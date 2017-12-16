@@ -41,9 +41,6 @@ a:hover{text-decoration: none; cursor:pointer;}
 .bloc-xl{
 	padding:150px 50px;
 }
-.bloc-md{
-	padding:50px;
-}
 .bloc-sm{
 	padding:20px 50px;
 }
@@ -75,6 +72,12 @@ a:hover{text-decoration: none; cursor:pointer;}
 .d-bloc .panel .btn-wire,.d-bloc .panel .btn-wire:hover,.l-bloc .btn-wire,.l-bloc .btn-wire:hover{
 	color:rgba(0,0,0,.7);
 	border-color:rgba(0,0,0,.3);
+}
+
+/* Row Margin Offsets */
+
+.voffset{
+	margin-top:30px;
 }
 
 /* Bloc text custom styling */
@@ -258,8 +261,8 @@ button{
 
 /* = Icons
 -------------------------------------------------------------- */
-.icon-lg{
-	font-size:60px!important;
+.icon-md{
+	font-size:30px!important;
 }
 
 
@@ -311,6 +314,11 @@ button{
 	opacity: 1;
 }
 
+/* Hide Object */
+.object-hidden{
+	display:none;
+}
+
 /* = Custom Styling
 -------------------------------------------------------------- */
 
@@ -345,6 +353,13 @@ h1,h2,h3,h4,h5,h6,p,label,.btn,a{
 }
 .projectsmatter{
 	text-align:left;
+}
+.social{
+	text-align:center;
+	float:none;
+	display:block;
+	overflow:visible;
+	padding:10px 10px 10px 10px;
 }
 
 /* = Colour
