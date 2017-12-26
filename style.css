@@ -360,6 +360,12 @@ h1,h2,h3,h4,h5,h6,p,label,.btn,a{
 	display:block;
 	overflow:visible;
 }
+.built-with-blocs-bloc p{
+	font-size:11px;
+	font-family:"helvetica";
+	font-weight:bold;
+	color:rgba(255,255,255,0.8);
+}
 
 /* = Colour
 -------------------------------------------------------------- */
@@ -609,6 +615,9 @@ h1,h2,h3,h4,h5,h6,p,label,.btn,a{
 	.headerpicture{
 	width:192px;
 	height:192px;
+}
+.bloc-mob-center-text{
+	text-align:center;
 }
  }
 
