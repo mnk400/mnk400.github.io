@@ -2,7 +2,7 @@
 $.fn.hasAttr = function(name) { var attr = $(this).attr(name); return typeof attr !== typeof undefined && attr !== false; };
 
 var lwi=-1;function thresholdPassed(){var w=$(window).width();var p=false;var cw=0;if(w>=768){cw++;}if(w>=960){cw++;}if(w>=1200){cw++;}if(lwi!=cw){p=true;}lwi=cw;return p;}
-shapesData = {"shape":[[9,0,484,0,0,42],[],[],[]]};
+shapesData = {"shape":[[9,0,280],[],[],[]]};
 $(document).ready(function() {
 r=function(){if(thresholdPassed()){dpi=window.devicePixelRatio;if($(window).width()>=1200){$('.js').attr('src', (dpi>1) ? 'images/img_8136-1200.jpg' : 'images/img_8136-600.jpg');
 $('.js-2').attr('src', (dpi>1) ? 'images/twitter-58.png' : 'images/twitter-29.png');
