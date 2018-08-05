@@ -6,7 +6,7 @@ var lwi=-1;function thresholdPassed(){var w=$(window).width();var p=false;var cw
 $(document).ready(function() {
 r=function(){if(thresholdPassed()){dpi=window.devicePixelRatio;if($(window).width()>=1200){$('.js-25').attr('src', (dpi>1) ? ((dpi>2) ? 'images/pasted-image-159.png' : 'images/pasted-image-106.png') : 'images/pasted-image-53.png');
 $('.js-26').attr('src', (dpi>1) ? ((dpi>2) ? 'images/pasted-image-102.png' : 'images/pasted-image-68.png') : 'images/pasted-image-34.png');
-$('.js-27').attr('src', (dpi>1) ? ((dpi>2) ? 'images/_mg_0501-1800.jpg' : 'images/_mg_0501-1200.jpg') : 'images/_mg_0501-600.jpg');
+$('.js-27').attr('src', (dpi>1) ? ((dpi>2) ? 'images/adsgaosg-1800.jpg' : 'images/adsgaosg-1200.jpg') : 'images/adsgaosg-600.jpg');
 $('.js-28').attr('src', (dpi>1) ? ((dpi>2) ? 'images/img_6972-1275.jpeg' : 'images/img_6972-850.jpeg') : 'images/img_6972-425.jpeg');
 $('.js-29').attr('src', (dpi>1) ? ((dpi>2) ? 'images/img_6377-984.jpg' : 'images/img_6377-656.jpg') : 'images/img_6377-328.jpg');
 $('.js-30').attr('src', (dpi>1) ? ((dpi>2) ? 'images/dscf1337-1215.jpg' : 'images/dscf1337-810.jpg') : 'images/dscf1337-405.jpg');
@@ -15,7 +15,7 @@ $('.js-32').attr('src', (dpi>1) ? ((dpi>2) ? 'images/img_5738-1443.jpeg' : 'imag
 $('.js-33').attr('src', (dpi>1) ? ((dpi>2) ? 'images/img_2840-750.jpg' : 'images/img_2840-500.jpg') : 'images/img_2840-250.jpg');
 $('.js-34').attr('src', (dpi>1) ? ((dpi>2) ? 'images/08bfb4d6-f2e2-4be8-b60f-c816c7ab14a7-1422.jpg' : 'images/08bfb4d6-f2e2-4be8-b60f-c816c7ab14a7-948.jpg') : 'images/08bfb4d6-f2e2-4be8-b60f-c816c7ab14a7-474.jpg');}else if($(window).width()>=960){$('.js-25').attr('src', (dpi>1) ? ((dpi>2) ? 'images/pasted-image-129.png' : 'images/pasted-image-86.png') : 'images/pasted-image-43.png');
 $('.js-26').attr('src', (dpi>1) ? ((dpi>2) ? 'images/pasted-image-81.png' : 'images/pasted-image-54.png') : 'images/pasted-image-27-1.png');
-$('.js-27').attr('src', (dpi>1) ? ((dpi>2) ? 'images/_mg_0501-1440.jpg' : 'images/_mg_0501-960.jpg') : 'images/_mg_0501-480-1.jpg');
+$('.js-27').attr('src', (dpi>1) ? ((dpi>2) ? 'images/adsgaosg-1440.jpg' : 'images/adsgaosg-960.jpg') : 'images/adsgaosg-480-1.jpg');
 $('.js-28').attr('src', (dpi>1) ? ((dpi>2) ? 'images/img_6972-1020.jpeg' : 'images/img_6972-680.jpeg') : 'images/img_6972-340.jpeg');
 $('.js-29').attr('src', (dpi>1) ? ((dpi>2) ? 'images/img_6377-789.jpg' : 'images/img_6377-526.jpg') : 'images/img_6377-263.jpg');
 $('.js-30').attr('src', (dpi>1) ? ((dpi>2) ? 'images/dscf1337-969.jpg' : 'images/dscf1337-646.jpg') : 'images/dscf1337-323.jpg');
@@ -24,7 +24,7 @@ $('.js-32').attr('src', (dpi>1) ? ((dpi>2) ? 'images/img_5738-1155.jpeg' : 'imag
 $('.js-33').attr('src', (dpi>1) ? ((dpi>2) ? 'images/img_2840-600.jpg' : 'images/img_2840-400.jpg') : 'images/img_2840-200.jpg');
 $('.js-34').attr('src', (dpi>1) ? ((dpi>2) ? 'images/08bfb4d6-f2e2-4be8-b60f-c816c7ab14a7-1140.jpg' : 'images/08bfb4d6-f2e2-4be8-b60f-c816c7ab14a7-760.jpg') : 'images/08bfb4d6-f2e2-4be8-b60f-c816c7ab14a7-380.jpg');}else if($(window).width()>=768){$('.js-25').attr('src', (dpi>1) ? ((dpi>2) ? 'images/pasted-image-159.png' : 'images/pasted-image-106.png') : 'images/pasted-image-53.png');
 $('.js-26').attr('src', (dpi>1) ? ((dpi>2) ? 'images/pasted-image-111.png' : 'images/pasted-image-74.png') : 'images/pasted-image-37.png');
-$('.js-27').attr('src', (dpi>1) ? ((dpi>2) ? 'images/_mg_0501-1152.jpg' : 'images/_mg_0501-768.jpg') : 'images/_mg_0501-384.jpg');
+$('.js-27').attr('src', (dpi>1) ? ((dpi>2) ? 'images/adsgaosg-1152.jpg' : 'images/adsgaosg-768.jpg') : 'images/adsgaosg-384.jpg');
 $('.js-28').attr('src', (dpi>1) ? ((dpi>2) ? 'images/img_6972-816.jpeg' : 'images/img_6972-544.jpeg') : 'images/img_6972-272.jpeg');
 $('.js-29').attr('src', (dpi>1) ? ((dpi>2) ? 'images/img_6377-633.jpg' : 'images/img_6377-422.jpg') : 'images/img_6377-211.jpg');
 $('.js-30').attr('src', (dpi>1) ? ((dpi>2) ? 'images/dscf1337-777.jpg' : 'images/dscf1337-518.jpg') : 'images/dscf1337-259.jpg');
@@ -33,7 +33,7 @@ $('.js-32').attr('src', (dpi>1) ? ((dpi>2) ? 'images/img_5738-924.jpeg' : 'image
 $('.js-33').attr('src', (dpi>1) ? ((dpi>2) ? 'images/img_2840-480.jpg' : 'images/img_2840-320.jpg') : 'images/img_2840-160.jpg');
 $('.js-34').attr('src', (dpi>1) ? ((dpi>2) ? 'images/08bfb4d6-f2e2-4be8-b60f-c816c7ab14a7-912.jpg' : 'images/08bfb4d6-f2e2-4be8-b60f-c816c7ab14a7-608.jpg') : 'images/08bfb4d6-f2e2-4be8-b60f-c816c7ab14a7-304.jpg');}else{$('.js-25').attr('src', (dpi>1) ? ((dpi>2) ? 'images/pasted-image-150.png' : 'images/pasted-image-100.png') : 'images/pasted-image-50-1.png');
 $('.js-26').attr('src', (dpi>1) ? ((dpi>2) ? 'images/pasted-image-108.png' : 'images/pasted-image-72.png') : 'images/pasted-image-36.png');
-$('.js-27').attr('src', (dpi>1) ? ((dpi>2) ? 'images/_mg_0501-480-2.jpg' : 'images/_mg_0501-320-1.jpg') : 'images/_mg_0501-160-1.jpg');
+$('.js-27').attr('src', (dpi>1) ? ((dpi>2) ? 'images/adsgaosg-480.jpg' : 'images/adsgaosg-320.jpg') : 'images/adsgaosg-160.jpg');
 $('.js-28').attr('src', (dpi>1) ? ((dpi>2) ? 'images/img_6972-447.jpeg' : 'images/img_6972-298.jpeg') : 'images/img_6972-149.jpeg');
 $('.js-29').attr('src', (dpi>1) ? ((dpi>2) ? 'images/img_6377-342.jpg' : 'images/img_6377-228.jpg') : 'images/img_6377-114.jpg');
 $('.js-30').attr('src', (dpi>1) ? ((dpi>2) ? 'images/dscf1337-441.jpg' : 'images/dscf1337-294.jpg') : 'images/dscf1337-147.jpg');
