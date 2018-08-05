@@ -33,7 +33,7 @@ $('.js-32').attr('src', (dpi>1) ? ((dpi>2) ? 'images/img_5738-924.jpeg' : 'image
 $('.js-33').attr('src', (dpi>1) ? ((dpi>2) ? 'images/img_2840-480.jpg' : 'images/img_2840-320.jpg') : 'images/img_2840-160.jpg');
 $('.js-34').attr('src', (dpi>1) ? ((dpi>2) ? 'images/08bfb4d6-f2e2-4be8-b60f-c816c7ab14a7-912.jpg' : 'images/08bfb4d6-f2e2-4be8-b60f-c816c7ab14a7-608.jpg') : 'images/08bfb4d6-f2e2-4be8-b60f-c816c7ab14a7-304.jpg');}else{$('.js-25').attr('src', (dpi>1) ? ((dpi>2) ? 'images/pasted-image-150.png' : 'images/pasted-image-100.png') : 'images/pasted-image-50-1.png');
 $('.js-26').attr('src', (dpi>1) ? ((dpi>2) ? 'images/pasted-image-108.png' : 'images/pasted-image-72.png') : 'images/pasted-image-36.png');
-$('.js-27').attr('src', (dpi>1) ? ((dpi>2) ? 'images/_mg_0501-573.jpg' : 'images/_mg_0501-382.jpg') : 'images/_mg_0501-191.jpg');
+$('.js-27').attr('src', (dpi>1) ? ((dpi>2) ? 'images/_mg_0501-480-2.jpg' : 'images/_mg_0501-320-1.jpg') : 'images/_mg_0501-160-1.jpg');
 $('.js-28').attr('src', (dpi>1) ? ((dpi>2) ? 'images/img_6972-447.jpeg' : 'images/img_6972-298.jpeg') : 'images/img_6972-149.jpeg');
 $('.js-29').attr('src', (dpi>1) ? ((dpi>2) ? 'images/img_6377-342.jpg' : 'images/img_6377-228.jpg') : 'images/img_6377-114.jpg');
 $('.js-30').attr('src', (dpi>1) ? ((dpi>2) ? 'images/dscf1337-441.jpg' : 'images/dscf1337-294.jpg') : 'images/dscf1337-147.jpg');
