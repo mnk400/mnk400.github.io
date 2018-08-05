@@ -4,8 +4,8 @@ $.fn.hasAttr = function(name) { var attr = $(this).attr(name); return typeof att
 var lwi=-1;function thresholdPassed(){var w=$(window).width();var p=false;var cw=0;if(w>=768){cw++;}if(w>=960){cw++;}if(w>=1200){cw++;}if(lwi!=cw){p=true;}lwi=cw;return p;}
 
 $(document).ready(function() {
-r=function(){if(thresholdPassed()){dpi=window.devicePixelRatio;if($(window).width()>=1200){$('.js-25').attr('src', (dpi>1) ? ((dpi>2) ? 'images/pasted-image-159-3.png' : 'images/pasted-image-106-3.png') : 'images/pasted-image-53-3.png');
-$('.js-26').attr('src', (dpi>1) ? ((dpi>2) ? 'images/pasted-image-102-3.png' : 'images/pasted-image-68-3.png') : 'images/pasted-image-34-3.png');
+r=function(){if(thresholdPassed()){dpi=window.devicePixelRatio;if($(window).width()>=1200){$('.js-25').attr('src', (dpi>1) ? ((dpi>2) ? 'images/pasted-image-159.png' : 'images/pasted-image-106.png') : 'images/pasted-image-53.png');
+$('.js-26').attr('src', (dpi>1) ? ((dpi>2) ? 'images/pasted-image-102.png' : 'images/pasted-image-68.png') : 'images/pasted-image-34.png');
 $('.js-27').attr('src', (dpi>1) ? ((dpi>2) ? 'images/_mg_0501-1800.jpg' : 'images/_mg_0501-1200.jpg') : 'images/_mg_0501-600.jpg');
 $('.js-28').attr('src', (dpi>1) ? ((dpi>2) ? 'images/img_6972-1275.jpeg' : 'images/img_6972-850.jpeg') : 'images/img_6972-425.jpeg');
 $('.js-29').attr('src', (dpi>1) ? ((dpi>2) ? 'images/img_6377-984.jpg' : 'images/img_6377-656.jpg') : 'images/img_6377-328.jpg');

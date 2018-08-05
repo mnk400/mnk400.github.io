@@ -60,8 +60,8 @@ html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; 
 .pos-7{position:relative;margin-left:155px;margin-top:-241px;}
 .size-6{min-width:109px;width:109px;min-height:35px;height:35px;}
 .cont-5{z-index:6;pointer-events:auto;}
-.font-4{font-family:Dosis;font-size:17px;font-weight:400;font-style:normal;text-decoration:none;text-transform:none;color:rgb(0,0,0);background-color:initial;line-height:30px;letter-spacing:normal;text-shadow:none;}
-.font-5{font-family:Dosis;font-size:18px;font-weight:400;font-style:normal;text-decoration:none;text-transform:none;color:rgb(0,0,0);background-color:initial;line-height:32px;letter-spacing:normal;text-shadow:none;}
+.font-4{font-family:Dosis;font-size:17px;font-weight:400;font-style:normal;text-decoration:none;text-transform:none;color:rgb(64,64,64);background-color:initial;line-height:30px;letter-spacing:normal;text-shadow:none;}
+.font-5{font-family:Dosis;font-size:18px;font-weight:400;font-style:normal;text-decoration:none;text-transform:none;color:rgb(64,64,64);background-color:initial;line-height:32px;letter-spacing:normal;text-shadow:none;}
 .pos-8{position:relative;margin-left:10px;margin-top:-181px;}
 .size-7{min-width:389px;width:389px;min-height:36px;}
 .pos-9{position:relative;margin-left:0;margin-top:2px;}
