@@ -2,7 +2,7 @@
 $.fn.hasAttr = function(name) { var attr = $(this).attr(name); return typeof attr !== typeof undefined && attr !== false; };
 
 var lwi=-1;function thresholdPassed(){var w=$(window).width();var p=false;var cw=0;if(w>=768){cw++;}if(w>=960){cw++;}if(w>=1200){cw++;}if(lwi!=cw){p=true;}lwi=cw;return p;}
-shapesData = {"shape":[[8,0,74],[],[],[]],"shape-2":[[8,0,386,0,0,20],[],[],[]]};
+shapesData = {"shape":[[8,0,72,0,400,8],[],[],[]],"shape-2":[[8,0,396,0,0,88],[],[],[]]};
 $(document).ready(function() {
 r=function(){if(thresholdPassed()){dpi=window.devicePixelRatio;if($(window).width()>=1200){$('.js').attr('src', (dpi>1) ? ((dpi>2) ? 'images/img_8136-1800.jpg' : 'images/img_8136-1200.jpg') : 'images/img_8136-600.jpg');
 $('.js-2').attr('src', (dpi>1) ? ((dpi>2) ? 'images/twitter-87.png' : 'images/twitter-58.png') : 'images/twitter-29.png');
