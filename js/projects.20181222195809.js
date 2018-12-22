@@ -8,7 +8,7 @@ r=function(){if(thresholdPassed()){dpi=window.devicePixelRatio;if($(window).widt
 $('.js-8').attr('src', (dpi>1) ? 'images/pasted-image-590.png' : 'images/pasted-image-295.png');
 $('.js-9').attr('src', (dpi>1) ? 'images/pasted-image-80.png' : 'images/pasted-image-40.png');
 $('.js-10').attr('src', (dpi>1) ? 'images/screenshot-2018-12-22-at-6.37.58-pm-400.png' : 'images/screenshot-2018-12-22-at-6.37.58-pm-200.png');
-$('.js-11').attr('src', (dpi>1) ? 'images/pasted-image-80.png' : 'images/pasted-image-40.png');}else{$('.js-7').attr('src', (dpi>1) ? 'images/pasted-image-578.png' : 'images/pasted-image-289.png');
+$('.js-11').attr('src', (dpi>1) ? 'images/pasted-image-80-2.png' : 'images/pasted-image-40-2.png');}else{$('.js-7').attr('src', (dpi>1) ? 'images/pasted-image-578.png' : 'images/pasted-image-289.png');
 $('.js-8').attr('src', (dpi>1) ? 'images/pasted-image-472.png' : 'images/pasted-image-236.png');
 $('.js-9').attr('src', (dpi>1) ? 'images/pasted-image-64.png' : 'images/pasted-image-32.png');
 $('.js-10').attr('src', (dpi>1) ? 'images/screenshot-2018-12-22-at-6.37.58-pm-320.png' : 'images/screenshot-2018-12-22-at-6.37.58-pm-160.png');
