@@ -5,7 +5,7 @@ var lwi=-1;function thresholdPassed(){var w=$(window).width();var p=false;var cw
 
 $(document).ready(function() {
 r=function(){if(thresholdPassed()){dpi=window.devicePixelRatio;if($(window).width()>=1200){$('.js').attr('src', (dpi>1) ? 'images/pasted-image-540.png' : 'images/pasted-image-270.png');
-$('.js-2').attr('src', (dpi>1) ? 'images/img_2178-528-6.jpg' : 'images/img_2178-264-6.jpg');
+$('.js-2').attr('src', (dpi>1) ? 'images/img_2178-528.jpg' : 'images/img_2178-264.jpg');
 $('.js-3').attr('src', (dpi>1) ? 'images/pasted-image-80.png' : 'images/pasted-image-40.png');}else{$('.js').attr('src', (dpi>1) ? 'images/pasted-image-432.png' : 'images/pasted-image-216.png');
 $('.js-2').attr('src', (dpi>1) ? 'images/img_2178-422.jpg' : 'images/img_2178-211.jpg');
 $('.js-3').attr('src', (dpi>1) ? 'images/pasted-image-64.png' : 'images/pasted-image-32.png');}}};
