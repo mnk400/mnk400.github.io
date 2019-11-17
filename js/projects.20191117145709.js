@@ -6,9 +6,9 @@ var lwi=-1;function thresholdPassed(){var w=$(window).width();var p=false;var cw
 $(document).ready(function() {
 r=function(){if(thresholdPassed()){dpi=window.devicePixelRatio;if($(window).width()>=1200){$('.js-10').attr('src', (dpi>1) ? 'images/pasted-image-722.png' : 'images/pasted-image-361.png');
 $('.js-11').attr('src', (dpi>1) ? 'images/pasted-image-590.png' : 'images/pasted-image-295.png');
-$('.js-12').attr('src', (dpi>1) ? 'images/pasted-image-80-2.png' : 'images/pasted-image-40-2.png');
+$('.js-12').attr('src', (dpi>1) ? 'images/pasted-image-80.png' : 'images/pasted-image-40.png');
 $('.js-13').attr('src', (dpi>1) ? 'images/screenshot-2018-12-22-at-6.37.58-pm-400.png' : 'images/screenshot-2018-12-22-at-6.37.58-pm-200.png');
-$('.js-14').attr('src', (dpi>1) ? 'images/pasted-image-80-3.png' : 'images/pasted-image-40-3.png');}else if($(window).width()>=960){$('.js-10').attr('src', (dpi>1) ? 'images/pasted-image-578.png' : 'images/pasted-image-289.png');
+$('.js-14').attr('src', (dpi>1) ? 'images/pasted-image-80.png' : 'images/pasted-image-40.png');}else if($(window).width()>=960){$('.js-10').attr('src', (dpi>1) ? 'images/pasted-image-578.png' : 'images/pasted-image-289.png');
 $('.js-11').attr('src', (dpi>1) ? 'images/pasted-image-472.png' : 'images/pasted-image-236.png');
 $('.js-12').attr('src', (dpi>1) ? 'images/pasted-image-64.png' : 'images/pasted-image-32.png');
 $('.js-13').attr('src', (dpi>1) ? 'images/screenshot-2018-12-22-at-6.37.58-pm-320.png' : 'images/screenshot-2018-12-22-at-6.37.58-pm-160.png');
