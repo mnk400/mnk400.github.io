@@ -268,3 +268,20 @@ html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; 
 .pos-45{margin-top:-124px;}
 .pos-46{margin-left:37px;margin-top:-72px;}
 }
+@font-face{font-family:"Redacted Script";src:url('redacted-script-regular.ttf');src:url('redacted-script-regular.ttf?#iefix') format('embedded-opentype'), url('redacted-script-regular.ttf') format('woff'), url('redacted-script-regular.ttf') format('truetype'), url('redacted-script-regular.ttf#RedactedScript') format('svg');font-weight:400;}
+.pos-47{position:relative;margin-top:385px;}
+.pos-48{position:relative;margin-left:-330px;margin-top:34px;}
+.size-37{min-width:490px;width:490px;min-height:121px;}
+.font-15{font-family:Lato;font-size:16px;font-weight:400;font-style:normal;text-decoration:none;text-transform:none;color:rgb(192,192,192);background-color:initial;line-height:23px;letter-spacing:normal;text-shadow:none;}
+.pos-49{position:relative;margin-left:0;margin-top:-34px;}
+.size-38{min-width:142px;width:142px;min-height:68px;height:68px;}
+.font-16{font-family:Lato;font-size:13px;font-weight:700;font-style:normal;text-decoration:none;text-transform:none;color:rgb(139,162,188);background-color:initial;line-height:22px;letter-spacing:normal;text-shadow:none;}
+@media (max-width:959px) {
+.pos-47{margin-top:215px;}
+.pos-48{margin-left:37px;margin-top:0;}
+.size-37{min-width:246px;width:246px;min-height:93px;}
+.font-15{font-size:18px;line-height:26px;}
+.pos-49{margin-top:-46px;}
+.size-38{min-width:120px;width:120px;min-height:34px;height:34px;}
+.font-16{font-size:14px;line-height:23px;}
+}
