@@ -19,7 +19,6 @@ video:-moz-full-screen{max-width:100% !important;}
 video:-ms-fullscreen{max-width:100% !important;}
 video:fullscreen{max-width:100% !important;}
 .player1.fullscreen1-active video{max-width:100% !important;}
-html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 #body{background-color:rgb(0,0,0);}
 .pos{position:relative;margin-top:385px;}
 .vis{display:block;vertical-align:top;}
