@@ -3,11 +3,10 @@ layout: post
 title: "Maximum Likelihood Estimation of Gumbel Distribution"
 description: "Estimating parameters of an unknown gumbel distribution using maximum likelihood."
 date: 2020-02-06
-tags: Machine Learning, Estimation
+lastedit: 2020-05-14
+tags: Machine-Learning, Estimation
 comments: true
 ---
-
-# Maximum Likelihood Estimation of Gumbel Distribution
 
 This is a write up to derive the maximum liklihood solution for estimation of a gumbel distribution.
 

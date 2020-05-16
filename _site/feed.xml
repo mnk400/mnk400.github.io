@@ -6,15 +6,13 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 15 May 2020 20:19:39 -0400</pubDate>
-    <lastBuildDate>Fri, 15 May 2020 20:19:39 -0400</lastBuildDate>
+    <pubDate>Fri, 15 May 2020 22:53:20 -0400</pubDate>
+    <lastBuildDate>Fri, 15 May 2020 22:53:20 -0400</lastBuildDate>
     <generator>Jekyll v3.6.3</generator>
     
       <item>
         <title>Maximum Likelihood Estimation of Gumbel Distribution</title>
-        <description>&lt;h1 id=&quot;maximum-likelihood-estimation-of-gumbel-distribution&quot;&gt;Maximum Likelihood Estimation of Gumbel Distribution&lt;/h1&gt;
-
-&lt;p&gt;This is a write up to derive the maximum liklihood solution for estimation of a gumbel distribution.&lt;/p&gt;
+        <description>&lt;p&gt;This is a write up to derive the maximum liklihood solution for estimation of a gumbel distribution.&lt;/p&gt;
 
 &lt;p&gt;Let’s start with the probability density function of the gumbel distribution, which is&lt;/p&gt;
 
@@ -109,9 +107,7 @@ We’ll choose starting values for α and β, α(0) and β(0) using the method o
         <link>http://localhost:4000/2020/02/gumble-mle.html</link>
         <guid isPermaLink="true">http://localhost:4000/2020/02/gumble-mle.html</guid>
         
-        <category>Machine</category>
-        
-        <category>Learning,</category>
+        <category>Machine-Learning,</category>
         
         <category>Estimation</category>
         

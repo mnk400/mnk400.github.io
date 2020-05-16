@@ -18,6 +18,12 @@
     p {
         @include fs--meta;
     }
+
+    img {
+        height: 20em;
+        width: auto;
+        border-radius: 6px;
+    }
 }
 
 .c-page__footer {

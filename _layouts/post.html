@@ -16,6 +16,7 @@ layout: page
   <div class="c-article__main">
     {{ content }}
   </div>
+  <p class="c-article__time"><time datetime="{{ page.lastedit | date_to_xmlschema }}" itemprop="datePublished">Last edited on {{ page.lastedit | date: "%b %-d, %Y" }}</time></p><br><br>
   <!-- Previous / Next Buttons -->
   <div class="pagenav">
     {% if page.previous.url %}

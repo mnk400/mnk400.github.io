@@ -21,7 +21,7 @@
     padding-bottom: 2.5rem;
     border-top: 1px solid #EFF1F3;
     text-align: justify;
-    text-justify: auto;
+    text-justify: inter-word;
     @media screen and (min-width: $bp__sm) {
         display: -webkit-box;
         display: -webkit-flex;
