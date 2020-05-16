@@ -2,12 +2,12 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Manik Kumar</title>
-    <description>Manik
+    <description>Manik 🤖💻
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 15 May 2020 22:53:20 -0400</pubDate>
-    <lastBuildDate>Fri, 15 May 2020 22:53:20 -0400</lastBuildDate>
+    <pubDate>Fri, 15 May 2020 23:10:03 -0400</pubDate>
+    <lastBuildDate>Fri, 15 May 2020 23:10:03 -0400</lastBuildDate>
     <generator>Jekyll v3.6.3</generator>
     
       <item>
@@ -107,7 +107,7 @@ We’ll choose starting values for α and β, α(0) and β(0) using the method o
         <link>http://localhost:4000/2020/02/gumble-mle.html</link>
         <guid isPermaLink="true">http://localhost:4000/2020/02/gumble-mle.html</guid>
         
-        <category>Machine-Learning,</category>
+        <category>Machine-Learning</category>
         
         <category>Estimation</category>
         

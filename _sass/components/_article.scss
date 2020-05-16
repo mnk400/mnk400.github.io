@@ -37,6 +37,7 @@
 .c-article__time {
     @include fs--body;
     color: $c-base__01;
+    font-size: 1.5em;
 }
 
 .c-article__main {

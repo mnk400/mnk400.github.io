@@ -4,7 +4,7 @@ title: "Maximum Likelihood Estimation of Gumbel Distribution"
 description: "Estimating parameters of an unknown gumbel distribution using maximum likelihood."
 date: 2020-02-06
 lastedit: 2020-05-14
-tags: Machine-Learning, Estimation
+tags: Machine-Learning Estimation
 comments: true
 ---
 
