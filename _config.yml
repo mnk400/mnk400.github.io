@@ -1,0 +1,27 @@
+# Site settings
+title: "Manik Kumar"
+description: > 
+  Manik
+
+author: Manik
+email: mnk_400@icloud.com
+# twitter_username: m.xnik
+linkedin_username: manik-kumar
+github_username: mnk400
+
+baseurl: "" # the subpath of your site, e.g. /blog
+url: "https://mnk400.github.io" # the base hostname & protocol for your site
+
+google_analytics_id: UA-166033844-1
+disqus_id:
+
+# Build settings
+include: [_pages]
+markdown: kramdown
+permalink: /:year/:month/:title.html
+
+sass:
+    style: compressed
+
+exclude: [vendor]
+

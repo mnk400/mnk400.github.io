@@ -1,0 +1,18 @@
+<header class="c-page__header">
+  {% if page.title == 'Home' %}
+  <style>
+    img.me {
+      height: 20em;
+      width: auto;
+    }
+  </style>
+  <img class = "me" src="assets/me.jpg">
+  <br><br><br><br>
+  {% endif %}
+  <h1>{{ site.description }}</h1>
+  <p>
+    <a href="{{ "/" | prepend: site.baseurl }}">Home</a><span
+          class="u-separate"></span> <a href="{{ "/projects/" | prepend:
+          site.baseurl }}">Projects</a><span class="u-separate"></span> <a href="{{ "/blog.html" | prepend: site.baseurl }}">Blog</a>
+  </p>
+</header>
