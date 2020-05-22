@@ -67,6 +67,10 @@
         @include fs--body;
     }
 
+    sup {
+        @include fs--subsup;
+    }
+    
     strong {
         color: $c-base__02;
         font-weight: 700;

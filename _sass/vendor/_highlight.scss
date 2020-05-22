@@ -22,11 +22,11 @@ pre, code {
 }
 
 .highlight {
-    border-radius: 4px;
+    border-radius: 8px;
     background: #FDFDFD;
-    border: 1px solid #E8E8EB;
-    color: #93a1a1;
-
+    color: #a19393;
+    background-color: #F3F3F3;
+    padding: 0.5em;
     .gutter {
         padding: 1.2rem;
         border-right: 1px solid #E8E8EB;

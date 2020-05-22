@@ -6,13 +6,99 @@
 </description>
     <link>http://localhost:4000/</link>
     <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 15 May 2020 23:10:03 -0400</pubDate>
-    <lastBuildDate>Fri, 15 May 2020 23:10:03 -0400</lastBuildDate>
+    <pubDate>Fri, 22 May 2020 02:35:51 -0400</pubDate>
+    <lastBuildDate>Fri, 22 May 2020 02:35:51 -0400</lastBuildDate>
     <generator>Jekyll v3.6.3</generator>
     
       <item>
+        <title>Editing icons for installed applications on macOS programmatically.</title>
+        <description>&lt;p&gt;This article will go through two different ways on how one could programmatically change app icons on macOS.&lt;/p&gt;
+
+&lt;p&gt;There have been multiple ways one could manually go about changing app icons for installed apps on macOS, which include replacing dragging an icon file on the application icon in the applications inspector window or using a 3rd party app like LiteIcon to do so. This can potentially be annoying as icons change back to defaults if you update the app or simply because it is a pretty tedious process.&lt;/p&gt;
+
+&lt;p&gt;This process can potentially be automated by using a script to replace the icons.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-process&quot;&gt;The Process&lt;/h2&gt;
+
+&lt;h4 id=&quot;the-easier-way&quot;&gt;The easier way&lt;/h4&gt;
+
+&lt;p&gt;By using the ‘fileicon’ utility by Michael Klement&lt;sup&gt;[1]&lt;/sup&gt; we can pretty much change icons for any file or folder on macOS. Using the following command&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;fileicon set [path_to_file] [path_to_icon]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;or remove the set icon using&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;fileicon remove [path_to_file] [path_to_icon]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;fileicon can be installed using brew, make sure you have the command line tools installed.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;brew install fileicon
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;Here’s an example script, written using the fileicon utility&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;#!/bin/bash&lt;/span&gt;
+
+&lt;span class=&quot;nv&quot;&gt;icon_path&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$1&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;app_path&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;/Applications/&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$2&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;.app&quot;&lt;/span&gt;
+
+fileicon &lt;span class=&quot;nb&quot;&gt;set&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$app_path&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$1&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;saving the above as replace.sh and calling&lt;/p&gt;
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;./replace.sh desktop/iconreplacement.icns Spotify
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;would change the Spotify’s app icon.&lt;/p&gt;
+
+&lt;p&gt;fileicon is capable of assigning any image format macOS is capable of reading to most files and folders, I would recommend using fileicon for most scripting projects.&lt;/p&gt;
+
+&lt;h4 id=&quot;the-harder-way&quot;&gt;The harder way&lt;/h4&gt;
+
+&lt;p&gt;I recommend going with the previously mentioned method unless you know what you’re doing.&lt;/p&gt;
+
+&lt;p&gt;Applications on macOS function like folders, you can right-click on a folder and select ‘show package contents’ to browse the contents of an app.&lt;/p&gt;
+
+&lt;p&gt;In the contents directory of an application, we should find a file called ‘Info.plist’, inside the mentioned plist file we’re looking for three entries&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;CFBundleIconFile:
+Icon that shows up in dock and Launchpad&lt;sup&gt;[2]&lt;/sup&gt;.&lt;/li&gt;
+  &lt;li&gt;CFBundleIconFileDark:
+Icon that shows up in the dock and Launchpad when dark mode is enabled&lt;sup&gt;[2]&lt;/sup&gt;.&lt;/li&gt;
+  &lt;li&gt;CFBundleTypeIconFile:
+Icon that shows up when on a file that can be showed up in the said application&lt;sup&gt;[2]&lt;/sup&gt;. As a caution, often applications can support opening a lot of different kinds of formats, which leads to dealing with a lot of different icons or just convoluted code.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The icon files specified in the Contents/Resources directory. It’s relatively easy to write code to replace the icons.&lt;/p&gt;
+
+&lt;p&gt;After replacing the icons specified by the plist, we’ll need to refresh the icon cache. There are numerous ways to execute this as discussed in a Github &lt;a href=&quot;https://gist.github.com/fabiofl/5873100&quot;&gt;Gist&lt;/a&gt; by Fabio Fernandesthread&lt;sup&gt;[3]&lt;/sup&gt; with a discussion about their drawbacks.&lt;/p&gt;
+
+&lt;p&gt;I’ve found the easiest way to achieve this is by simply &lt;a href=&quot;https://gist.github.com/fabiofl/5873100#gistcomment-1320553&quot;&gt;touching&lt;/a&gt; the application, and restarting Finder and Dock.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;touch /Applications/[name].app
+killall Finder &amp;amp;&amp;amp; killall Dock
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;references&quot;&gt;References&lt;/h2&gt;
+&lt;p&gt;[1] fileicon. Michael Klement, &lt;a href=&quot;https://github.com/mklement0/fileicon&quot;&gt;Github.&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;[2] Core Foundation Keys. &lt;a href=&quot;https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html&quot;&gt;Apple Documentation.&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;[3] “Clear Mac OS X’s icon cache”. Fabio Fernandes. &lt;a href=&quot;https://gist.github.com/fabiofl/5873100&quot;&gt;Github Gist.&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Thu, 21 May 2020 00:00:00 -0400</pubDate>
+        <link>http://localhost:4000/2020/05/macicons.html</link>
+        <guid isPermaLink="true">http://localhost:4000/2020/05/macicons.html</guid>
+        
+        <category>macOS</category>
+        
+        <category>Scripting</category>
+        
+        <category>Guide</category>
+        
+        
+      </item>
+    
+      <item>
         <title>Maximum Likelihood Estimation of Gumbel Distribution</title>
-        <description>&lt;p&gt;This is a write up to derive the maximum liklihood solution for estimation of a gumbel distribution.&lt;/p&gt;
+        <description>&lt;p&gt;This is a write up to derive the maximum liklihood solution for estimation of a gumbel distribution, this write up also assumes basic knowledge of estimation theory.&lt;/p&gt;
 
 &lt;p&gt;Let’s start with the probability density function of the gumbel distribution, which is&lt;/p&gt;
 

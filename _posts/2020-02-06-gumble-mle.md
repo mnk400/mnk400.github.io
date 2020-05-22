@@ -5,10 +5,10 @@ description: "Estimating parameters of an unknown gumbel distribution using maxi
 date: 2020-02-06
 lastedit: 2020-05-14
 tags: Machine-Learning Estimation
-comments: true
+comments: false
 ---
 
-This is a write up to derive the maximum liklihood solution for estimation of a gumbel distribution.
+This is a write up to derive the maximum liklihood solution for estimation of a gumbel distribution, this write up also assumes basic knowledge of estimation theory.
 
 Let's start with the probability density function of the gumbel distribution, which is
 
