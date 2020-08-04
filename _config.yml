@@ -1,27 +1,24 @@
-# Site settings
-title: "Manik Kumar"
-description: > 
-  Manik 🤖💻
+# My variables
+name: manik kumar
+description: ~
 
-author: Manik
-email: mnk_400@icloud.com
-# twitter_username: m.xnik
-linkedin_username: manik-kumar
-github_username: mnk400
+# File management
+include: [".htaccess"]
+exclude: ["README.md", "LICENSE"]
 
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "https://mnk400.github.io" # the base hostname & protocol for your site
 
-google_analytics_id: UA-166033844-1
-disqus_id:
-
-# Build settings
-include: [_pages]
-markdown: kramdown
-permalink: /:year/:month/:title.html
-
+# Sass
 sass:
-    style: compressed
+  style: :compressed
+  sass_dir: _sass
 
-exclude: [vendor]
+# Google analytics tracking ID
+google_analytics: "UA-166033844-1"
 
+# Markdown
+markdown: kramdown
+kramdown:
+  input: GFM
+  math_engine: mathjax
+  hard_wrap: false
+highlighter: rouge

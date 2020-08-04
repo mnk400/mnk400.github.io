@@ -1,15 +1,32 @@
 ---
-layout: page
-title: Home
+layout: default
 ---
-<section class="c-archives">
-  <link rel="shortcut icon" href="">
-  <div class="c-archives__dist">
-    <h3>
-      <small>
-        I am a computer systems engineering graduate student at Northeastern Boston, with a portfolio and interests that includes working in fields like Internet of Things, Robotics, and Machine Learning.
-      <br><br>
-      </small>
-    </h3>
-  </div>
-</section>
+
+{% include header.html %}
+
+
+
+
+<div class="desc">
+	<p>
+        Graduate student at The Northeastern University Boston. Loves Internet of Things, development boards, machine learning, and writing software. 
+                    
+    </p><br>
+
+<div class="blog">
+    <h1>Archive</h1>
+	<hr>
+    <ol>
+        <li>
+        </li>
+        {% for post in site.posts %}
+        <li>
+            {% if post.type == "external" %}
+                <a href="{{ post.link }}" target="_blank">{{ post.title }}</a><span class="date"> {{ post.date | date: '%Y-%m' }}
+            {% else %}
+                <a href="{{ post.url }}">{{ post.title }}</a><span class="date"> {{ post.date | date: '%Y-%m' }}
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ol>
+</div>

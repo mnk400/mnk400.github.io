@@ -1,14 +1,11 @@
 ---
 layout: post
 title: "Maximum Likelihood Estimation of Gumbel Distribution"
-description: "Estimating parameters of an unknown gumbel distribution using maximum likelihood."
 date: 2020-02-06
-lastedit: 2020-05-14
-tags: Machine-Learning Estimation
-comments: false
+edit: 2020-05-14
 ---
 
-This is a write up to derive the maximum liklihood solution for estimation of a gumbel distribution, this write up also assumes basic knowledge of estimation theory.
+<span class="note">This write up assumes basic knowledge of the estimation theory.</span>
 
 Let's start with the probability density function of the gumbel distribution, which is
 
@@ -90,8 +87,7 @@ $$\left[\left(\alpha^{(n e w)}-\alpha^{(o l d)}\right)^{2}+\left(\beta^{(n e w)}
 - if Yes, then stop.
 
 Following are the results of the above algorithm for a gumbel destibution generated using α = 2.3 and β = 4.0 ran multiple times and averaged.
-
-
+ 
 ![](https://i.imgur.com/EjvbGg5.png)
 
 [Link to the code.](https://github.com/mnk400/gumbelMLE)

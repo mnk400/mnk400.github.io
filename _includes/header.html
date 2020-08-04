@@ -1,13 +1,24 @@
-<header class="c-page__header">
-  {% if page.title == 'Home' %}
-  
-  <img class = "me" src="assets/me.jpg">
-  <br><br><br><br>
-  {% endif %}
-  <h1>{{ site.description }}</h1>
-  <p>
-    <a href="{{ "/" | prepend: site.baseurl }}">Home</a><span
-          class="u-separate"></span> <a href="{{ "/projects/" | prepend:
-          site.baseurl }}">Projects</a><span class="u-separate"></span> <a href="{{ "/blog.html" | prepend: site.baseurl }}">Blog</a>
-  </p>
-</header>
+<!-- <img src="assets/profile.JPG" class="me"></img>
+</br>
+</br> -->
+</br>
+<div class="header">
+    <ul>
+        {% for item in site.data.navigation %}
+        <li>
+            <a href="{{ item.url }}">{{ item.title }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div class="nav">
+    <div class="site-title"> <a href=".">Manik</a> </div>
+    <ul>
+        <li><a href="/about">about</a></li>
+        <li><a href="/projects">projects</a></li>
+        <li><a href="https://github.com/mnk400" target="_blank">github</a></li>
+        <li><a href="https://linkedin.com/in/manik-kumar" target="_blank">linkedin</a></li>
+        <li><a href="https://instagram.com/m.xnik" target="_blank">photos</a></li>
+    </ul>
+</div>
