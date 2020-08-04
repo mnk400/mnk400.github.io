@@ -75,52 +75,51 @@
 
 <p>Let’s start with the probability density function of the gumbel distribution, which is</p>
 
-<script type="math/tex; mode=display">p(x)=\frac{1}{\beta}e^{\frac{x-\alpha}{\beta}}e^{-e^{\frac{x-\alpha}{\beta}}}</script>
+\[p(x)=\frac{1}{\beta}e^{\frac{x-\alpha}{\beta}}e^{-e^{\frac{x-\alpha}{\beta}}}\]
 
-<script type="math/tex; mode=display">\text{where }\alpha \text{ and } \beta \text{ are parameters and }\alpha \in \mathbb{R}, \beta > 0</script>
+\[\text{where }\alpha \text{ and } \beta \text{ are parameters and }\alpha \in \mathbb{R}, \beta &gt; 0\]
 
 <p>Maximum liklihood solution can be written as,</p>
 
-<script type="math/tex; mode=display">\mathrm{f}_{M L}=\underset{\alpha \in \mathbb{R}, \beta>0}{\operatorname{argmax}} \in \mathbb{R}, \beta>0(P(D | \alpha, \beta))</script>
+\[\mathrm{f}_{M L}=\underset{\alpha \in \mathbb{R}, \beta&gt;0}{\operatorname{argmax}} \in \mathbb{R}, \beta&gt;0(P(D | \alpha, \beta))\]
 
 <p>where <em>D</em> represents the set of datapoints.</p>
 
-<script type="math/tex; mode=display">\mathrm{f}_{M L}=\underset{\alpha \in \mathbb{R}, \beta>0}{\operatorname{argmax}} \in \mathbb{R}, \beta>0(\prod_{i=1}^n P(x_i | \alpha, \beta))</script>
+\[\mathrm{f}_{M L}=\underset{\alpha \in \mathbb{R}, \beta&gt;0}{\operatorname{argmax}} \in \mathbb{R}, \beta&gt;0(\prod_{i=1}^n P(x_i | \alpha, \beta))\]
 
 <p>where <em>x</em><sub><em>i</em></sub> represents each datapoint.</p>
 
 <p>Now onto calculating the log-likelihood,</p>
 
-<script type="math/tex; mode=display">=\ln \left(\prod_{i=0}^{n} P\left(x_{i} | \alpha, \beta\right)\right)</script>
+\[=\ln \left(\prod_{i=0}^{n} P\left(x_{i} | \alpha, \beta\right)\right)\]
 
-<script type="math/tex; mode=display">=\sum_{i=0}^{n} \ln P\left(\left(x_{i} | \alpha, \beta\right)\right)</script>
+\[=\sum_{i=0}^{n} \ln P\left(\left(x_{i} | \alpha, \beta\right)\right)\]
 
-<script type="math/tex; mode=display">=\sum_{i=0}^{n} \ln \left(\frac{1}{\beta} e^{-\frac{y_{i}-\alpha}{\beta}} e^{-e^{-\frac{j_{j}-a}{\beta}}}\right)</script>
+\[=\sum_{i=0}^{n} \ln \left(\frac{1}{\beta} e^{-\frac{y_{i}-\alpha}{\beta}} e^{-e^{-\frac{j_{j}-a}{\beta}}}\right)\]
 
 <p>We end up with an equation with 2 variables in it, we’ll be using <a href="http://www.sosmath.com/calculus/diff/der07/der07.html">the Newton-Raphson method</a> to approximate the roots of the equation. I recommend reading through the link if you’re familiar with the approximation method.</p>
 
 <p>Finding derivatives, with respect to both <em>α</em> and <em>β</em>.</p>
 
-<script type="math/tex; mode=display">\frac{\partial f}{\partial \beta}=\sum_{i=0}^{n} \frac{x_{i}-n}{\beta^{2}}-\frac{n}{\beta}-\sum_{i=0}^{n} \frac{x_{i}-\alpha}{\beta} e^{-\frac{z_{i}-\alpha}{\beta}}</script>
+\[\frac{\partial f}{\partial \beta}=\sum_{i=0}^{n} \frac{x_{i}-n}{\beta^{2}}-\frac{n}{\beta}-\sum_{i=0}^{n} \frac{x_{i}-\alpha}{\beta} e^{-\frac{z_{i}-\alpha}{\beta}}\]
 
-<script type="math/tex; mode=display">\frac{\partial f}{\partial \alpha}=\frac{n}{\beta}-\frac{1}{\beta} \sum_{i=0}^{n} e^{-\frac{z_{i}-\alpha}{\beta}}</script>
+\[\frac{\partial f}{\partial \alpha}=\frac{n}{\beta}-\frac{1}{\beta} \sum_{i=0}^{n} e^{-\frac{z_{i}-\alpha}{\beta}}\]
 
 <p>For the Newron-Raphson approximation method, we require double derivatives, which we use to calculate the Hessian matrix.</p>
 
-<script type="math/tex; mode=display">\frac{\partial^{2} f}{\partial \beta^{2}}=\frac{n}{\beta^{2}}-\frac{2}{\beta^{2}} \sum_{i=0}^{n}\left(x_{i}-\alpha\right)+\frac{2}{\beta^{3}} \sum_{i=0}^{n}\left(x_{i}-\alpha\right) e^{\frac{-\left(x_{i}-\alpha\right)}{\beta}}+\frac{2}{\beta^{4}} \sum_{i=0}^{n}\left(x_{i}-\alpha\right)^{2} e^{\frac{-\left(x_{j}-\alpha\right)}{\beta}}</script>
+\[\frac{\partial^{2} f}{\partial \beta^{2}}=\frac{n}{\beta^{2}}-\frac{2}{\beta^{2}} \sum_{i=0}^{n}\left(x_{i}-\alpha\right)+\frac{2}{\beta^{3}} \sum_{i=0}^{n}\left(x_{i}-\alpha\right) e^{\frac{-\left(x_{i}-\alpha\right)}{\beta}}+\frac{2}{\beta^{4}} \sum_{i=0}^{n}\left(x_{i}-\alpha\right)^{2} e^{\frac{-\left(x_{j}-\alpha\right)}{\beta}}\]
 
-<script type="math/tex; mode=display">\frac{\partial^{2} f}{\partial \alpha^{2}}=\frac{-i}{\beta^{2}} \sum_{i=0}^{n} e^{-\frac{x_{i}-a}{\beta}}</script>
+\[\frac{\partial^{2} f}{\partial \alpha^{2}}=\frac{-i}{\beta^{2}} \sum_{i=0}^{n} e^{-\frac{x_{i}-a}{\beta}}\]
 
-<script type="math/tex; mode=display">\frac{\partial^{2} f}{\partial \alpha \beta}=-\frac{n}{\beta^{2}}+\frac{1}{\beta^{2}} \sum_{i=0}^{n} e^{\frac{-\left(x_{i}-\alpha\right)}{\beta}}-\frac{1}{\beta^{3}} \sum_{i=0}^{n}\left(x_{i}-\alpha\right) e^{\frac{-\left(x_{i}-a\right)}{\beta}}</script>
+\[\frac{\partial^{2} f}{\partial \alpha \beta}=-\frac{n}{\beta^{2}}+\frac{1}{\beta^{2}} \sum_{i=0}^{n} e^{\frac{-\left(x_{i}-\alpha\right)}{\beta}}-\frac{1}{\beta^{3}} \sum_{i=0}^{n}\left(x_{i}-\alpha\right) e^{\frac{-\left(x_{i}-a\right)}{\beta}}\]
 
 <p>The Hessian matrix can be calculated by,</p>
 
-<script type="math/tex; mode=display">% <![CDATA[
-H=\left[\begin{array}{ll}\frac{\partial^{2} f}{\partial \alpha^{2}} & \frac{\partial^{2} f}{\partial \alpha \beta} \\ \frac{\partial^{2} f}{\partial \alpha \beta} & \frac{\partial^{2} f}{\partial \beta^{2}}\end{array}\right] %]]></script>
+\[H=\left[\begin{array}{ll}\frac{\partial^{2} f}{\partial \alpha^{2}} &amp; \frac{\partial^{2} f}{\partial \alpha \beta} \\ \frac{\partial^{2} f}{\partial \alpha \beta} &amp; \frac{\partial^{2} f}{\partial \beta^{2}}\end{array}\right]\]
 
 <p>We also need a f matrix with the equations we’re solving for,</p>
 
-<script type="math/tex; mode=display">f=\left[\begin{array}{l}\frac{\partial f}{\partial \alpha} \\ \frac{\partial f}{\partial \beta}\end{array}\right]</script>
+\[f=\left[\begin{array}{l}\frac{\partial f}{\partial \alpha} \\ \frac{\partial f}{\partial \beta}\end{array}\right]\]
 
 <p>Now we can follow the following algorithm to estimate the parameters.</p>
 
@@ -142,14 +141,13 @@ We’ll choose starting values for α and β, α(0) and β(0) using the method o
 
 <p>Obtain new values of α and β, α(new) and β(new), from the Newton Raphson algorithm,</p>
 
-<script type="math/tex; mode=display">\left[\begin{array}{l}\alpha^{(n e w)} \\ \beta^{(n e w)}\end{array}\right]=\left[\begin{array}{l}\alpha^{(o l d)} \\ \beta^{(o l d)}\end{array}\right]-H^{-1}\left(\alpha^{(o l d)}, \beta^{(o l d)}\right) f\left(\alpha^{(o l d)}, \beta^{(o l d)}\right)</script>
+\[\left[\begin{array}{l}\alpha^{(n e w)} \\ \beta^{(n e w)}\end{array}\right]=\left[\begin{array}{l}\alpha^{(o l d)} \\ \beta^{(o l d)}\end{array}\right]-H^{-1}\left(\alpha^{(o l d)}, \beta^{(o l d)}\right) f\left(\alpha^{(o l d)}, \beta^{(o l d)}\right)\]
 
 <p><strong>Step 5 :</strong></p>
 
 <p>Check to see if the differences between new and the old values are small enough and compare it by the set tolerance,</p>
 
-<script type="math/tex; mode=display">% <![CDATA[
-\left[\left(\alpha^{(n e w)}-\alpha^{(o l d)}\right)^{2}+\left(\beta^{(n e w)}-\beta^{(o l d)}\right)^{2}<t\right] %]]></script>
+\[\left[\left(\alpha^{(n e w)}-\alpha^{(o l d)}\right)^{2}+\left(\beta^{(n e w)}-\beta^{(o l d)}\right)^{2}&lt;t\right]\]
 
 <ul>
   <li>if No, then return to Step(3), and calculate H−1(α(new))(β(new)) and f(α(new))(β(new)) and keep iterating.</li>

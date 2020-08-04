@@ -3,7 +3,7 @@ layout: post
 title: About
 ---
 
-I am a computer systems engineering graduate student at The Northeastern University in Boston, with a portfolio and interests that includes working in fields like Internet of Things, Robotics, and Machine Learning.
+I am a computer systems engineering graduate student at the Northeastern University in Boston, with a portfolio and interests that includes working in fields like Internet of Things, robotics, machine learning, and software development in general.
 
 
 # Setup

@@ -74,14 +74,6 @@ a {
     text-decoration-thickness: .125em;
     text-underline-offset: 2.5px;
 
-    &:hover {
-        // background-color: #000000;
-        // border-bottom: 1px solid #505050;
-        // color: #ffffff;
-        // transition: .15s;
-        // padding: 1px;
-
-    }
 }
 
 h1 {
@@ -136,14 +128,6 @@ ul {
         padding-bottom: 5px;
 		text-align: left;
     }
-    // ul {
-    //     margin-top: 10px;
-    //     li {
-    //         display: inline;
-    //         padding: 0;
-    //         padding-left: 5px;
-    //     }
-    // }
 
 }
 
@@ -200,7 +184,7 @@ i {
 
     h1 {
         font-size: 12pt;
-        font-weight: 400;
+        font-weight: 300;
         margin-bottom: 5px;
     }
 

@@ -93,20 +93,21 @@
 
 <p>Here’s an example script, written using the fileicon utility</p>
 
-<figure class="highlight"><pre><code class="language-sh" data-lang="sh"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+<figure class="highlight"><pre><code class="language-sh" data-lang="sh"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
 2
 3
 4
 5
-6</pre></td><td class="code"><pre><span class="c">#!/bin/bash</span>
+6
+</pre></td><td class="code"><pre><span class="c">#!/bin/bash</span>
 
 <span class="nv">icon_path</span><span class="o">=</span><span class="nv">$1</span>
 <span class="nv">app_path</span><span class="o">=</span><span class="s2">"/Applications/</span><span class="nv">$2</span><span class="s2">.app"</span>
 
-fileicon <span class="nb">set</span> <span class="nv">$app_path</span> <span class="s2">"</span><span class="nv">$1</span><span class="s2">"</span><span class="w">
-</span></pre></td></tr></tbody></table></code></pre></figure>
+fileicon <span class="nb">set</span> <span class="nv">$app_path</span> <span class="s2">"</span><span class="nv">$1</span><span class="s2">"</span>
+</pre></td></tr></tbody></table></code></pre></figure>
 
-<p>saving the above as <code class="highlighter-rouge">replace.sh</code> and calling</p>
+<p>saving the above as <code class="language-plaintext highlighter-rouge">replace.sh</code> and calling</p>
 
 <figure class="highlight"><pre><code class="language-text" data-lang="text">./replace.sh desktop/iconreplacement.icns Spotify</code></pre></figure>
 
@@ -120,13 +121,15 @@ fileicon <span class="nb">set</span> <span class="nv">$app_path</span> <span cla
 
 <p>Applications on macOS function like folders, you can right-click on a folder and select ‘show package contents’ to browse the contents of an app.</p>
 
-<p>In the contents directory of an application, we should find a file called ‘Info.plist’, inside the mentioned plist file we’re looking for three entries
-- CFBundleIconFile:
-Icon that shows up in dock and Launchpad<sup>[2]</sup>.
-- CFBundleIconFileDark:
-Icon that shows up in the dock and Launchpad when dark mode is enabled<sup>[2]</sup>.
-- CFBundleTypeIconFile:
-Icon that shows up when on a file that can be showed up in the said application<sup>[2]</sup>. As a caution, often applications can support opening a lot of different kinds of formats, which leads to dealing with a lot of different icons or just convoluted code.</p>
+<p>In the contents directory of an application, we should find a file called ‘Info.plist’, inside the mentioned plist file we’re looking for three entries</p>
+<ul>
+  <li>CFBundleIconFile:
+Icon that shows up in dock and Launchpad<sup>[2]</sup>.</li>
+  <li>CFBundleIconFileDark:
+Icon that shows up in the dock and Launchpad when dark mode is enabled<sup>[2]</sup>.</li>
+  <li>CFBundleTypeIconFile:
+Icon that shows up when on a file that can be showed up in the said application<sup>[2]</sup>. As a caution, often applications can support opening a lot of different kinds of formats, which leads to dealing with a lot of different icons or just convoluted code.</li>
+</ul>
 
 <p>The icon files specified in the Contents/Resources directory. It’s relatively easy to write code to replace the icons.</p>
 
@@ -134,10 +137,11 @@ Icon that shows up when on a file that can be showed up in the said application<
 
 <p>I’ve found the easiest way to achieve this is by simply <a href="https://gist.github.com/fabiofl/5873100#gistcomment-1320553">touching</a> the application, and restarting Finder and Dock.</p>
 
-<figure class="highlight"><pre><code class="language-sh" data-lang="sh"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2</pre></td><td class="code"><pre>touch /Applications/[name].app
-killall Finder <span class="o">&amp;&amp;</span> killall Dock<span class="w">
-</span></pre></td></tr></tbody></table></code></pre></figure>
+<figure class="highlight"><pre><code class="language-sh" data-lang="sh"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="code"><pre><span class="nb">touch</span> /Applications/[name].app
+killall Finder <span class="o">&amp;&amp;</span> killall Dock
+</pre></td></tr></tbody></table></code></pre></figure>
 
 <h2 id="references">References</h2>
 <p>[1] fileicon. Michael Klement, <a href="https://github.com/mklement0/fileicon">Github.</a></p>
