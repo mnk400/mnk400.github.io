@@ -15,6 +15,9 @@ sass:
 # Google analytics tracking ID
 google_analytics: "UA-166033844-1"
 
+plugins:
+  - jekyll-sitemap
+  
 # Markdown
 markdown: kramdown
 kramdown:
