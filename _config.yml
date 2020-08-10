@@ -1,6 +1,6 @@
 # My variables
-name: manik kumar
-description: ~
+name: Manik Kumar
+description: My Portfolio and Blog.
 
 # File management
 include: [".htaccess"]
