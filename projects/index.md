@@ -3,6 +3,9 @@ layout: post
 title: Projects
 ---
 
+[nfo](https://github.com/mnk400/nfo)
+<br>
+A fetch program to get system details with ASCII art support, allows of various configurations and custom ASCII art. Built for linux.
 
 [Accent Recognition System using Convolutional Neural Networks.]()
 <br>
