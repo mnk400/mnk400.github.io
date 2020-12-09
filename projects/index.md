@@ -3,6 +3,10 @@ layout: post
 title: Projects
 ---
 
+[Viral Diseases Simulator](https://github.com/mnk400/virussim)
+<br>
+A simulation system built in python with matplotlib and numpy to simulate how a virus can spread, based on social conditions and characteristics of the virus. Project also has a helper cross platform GUI  which allows users to easily play around with the settings and different scenarios.
+
 [nfo](https://github.com/mnk400/nfo)
 <br>
 A fetch program to get system details with ASCII art support, allows of various configurations and custom ASCII art. Built for linux.
