@@ -1,0 +1,47 @@
+I"�<h1 id="c-vs-fortran-memory-order">C vs Fortran memory order.</h1>
+
+<p>There are two major types of memory ordering techniques used in programming languages to index arrays; row-major and column-major. As someone who mostly works with languages that use(or at least appear to) C like memory ordering or row-major memory ordering, it always takes a bit of mental exercise to adjust to fortran like or column-major memory ordering.</p>
+
+<h2 id="row-major-memory-order">Row-major memory order</h2>
+<p>In C/C++ arrays are indexed using row-major order, where consecutive elements of a row are stored next to each other. Which means in a multidimensional array, let’s say a 2D array, the first row is stored in a continuous patch of memory, then the second row and so on.</p>
+
+<p><img src="https://i.imgur.com/XAXOPdT.png" alt="" /></p>
+
+<p>Another way to state the above would to say that the most rapidly changing index is the last index in <code class="language-plaintext highlighter-rouge">array[i][j]</code>. Here the index <em>j</em> would be the fastest changing index and <em>j</em> refers to each column(or the elements inside the row). The index <em>i</em> would refer to the entire row.</p>
+
+<h2 id="column-major-memory-order">Column-major memory order</h2>
+<p>In Fortran arrays are indexed using column-major order, where consecutive elements of a column instead of a row are stored next to each other. Which means in a 2D array, the first column is stored in a continuous patch of memory, then the second column and so on.</p>
+
+<p><img src="https://i.imgur.com/GGgqpfw.png" alt="" /></p>
+
+<p>Hence in the case of <code class="language-plaintext highlighter-rouge">array[i][j]</code>, the index row index, <em>i.e.</em> <em>i</em> would change the quickest rather than <em>j</em>, that is of course because the column elements instead of row elements are stored in contiguous memory.</p>
+
+<h2 id="real-world-example">Real world example</h2>
+<p>The python module, numpy, has a great function <code class="language-plaintext highlighter-rouge">nditer</code>, which allows you to iterate over multidimensional arrays in the order of which it’s elements are stored in memory. Numpy also allows you to store arrays in both C like or Fortran like memory ordering, which makes it the perfect tool for this example.</p>
+
+<p>Let’s start with an example 2D list.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">&gt;&gt;&gt; example_list = [[1,  2,  3,  4], 
+                    [5,  6,  7,  8], 
+                    [9, 10, 11, 12]]</code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">&gt;&gt;&gt; c_array = np.array(example_list, order='C')
+&gt;&gt;&gt; for curr_element in np.nditer(c_array):
+...     print(curr_element, end=' ')
+
+    1 2 3 4 5 6 7 8 9 10 11 12</code></pre></figure>
+
+<p>Using <code class="language-plaintext highlighter-rouge">order='C'</code> you can specified C-like memory ordering. The output elements inside the rows are printed together as rows are stored together contiguously.</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">&gt;&gt;&gt; f_array = np.array(example_list, order='F')
+&gt;&gt;&gt; for curr_element in np.nditer(f_array):
+...     print(curr_element, end=' ')
+
+    1 5 9 2 6 10 3 7 11 4 8 12</code></pre></figure>
+
+<p>Using <code class="language-plaintext highlighter-rouge">order='F'</code> you can specified Fortran-like memory ordering. Output is clearly different than in the above case, as elements of a column were printed together, because in this case columns are stored together contiguously.</p>
+
+<h2 id="imagining-in-3d">Imagining in 3D</h2>
+
+<p><img src="https://i.imgur.com/LD9MIOF.png" alt="" /></p>
+:ET
