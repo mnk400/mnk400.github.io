@@ -17,7 +17,7 @@
 <p>Hence in the case of <code class="language-plaintext highlighter-rouge">array[i][j]</code>, the index row index, <em>i.e.</em> <em>i</em> would change the quickest rather than <em>j</em>, that is of course because the column elements instead of row elements are stored in contiguous memory.</p>
 
 <h2 id="real-world-example">Real-world example</h2>
-<p>The python module, NumPy, has a great function <code class="language-plaintext highlighter-rouge">nditer</code>, which allows you to iterate over multidimensional arrays in the order in which its elements are stored in memory. Numpy also allows you to store arrays in both C-like or Fortran-like memory ordering, which makes it the perfect tool for this example.</p>
+<p>The python module, NumPy, has a great function <code class="language-plaintext highlighter-rouge">nditer</code>, which allows you to iterate over multidimensional arrays in the order in which its elements are stored in memory. NumPy also allows you to store arrays in both C-like or Fortran-like memory ordering, which makes it the perfect tool for this example.</p>
 
 <p>Let’s start with an example 2D list.</p>
 
