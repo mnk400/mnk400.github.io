@@ -2,16 +2,17 @@
 layout: post
 title: About
 ---
+I am a Computer Systems Engineering graduate student at the Northeastern University in Boston, with a portfolio and interest in writing complex software systems, and working in fields surrounding Internet of Things, and Robotics. 
+# Experience
 
-I am a computer systems engineering graduate student at the Northeastern University in Boston, with a portfolio and interests that includes working in fields like Internet of Things, robotics, machine learning, and software development in general.
+## Amazon
+### Incoming SDE 1
+Feb 2022 
 
+## Medtronic
+### Software Development Co-op
+Jan 2021 - Aug 2021
 
-# Setup
-I've got a hybrid setup running WSL in windows, Linux, and macOS as well. My setup files, which are shared across all systems can be found in my [dotfiles repository](https://github.com/mnk400/dotfiles).
-
-
-![](https://i.imgur.com/oYLOQQS.jpg)
-![](https://i.redd.it/nt4ses0ujam41.png)
-
+Worked in the Surgical robotics team, particularly the platform software team working on the performance monitoring subsystem for the robot, developing a series of internal diagnostic tools.
 
 ---
