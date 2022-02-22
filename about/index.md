@@ -2,12 +2,12 @@
 layout: post
 title: About
 ---
-I am a Computer Systems Engineering graduate student at the Northeastern University in Boston, with a portfolio and interest in writing complex software systems, and working in fields surrounding Internet of Things, and Robotics. 
+I am a Computer Systems Engineering graduate from the Northeastern University in Boston, with a portfolio and interest in writing complex software systems, and working in fields surrounding Internet of Things, and Backend Development. Outside of work I love photography, music, books, and mechanical keyboards.
 # Experience
 
 ## Amazon
-### Incoming SDE 1
-Feb 2022 
+### Software Development Engineer
+Feb 2022 - Present
 
 ## Medtronic
 ### Software Development Co-op
