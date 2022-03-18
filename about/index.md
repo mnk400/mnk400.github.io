@@ -2,6 +2,8 @@
 layout: post
 title: About
 ---
+<img src="/assets/picture.jpg" class="me">
+
 I am a Computer Systems Engineering graduate from the Northeastern University in Boston, with a portfolio and interest in writing complex software systems, and working in fields surrounding Internet of Things, and Backend Development. Outside of work I love photography, music, books, and mechanical keyboards.
 # Experience
 
@@ -9,10 +11,12 @@ I am a Computer Systems Engineering graduate from the Northeastern University in
 ### Software Development Engineer
 Feb 2022 - Present
 
+Working in Amazon Publishing developing customer facing products like Amazon First Reads & Amazon Original Stories on Amazon retail website and mobile devices.
+
 ## Medtronic
 ### Software Development Co-op
 Jan 2021 - Aug 2021
 
-Worked in the Surgical robotics team, particularly the platform software team working on the performance monitoring subsystem for the robot, developing a series of internal diagnostic tools.
+Worked in the surgical robotics team, working on the performance monitoring subsystem for the surgical robotic system, and developing a series of internal diagnostic tools to improve the quality of integeration testing & offer better diagnostic tools to other developers.
 
 ---
