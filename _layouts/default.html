@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html>
 
     <head>
@@ -7,10 +8,12 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
         {% include analytics.html %}
+        {% include darkmode.html %}
+
         {% if page.title %}
-        <title>{{ page.title }} — Manik</title>
+            <title>{{ page.title }} — Manik</title>
         {% else %}
-        <title>Manik</title>
+            <title>Manik</title>
         {% endif %}
 
         <meta name="description" content="{{ site.description }}">
@@ -18,14 +21,24 @@
         <link rel="icon" href="/assets/favicon.ico">
         <link rel="stylesheet" type="text/css" href="/assets/css/main.css">
         <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+        <script src="https://kit.fontawesome.com/1793033470.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+        <script type="text/x-mathjax-config">
+            MathJax.Hub.Config({
+                "HTML-CSS" : {
+                    availableFonts : ["Tex"],
+                    scale : 70
+                }
+            });
+        </script>
+        
     </head>
 
     <body>
-
         <div class="wrapper">
+            {% include header.html %}
             {{ content }}
         </div>
-
     </body>
 
 </html>

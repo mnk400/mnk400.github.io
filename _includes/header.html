@@ -1,24 +1,29 @@
-<!-- <img src="assets/profile.JPG" class="me"></img>
 </br>
-</br> -->
-</br>
-<div class="header">
-    <ul>
-        {% for item in site.data.navigation %}
-        <li>
-            <a href="{{ item.url }}">{{ item.title }}</a>
-        </li>
-        {% endfor %}
-    </ul>
+<div class="site-title">
+    <table>
+        <tr>
+          <th class="site-title-name">Manik</th>
+          <th class="dark-button">
+              <a class="dark-mode-button" >
+                <i class="fa-solid fa-circle-half-stroke"></i>
+              </a>
+            </th> 
+        </tr>
+    </table>
 </div>
-
 <div class="nav">
-    <div class="site-title"> <a href=".">Manik</a> </div>
     <ul>
-        <li><a href="/about">about</a></li>
-        <li><a href="/projects">projects</a></li>
-        <li><a href="https://github.com/mnk400" target="_blank">github</a></li>
+        {% if page.url != "/" %}
+            <li><a href="/">←</a></li>
+        {% endif %}
+        {% if page.url != "/about/" %}
+            <li><a href="/about">about</a></li>
+        {% endif %}
+        {% if page.url != "/projects/" %}    
+            <li><a href="/projects">projects</a></li>
+        {% endif %}
         <li><a href="https://linkedin.com/in/manik-kumar" target="_blank">linkedin</a></li>
+        <li><a href="https://instagram.com/m.xnik" target="_blank">photos</a></li>
         <li><a href="mailto:me@manik.cc">email</a></li>
     </ul>
 </div>

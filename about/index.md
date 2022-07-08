@@ -4,7 +4,12 @@ title: About
 ---
 <img src="/assets/picture.jpg" class="me">
 
-I am a Computer Systems Engineering graduate from the Northeastern University in Boston, with a portfolio and interest in writing complex software systems, and working in fields surrounding Internet of Things, and Backend Development. Outside of work I love photography, music, books, and mechanical keyboards.
+Hi! I am <b>Manik</b>, Graduate student from the <b>Northeastern University</b> Boston and I currently live in PNW. My current technical work incldues writing complex software systems for <b>Amazon</b>. I've worked with various technical paradigms either professionaly or as a hobby including but not limited to Fullstack Devleopment, Internet of Things, Robotics, Automation, and Machine Learning. 
+
+Outside of tech you'll probably find me listening to some music, or reading, or struggling over deciding what to eat for dinner tonight.
+
+I also am an amateur photographer who sometimes likes to post to instagram, though not often(check out the link from top bar!).
+
 # Experience
 
 ## Amazon
