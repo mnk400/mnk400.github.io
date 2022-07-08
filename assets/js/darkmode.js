@@ -6,11 +6,7 @@ $(document).ready(function(){
 
     let enabled = localStorage.getItem('dark-mode')
 
-    if (enabled === null) {
-      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          enable();
-      }
-    } else if (enabled === 'true') {
+    if (enabled === 'true') {
       enable()
     }
 
