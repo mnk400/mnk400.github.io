@@ -15,6 +15,10 @@
     color: #4a4a4a;
 }
 
+.site-title .my-name {
+    animation: normal;
+}
+
 .site-title table {
     width: 100%;
 }
@@ -86,7 +90,10 @@ a {
     text-decoration-color: #DADADA;
     text-decoration-thickness: .125em;
     text-underline-offset: 2.5px;
+}
 
+a:hover {
+    color: #913045;
 }
 
 h1 {
@@ -112,19 +119,14 @@ ul {
     }
 }
 
-
 .wrapper {
     max-width: 525px;
     margin: auto;
     padding: 60px 30px 60px 30px;
-    // margin-left: 10px;
-    // margin-top: 5px;
-    // overflow: hidden;
     @media screen and (max-width: $br) {
         padding: 20px;
     }
 }
-
 
 // header (name)
 .header {
@@ -163,6 +165,59 @@ i {
 #navigation li:not(:first-child):before {
     content: " · ";
 }
+
+// Text fader
+.text-fader{
+    .text-content{
+      span{
+        &.line{
+          opacity:0;
+          animation-fill-mode: forwards;
+          animation-timing-function: ease;
+          animation-duration: 0.8s;
+          display: none;
+        }
+      }
+      &.in{
+        span{
+          &.line{
+            animation-name: textFaderIn;
+            display: block;
+          }
+        }
+      }
+      &.out{
+        span{
+          &.line{
+            animation-name: textFaderOut;
+            display: block;
+          }
+        }
+      }
+    }
+  }
+  
+  @keyframes textFaderIn {
+    from{
+      opacity: 0;
+      transform: translateY(25%);
+    }
+    to{
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes textFaderOut {
+    from{
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to{
+      opacity: 0;
+      transform: translateY(-25%);
+    }
+  }
 
 .picture {
     img {
