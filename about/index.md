@@ -1,14 +1,8 @@
 ---
 layout: post
-title: About
+title: More
 ---
 <img src="/assets/picture.jpg" class="me">
-
-Hi! I am <b>Manik,</b> a graduate student from <b>Northeastern University</b> in Boston, and I currently live in PNW. My current technical work includes writing complex software systems for <b>Amazon.</b> I've worked with various technical paradigms either professionally or as a hobby: Including but not limited to Fullstack Development, Internet of Things, Robotics, Automation, and Machine Learning. 
-
-Outside of tech, you'll probably find me listening to some music, reading, or struggling to figure out what I eat for dinner. 
-
-I also am an amateur photographer who sometimes likes to post to Instagram, though not often(check out the link from the top bar!).
 
 # Experience
 
