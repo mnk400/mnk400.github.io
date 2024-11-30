@@ -174,15 +174,18 @@ i {
     background-color: white;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
+
 .cell {
     width: 15px;
     height: 15px;
     border: 1px solid #ddd;
     transition: background-color 0.2s;
 }
+
 .alive {
     background-color: #333;
 }
+
 #startOverlay {
     position: fixed;
     top: 0;
@@ -195,18 +198,20 @@ i {
     align-items: center;
     z-index: 1000;
 }
+
 #startButton {
-    font-size: 24px;
+    font-size: 20px;
     padding: 15px 30px;
     background-color: #9c606d;
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: 12px;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.2s;
 }
+
 #startButton:hover {
-    background-color: #b3566a;
+    background-color: #4b8255;
 }
 
 // navigation item separation
