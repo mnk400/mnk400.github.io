@@ -154,6 +154,61 @@ i {
     font-style: italic;
 }
 
+.fullscreen {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+.game-of-life-base {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+}
+
+#gameBoard {
+    display: grid;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+.cell {
+    width: 15px;
+    height: 15px;
+    border: 1px solid #ddd;
+    transition: background-color 0.2s;
+}
+.alive {
+    background-color: #333;
+}
+#startOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+#startButton {
+    font-size: 24px;
+    padding: 15px 30px;
+    background-color: #9c606d;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+#startButton:hover {
+    background-color: #b3566a;
+}
+
 // navigation item separation
 #navigation ul li {
 	margin: 0;
