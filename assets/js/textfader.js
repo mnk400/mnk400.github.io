@@ -1,38 +1,47 @@
-//setup colour change
+// Setup text splitting
 $('.text-fader .text-content').each(function(){
     var textSplit = $(this).text().split('');
-    var returnHTML = '';
-    $.each(textSplit, function (intIndex, objValue) {
-      returnHTML+='<span class="letter">'+objValue+'</span>';
-    });
+    var returnHTML = textSplit.map(function(char) {
+        return '<span class="letter">' + char + '</span>';
+    }).join('');
     $(this).html(returnHTML);
-  });
-  
-  $(".text-fader .text-content:first-child").addClass("in");
-  var textFaderDelay = 3000;
-  var textFaderAnimationSpeed = 1000;
-  var colourChangeDelay = 0000;
-  function nextText($current) {
-    if ($current.next(".text-fader .text-content").length > 0) {
-      var hasNext = true;
-    } else {
-      var hasNext = false;
-    }
-    
-    setTimeout(function() {
-      $current.removeClass("in").addClass("out");
-      setTimeout(function() {
-        $current.removeClass("out");
-        if (hasNext) {
-          $current.next(".text-fader .text-content").addClass("in");
-        } else {
-          $(".text-fader .text-content:first-child").addClass("in");
-        }
-        nextText($(".text-fader .text-content.in"));
-      }, textFaderAnimationSpeed);
-    }, textFaderDelay);
-  }
-  console.log('test');
-  nextText($(".text-fader .text-content.in"));
+});
 
-   
+// Text fading configuration
+var textFaderDelay = 3000;
+var textFaderAnimationSpeed = 1000;
+
+// Initialize text fading
+function initTextFader() {
+    var $textContents = $(".text-fader .text-content");
+    
+    // Immediately show first text
+    $textContents.first().addClass("in");
+
+    function cycleTexts($current) {
+
+        var $next = $current.next(".text-fader .text-content");
+        if ($next.length === 0) {
+            $next = $textContents.first();
+        }
+
+        $current.removeClass("in").addClass("out");
+
+        setTimeout(function() {
+            $current.removeClass("out");
+            $next.addClass("in");
+
+            setTimeout(function() {
+                cycleTexts($next);
+            }, textFaderDelay);
+        }, textFaderAnimationSpeed);
+    }
+
+    // Start cycling after first delay
+    setTimeout(function() {
+        cycleTexts($textContents.first());
+    }, textFaderDelay);
+}
+
+// Initialize on document ready
+$(document).ready(initTextFader);
