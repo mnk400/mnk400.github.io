@@ -1,0 +1,112 @@
+---
+layout: default
+title: Photos
+permalink: /photos.html
+---
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #ffffff;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        .album-container {
+            max-width: 600px;
+            margin: 0 0;
+            padding: 0;
+        }
+        .image-card {
+            width: 100%;
+            margin-bottom: 10px;
+            display: flex;
+        }
+        .image-card.left {
+            justify-content: flex-start;
+        }
+        .image-card.right {
+            justify-content: flex-end;
+        }
+        .image-wrapper {
+            width: 90%;
+            overflow: hidden;
+        }
+        .image-wrapper img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
+        }
+        #loading {
+            text-align: center;
+            color: #888;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">Loading images...</div>
+    <div class="album-container" id="album-container"></div>
+
+    <script>
+        const CLIENT_ID = 'b6bc278a11fc930';
+        const ALBUM_HASH = 'Hq3ctL4';
+
+        function getRandomScale() {
+            // Generate a random scale factor between 0.6 and 1.4
+            return Math.random() * 0.8 + 0.6;
+        }
+
+        async function loadAlbum() {
+            const albumContainer = document.getElementById('album-container');
+            const loadingIndicator = document.getElementById('loading');
+
+            try {
+                const response = await axios.get(`https://api.imgur.com/3/album/${ALBUM_HASH}/images`, {
+                    headers: {
+                        'Authorization': `Client-ID ${CLIENT_ID}`
+                    }
+                });
+
+                loadingIndicator.style.display = 'none';
+
+                response.data.data.forEach((image) => {
+                    const imageCard = document.createElement('div');
+                    imageCard.className = 'image-card';
+
+                    // Randomly choose left or right alignment
+                    imageCard.classList.add(Math.random() < 0.5 ? 'left' : 'right');
+
+                    // Create wrapper div to control size
+                    const imageWrapper = document.createElement('div');
+                    imageWrapper.className = 'image-wrapper';
+
+                    const img = document.createElement('img');
+                    img.src = image.link;
+                    img.alt = image.title || 'Gallery Image';
+
+                    // Apply random scaling
+                    const randomScale = getRandomScale();
+                    imageWrapper.style.transform = `scale(${randomScale})`;
+                    imageWrapper.style.transformOrigin = 'top left';
+
+                    imageWrapper.appendChild(img);
+                    imageCard.appendChild(imageWrapper);
+                    albumContainer.appendChild(imageCard);
+                });
+            } catch (error) {
+                loadingIndicator.style.display = 'none';
+                console.error('Error loading album:', error);
+            }
+        }
+
+        // Load album on page load
+        loadAlbum();
+    </script>
+</body>
