@@ -10,13 +10,6 @@ permalink: /photos.html
     <title>Gallery</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #ffffff;
-            margin: 0;
-            padding: 0;
-            line-height: 1.6;
-        }
         .album-container {
             max-width: 400px;
             margin-left: -0px;
@@ -61,7 +54,7 @@ permalink: /photos.html
 
         function getRandomScale() {
             // Generate a random scale factor between 0.6 and 1.4
-            return Math.random() * 0.8 + 0.6;
+            return Math.random() * 0.7 + 0.5;
         }
 
         async function loadAlbum() {
@@ -100,6 +93,7 @@ permalink: /photos.html
                     imageWrapper.appendChild(img);
                     imageCard.appendChild(imageWrapper);
                     albumContainer.appendChild(imageCard);
+                    document.createElement('br')
                 });
             } catch (error) {
                 loadingIndicator.style.display = 'none';
