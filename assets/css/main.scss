@@ -284,6 +284,32 @@ i {
         width: 100%;
     }
 }
+
+// Photo page
+.album-container {
+    max-width: 100%;
+    padding: 0;
+    margin: 0 auto;
+}
+.image-card {
+    width: 100%;
+    padding-bottom: 10px;
+}
+.image-wrapper img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+}
+#loading {
+    text-align: center;
+    color: #888;
+    margin-top: 50px;
+}
+#insta-link:hover {
+    color: #F34F54; /* Color when hovered */
+}
+
 // description
 .desc {
 	h2 {
