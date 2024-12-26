@@ -1,7 +1,7 @@
 // Setup text splitting
-$('.text-fader .text-content').each(function(){
+$('.text-fader .text-content').each(function () {
     var textSplit = $(this).text().split('');
-    var returnHTML = textSplit.map(function(char) {
+    var returnHTML = textSplit.map(function (char) {
         return '<span class="letter">' + char + '</span>';
     }).join('');
     $(this).html(returnHTML);
@@ -14,7 +14,7 @@ var textFaderAnimationSpeed = 1000;
 // Initialize text fading
 function initTextFader() {
     var $textContents = $(".text-fader .text-content");
-    
+
     // Immediately show first text
     $textContents.first().addClass("in");
 
@@ -27,18 +27,18 @@ function initTextFader() {
 
         $current.removeClass("in").addClass("out");
 
-        setTimeout(function() {
+        setTimeout(function () {
             $current.removeClass("out");
             $next.addClass("in");
 
-            setTimeout(function() {
+            setTimeout(function () {
                 cycleTexts($next);
             }, textFaderDelay);
         }, textFaderAnimationSpeed);
     }
 
     // Start cycling after first delay
-    setTimeout(function() {
+    setTimeout(function () {
         cycleTexts($textContents.first());
     }, textFaderDelay);
 }
