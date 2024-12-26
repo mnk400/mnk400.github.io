@@ -310,6 +310,31 @@ i {
     color: #F34F54; /* Color when hovered */
 }
 
+// Music Page
+.album-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 3fr);
+    gap: 10px;
+}
+.album-item {
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    margin-bottom: -1em;
+}
+.album-item img {
+    width: 100%;
+    object-fit:fill;
+}
+.album-item p {
+    font-weight: 500 !important;
+    font-size: 0.8em !important;
+}
+#loading {
+    text-align: center;
+    margin: 20px 0;
+}
+
 // description
 .desc {
 	h2 {
