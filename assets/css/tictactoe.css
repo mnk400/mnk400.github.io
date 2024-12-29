@@ -1,0 +1,96 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    height: 100%;
+    font-family: 'inter', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+#game-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr); 
+    grid-gap: 10px;
+    width: 60vmin;
+    height: 60vmin;
+    max-width: 400px;
+    max-height: 400px;
+    perspective: 1000px;
+}
+
+.ttt-cell {
+    position: relative; 
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border: 2px solid transparent;
+    aspect-ratio: 1;  
+}
+
+/* New: Content wrapper inside cell */
+.ttt-cell::before {
+    content: attr(data-content);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5em;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.ttt-cell:hover {
+    background-color: #e0e0e0;
+}
+
+.ttt-cell.x::before {
+    color: #007bff;
+}
+
+.ttt-cell.o::before {
+    color: #dc3545;
+}
+
+#status {
+    position: absolute;
+    top: 25%;
+    font-size: 1.5em;
+    text-align: center;
+    width: 100%;
+    color: black;
+    font-weight: 300;
+}
+
+#reset-btn {
+    position: absolute;
+    bottom: 25%;
+    padding: 10px 20px;
+    background-color: #9c606d;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1.5em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#reset-btn:hover {
+    background-color: #4b8255;
+}
+
+.ttt-cell.winning-cell {
+    background-color: #6b46c1 !important;
+}
+
+.ttt-cell.winning-cell::before {
+    color: white !important;
+}
