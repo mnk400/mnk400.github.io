@@ -6,7 +6,7 @@ async function fetchTopAlbums() {
 
     try {
         const response = await fetch(
-            `https://ws.audioscrobbler.com/2.0/?method=user.gettopalbums&user=${username}&period=7day&api_key=15606af7854e910d497469811c1ddbd4&format=json&limit=10`
+            `https://ws.audioscrobbler.com/2.0/?method=user.gettopalbums&user=${username}&period=7day&api_key=15606af7854e910d497469811c1ddbd4&format=json&limit=9`
         );
         const data = await response.json();
 
@@ -17,7 +17,7 @@ async function fetchTopAlbums() {
 
         const albums = data.topalbums.album;
         grid.innerHTML = albums.map(album => {
-            const imageUrl = album.image.find(img => img.size === 'large')['#text'] || 'https://via.placeholder.com/174';
+            const imageUrl = album.image.find(img => img.size === 'large')['#text'] || 'assets/album-placeholder.png';
             return `
                         <div class="album-item">
                             <img src="${imageUrl}" alt="${album.name}">

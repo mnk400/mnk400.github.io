@@ -313,7 +313,7 @@ i {
 // Music Page
 .album-grid {
     display: grid;
-    grid-template-columns: repeat(2, 3fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 10px;
 }
 .album-item {
