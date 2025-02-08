@@ -31,7 +31,7 @@ $$=\sum_{i=0}^{n} \ln P\left(\left(x_{i} | \alpha, \beta\right)\right)$$
 
 $$=\sum_{i=0}^{n} \ln \left(\frac{1}{\beta} e^{-\frac{y_{i}-\alpha}{\beta}} e^{-e^{-\frac{j_{j}-a}{\beta}}}\right)$$
 
-We end up with an equation with 2 variables in it, we'll be using [the Newton-Raphson method](http://www.sosmath.com/calculus/diff/der07/der07.html) to approximate the roots of the equation. I recommend reading through the link if you're familiar with the approximation method.
+We end up with an equation with 2 variables in it, we'll be using [the Newton-Raphson method](https://web.archive.org/web/20210126083356/http://www.sosmath.com/calculus/diff/der07/der07.html) to approximate the roots of the equation. I recommend reading through the link if you're familiar with the approximation method.
 
 Finding derivatives, with respect to both *α* and *β*.
 

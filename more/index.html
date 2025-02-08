@@ -1,0 +1,19 @@
+---
+layout: post
+title: Collection of Random Stuff
+permalink: /more
+---
+
+<div class="desc">
+    <div class="blog">
+            {% for page in site.pages %}
+                {% if page.url contains '/more/' and page.title %}
+                    <a href="{{ page.url }}">{{ page.title }}</a>
+                    {% if page.description %}
+                        <span class="description">{{ page.description }}</span>
+                    {% endif %}
+                    <br>
+                {% endif %}
+            {% endfor %}
+    </div>
+</div>

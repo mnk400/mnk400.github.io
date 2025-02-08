@@ -17,7 +17,7 @@ async function fetchTopAlbums() {
 
         const albums = data.topalbums.album;
         grid.innerHTML = albums.map(album => {
-            const imageUrl = album.image.find(img => img.size === 'large')['#text'] || 'assets/album-placeholder.png';
+            const imageUrl = album.image.find(img => img.size === 'large')['#text'] || '/assets/album-placeholder.png';
             return `
                         <div class="album-item">
                             <img src="${imageUrl}" alt="${album.name}">
