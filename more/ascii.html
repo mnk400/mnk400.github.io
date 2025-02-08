@@ -1,0 +1,28 @@
+---
+layout: post
+title: ASCII Art Converter 
+permalink: /ascii
+---
+
+<body>
+    Easily convert your images to ASCII art!
+    <br/>
+    <div class="ascii-container">
+        <img id="image-preview" style="display: none;">
+        
+        <div class="controls">
+            <label>
+                <b>Width: <span id="width-value">125</span> Characters</b>
+                <input type="range" id="width-input" value="125" min="20" max="250">
+            </label>
+            <br/>
+            <input type="file" id="image-input" accept="image/*">
+            <br/><br/>
+            <button id="convert-btn">Convert to ASCII</button>
+        </div>
+        
+        <pre id="ascii-output"></pre>
+    </div>
+
+    <script src="/assets/js/ascii.js"></script>
+</body>
