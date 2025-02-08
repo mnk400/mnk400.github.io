@@ -126,8 +126,6 @@ function endGame(winner) {
     } else {
         statusDisplay.textContent = "It's a Draw!";
     }
-
-    statusDisplay.style.display = 'block';
 }
 
 function updateStatus() {

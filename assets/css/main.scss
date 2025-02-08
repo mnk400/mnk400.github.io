@@ -352,13 +352,27 @@ i {
 
 }
 
-
 .portfolio {
     padding-bottom: 30px;
     h1 {
         font-size: 1em;
         margin-bottom: 5px;
     }
+}
+
+#reset-btn {
+    padding: 8px 16px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+#reset-btn:hover {
+    background-color: #555;
 }
 
 
@@ -625,7 +639,6 @@ i {
     }
 }
 
-
 // ASCII Art styles
 .ascii-container {
     margin: 20px 0;
@@ -685,3 +698,59 @@ i {
         margin: 10px 0;
     }
 }
+
+.game-wrapper {
+    height: 100vh;
+    width: 100%;
+    justify-content: center;
+    position: relative;
+
+    #game-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(3, 1fr); 
+        grid-gap: 8px;
+    }
+    
+    .ttt-cell {
+        position: relative; 
+        background-color: #f8f8f8;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        border: 1px solid #eaeaea;
+        aspect-ratio: 1;  
+    }
+    
+    .ttt-cell::before {
+        content: attr(data-content);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 1.3em;
+        font-weight: 500;
+        line-height: 100;
+    }
+    
+    .ttt-cell:hover {
+        background-color: #f0f0f0;
+    }
+    
+    .ttt-cell.x::before {
+        color: #2196F3;
+    }
+    
+    .ttt-cell.o::before {
+        color: #F44336;
+    }
+    
+    .ttt-cell.winning-cell {
+        background-color: #4CAF50 !important;
+    }
+    
+    .ttt-cell.winning-cell::before {
+        color: white !important;
+    }
+}
+
