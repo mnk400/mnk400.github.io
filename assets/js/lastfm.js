@@ -43,7 +43,7 @@ async function fetchTopArtists() {
             `https://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user=${username}&period=7day&api_key=15606af7854e910d497469811c1ddbd4&format=json&limit=9`
         );
         const data = await response.json();
-        grid.style.display = 'grid'
+        grid.style.display = 'block';
 
         if (data.error) {
             grid.innerHTML = `<p>Error: ${data.message}</p>`;
@@ -51,15 +51,13 @@ async function fetchTopArtists() {
         }
 
         const artists = data.topartists.artist;
-        grid.innerHTML = artists.map(artist => {
-            const imageUrl = artist.image.find(img => img.size === 'large')['#text'] || '/assets/album-placeholder.png';
-            return `
-                <div class="album-item">
-                    <img src="${imageUrl}" alt="${artist.name}">
-                    <p>${artist.name}</p>
-                </div>
-            `;
-        }).join('');
+        grid.innerHTML = `<div class="artist-list">${
+            artists.map(artist => 
+                `<div class="artist-item">
+                    <p>${artist.name} (${artist.playcount} plays)</p>
+                </div>`
+            ).join('')
+        }</div>`;
     } catch (error) {
         grid.innerHTML = `<p>Error fetching artists: ${error.message}</p>`;
     } finally {
@@ -67,12 +65,24 @@ async function fetchTopArtists() {
     }
 }
 
-function handleViewChange() {
+function handleViewChange(view) {
     const loading = document.getElementById('loading');
     const grid = document.getElementById('album-grid');
-    grid.style.display = 'none'
+    const albumsToggle = document.getElementById('albums-toggle');
+    const artistsToggle = document.getElementById('artists-toggle');
+
+    // Update active states
+    if (view === 'albums') {
+        albumsToggle.classList.add('active');
+        artistsToggle.classList.remove('active');
+    } else {
+        albumsToggle.classList.remove('active');
+        artistsToggle.classList.add('active');
+    }
+
+    grid.style.display = 'none';
     loading.style.display = 'block';
-    const view = document.querySelector('input[name="view"]:checked').value;
+    
     if (view === 'albums') {
         loading.textContent = 'Loading albums...';
         fetchTopAlbums();
@@ -83,9 +93,11 @@ function handleViewChange() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const radioButtons = document.querySelectorAll('input[name="view"]');
-    radioButtons.forEach(button => {
-        button.addEventListener('change', handleViewChange);
-    });
+    const albumsToggle = document.getElementById('albums-toggle');
+    const artistsToggle = document.getElementById('artists-toggle');
+
+    albumsToggle.addEventListener('click', () => handleViewChange('albums'));
+    artistsToggle.addEventListener('click', () => handleViewChange('artists'));
+
     fetchTopAlbums(); // Load albums by default
 });

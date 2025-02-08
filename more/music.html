@@ -10,12 +10,9 @@ permalink: /more/music
             This page lists my top 9 albums/artists from the past week on last.fm.
         </p>
         <div class="view-toggle">
-            <label>
-                <input type="radio" name="view" value="albums" checked> Albums
-            </label>
-            <label>
-                <input type="radio" name="view" value="artists"> Artists
-            </label>
+            <span id="albums-toggle" class="view-option active">Albums</span>
+            <span> · </span>
+            <span id="artists-toggle" class="view-option">Artists</span>
         </div>
         <div id="loading">Loading...</div>
         <div id="album-grid" class="album-grid"></div>

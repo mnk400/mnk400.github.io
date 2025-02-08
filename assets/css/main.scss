@@ -325,6 +325,23 @@ i {
 }
 
 // Music Page
+.view-toggle {
+    margin: 1em 0;
+}
+
+.view-option {
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.view-option:hover {
+    color: #913045;
+}
+
+.view-option.active {
+    font-weight: 600 !important;
+}
+
 .album-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -401,7 +418,7 @@ input[type=file]::file-selector-button {
     font-weight: 400 !important;
     cursor: pointer;
     transition: background-color 0.2s ease;
-  }
+}
 
 // archive section
 .blog {
