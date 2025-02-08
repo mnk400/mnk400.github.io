@@ -7,9 +7,17 @@ permalink: /more/music
 <body>
     <div class="container">
         <p>
-            This page lists 9 albums that I’ve listened to the most over the past week. It draws data from last.fm on each refresh.
+            This page lists my top 9 albums/artists from the past week on last.fm.
         </p>
-        <div id="loading">Loading albums...</div>
+        <div class="view-toggle">
+            <label>
+                <input type="radio" name="view" value="albums" checked> Albums
+            </label>
+            <label>
+                <input type="radio" name="view" value="artists"> Artists
+            </label>
+        </div>
+        <div id="loading">Loading...</div>
         <div id="album-grid" class="album-grid"></div>
     </div>
 
