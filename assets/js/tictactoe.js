@@ -122,16 +122,16 @@ function endGame(winner) {
             });
         }
 
-        statusDisplay.textContent = winner === humanPlayer ? 'You Win!' : 'AI Wins!';
+        statusDisplay.textContent = winner === humanPlayer ? 'You Win 😄' : 'You Lose 😞';
     } else {
-        statusDisplay.textContent = "It's a Draw!";
+        statusDisplay.textContent = "It's a Draw 😐";
     }
 }
 
 function updateStatus() {
     statusDisplay.textContent = currentPlayer === humanPlayer
         ? "Your Turn"
-        : "AI is thinking...";
+        : "Thinking...";
 }
 
 resetButton.addEventListener('click', () => {
