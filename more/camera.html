@@ -1,16 +1,18 @@
 ---
 layout: post
-title: ASCII Art Converter
-description: Convert an image into a simple ASCII art 
-permalink: /more/ascii
+title: Live ASCII Camera
+description: Convert your camera feed into real-time ASCII art
+permalink: /more/live-ascii
 ---
 
 <body>
     <p>
-        Convert an image to ASCII art.
+        See yourself live in ASCII art.
+        <br/>
+        <span class="description">You'll need to camera permissions to the webpage for this to work.</span>
     </p>
     <div class="ascii-container">
-        <img id="image-preview" style="display: none;">
+        <video id="video" style="display: none;"></video>
         
         <div class="controls">
             <label>
@@ -18,14 +20,12 @@ permalink: /more/ascii
                 <input type="range" id="width-input" value="125" min="20" max="250">
             </label>
             <br/>
-            <input type="file" id="image-input" accept="image/*">
-            <br/><br/>
-            <button id="convert-btn" class="normal-btn">Convert to ASCII</button>
+            <button id="start-btn" class="normal-btn">Start Camera</button>
         </div>
         
         <pre id="ascii-output"></pre>
     </div>
 
     <script src="/assets/js/ascii-utils.js"></script>
-    <script src="/assets/js/photo-to-ascii.js"></script>
+    <script src="/assets/js/camera-to-ascii.js"></script>
 </body>

@@ -17,9 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 10);
     });
 
-    // ASCII characters from dark to light
-    const ASCII_CHARS = '@%#*+=-:. ';
-
     imageInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -45,9 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
 
-        // Calculate height maintaining aspect ratio
-        const aspectRatio = imagePreview.naturalWidth / imagePreview.naturalHeight;
-        const height = Math.floor(width / aspectRatio / 2); // Divide by 2 because characters are taller than wide
+        const height = calculateHeight(width, imagePreview.naturalWidth, imagePreview.naturalHeight);
 
         canvas.width = width;
         canvas.height = height;
@@ -55,18 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Draw and process the image
         ctx.drawImage(imagePreview, 0, 0, width, height);
         const imageData = ctx.getImageData(0, 0, width, height);
-        const pixels = imageData.data;
-
-        let ascii = '';
-        for (let i = 0; i < height; i++) {
-            for (let j = 0; j < width; j++) {
-                const idx = (i * width + j) * 4;
-                const avg = (pixels[idx] + pixels[idx + 1] + pixels[idx + 2]) / 3;
-                const charIdx = Math.floor(avg / 255 * (ASCII_CHARS.length - 1));
-                ascii += ASCII_CHARS[charIdx];
-            }
-            ascii += '\n';
-        }
+        const ascii = convertToAscii(imageData, width, height);
 
         // Update the output
         asciiOutput.style.fontSize = `${fontSize}px`;

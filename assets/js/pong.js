@@ -53,13 +53,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function movePaddles() {
-        // Left paddle (W/S)
-        if (keys.w && leftPaddleY > 0) leftPaddleY -= paddleSpeed;
-        if (keys.s && leftPaddleY < canvas.height - paddleHeight) leftPaddleY += paddleSpeed;
+        if (keys.ArrowUp && rightPaddleY > 0) rightPaddleY -= paddleSpeed;
+        if (keys.ArrowDown && rightPaddleY < canvas.height - paddleHeight) rightPaddleY += paddleSpeed;
 
         if (isSinglePlayer) {
-            // AI movement for right paddle
-            const paddleCenter = rightPaddleY + paddleHeight / 2;
+            // AI movement for left paddle
+            const paddleCenter = leftPaddleY + paddleHeight / 2;
             const targetY = ballY;
             const distance = targetY - paddleCenter;
             
@@ -67,19 +66,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const movement = distance * aiReactionDelay;
             const limitedMovement = Math.min(Math.abs(movement), aiMaxSpeed) * Math.sign(movement);
             
-            rightPaddleY += limitedMovement;
-            rightPaddleY = Math.max(0, Math.min(canvas.height - paddleHeight, rightPaddleY));
+            leftPaddleY += limitedMovement;
+            leftPaddleY = Math.max(0, Math.min(canvas.height - paddleHeight, leftPaddleY));
         } else {
             // Manual control for right paddle in multiplayer
-            if (keys.ArrowUp && rightPaddleY > 0) rightPaddleY -= paddleSpeed;
-            if (keys.ArrowDown && rightPaddleY < canvas.height - paddleHeight) rightPaddleY += paddleSpeed;
+            if (keys.w && leftPaddleY > 0) leftPaddleY -= paddleSpeed;
+            if (keys.s && leftPaddleY < canvas.height - paddleHeight) leftPaddleY += paddleSpeed;
         }
     }
 
     function resetBall() {
         ballX = canvas.width / 2;
         ballY = canvas.height / 2;
-        ballSpeedX = Math.random() > 0.5 ? 10 : -10;
+        ballSpeedX = Math.random() > 0.5 ? 7 : -7;
         ballSpeedY = (Math.random() - 0.5) * 5;
     }
 
