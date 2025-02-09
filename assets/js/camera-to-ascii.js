@@ -7,6 +7,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const asciiOutput = document.getElementById('ascii-output');
     const asciiContainer = document.querySelector('.ascii-container');
     
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                    (window.innerWidth <= 768);
+
+    // Hide fullscreen button on mobile devices
+    if (isMobile) {
+        fullscreenBtn.style.display = 'none';
+    }
+
     let isFullscreen = false;
 
     // Update width value display when slider moves
