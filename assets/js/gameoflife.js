@@ -170,6 +170,8 @@ class GameOfLife {
 
   start() {
     if (!this.intervalId) {
+      this.canvas.classList.add('game-started');
+      this.gridCanvas.classList.add('game-started');
       this.intervalId = setInterval(() => this.updateGrid(), 200);
     }
   }
