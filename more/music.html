@@ -9,12 +9,24 @@ permalink: /more/music
         <p>
             This page lists my top 9 albums/artists from the past week on last.fm.
         </p>
-        <div class="view-toggle">
-            <span id="albums-toggle" class="view-option active">Albums</span>
-            <span> · </span>
-            <span id="artists-toggle" class="view-option">Artists</span>
+        <div class="view-controls">
+            <div class="view-toggle">
+                <span id="albums-toggle" class="view-option active">Albums</span>
+                <span> · </span>
+                <span id="artists-toggle" class="view-option">Artists</span>
+            </div>
+            <div class="period-toggle">
+                <span id="7day" class="period-option active">Past Week</span>
+                <span> · </span>
+                <span id="1month" class="period-option">Past Month</span>
+                <span> · </span>
+                <span id="6month" class="period-option">Past 6 Months</span>
+                <span> · </span>
+                <span id="12month" class="period-option">Past Year</span>
+            </div>
+            <br/>
         </div>
-        <div id="loading">Loading...</div>
+        <div id="loading" class="loading">Loading...</div>
         <div id="album-grid" class="album-grid"></div>
     </div>
 

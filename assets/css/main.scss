@@ -72,14 +72,14 @@
 
 body {
     color: #3b3b3b;
-    background: #ffffff;
+    background: #f2f0ef;
     font-family: "Playfair Display", serif;
     font-weight: 300;
     word-wrap: break-word;
 }
 
 hr {
-    color: #ffffff;
+    color: #f2f0ef;
 }
 
 a {
@@ -355,10 +355,20 @@ i {
     font-weight: 500 !important;
     font-size: 0.8em !important;
 }
-#loading {
-    text-align: center;
+.period-option {
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+.period-option:hover {
+    color: #913045;
+}
+.period-option.active {
+    font-weight: 600 !important;
+}
+.loading {
     margin: 20px 0;
 }
+
 
 // description
 .desc {
