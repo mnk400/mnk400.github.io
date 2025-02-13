@@ -1,6 +1,27 @@
 ---
 ---
 
+:root[data-theme="light"] {
+    --bg-color: #f2f0ef;
+    --text-color: #3b3b3b;
+    --sec-text-color: #656565;
+    --border-color: #ddd;
+    --code-bg: #ebe9e8;
+    --input-bg: #f8f5f3;
+    --input-border: #e1dedd;
+}
+
+:root[data-theme="dark"] {
+    --bg-color: #1a1a1a;
+    --text-color: #d0d0d0;
+    --sec-text-color: #b0b0b0;
+    --border-color: #505050;
+    --code-bg: #212121;
+    --code-text: #d0d0d0;
+    --input-bg: #2a2a2a;
+    --input-border: #505050;
+}
+
 @import url(bw.css);
 @import url('https://rsms.me/inter/inter.css');
 @import "reset";
@@ -15,7 +36,7 @@
 }
 
 .site-title {
-    color: #4a4a4a;
+    color: var(--text-color);
 }
 
 .site-title .my-name {
@@ -36,6 +57,7 @@
     text-align: right;
     a {
         text-decoration: none;
+        color: var(--text-color);
     }
 }
 
@@ -67,32 +89,28 @@
   content: '/';
   position: relative;
   padding: 5px;
-  color: #3b3b3b;
+  color: var(--text-color);
 }
 
 body {
-    color: #3b3b3b;
-    background: #f2f0ef;
+    color: var(--text-color);
+    background: var(--bg-color);
     font-family: "Playfair Display", serif;
     font-weight: 300;
     word-wrap: break-word;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 hr {
-    color: #f2f0ef;
+    color: var(--bg-color);
 }
 
 a {
     line-height: 25px;
-    color: #656565;
+    color: var(--link-color);
     text-decoration: underline;
-    text-decoration-color: currentcolor;
-    text-decoration-thickness: auto;
-    text-decoration-color: currentcolor;
-    text-decoration-thickness: auto;
-    text-decoration-color: #DADADA;
+    text-decoration-color: var(--border-color);
     text-decoration-thickness: .1em;
-    text-underline-offset: 2.5px;
 }
 
 a:hover {
@@ -148,7 +166,7 @@ ul {
 }
 
 .description {
-    color: #7d7d7d;
+    color: var(--sec-text-color);
     font-size: 0.8em;
     margin-top: 0.2em;
     margin-bottom: -0.3em;
@@ -485,7 +503,7 @@ input[type=file]::file-selector-button {
             float: none;
             padding-left: 5px;
             font-size: 10pt;
-            color: #b8b8b8;
+            color: var(--sec-text-color);
             text-transform: lowercase;
         }
 
@@ -518,12 +536,12 @@ input[type=file]::file-selector-button {
     &__date {
         font-size: 0.75em;
 		text-align: left;
-        color: #616161;
+        color: var(--sec-text-color);
         font-weight: 300;
         margin-bottom: 20px;
     }
     &__content {
-		color: #656565;
+		color: var(--text-color);
 
         hr {
                 width: 10%;
@@ -531,7 +549,7 @@ input[type=file]::file-selector-button {
 
         h1 {
             font-size: 16pt;
-            color: #3b3b3b;
+            color: var(--text-color);
             font-weight: 800;
             margin-top: 10px;
             margin-bottom: 8px;
@@ -539,7 +557,7 @@ input[type=file]::file-selector-button {
 
         h2 {
             font-size: 14pt;
-            color: #3b3b3b;
+            color: var(--text-color);
             font-weight: 700;
             margin-top: 5px;
             margin-bottom: 10px;
@@ -547,7 +565,7 @@ input[type=file]::file-selector-button {
 
         h3 {
             font-size: 12pt;
-            color: #3b3b3b;
+            color: var(--text-color);
             font-weight: 700;
             margin-top: 5px;
             margin-bottom: 10px;
@@ -562,7 +580,7 @@ input[type=file]::file-selector-button {
             text-align: left;
             word-wrap: break-word;
             letter-spacing: 0.2px;
-            color: #656565;
+            color: var(--text-color);
         }
         strong {
             padding-bottom: 10px;
@@ -616,7 +634,7 @@ input[type=file]::file-selector-button {
             padding: 10px;
             a {
                 line-height: 25px;
-                color: #656565;
+                color: var(--text-color);
                 text-decoration: underline;
                 text-decoration-color: currentcolor;
                 text-decoration-thickness: auto;
@@ -632,12 +650,12 @@ input[type=file]::file-selector-button {
         .highlighter-rouge {
             padding: 0.5px 5px 0.5px 5px;
             font-size: 11pt;
-            background: #f2f2f2;
+            background: var(--code-bg);
             word-wrap: break-word;
             font-weight: 400;
             overflow: hidden;
             margin-bottom: 10px;
-            color: #757575;
+            color: var(--code-text);
 
             a {
                 text-decoration: none;
@@ -658,11 +676,11 @@ input[type=file]::file-selector-button {
             line-height: 16pt;
             font-weight: 400;
             overflow-x: scroll;
-            background: #f7f7f7;
+            background: var(--code-bg);
             font-size: 11pt;
             font-family: 'IBM Plex Mono', monospace;
             font-weight: 400;
-            color: #757575;
+            color: var(--code-text);
             margin-bottom: 15px;
         }
 
@@ -744,7 +762,8 @@ input[type=file]::file-selector-button {
             -webkit-appearance: none;
             appearance: none;
             height: 4px;
-            background: #e7e7e7;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
             border-radius: 4px;
             outline: none;
             
@@ -797,7 +816,7 @@ input[type=file]::file-selector-button {
         cursor: pointer;
         font-family: 'IBM Plex Mono', monospace;
         transition: background-color 0.2s ease;
-        border: 1px solid #eaeaea;
+        border: 1px solid var(--border-color);
         aspect-ratio: 1;  
     }
     
@@ -813,7 +832,7 @@ input[type=file]::file-selector-button {
     }
     
     .ttt-cell:hover {
-        background-color: #f0f0f0;
+        background-color: var(--border-color);
     }
     
     .ttt-cell.x::before {
