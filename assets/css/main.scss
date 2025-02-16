@@ -5,7 +5,7 @@
     --bg-color: #f2f0ef;
     --text-color: #3b3b3b;
     --sec-text-color: #656565;
-    --border-color: #ddd;
+    --sec-use-color: rgb(0, 0, 0, 0.07);
     --code-bg: #ebe9e8;
     --note-bg: #d8f2fd;
     --input-bg: #f8f5f3;
@@ -19,7 +19,7 @@
     --bg-color: #1a1a1a;
     --text-color: #d0d0d0;
     --sec-text-color: #b0b0b0;
-    --border-color: #505050;
+    --sec-use-color: rgb(256, 256, 256, 0.07);
     --code-bg: #212121;
     --note-bg: #4a606a;
     --input-bg: #2a2a2a;
@@ -116,7 +116,7 @@ a {
     line-height: 25px;
     color: var(--link-color);
     text-decoration: underline;
-    text-decoration-color: var(--border-color);
+    text-decoration-color: var(--sec-use-color);
     text-decoration-thickness: .1em;
 }
 
@@ -343,6 +343,29 @@ i {
 }
 
 // Music Page
+.now-playing-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+    padding: 5px 15px;
+    border-radius: 6px;
+    background: var(--sec-use-color);
+}
+.now-playing-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+.now-playing-info {
+    flex-grow: 1;
+    margin-top: -5px;
+}
+.playing-or-no {
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-bottom: 15px;
+}
 .view-toggle {
     margin: 1em 0;
 }
@@ -794,7 +817,7 @@ input[type=file]::file-selector-button {
         cursor: pointer;
         font-family: 'IBM Plex Mono', monospace;
         transition: background-color 0.2s ease;
-        border: 1px solid var(--border-color);
+        border: 1px solid var(--sec-use-color);
         aspect-ratio: 1;  
     }
     
@@ -810,7 +833,7 @@ input[type=file]::file-selector-button {
     }
     
     .ttt-cell:hover {
-        background-color: var(--border-color);
+        background-color: var(--sec-use-color);
     }
     
     .ttt-cell.x::before {
