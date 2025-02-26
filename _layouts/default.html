@@ -7,6 +7,20 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
         <meta name="p:domain_verify" content="bba1d80d0778741b7525ee227f44f5ff"/>
+        <meta name="author" content="Manik Kumar">
+        <meta name="keywords" content="portfolio, developer, software engineer, projects, blog">
+        
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="{{ site.url }}{{ page.url }}">
+        <meta property="og:title" content="{% if page.title %}{{ page.title }} — Manik{% else %}Manik{% endif %}">
+        <meta property="og:description" content="{{ site.description }}">
+        
+        <!-- Twitter -->
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:url" content="{{ site.url }}{{ page.url }}">
+        <meta name="twitter:title" content="{% if page.title %}{{ page.title }} — Manik{% else %}Manik{% endif %}">
+        <meta name="twitter:description" content="{{ site.description }}">
 
         {% if page.title %}
             <title>{{ page.title }} — Manik</title>
