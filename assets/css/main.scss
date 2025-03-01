@@ -1,35 +1,8 @@
 ---
 ---
 
-:root[data-theme="light"] {
-    --bg-color: #f2f0ef;
-    --text-color: #3b3b3b;
-    --sec-text-color: #656565;
-    --sec-use-color: rgb(0, 0, 0, 0.07);
-    --code-bg: #ebe9e8;
-    --note-bg: #d8f2fd;
-    --input-bg: #f8f5f3;
-    --input-border: #e1dedd;
-    --link-hover-color: #b25e71;
-    --button-bg: #333;
-    --button-hover: #555;
-}
-
-:root[data-theme="dark"] {
-    --bg-color: #1a1a1a;
-    --text-color: #d0d0d0;
-    --sec-text-color: #b0b0b0;
-    --sec-use-color: rgb(256, 256, 256, 0.07);
-    --code-bg: #212121;
-    --note-bg: #4a606a;
-    --input-bg: #2a2a2a;
-    --input-border: #505050;
-    --link-hover-color: #9f5465;
-    --button-bg: #333;
-    --button-hover: #555;
-}
-
 @import url(bw.css);
+@import url(color-scheme.css);
 @import url('https://rsms.me/inter/inter.css');
 @import "reset";
 @import "config";
@@ -102,7 +75,7 @@
 
 body {
     color: var(--text-color);
-    background: var(--bg-color);
+    background: var(--background-main);
     font-family: "Playfair Display", serif;
     font-weight: 300;
     word-wrap: break-word;
@@ -110,19 +83,19 @@ body {
 }
 
 hr {
-    color: var(--bg-color);
+    color: var(--background-main);
 }
 
 a {
     line-height: 25px;
     color: var(--link-color);
     text-decoration: underline;
-    text-decoration-color: var(--sec-use-color);
+    text-decoration-color: var(--min-translucent);
     text-decoration-thickness: .1em;
 }
 
 a:hover {
-    color: var(--link-hover-color);
+    color: var(--red-accent);
 }
 
 h1 {
@@ -351,7 +324,7 @@ i {
     margin-bottom: 20px;
     padding: 5px 15px;
     border-radius: 6px;
-    background: var(--sec-use-color);
+    background: var(--min-translucent);
 }
 .now-playing-image {
     width: 100px;
@@ -377,7 +350,7 @@ i {
 }
 
 .view-option:hover {
-    color: var(--link-hover-color);
+    color: var(--red-accent);
 }
 
 .view-option.active {
@@ -409,7 +382,7 @@ i {
     transition: color 0.2s ease;
 }
 .period-option:hover {
-    color: var(--link-hover-color);
+    color: var(--red-accent);
 }
 .period-option.active {
     font-weight: 600 !important;
@@ -445,7 +418,7 @@ i {
 
 button {
     padding: 8px 16px;
-    background-color: var(--button-bg);
+    background-color: var(--black-accent);
     color: white;
     border: none;
     border-radius: 6px;
@@ -456,7 +429,7 @@ button {
 }
 
 button:hover {
-    background-color: var(--button-hover);
+    background-color: var(--black-accent-hover);
 }
 
 .modern-btn {
@@ -764,8 +737,8 @@ input[type=file]::file-selector-button {
             -webkit-appearance: none;
             appearance: none;
             height: 4px;
-            background: var(--input-bg);
-            border: 1px solid var(--input-border);
+            background: var(--background-darker);
+            border: 1px solid var(--min-translucent);
             border-radius: 4px;
             outline: none;
             
@@ -818,7 +791,7 @@ input[type=file]::file-selector-button {
         cursor: pointer;
         font-family: 'IBM Plex Mono', monospace;
         transition: background-color 0.2s ease;
-        border: 1px solid var(--sec-use-color);
+        border: 1px solid var(--min-translucent);
         aspect-ratio: 1;  
     }
     
@@ -834,7 +807,7 @@ input[type=file]::file-selector-button {
     }
     
     .ttt-cell:hover {
-        background-color: var(--sec-use-color);
+        background-color: var(--min-translucent);
     }
     
     .ttt-cell.x::before {
