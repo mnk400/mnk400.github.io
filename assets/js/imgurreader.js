@@ -50,6 +50,17 @@ async function loadAlbum() {
             img.alt = image.title || 'Gallery Image';
             img.addEventListener('click', () => openLightbox(image.link));
 
+            img.onload = function() {
+                const ratio = this.width / this.height;
+                if (ratio > 1.7) {
+                    imageCard.classList.add('wide');
+                } else if (ratio < 0.7) {
+                    imageCard.classList.add('tall');
+                } else if (ratio > 1.3 && this.width > 1800) {
+                    imageCard.classList.add('big');
+                }
+            };
+
             imageWrapper.appendChild(img);
             imageCard.appendChild(imageWrapper);
             albumContainer.appendChild(imageCard);

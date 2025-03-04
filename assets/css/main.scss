@@ -292,18 +292,54 @@ i {
     padding: 0;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    grid-gap: 10px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-auto-rows: 200px;
+    grid-auto-flow: dense;
+}
+
+.album-container > div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.album-container > div > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.album-container .wide {
+    grid-column: span 2;
+}
+
+.album-container .tall {
+    grid-row: span 2;
+}
+
+.album-container .big {
+    grid-column: span 2;
+    grid-row: span 2;
 }
 .image-card {
     width: 100%;
-    padding-bottom: 10px;
+    height: 100%;
+    overflow: hidden;
+}
+.image-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .image-wrapper img {
     width: 100%;
-    height: auto;
+    height: 100%;
     display: block;
-    object-fit: contain;
+    object-fit: cover;
 }
 #loading {
     text-align: center;
