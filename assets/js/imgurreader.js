@@ -4,27 +4,9 @@ function getRandomNumber(min, max) {
     return Math.random() * (max - min) + min;
 }
 
-function createLightbox() {
-    const lightbox = document.createElement('div');
-    lightbox.className = 'lightbox';
-    lightbox.innerHTML = '<span class="close-btn">&times;</span>';
-    document.body.appendChild(lightbox);
-
-    const closeBtn = lightbox.querySelector('.close-btn');
-    closeBtn.onclick = () => lightbox.style.display = 'none';
-    lightbox.onclick = (e) => {
-        if (e.target === lightbox) {
-            lightbox.style.display = 'none';
-        }
-    };
-
-    return lightbox;
-}
-
 async function loadAlbum() {
     const albumContainer = document.getElementById('album-container');
     const loadingIndicator = document.getElementById('loading');
-    const lightbox = createLightbox();
 
     try {
         const response = await axios.get(`https://api.imgur.com/3/album/${ALBUM_HASH}/images`, {
@@ -39,6 +21,7 @@ async function loadAlbum() {
             const imageCard = document.createElement('div');
             imageCard.className = 'image-card';
 
+            // Create wrapper div to control size
             const imageWrapper = document.createElement('div');
             imageWrapper.className = 'image-wrapper';
 
@@ -46,28 +29,10 @@ async function loadAlbum() {
             img.src = image.link;
             img.alt = image.title || 'Gallery Image';
 
-            // Calculate grid row span based on image aspect ratio
-            img.onload = () => {
-                const rowSpan = Math.ceil((img.naturalHeight / img.naturalWidth) * 25);
-                imageWrapper.style.setProperty('--rows', rowSpan);
-            };
-
             imageWrapper.appendChild(img);
             imageCard.appendChild(imageWrapper);
             albumContainer.appendChild(imageCard);
-
-            imageCard.onclick = () => {
-                const lightboxImg = document.createElement('img');
-                lightboxImg.src = image.link;
-                lightboxImg.alt = image.title || 'Gallery Image';
-                
-                lightbox.innerHTML = '<span class="close-btn">&times;</span>';
-                lightbox.appendChild(lightboxImg);
-                lightbox.style.display = 'block';
-
-                const closeBtn = lightbox.querySelector('.close-btn');
-                closeBtn.onclick = () => lightbox.style.display = 'none';
-            };
+            document.createElement('br')
         });
     } catch (error) {
         loadingIndicator.style.display = 'none';
@@ -76,4 +41,4 @@ async function loadAlbum() {
 }
 
 // Load album on page load
-loadAlbum();
+loadAlbum()

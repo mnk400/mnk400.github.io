@@ -288,95 +288,19 @@ i {
 
 // Photo page
 .album-container {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
     max-width: 100%;
     padding: 0;
     margin: 0 auto;
 }
-
 .image-card {
     width: 100%;
-    cursor: pointer;
-    transition: opacity 0.2s ease;
+    padding-bottom: 10px;
 }
-
-.image-card:hover {
-    opacity: 0.9;
-}
-
 .image-wrapper img {
     width: 100%;
     height: auto;
     display: block;
-    object-fit: cover;
-}
-
-.lightbox {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.9);
-    z-index: 1000;
-    cursor: pointer;
-}
-
-.lightbox img {
-    max-width: 90%;
-    max-height: 90vh;
-    margin: auto;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
-
-.close-btn {
-    position: absolute;
-    top: 20px;
-    right: 30px;
-    color: #f1f1f1;
-    font-size: 40px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.close-btn:hover {
-    color: #bbb;
-}
-.album-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    grid-auto-rows: 10px;
-    grid-auto-flow: dense;
-    gap: 15px;
-    padding: 15px;
-}
-
-.image-card {
-    position: relative;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-}
-
-.image-card:hover {
-    transform: scale(1.02);
-}
-
-.image-wrapper {
-    grid-row: span var(--rows);
-}
-
-.image-wrapper img {
-    width: 100%;
-    height: 100%;
-    display: block;
-    object-fit: cover;
-    border-radius: 4px;
+    object-fit: contain;
 }
 #loading {
     text-align: center;
