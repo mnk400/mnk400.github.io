@@ -291,55 +291,19 @@ i {
     max-width: 100%;
     padding: 0;
     margin: 0 auto;
-    display: grid;
-    grid-gap: 10px;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    grid-auto-rows: 200px;
-    grid-auto-flow: dense;
-}
-
-.album-container > div {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.album-container > div > img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 5px;
-}
-
-.album-container .wide {
-    grid-column: span 2;
-}
-
-.album-container .tall {
-    grid-row: span 2;
-}
-
-.album-container .big {
-    grid-column: span 2;
-    grid-row: span 2;
+    column-count: 2;
+    column-gap: 10px;
 }
 .image-card {
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-}
-.image-wrapper {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    break-inside: avoid;
+    margin-bottom: 10px;
 }
 .image-wrapper img {
     width: 100%;
-    height: 100%;
+    height: auto;
     display: block;
-    object-fit: cover;
+    object-fit: contain;
+    border-radius: 4px;
 }
 #loading {
     text-align: center;
@@ -353,38 +317,6 @@ i {
 
 #tiktok-link:hover {
     color: #9860d5; /* Color when hovered */
-}
-
-.lightbox {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.9);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
-}
-
-.lightbox img {
-    max-width: 90%;
-    max-height: 90vh;
-    object-fit: contain;
-}
-
-.close-btn {
-    position: absolute;
-    top: 20px;
-    right: 30px;
-    color: #fff;
-    font-size: 30px;
-    cursor: pointer;
-}
-
-.image-wrapper img {
-    cursor: pointer;
 }
 
 // Music Page
