@@ -46,6 +46,12 @@ async function loadAlbum() {
             img.src = image.link;
             img.alt = image.title || 'Gallery Image';
 
+            // Calculate grid row span based on image aspect ratio
+            img.onload = () => {
+                const rowSpan = Math.ceil((img.naturalHeight / img.naturalWidth) * 25);
+                imageWrapper.style.setProperty('--rows', rowSpan);
+            };
+
             imageWrapper.appendChild(img);
             imageCard.appendChild(imageWrapper);
             albumContainer.appendChild(imageCard);
