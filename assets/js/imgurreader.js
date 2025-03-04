@@ -4,30 +4,9 @@ function getRandomNumber(min, max) {
     return Math.random() * (max - min) + min;
 }
 
-function openLightbox(imageSrc) {
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImg = document.getElementById('lightbox-img');
-    lightboxImg.src = imageSrc;
-    lightbox.style.display = 'flex';
-}
-
-function closeLightbox() {
-    const lightbox = document.getElementById('lightbox');
-    lightbox.style.display = 'none';
-}
-
 async function loadAlbum() {
     const albumContainer = document.getElementById('album-container');
     const loadingIndicator = document.getElementById('loading');
-    const lightbox = document.getElementById('lightbox');
-    const closeBtn = document.querySelector('.close-btn');
-
-    closeBtn.addEventListener('click', closeLightbox);
-    lightbox.addEventListener('click', (e) => {
-        if (e.target === lightbox) {
-            closeLightbox();
-        }
-    });
 
     try {
         const response = await axios.get(`https://api.imgur.com/3/album/${ALBUM_HASH}/images`, {
@@ -42,28 +21,18 @@ async function loadAlbum() {
             const imageCard = document.createElement('div');
             imageCard.className = 'image-card';
 
+            // Create wrapper div to control size
             const imageWrapper = document.createElement('div');
             imageWrapper.className = 'image-wrapper';
 
             const img = document.createElement('img');
             img.src = image.link;
             img.alt = image.title || 'Gallery Image';
-            img.addEventListener('click', () => openLightbox(image.link));
-
-            img.onload = function() {
-                const ratio = this.width / this.height;
-                if (ratio > 1.7) {
-                    imageCard.classList.add('wide');
-                } else if (ratio < 0.7) {
-                    imageCard.classList.add('tall');
-                } else if (ratio > 1.3 && this.width > 1800) {
-                    imageCard.classList.add('big');
-                }
-            };
 
             imageWrapper.appendChild(img);
             imageCard.appendChild(imageWrapper);
             albumContainer.appendChild(imageCard);
+            document.createElement('br')
         });
     } catch (error) {
         loadingIndicator.style.display = 'none';
