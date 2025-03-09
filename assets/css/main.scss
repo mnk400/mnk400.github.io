@@ -743,6 +743,22 @@ input[type=file]::file-selector-button {
 .ascii-container {
     margin: 20px 0;
 
+    .canvas-container {
+        position: relative;
+        width: 100%;
+        padding-bottom: 75%; /* 16:9 aspect ratio */
+    }
+
+    #canvas-output {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: var(--min-translucent);
+        border-radius: 6px;
+    }
+
     #ascii-output {
         white-space: pre;
         font-family: 'IBM Plex Mono', monospace;

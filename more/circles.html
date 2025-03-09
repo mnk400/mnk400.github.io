@@ -1,0 +1,32 @@
+---
+layout: post
+title: Circle Camera
+description: Convert your camera feed into real-time circle art
+permalink: /more/circles
+---
+
+<body>
+    <p>
+        See yourself live as circles.
+        <br/>
+        <span class="description">You'll need to grant camera permissions to the webpage for this to work.</span>
+    </p>
+    <div class="ascii-container">
+        <div class="canvas-container">
+            <video id="video" style="display: none;"></video>
+            <canvas id="canvas-output"></canvas>
+        </div>
+        
+        <div class="controls">
+            <label>
+                <b>Resolution: <span id="resolution-value">40</span></b>
+                <input type="range" id="resolution-input" value="40" min="10" max="100">
+            </label>
+            <br/>
+            <button id="start-btn" class="normal-btn">Start Camera</button>
+            <button id="fullscreen-btn" class="normal-btn">Fullscreen</button>
+        </div>
+    </div>
+
+    <script src="/assets/js/circle-camera.js"></script>
+</body>
