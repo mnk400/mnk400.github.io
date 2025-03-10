@@ -1,0 +1,56 @@
+---
+layout: post
+title: "My Personal Ricoh GR III Recipe For Everyday Use"
+date: 2024-03-04
+---
+
+![](/assets/images/blogs/R0001832.jpg)
+
+This is a recipe for a Ricoh GR III that I use everyday. This started as Reggie's recipe but, with minor changes over time, formed into a completely different recipe.
+
+This is based on a positive film base simulation. This recipe isn't aiming to reproduce any particular film, but rather to be a good base for everyday use.
+
+*I also encourage everyone to shoot film if you can! :)*
+
+---
+
+# Manik's Color Positive Recipe
+
+- Film Simulation: Positive Film
+- Saturation: 0
+- Hue: 0
+- High/Low Key: 0
+- Contrast: +2
+- Contrast (Highlight): -3
+- Contrast (Shadow): -1
+- Sharpness: +1
+- Clarity: 0
+- Shading: +1
+- Highlight Correction: Auto
+- Shadow Correction: Medium
+- High-ISO Noise Reduction: Off
+- White Balance: Auto
+- WB Compensation: M1:1 B1:1
+
+Potentially can be reproduced on older Ricoh GR cameras if they support a positive film simulation.
+
+---
+
+# Sample Pictures
+
+All shot on GR III, some have been cropped.
+
+![](/assets/images/blogs/R0002447.jpg)
+
+![](/assets/images/blogs/R0002265.JPG)
+
+![](/assets/images/blogs/R0002054.JPG)
+
+![](/assets/images/blogs/R0001744.jpg)
+
+![](/assets/images/blogs/R0001496.JPG)
+
+![](/assets/images/blogs/R0001553.JPG)
+
+![](/assets/images/blogs/R0001833.JPG)
+
