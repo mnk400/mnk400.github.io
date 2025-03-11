@@ -1,24 +1,34 @@
-# My variables
-name: Manik Kumar
+# Site settings
+title: Manik Kumar
 description: My Portfolio and Blog.
+url: https://manik.cc
+baseurl: ""
 
-# File management
-include: [".htaccess"]
-exclude: ["README.md", "LICENSE"]
-
-
-# Sass
-sass:
-  style: :compressed
-  sass_dir: _sass
-
-plugins:
-  - jekyll-sitemap
-  
-# Markdown
+# Build settings
 markdown: kramdown
-kramdown:
-  input: GFM
-  math_engine: mathjax
-  hard_wrap: false
 highlighter: rouge
+paginate: 5
+paginate_path: "/blog/page:num/"
+
+# Collections
+collections:
+  projects:
+    output: true
+    permalink: /projects/:path/
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+  - scope:
+      path: ""
+      type: "projects"
+    values:
+      layout: "project"
+  - scope:
+      path: ""
+    values:
+      layout: "default"

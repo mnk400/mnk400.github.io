@@ -2,6 +2,7 @@
 layout: post
 title: "C vs Fortran memory order."
 date: 2021-02-25
+image: https://i.imgur.com/XAXOPdT.png
 ---
 # C vs Fortran memory order.
 

@@ -15,12 +15,18 @@
         <meta property="og:url" content="{{ site.url }}{{ page.url }}">
         <meta property="og:title" content="{% if page.title %}{{ page.title }} — Manik{% else %}Manik{% endif %}">
         <meta property="og:description" content="{{ site.description }}">
+        {% if page.image %}
+        <meta property="og:image" content="{{ site.url }}{{ page.image }}">
+        {% endif %}
         
         <!-- Twitter -->
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:url" content="{{ site.url }}{{ page.url }}">
         <meta name="twitter:title" content="{% if page.title %}{{ page.title }} — Manik{% else %}Manik{% endif %}">
         <meta name="twitter:description" content="{{ site.description }}">
+        {% if page.image %}
+        <meta name="twitter:image" content="{{ site.url }}{{ page.image }}">
+        {% endif %}
 
         {% if page.title %}
             <title>{{ page.title }} — Manik</title>

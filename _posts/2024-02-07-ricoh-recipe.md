@@ -2,6 +2,7 @@
 layout: post
 title: "My Personal Ricoh GR III Recipe For Everyday Use"
 date: 2024-03-04
+image: /assets/images/blogs/R0001832.jpg
 ---
 
 ![](/assets/images/blogs/R0001832.jpg)
