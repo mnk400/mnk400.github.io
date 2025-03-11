@@ -17,6 +17,19 @@
 
 .site-title {
     color: var(--text-color);
+    text-decoration: none;
+
+    a, .site-title-link {
+        text-decoration: none;
+    }
+
+    .site-title-link:hover {
+        color: var(--text-color);
+    }
+
+    .dark-button a:hover {
+        color: var(--red-accent);
+    }
 }
 
 .site-title .my-name {
