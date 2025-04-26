@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     const fetchButton = document.getElementById('fetch-wiki');
-    const loadingIndicator = document.getElementById('loading');
+    const wikiContent = document.getElementById('wiki-content');
     const wikiTitle = document.getElementById('wiki-title');
     const wikiExtract = document.getElementById('wiki-extract');
     const wikiLink = document.getElementById('wiki-link');
@@ -10,11 +10,11 @@ document.addEventListener('DOMContentLoaded', function() {
     fetchRandomWiki();
     
     function fetchRandomWiki() {
-
-        loadingIndicator.style.display = 'block';
+        // Clear previous content and show loading state
         wikiTitle.textContent = '';
-        wikiExtract.innerHTML = '';
+        wikiExtract.innerHTML = '<p>Loading...</p>';
         wikiLink.innerHTML = '';
+        wikiContent.classList.add('loading');
         
         const randomApiUrl = 'https://en.wikipedia.org/api/rest_v1/page/random/summary';
         
@@ -45,7 +45,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 return response.json();
             })
             .then(data => {
-                loadingIndicator.style.display = 'none';
+                wikiContent.classList.remove('loading');
+                wikiExtract.innerHTML = '';
                 
                 if (data.parse && data.parse.text && data.parse.text['*']) {
                     const tempDiv = document.createElement('div');
@@ -78,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             })
             .catch(error => {
-                loadingIndicator.style.display = 'none';
+                wikiContent.classList.remove('loading');
                 wikiExtract.innerHTML = `<p>Error fetching Wikipedia article: ${error.message}</p>`;
                 console.error('Error fetching Wikipedia article:', error);
             });
