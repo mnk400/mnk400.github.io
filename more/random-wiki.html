@@ -1,0 +1,24 @@
+---
+layout: post
+title: Random Wikipedia
+description: Read a random article from Wikipedia.
+permalink: /more/random-wiki
+---
+
+<div class="wiki-container">
+    <p>
+        Read a random article from Wikipedia.
+    </p>
+    <div class="controls">
+        <button id="fetch-wiki" class="normal-btn">Get Random Article</button>
+        <div id="loading" style="display: none;">Loading...</div>
+    </div>
+    
+    <div id="wiki-content" class="wiki-content">
+        <h2 id="wiki-title"></h2>
+        <div id="wiki-extract"></div>
+        <div id="wiki-link" style="margin-top: 20px;"></div>
+    </div>
+</div>
+
+<script src="/assets/js/random-wiki.js"></script>

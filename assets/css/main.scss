@@ -343,6 +343,7 @@ i {
     border-radius: 4px;
     box-shadow: 0 0 20px rgba(0,0,0,0.3);
 }
+
 #loading {
     text-align: center;
     color: #888;
@@ -901,4 +902,26 @@ input[type=file]::file-selector-button {
 
 #pongCanvas.game-started {
     filter: none;
+}
+
+.wiki-content {
+    margin-top: 20px;
+    padding: 10px;
+}
+
+#wiki-title {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+#wiki-extract {
+    line-height: 1.6;
+}
+
+#wiki-extract p {
+    margin-bottom: 10px;
+}
+
+.controls {
+    margin: 20px 0;
 }
