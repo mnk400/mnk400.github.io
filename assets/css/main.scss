@@ -776,6 +776,71 @@ input[type=file]::file-selector-button {
     }
 }
 
+// Flappy Bird styles
+#flappy-game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    margin: 20px 0;
+}
+
+#flappyCanvas {
+    border-radius: 8px;
+}
+
+#flappy-ui {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+#flappy-ui > * {
+    pointer-events: auto;
+}
+
+#score, #high-score {
+    position: absolute;
+    top: 20px;
+    font-weight: 600;
+    font-size: 18px;
+    color: #3b3b3b;
+    background: rgba(255, 255, 255, 0.6);
+    padding: 8px 16px;
+    border-radius: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+#score {
+    left: 20px;
+}
+
+#high-score {
+    right: 20px;
+}
+
+#game-over, #start-screen {
+    background: rgba(255, 255, 255, 0.7);
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    p, h2 {
+        color: #3b3b3b !important;
+    }
+}
+
 // Tic Tac Toe styles
 .game-wrapper {
     height: 100vh;

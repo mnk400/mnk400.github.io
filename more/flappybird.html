@@ -1,0 +1,28 @@
+---
+layout: post
+title: Flappy Bird
+description: Flappy bird game
+permalink: /more/flappybird
+---
+
+<div class="game-wrapper">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <div id="flappy-game-container">
+        <canvas id="flappyCanvas" width="400" height="600"></canvas>
+        <div id="flappy-ui">
+            <div id="score">Score: 0</div>
+            <div id="high-score">High Score: 0</div>
+            <div id="game-over" style="display: none;">
+                <h2>Game Over!</h2>
+                <p>Final Score: <span id="final-score">0</span></p>
+                <button id="restart-btn" class="normal-btn">Play Again</button>
+            </div>
+            <div id="start-screen">
+                <h2>Flappy Bird</h2>
+                <p>Press SPACE or click to fly!</p>
+                <button id="start-btn" class="normal-btn">Start Game</button>
+            </div>
+        </div>
+    </div>
+    <script src="/assets/js/flappybird.js"></script>
+</div>
