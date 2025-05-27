@@ -135,6 +135,7 @@ body {
 
 hr {
     color: var(--background-main);
+    opacity: 60%;
 }
 
 a {
@@ -541,7 +542,7 @@ input[type=file]::file-selector-button {
 
     h1 {
         font-size: 12pt;
-        font-weight: 300;
+        font-weight: 400;
         margin-bottom: 5px;
     }
 
