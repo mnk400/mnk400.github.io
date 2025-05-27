@@ -1,50 +1,61 @@
 <header class="{% if page.minimal %}minimal-mode{% endif %}">
-<div class="minimal-header" id="minimalHeader">
-    {% if page.url != "/" %}
-    <a id="back-button" href="#" onclick="handleBackNavigation(); return false;">←</a>
-    {% else %}
-    <a></a>
-    {% endif %}
-    <a href="#" onclick="toggleHeaderVisibility(true); return false;" class="minimal-header-arrow">
-        <i class="fa fa-chevron-circle-down"></i>
-    </a>
-</div>
-<div class="full-header" id="fullHeader">
-</br>
-<div class="site-title">
-    <table>
-        <tr>
-          <th class="site-title-name">
-            <a href="/" class="site-title-link">
-            <span>Manik</span>
-          </th>
-          <th class="dark-button">
-            <a href="#" onclick="toggleTheme()">
-                <i class="fas fa-moon dark-mode-icon"></i>
-            </a>
-            {% if page.minimal == true %}
-            <a href="#" onclick="toggleHeaderVisibility(false); return false;" style="margin-left: 10px;">
-                <i class="fa fa-chevron-circle-up"></i>
-            </a>
-            {% endif %}
-          </th>
-        </tr>
-    </table>
-</div>
-<div class="nav">
-    <ul>
-        {% if page.url != "/" %}
-            <li><a id="back-button" href="#" onclick="handleBackNavigation(); return false;">←</a></li>
-        {% endif %}
-        {% if page.url != "/more" %}
-            <li><a href="/more">more</a></li>
-        {% endif %}
-        {% if page.url != "/photos" %}
-            <li><a href="/photos">photos</a></li>
-        {% endif %}
-        <li><a href="https://linkedin.com/in/manik-kumar" target="_blank">linkedin</a></li>
-        <li><a href="mailto:me@manik.cc">email</a></li>
-    </ul>
-</div>
-</div>
+    <div class="minimal-header" id="minimalHeader">
+        <table>
+            <tr>
+                <th class="min-back-arrow">
+                    {% if page.url != "/" %}
+                    <a id="back-button" href="#" onclick="handleBackNavigation(); return false;">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                    {% endif %}
+                    <span style="padding-left: 10px;"><b>{{ page.title }}</b></span>
+                </th>
+                <th class="min-down-arrow">
+                    <a href="#" onclick="toggleHeaderVisibility(true); return false;">
+                        <i class="fa fa-chevron-circle-down"></i>
+                    </a>
+                </th>
+            </tr>
+        </table>
+    </div>
+    <div class="full-header" id="fullHeader">
+        </br>
+        <div class="site-title">
+            <table>
+                <tr>
+                    <th class="site-title-name">
+                        <a href="/" class="site-title-link">
+                            <span>Manik</span>
+                    </th>
+                    <th class="dark-button">
+                        <a href="#" onclick="toggleTheme()">
+                            <i class="fas fa-moon dark-mode-icon"></i>
+                        </a>
+                        {% if page.minimal == true %}
+                        <a href="#" onclick="toggleHeaderVisibility(false); return false;" style="margin-left: 10px;">
+                            <i class="fa fa-chevron-circle-up"></i>
+                        </a>
+                        {% endif %}
+                    </th>
+                </tr>
+            </table>
+        </div>
+        <div class="nav">
+            <ul>
+                {% if page.url != "/" %}
+                <li><a id="back-button" href="#" onclick="handleBackNavigation(); return false;">
+                        <i class="fa fa-angle-left"></i>
+                    </a></li>
+                {% endif %}
+                {% if page.url != "/more" %}
+                <li><a href="/more">more</a></li>
+                {% endif %}
+                {% if page.url != "/photos" %}
+                <li><a href="/photos">photos</a></li>
+                {% endif %}
+                <li><a href="https://linkedin.com/in/manik-kumar" target="_blank">linkedin</a></li>
+                <li><a href="mailto:me@manik.cc">email</a></li>
+            </ul>
+        </div>
+    </div>
 </header>

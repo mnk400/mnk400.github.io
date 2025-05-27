@@ -1,5 +1,5 @@
 ---
----
+--- 
 
 @import url(bw.css);
 @import url(color-scheme.css);
@@ -11,7 +11,7 @@
     font-family: "Playfair Display", serif;
 }
 
-.me{
+.me {
     width: 100%;
 }
 
@@ -19,7 +19,8 @@
     color: var(--text-color);
     text-decoration: none;
 
-    a, .site-title-link {
+    a,
+    .site-title-link {
         text-decoration: none;
     }
 
@@ -40,34 +41,45 @@
     width: 100%;
 }
 
-.site-title table .site-title-name {
+.site-title-name {
     font-size: 1.5em;
     font-weight: 700;
     text-align: left;
     padding-bottom: 0.3em;
 }
 
-.site-title table .dark-button {
+.dark-button {
     text-align: right;
+
     a {
         text-decoration: none;
         color: var(--text-color);
     }
 }
 
-.site-title .dark-mode-icon {
+.dark-mode-icon {
     height: 1.5em;
 }
 
 .minimal-header {
     display: none;
-    justify-content: space-between;
-    align-items: right;
     background-color: var(--min-translucent);
     padding: 5px 10px 5px 10px;
     border-radius: 6px;
     margin-bottom: 1em;
     vertical-align: center;
+}
+
+.min-down-arrow {
+    text-align: right;
+}
+
+.min-back-arrow {
+    text-align: left;
+}
+
+.minimal-header table {
+    width: 100%;
 }
 
 .minimal-mode .minimal-header {
@@ -89,6 +101,8 @@
 
 #back-button {
     text-decoration: none !important;
+    font-size: 0.8em;
+    text-align: left;
 }
 
 .nav ul {
@@ -97,16 +111,17 @@
     flex: -1;
     max-width: 300px;
     align-items: center;
+
     li {
         padding: 0px;
     }
 }
 
 .nav ul li:not(:last-child):after {
-  content: '/';
-  position: relative;
-  padding: 5px;
-  color: var(--text-color);
+    content: '/';
+    position: relative;
+    padding: 5px;
+    color: var(--text-color);
 }
 
 body {
@@ -147,9 +162,11 @@ p {
 ul {
     list-style: none;
     align-items: baseline;
+
     li {
         padding: 5px;
         padding-left: 10px;
+
         @media screen and (max-width: $br) {
             padding: 10px 0 10px 0;
         }
@@ -160,6 +177,7 @@ ul {
     max-width: 525px;
     margin: auto;
     padding: 60px 30px 60px 30px;
+
     @media screen and (max-width: $br) {
         padding: 20px;
     }
@@ -170,14 +188,16 @@ ul {
     display: inline;
     justify-content: space-between;
     align-items: baseline;
+
     @media screen and (max-width: $br) {
         display: block;
     }
+
     h1 {
         font-size: 12pt;
-		font-weight: 500;
+        font-weight: 500;
         padding-bottom: 5px;
-		text-align: left;
+        text-align: left;
     }
 
 }
@@ -215,7 +235,7 @@ i {
 #gameBoard {
     display: grid;
     background-color: black;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 #gameBoard canvas {
@@ -244,7 +264,7 @@ i {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.8);
+    background-color: rgba(0, 0, 0, 0.8);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -253,8 +273,8 @@ i {
 
 // navigation item separation
 #navigation ul li {
-	margin: 0;
-	padding: 0;
+    margin: 0;
+    padding: 0;
     list-style-type: none;
     display: inline;
 }
@@ -277,11 +297,13 @@ i {
     column-count: 2;
     column-gap: 10px;
 }
+
 .image-card {
     break-inside: avoid;
     margin-bottom: -10px;
     cursor: pointer;
 }
+
 .image-wrapper img {
     width: 100%;
     height: auto;
@@ -311,7 +333,7 @@ i {
     left: 50%;
     transform: translate(-50%, -50%);
     border-radius: 4px;
-    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
 }
 
 #loading {
@@ -321,11 +343,13 @@ i {
 }
 
 #insta-link:hover {
-    color: #b6393d; /* Color when hovered */
+    color: #b6393d;
+    /* Color when hovered */
 }
 
 #tiktok-link:hover {
-    color: #9860d5; /* Color when hovered */
+    color: #9860d5;
+    /* Color when hovered */
 }
 
 // Music Page
@@ -338,20 +362,24 @@ i {
     border-radius: 6px;
     background: var(--min-translucent);
 }
+
 .now-playing-image {
     width: 100px;
     height: 100px;
     object-fit: cover;
 }
+
 .now-playing-info {
     flex-grow: 1;
     margin-top: -5px;
 }
+
 .playing-or-no {
     font-weight: bold;
     font-size: 1.1em;
     margin-bottom: 15px;
 }
+
 .view-toggle {
     margin: 1em 0;
 }
@@ -374,31 +402,38 @@ i {
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
 }
+
 .album-item {
     text-align: center;
     width: 100%;
     height: 100%;
     margin-bottom: -0.7em;
 }
+
 .album-item img {
     width: 100%;
-    object-fit:fill;
+    object-fit: fill;
 }
+
 .album-item p {
     margin-top: -0.8em;
     font-weight: 500 !important;
     font-size: 0.8em !important;
 }
+
 .period-option {
     cursor: pointer;
     transition: color 0.2s ease;
 }
+
 .period-option:hover {
     color: var(--red-accent);
 }
+
 .period-option.active {
     font-weight: 600 !important;
 }
+
 .loading {
     margin: 20px 0;
 }
@@ -406,9 +441,9 @@ i {
 
 // description
 .desc {
-	h2 {
+    h2 {
         font-size: 12pt;
-	}
+    }
 
     p {
         font-size: 11.5pt;
@@ -422,6 +457,7 @@ i {
 
 .portfolio {
     padding-bottom: 30px;
+
     h1 {
         font-size: 1em;
         margin-bottom: 5px;
@@ -508,14 +544,14 @@ input[type=file]::file-selector-button {
         margin-bottom: 5px;
     }
 
-	li {
+    li {
         font-size: 11.5pt;
         margin: 0 1.5px 1.5px 0;
         padding-right: 0px;
         list-style: none;
         line-height: 1.5em;
 
-        .date{
+        .date {
             float: none;
             padding-left: 5px;
             font-size: 10pt;
@@ -527,7 +563,7 @@ input[type=file]::file-selector-button {
             color: #000000;
         }
 
-	}
+    }
 }
 
 
@@ -535,32 +571,34 @@ input[type=file]::file-selector-button {
 .post {
     padding-bottom: 30px;
 
-	&__back {
-		display: in-line;
-		text-align: left;
-		display: block;
+    &__back {
+        display: in-line;
+        text-align: left;
+        display: block;
         margin-bottom: 25px;
-	}
+    }
 
     &__title {
         font-size: 24pt;
         font-weight: 900;
         margin-bottom: 10px;
-		text-align: left;
+        text-align: left;
         line-height: 1.1em;
     }
+
     &__date {
         font-size: 0.75em;
-		text-align: left;
+        text-align: left;
         color: var(--sec-text-color);
         font-weight: 300;
         margin-bottom: 20px;
     }
+
     &__content {
-		color: var(--text-color);
+        color: var(--text-color);
 
         hr {
-                width: 10%;
+            width: 10%;
         }
 
         h1 {
@@ -598,12 +636,15 @@ input[type=file]::file-selector-button {
             letter-spacing: 0.2px;
             color: var(--sec-text-color);
         }
+
         strong {
             padding-bottom: 10px;
         }
+
         em {
             font-style: italic;
         }
+
         ul {
             font-size: 12pt;
             list-style: disc;
@@ -613,12 +654,12 @@ input[type=file]::file-selector-button {
             color: var(--sec-text-color);
         }
 
-        p + ol {
+        p+ol {
             margin-top: -8px;
             margin-bottom: 10px;
         }
 
-        p + ul {
+        p+ul {
             margin-top: -10px;
             margin-bottom: 10px;
         }
@@ -629,19 +670,21 @@ input[type=file]::file-selector-button {
             line-height: 1.65em;
             margin-left: 15px;
         }
+
         li {
             padding-top: 3px;
             padding-bottom: 3px;
             // list-style: decimal;
             padding-left: 2px;
         }
+
         img {
             max-width: 100%;
             padding-top: 10px;
             padding-bottom: 15px;
             display: block;
             margin: 0 auto;
-            
+
         }
 
         .note {
@@ -650,6 +693,7 @@ input[type=file]::file-selector-button {
             display: inline-block;
             padding: 10px;
             color: var(--sec-text-color);
+
             a {
                 line-height: 25px;
                 text-decoration: underline;
@@ -713,7 +757,7 @@ input[type=file]::file-selector-button {
             -moz-user-select: none;
             -ms-user-select: none;
             user-select: none;
-         }
+        }
 
         .codebreak {
             margin: 15px;
@@ -730,7 +774,8 @@ input[type=file]::file-selector-button {
     .canvas-container {
         position: relative;
         width: 100%;
-        padding-bottom: 75%; /* 16:9 aspect ratio */
+        padding-bottom: 75%;
+        /* 16:9 aspect ratio */
     }
 
     #canvas-output {
@@ -769,7 +814,7 @@ input[type=file]::file-selector-button {
             border: 1px solid var(--min-translucent);
             border-radius: 4px;
             outline: none;
-            
+
             &::-webkit-slider-thumb {
                 -webkit-appearance: none;
                 appearance: none;
@@ -780,7 +825,7 @@ input[type=file]::file-selector-button {
                 cursor: pointer;
                 transition: background 0.15s ease-in-out;
             }
-            
+
             &::-moz-range-thumb {
                 width: 12px;
                 height: 12px;
@@ -825,11 +870,12 @@ input[type=file]::file-selector-button {
     pointer-events: none;
 }
 
-#flappy-ui > * {
+#flappy-ui>* {
     pointer-events: auto;
 }
 
-#score, #high-score {
+#score,
+#high-score {
     position: absolute;
     top: 20px;
     font-weight: 600;
@@ -851,7 +897,8 @@ input[type=file]::file-selector-button {
     right: 20px;
 }
 
-#game-over, #start-screen {
+#game-over,
+#start-screen {
     background: rgba(255, 255, 255, 0.7);
     padding: 30px;
     border-radius: 12px;
@@ -859,7 +906,9 @@ input[type=file]::file-selector-button {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(6px);
     -webkit-backdrop-filter: blur(6px);
-    p, h2 {
+
+    p,
+    h2 {
         color: #3b3b3b !important;
     }
 }
@@ -872,10 +921,10 @@ input[type=file]::file-selector-button {
         display: flex;
         flex-direction: column;
         align-items: center;
-        
+
         #flappyCanvas {
             max-width: 95vw;
-            max-height: 63vh;
+            max-height: 70vh;
             width: 100%;
             height: auto;
             border-radius: 8px;
@@ -899,20 +948,20 @@ input[type=file]::file-selector-button {
     #game-container {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: repeat(3, 1fr); 
+        grid-template-rows: repeat(3, 1fr);
         grid-gap: 8px;
     }
-    
+
     .ttt-cell {
-        position: relative; 
+        position: relative;
         border-radius: 6px;
         cursor: pointer;
         font-family: 'IBM Plex Mono', monospace;
         transition: background-color 0.2s ease;
         border: 1px solid var(--min-translucent);
-        aspect-ratio: 1;  
+        aspect-ratio: 1;
     }
-    
+
     .ttt-cell::before {
         content: attr(data-content);
         position: absolute;
@@ -923,23 +972,23 @@ input[type=file]::file-selector-button {
         font-weight: 500;
         line-height: 100;
     }
-    
+
     .ttt-cell:hover {
         background-color: var(--min-translucent);
     }
-    
+
     .ttt-cell.x::before {
         color: #2196F3;
     }
-    
+
     .ttt-cell.o::before {
         color: #F44336;
     }
-    
+
     .ttt-cell.winning-cell {
         background-color: #4CAF50 !important;
     }
-    
+
     .ttt-cell.winning-cell::before {
         color: white !important;
     }
