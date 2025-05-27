@@ -37,14 +37,10 @@ function handleBackNavigation() {
 }
 
 function toggleHeaderVisibility(showFull) {
-  const minimalHeader = document.getElementById('minimalHeader');
-  const fullHeader = document.getElementById('fullHeader');
-
+  const header = document.querySelector('header');
   if (showFull) {
-    if (minimalHeader) minimalHeader.style.display = 'none';
-    if (fullHeader) fullHeader.style.display = 'block';
+    header.classList.remove('minimal-mode');
   } else {
-    if (minimalHeader) minimalHeader.style.display = 'flex';
-    if (fullHeader) fullHeader.style.display = 'none';
+    header.classList.add('minimal-mode');
   }
 }
