@@ -3,17 +3,33 @@ layout: post
 title: Collection of Random Stuff
 permalink: /more
 ---
-
 <div class="desc">
+    <p>
+        This page is an ongoing collection of random stuff I make out of bordem.
+    </p>
     <div class="blog">
-            {% for page in site.pages %}
-                {% if page.url contains '/more/' and page.title %}
-                    <a href="{{ page.url }}">{{ page.title }}</a>
-                    {% if page.description %}
-                        <span class="description">{{ page.description }}</span>
+        {% assign pages_in_more_dir = site.pages | where_exp: "page", "page.path contains 'more/'" | where_exp: "page", "page.name != 'index.html'" | where_exp: "page", "page.disabled != true" | where_exp: "page", "page.category" %}
+        {% assign unique_categories = "" | split: "," %}
+        {% for page in pages_in_more_dir %}
+            {% if page.category %}
+                {% assign unique_categories = unique_categories | push: page.category %}
+            {% endif %}
+        {% endfor %}
+        {% assign unique_categories = unique_categories | uniq | sort %}
+
+        {% for category_name in unique_categories %}
+            <h3>{{ category_name }}</h3>
+            <p>
+                {% for page in pages_in_more_dir %}
+                    {% if page.title and page.category == category_name %}
+                            <a href="{{ page.url | relative_url }}">{{ page.title }}</a>
+                            {% if page.description %}
+                                <span class="description">{{ page.description }}</span><br>
+                            {% endif %}      
                     {% endif %}
-                    <br>
-                {% endif %}
-            {% endfor %}
+                {% endfor %}
+            </p>      
+            <!-- <br>  -->
+        {% endfor %}
     </div>
 </div>
