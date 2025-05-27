@@ -5,20 +5,20 @@ layout: default
 <br>
 <div class="post">
 
-	{% if page.title %}
-		<h1 class="post__title">{{ page.title }}</h1>
+	{% if page.title and page.minimal != true %}
+	<h1 class="post__title">{{ page.title }}</h1>
 	{% endif %}
 
-	{% if page.date %}
-		<p class="post__date">{{ page.date | date: '%B %-d, %Y' }}.
+	{% if page.date and page.minimal != true %}
+	<p class="post__date">{{ page.date | date: '%B %-d, %Y' }}.
+		{% endif %}
+
+		{% if page.edit %}
+		Edited on {{ page.edit | date: '%B %-d, %Y' }}</p>
 	{% endif %}
 
-	{% if page.edit %}
-	Edited on {{ page.edit | date: '%B %-d, %Y' }}</p>
-	{% endif %}
-
-    <div class="post__content"?>
-        {{ content }}
-    </div>
+	<div class="post__content" ?>
+		{{ content }}
+	</div>
 
 </div>

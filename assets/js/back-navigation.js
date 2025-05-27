@@ -35,3 +35,16 @@ function handleBackNavigation() {
   
   window.history.back();
 }
+
+function toggleHeaderVisibility(showFull) {
+  const minimalHeader = document.getElementById('minimalHeader');
+  const fullHeader = document.getElementById('fullHeader');
+
+  if (showFull) {
+    if (minimalHeader) minimalHeader.style.display = 'none';
+    if (fullHeader) fullHeader.style.display = 'block';
+  } else {
+    if (minimalHeader) minimalHeader.style.display = 'flex';
+    if (fullHeader) fullHeader.style.display = 'none';
+  }
+}
