@@ -57,5 +57,12 @@
                 <li><a href="mailto:me@manik.cc">email</a></li>
             </ul>
         </div>
+        <!-- page/post title is in header file so we can hide/unhide it based on minimial mode  -->
+        <br>
+        <div>
+            {% if page.title %}
+            <h1 class="post__title">{{ page.title }}</h1>
+            {% endif %}
+        </div>
     </div>
 </header>

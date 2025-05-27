@@ -567,6 +567,13 @@ input[type=file]::file-selector-button {
     }
 }
 
+.post__title {
+    font-size: 24pt;
+    font-weight: 900;
+    margin-bottom: 10px;
+    text-align: left;
+    line-height: 1.1em;
+}
 
 // blog-post
 .post {
@@ -577,14 +584,6 @@ input[type=file]::file-selector-button {
         text-align: left;
         display: block;
         margin-bottom: 25px;
-    }
-
-    &__title {
-        font-size: 24pt;
-        font-weight: 900;
-        margin-bottom: 10px;
-        text-align: left;
-        line-height: 1.1em;
     }
 
     &__date {
