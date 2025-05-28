@@ -62,12 +62,33 @@
 }
 
 .minimal-header {
-    display: none;
     background-color: var(--min-translucent);
     padding: 5px 10px 5px 10px;
     border-radius: 6px;
     margin-bottom: 1em;
     vertical-align: center;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+    max-height: 0;
+    opacity: 0;
+}
+
+.minimal-mode .minimal-header {
+    max-height: 50px;
+    opacity: 1;
+    margin-bottom: 40px;
+}
+
+.full-header {
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+    max-height: 200px;
+    margin-top: -25px;
+}
+
+.minimal-mode .full-header {
+    max-height: 0;
+    opacity: 0;
 }
 
 .min-down-arrow {
@@ -80,14 +101,6 @@
 
 .minimal-header table {
     width: 100%;
-}
-
-.minimal-mode .minimal-header {
-    display: flex;
-}
-
-.minimal-mode .full-header {
-    display: none;
 }
 
 .nav {
