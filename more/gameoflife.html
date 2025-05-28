@@ -1,0 +1,28 @@
+---
+layout: post
+title: Game of Life
+description: Conway's Game of Life
+permalink: /more/gameoflife
+minimal: true
+category: Games
+---
+
+<div class="game-wrapper">
+    <p>
+        This is a simple implementation of Conway's Game of Life that allows cells to cross the edges of the canvas 
+        and wrap around to the opposite side.
+    </p>
+    <p>
+        To get started quickly, click the Random button to generate a random pattern.
+    </p>
+    <div id="game-of-life-container">
+        <canvas id="game-of-life-canvas" width="500" height="500"></canvas>
+        <div class="controls">
+            <button id="start-btn" class="normal-btn">Start</button>
+            <button id="random-btn" class="normal-btn">Random</button>
+            <button id="step-btn" class="normal-btn">Step</button>
+            <button id="reset-btn" class="normal-btn">Reset</button>
+        </div>
+    </div>
+    <script src="/assets/js/gameoflife.js"></script>
+</div>

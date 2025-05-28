@@ -1,217 +1,226 @@
-const CELL_SIZE = 15;
-const GRID_WIDTH = Math.floor(window.innerWidth / CELL_SIZE);
-const GRID_HEIGHT = Math.floor(window.innerHeight / CELL_SIZE);
+document.addEventListener('DOMContentLoaded', function() {
+    const canvas = document.getElementById('game-of-life-canvas');
+    const ctx = canvas.getContext('2d');
+    const startBtn = document.getElementById('start-btn');
+    const randomBtn = document.getElementById('random-btn');
+    const stepBtn = document.getElementById('step-btn');
+    const resetBtn = document.getElementById('reset-btn');
 
-class GameOfLife {
-  constructor() {
-    this.grid = new Uint8Array(GRID_WIDTH * GRID_HEIGHT);
-    this.nextGrid = new Uint8Array(GRID_WIDTH * GRID_HEIGHT);
-    this.setupCanvas();
-    this.createGridLines();
-  }
+    // Mobile detection
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+        (navigator.maxTouchPoints && navigator.maxTouchPoints > 2);
 
-  setupCanvas() {
-    // Create main canvas for cells
-    this.canvas = document.createElement('canvas');
-    this.ctx = this.canvas.getContext('2d');
-    this.canvas.width = GRID_WIDTH * CELL_SIZE;
-    this.canvas.height = GRID_HEIGHT * CELL_SIZE;
+    const maxCanvasHeight = 500;
     
-    // Create separate canvas for grid lines
-    this.gridCanvas = document.createElement('canvas');
-    this.gridCtx = this.gridCanvas.getContext('2d');
-    this.gridCanvas.width = GRID_WIDTH * CELL_SIZE;
-    this.gridCanvas.height = GRID_HEIGHT * CELL_SIZE;
+    // Get the parent container's width to determine canvas width
+    const gameContainer = document.getElementById('game-of-life-container');
+    const canvasWidth = gameContainer ? gameContainer.offsetWidth : window.innerWidth;
+    const canvasHeight = Math.min(maxCanvasHeight, window.innerHeight - 280);
+
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+
+    const cellSize = isMobile ? Math.floor(canvasWidth / 16) : 21;
+    const rows = Math.floor(canvas.height / cellSize);
+    const cols = Math.floor(canvas.width / cellSize);
+    let grid = createEmptyGrid();
+    let nextGrid = createEmptyGrid();
     
-    // Style and position canvases
-    const container = document.createElement('div');
-    container.style.position = 'relative';
-    container.style.width = '100vw';
-    container.style.height = '100vh';
-    container.style.overflow = 'hidden';
+    let gameRunning = false;
+    let gameInterval = null;
+    const frameRate = 7; 
+    const frameInterval = 1000 / frameRate;
     
-    this.canvas.style.position = 'absolute';
-    this.canvas.style.top = '0';
-    this.canvas.style.left = '0';
-    
-    this.gridCanvas.style.position = 'absolute';
-    this.gridCanvas.style.top = '0';
-    this.gridCanvas.style.left = '0';
-    this.gridCanvas.style.pointerEvents = 'none'; // Allow clicks to pass through
-    
-    container.appendChild(this.canvas);
-    container.appendChild(this.gridCanvas);
-    
-    const gameBoard = document.getElementById('gameBoard');
-    gameBoard.innerHTML = '';
-    gameBoard.appendChild(container);
-    gameBoard.style.margin = '0';
-    gameBoard.style.padding = '0';
-    
-    // Add click handler
-    this.canvas.addEventListener('click', this.handleClick.bind(this));
-    
-    // Pre-calculate cell coordinates
-    this.cellCoords = new Array(GRID_WIDTH * GRID_HEIGHT);
-    for (let y = 0; y < GRID_HEIGHT; y++) {
-      for (let x = 0; x < GRID_WIDTH; x++) {
-        const index = y * GRID_WIDTH + x;
-        this.cellCoords[index] = {
-          x: x * CELL_SIZE,
-          y: y * CELL_SIZE
-        };
-      }
+    // Function to get CSS variable value
+    function getCSSVariable(variableName) {
+        return getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
     }
-  }
 
-  createGridLines() {
-    this.gridCtx.strokeStyle = '#ddd';
-    this.gridCtx.beginPath();
+    // Colors based on theme
+    const colors = {
+        background: getCSSVariable('--background-main'),
+        cell: getCSSVariable('--red-accent'),
+        cellStroke: getCSSVariable('--red-accent')
+    };
     
-    // Draw vertical lines
-    for (let x = 0; x <= GRID_WIDTH; x++) {
-      this.gridCtx.moveTo(x * CELL_SIZE - 0.5, 0);
-      this.gridCtx.lineTo(x * CELL_SIZE - 0.5, this.gridCanvas.height);
+    // Function to update colors based on current theme
+    function updateThemeColors() {
+        // Get background color from CSS variable
+        colors.background = getCSSVariable('--background-main');
+        if (typeof render === 'function') {
+            render();
+        }
     }
     
-    // Draw horizontal lines
-    for (let y = 0; y <= GRID_HEIGHT; y++) {
-      this.gridCtx.moveTo(0, y * CELL_SIZE - 0.5);
-      this.gridCtx.lineTo(this.gridCanvas.width, y * CELL_SIZE - 0.5);
+    // Listen for theme changes
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.attributeName === 'data-theme') {
+                updateThemeColors();
+            }
+        });
+    });
+    observer.observe(document.documentElement, { attributes: true });
+    
+    updateThemeColors();
+
+    function createEmptyGrid() {
+        return Array(rows).fill().map(() => Array(cols).fill(0));
     }
-    
-    this.gridCtx.stroke();
-  }
 
-  handleClick(event) {
-    const rect = this.canvas.getBoundingClientRect();
-    const x = Math.floor((event.clientX - rect.left) / CELL_SIZE);
-    const y = Math.floor((event.clientY - rect.top) / CELL_SIZE);
-    
-    if (x >= 0 && x < GRID_WIDTH && y >= 0 && y < GRID_HEIGHT) {
-      const index = y * GRID_WIDTH + x;
-      this.grid[index] = 1 - this.grid[index];
-      this.renderCell(x, y);
-    }
-  }
-
-  countNeighbors(x, y) {
-    let count = 0;
-    const yAbove = ((y - 1 + GRID_HEIGHT) % GRID_HEIGHT) * GRID_WIDTH;
-    const yCenter = y * GRID_WIDTH;
-    const yBelow = ((y + 1) % GRID_HEIGHT) * GRID_WIDTH;
-    
-    const xLeft = (x - 1 + GRID_WIDTH) % GRID_WIDTH;
-    const xRight = (x + 1) % GRID_WIDTH;
-
-    count += this.grid[yAbove + xLeft];
-    count += this.grid[yAbove + x];
-    count += this.grid[yAbove + xRight];
-    count += this.grid[yCenter + xLeft];
-    count += this.grid[yCenter + xRight];
-    count += this.grid[yBelow + xLeft];
-    count += this.grid[yBelow + x];
-    count += this.grid[yBelow + xRight];
-
-    return count;
-  }
-
-  updateGrid() {
-    for (let y = 0; y < GRID_HEIGHT; y++) {
-      for (let x = 0; x < GRID_WIDTH; x++) {
-        const index = y * GRID_WIDTH + x;
-        const neighbors = this.countNeighbors(x, y);
-        const alive = this.grid[index] === 1;
+    function randomizeGrid() {
+        resetGame();
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < cols; j++) {
+                grid[i][j] = Math.random() > 0.7 ? 1 : 0;
+            }
+        }
         
-        this.nextGrid[index] = alive
-          ? (neighbors === 2 || neighbors === 3)
-          : neighbors === 3;
-      }
+        render();
     }
-    
-    [this.grid, this.nextGrid] = [this.nextGrid, this.grid];
-    this.render();
-  }
 
-  renderCell(x, y) {
-    const index = y * GRID_WIDTH + x;
-    const coords = this.cellCoords[index];
-    
-    this.ctx.fillStyle = this.grid[index] ? '#000' : '#fff';
-    this.ctx.fillRect(coords.x + 1, coords.y + 1, CELL_SIZE - 1, CELL_SIZE - 1);
-  }
-
-  render() {
-    // Clear the canvas
-    this.ctx.fillStyle = '#fff';
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-    
-    // Draw alive cells
-    this.ctx.fillStyle = '#000';
-    for (let i = 0; i < this.grid.length; i++) {
-      if (this.grid[i]) {
-        const coords = this.cellCoords[i];
-        this.ctx.fillRect(coords.x + 1, coords.y + 1, CELL_SIZE - 1, CELL_SIZE - 1);
-      }
+    function resetGame() {
+        grid = createEmptyGrid();
+        
+        stopGame();
+        render();
     }
-  }
 
-  randomize() {
-    for (let i = 0; i < this.grid.length; i++) {
-      this.grid[i] = Math.random() < 0.3 ? 1 : 0;
+    function startGame() {
+        if (!gameRunning) {
+            gameRunning = true;
+            startBtn.textContent = 'Pause';
+            gameInterval = setInterval(step, frameInterval);
+        } else {
+            stopGame();
+        }
     }
-    this.render();
-  }
 
-  clear() {
-    this.grid.fill(0);
-    this.render();
-  }
-
-  start() {
-    if (!this.intervalId) {
-      this.canvas.classList.add('game-started');
-      this.gridCanvas.classList.add('game-started');
-      this.intervalId = setInterval(() => this.updateGrid(), 200);
+    function stopGame() {
+        gameRunning = false;
+        startBtn.textContent = 'Start';
+        if (gameInterval) {
+            clearInterval(gameInterval);
+            gameInterval = null;
+        }
     }
-  }
 
-  stop() {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
-      this.intervalId = null;
+    function step() {
+        computeNextGeneration();
+        grid = JSON.parse(JSON.stringify(nextGrid)); // Deep copy
+        
+        render();
     }
-  }
-}
 
-// Initialize the game when the page loads
-window.addEventListener('load', () => {
-  const game = new GameOfLife();
-  const startOverlay = document.getElementById('startOverlay');
-  const controls = document.querySelector('.controls');
+    function computeNextGeneration() {
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < cols; j++) {
+                const neighbors = countNeighbors(i, j);
+                
+                // Conway's Game of Life rules
+                if (grid[i][j] === 1) {
+                    // Any live cell with fewer than two live neighbors dies (underpopulation)
+                    // Any live cell with more than three live neighbors dies (overpopulation)
+                    if (neighbors < 2 || neighbors > 3) {
+                        nextGrid[i][j] = 0;
+                    } else {
+                        // Any live cell with two or three live neighbors lives on
+                        nextGrid[i][j] = 1;
+                    }
+                } else {
+                    // Any dead cell with exactly three live neighbors becomes a live cell (reproduction)
+                    if (neighbors === 3) {
+                        nextGrid[i][j] = 1;
+                    } else {
+                        nextGrid[i][j] = 0;
+                    }
+                }
+            }
+        }
+    }
 
-  document.getElementById('startButton').addEventListener('click', () => {
-    game.randomize();
-    game.start();
-    startOverlay.style.display = 'none';
-    controls.style.display = 'flex';
-  });
+    function countNeighbors(row, col) {
+        let count = 0;
+        for (let i = -1; i <= 1; i++) {
+            for (let j = -1; j <= 1; j++) {
+                if (i === 0 && j === 0) continue;
+                
+                const r = (row + i + rows) % rows;
+                const c = (col + j + cols) % cols;
+                
+                count += grid[r][c];
+            }
+        }
+        return count;
+    }
 
-  document.getElementById('stopButton')?.addEventListener('click', () => game.stop());
-  document.getElementById('clearButton')?.addEventListener('click', () => {
-    game.stop();
-    game.clear();
-  });
-  document.getElementById('randomizeButton')?.addEventListener('click', () => {
-    game.stop();
-    game.randomize();
-    game.start();
-  });
+    function render() {
+        ctx.fillStyle = colors.background;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < cols; j++) {
+                const gap = 2;
+                const radius = 4; 
+                
+                const x = j * cellSize + gap;
+                const y = i * cellSize + gap;
+                const width = cellSize - (gap * 2);
+                const height = cellSize - (gap * 2);
+                
+                // rounded rectangle for all cells
+                ctx.beginPath();
+                ctx.moveTo(x + radius, y);
+                ctx.lineTo(x + width - radius, y);
+                ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+                ctx.lineTo(x + width, y + height - radius);
+                ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+                ctx.lineTo(x + radius, y + height);
+                ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+                ctx.lineTo(x, y + radius);
+                ctx.quadraticCurveTo(x, y, x + radius, y);
+                ctx.closePath();
+                
+                if (grid[i][j] === 1) {
+                    ctx.fillStyle = colors.cell;
+                    ctx.fill();
+                    ctx.strokeStyle = colors.cellStroke;
+                    ctx.lineWidth = 0.5;
+                    ctx.stroke();
+                } else {
+                    // Dead cell border (slightly darker)
+                    ctx.strokeStyle = '#a0a0a0';
+                    ctx.lineWidth = 0.4;
+                    ctx.stroke();
+                }
+            }
+        }
+    }
 
-  // Handle window resize
-  let resizeTimeout;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => location.reload(), 250);
-  });
+    // Handle canvas click to toggle cell state
+    function handleCanvasClick(event) {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const x = (event.clientX - rect.left) * scaleX;
+        const y = (event.clientY - rect.top) * scaleY;
+
+        const col = Math.floor(x / cellSize);
+        const row = Math.floor(y / cellSize);
+
+        if (row >= 0 && row < rows && col >= 0 && col < cols) {
+            grid[row][col] = grid[row][col] === 0 ? 1 : 0;
+            render();
+        }
+    }
+
+    // Event Listeners
+    canvas.addEventListener('click', handleCanvasClick);
+    startBtn.addEventListener('click', startGame);
+    randomBtn.addEventListener('click', randomizeGrid);
+    stepBtn.addEventListener('click', step);
+    resetBtn.addEventListener('click', resetGame);
+
+    // Initial render
+    resetGame();
 });

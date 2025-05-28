@@ -226,29 +226,6 @@ i {
     overflow: hidden;
 }
 
-.game-of-life-base {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: #f0f0f0;
-}
-
-#gameBoard {
-    display: grid;
-    background-color: black;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-#gameBoard canvas {
-    filter: blur(3px);
-    transition: filter 0.5s ease;
-}
-
-#gameBoard canvas.game-started {
-    filter: none;
-}
-
 .cell {
     width: 15px;
     height: 15px;
@@ -258,19 +235,6 @@ i {
 
 .alive {
     background-color: #333;
-}
-
-#startOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.8);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
 }
 
 // navigation item separation
@@ -482,45 +446,57 @@ button:hover {
     background-color: var(--black-accent-hover);
 }
 
-.modern-btn {
-    font-family: "-apple-system", "inter", sans-serif;
-    font-size: 14px;
-    margin: 5px;
-    padding: 12px 25px;
-    background: transparent;
-    color: #fff;
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    letter-spacing: 2px;
-    position: relative;
-    overflow: hidden;
-    z-index: 1;
-}
+.controls {
+    margin-top: 10px;
+    flex-wrap: wrap;
+    gap: 8px;
+    /* Ensure vertical spacing for wrapped items */
+    & > * {
+        margin-bottom: 10px;
+    }
+    /* Remove margin from the last item in a row to prevent extra space */
+    &:last-child {
+        margin-bottom: 0;
+    }
 
-.modern-btn:before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 0;
-    height: 0;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
-    transition: width 0.6s ease, height 0.6s ease;
-    z-index: -1;
-}
+    label {
+        display: block;
+        margin: 10px 0;
+    }
 
-.modern-btn:hover:before {
-    width: 300px;
-    height: 300px;
-}
+    input[type="range"] {
+        display: block;
+        width: 100%;
+        margin: 10px 0;
+        -webkit-appearance: none;
+        appearance: none;
+        height: 4px;
+        background: var(--background-darker);
+        border: 1px solid var(--min-translucent);
+        border-radius: 4px;
+        outline: none;
 
-.modern-btn:hover {
-    border-color: rgba(255, 255, 255, 0.5);
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        &::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            background: #6e6e6e;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.15s ease-in-out;
+        }
+
+        &::-moz-range-thumb {
+            width: 12px;
+            height: 12px;
+            background: #6e6e6e;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.15s ease-in-out;
+        }
+    }
 }
 
 input[type=file]::file-selector-button {
@@ -796,53 +772,21 @@ input[type=file]::file-selector-button {
         overflow: auto;
     }
 
-    .controls {
-        margin: 20px 0;
-
-        label {
-            display: block;
-            margin: 10px 0;
-        }
-
-        input[type="range"] {
-            display: block;
-            width: 100%;
-            margin: 10px 0;
-            -webkit-appearance: none;
-            appearance: none;
-            height: 4px;
-            background: var(--background-darker);
-            border: 1px solid var(--min-translucent);
-            border-radius: 4px;
-            outline: none;
-
-            &::-webkit-slider-thumb {
-                -webkit-appearance: none;
-                appearance: none;
-                width: 12px;
-                height: 12px;
-                background: #6e6e6e;
-                border-radius: 50%;
-                cursor: pointer;
-                transition: background 0.15s ease-in-out;
-            }
-
-            &::-moz-range-thumb {
-                width: 12px;
-                height: 12px;
-                background: #6e6e6e;
-                border: none;
-                border-radius: 50%;
-                cursor: pointer;
-                transition: background 0.15s ease-in-out;
-            }
-        }
-    }
-
     #image-preview {
         max-width: 100%;
         margin: 10px 0;
     }
+}
+
+///////////////////////////
+/// Game Related Styles
+//////////////////////////
+
+.game-wrapper {
+    height: 100vh;
+    width: 100%;
+    justify-content: center;
+    position: relative;
 }
 
 // Flappy Bird styles
@@ -941,98 +885,64 @@ input[type=file]::file-selector-button {
 }
 
 // Tic Tac Toe styles
-.game-wrapper {
-    height: 100vh;
-    width: 100%;
-    justify-content: center;
-    position: relative;
 
-    #game-container {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: repeat(3, 1fr);
-        grid-gap: 8px;
-    }
-
-    .ttt-cell {
-        position: relative;
-        border-radius: 6px;
-        cursor: pointer;
-        font-family: 'IBM Plex Mono', monospace;
-        transition: background-color 0.2s ease;
-        border: 1px solid var(--min-translucent);
-        aspect-ratio: 1;
-    }
-
-    .ttt-cell::before {
-        content: attr(data-content);
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 1.3em;
-        font-weight: 500;
-        line-height: 100;
-    }
-
-    .ttt-cell:hover {
-        background-color: var(--min-translucent);
-    }
-
-    .ttt-cell.x::before {
-        color: #2196F3;
-    }
-
-    .ttt-cell.o::before {
-        color: #F44336;
-    }
-
-    .ttt-cell.winning-cell {
-        background-color: #4CAF50 !important;
-    }
-
-    .ttt-cell.winning-cell::before {
-        color: white !important;
-    }
+#ttt-game-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    grid-gap: 8px;
 }
 
-// Pong Styles
-.game-base {
+.ttt-cell {
+    position: relative;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'IBM Plex Mono', monospace;
+    transition: background-color 0.2s ease;
+    border: 1px solid var(--min-translucent);
+    aspect-ratio: 1;
+}
+
+.ttt-cell::before {
+    content: attr(data-content);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.3em;
+    font-weight: 500;
+    line-height: 100;
+}
+
+.ttt-cell:hover {
+    background-color: var(--min-translucent);
+}
+
+.ttt-cell.x::before {
+    color: #2196F3;
+}
+
+.ttt-cell.o::before {
+    color: #F44336;
+}
+
+.ttt-cell.winning-cell {
+    background-color: #4CAF50 !important;
+}
+
+.ttt-cell.winning-cell::before {
+    color: white !important;
+}
+
+
+//// Game of Life styles
+#game-of-life-container {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-color: #f0f0f0;
     position: relative;
 }
 
-#pongCanvas {
-    filter: blur(5px);
-    transition: filter 0.3s ease;
-}
-
-#pongCanvas.game-started {
-    filter: none;
-}
-
-.wiki-content {
-    margin-top: 20px;
-    padding: 10px;
-}
-
-#wiki-title {
-    margin-top: 20px;
-    margin-bottom: 10px;
-}
-
-#wiki-extract {
-    line-height: 1.6;
-}
-
-#wiki-extract p {
-    margin-bottom: 10px;
-}
-
-.controls {
-    margin: 20px 0;
+#game-of-life-canvas {
+    justify-content: center;
+    align-items: center;
 }

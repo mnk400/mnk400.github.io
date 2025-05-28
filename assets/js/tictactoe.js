@@ -1,4 +1,4 @@
-const gameContainer = document.getElementById('game-container');
+const gameContainer = document.getElementById('ttt-game-container');
 const statusDisplay = document.getElementById('status');
 const resetButton = document.getElementById('reset-btn');
 
