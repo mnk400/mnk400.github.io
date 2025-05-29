@@ -14,6 +14,11 @@ document.addEventListener('DOMContentLoaded', () => {
         fullscreenBtn.style.display = 'none';
     }
 
+    // Function to get CSS variable value
+    function getCSSVariable(variableName) {
+        return getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
+    }
+
     let isFullscreen = false;
 
     let updateTimeout;
@@ -51,6 +56,9 @@ document.addEventListener('DOMContentLoaded', () => {
             video.srcObject = stream;
             await video.play();
             startBtn.textContent = 'Stop Camera';
+            
+            canvas.style.backgroundColor = 'transparent';
+            
             startCircleConversion();
         } catch (err) {
             console.error('Error accessing camera:', err);
@@ -69,6 +77,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         video.srcObject = null;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        canvas.style.backgroundColor = getCSSVariable(`--min-translucent`);
+        
         startBtn.textContent = 'Start Camera';
     }
 
@@ -76,8 +87,8 @@ document.addEventListener('DOMContentLoaded', () => {
         function convert() {
             const resolution = parseInt(resolutionInput.value);
             
-            ctx.fillStyle = '#1a1a1a';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            // Clear canvas with transparent background
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             
             const cellWidth = canvas.width / resolution;
             const cellHeight = canvas.height / resolution;
@@ -95,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
             const pixels = imageData.data;
             
-            ctx.fillStyle = 'white';
+            ctx.fillStyle = getCSSVariable('--black-accent-hover');
             
             for (let y = 0; y < tempCanvas.height; y++) {
                 for (let x = 0; x < tempCanvas.width; x++) {

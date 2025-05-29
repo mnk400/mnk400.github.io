@@ -6,6 +6,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const convertBtn = document.getElementById('convert-btn');
     const asciiOutput = document.getElementById('ascii-output');
 
+    // Calculate the optimal font size to fit the container width
+    function calculateOptimalFontSize(containerWidth, charWidth) {
+        const availableWidth = containerWidth
+        return Math.floor(availableWidth / charWidth * 1.8);
+    }
+
     // Update width value display when slider moves
     let updateTimeout;
     widthInput.addEventListener('input', () => {
@@ -14,6 +20,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         updateTimeout = setTimeout(() => {
             widthValue.textContent = widthInput.value;
+            
+            // Recalculate font size when width changes if an image has been converted
+            if (asciiOutput.textContent) {
+                const width = parseInt(widthInput.value);
+                const containerWidth = asciiOutput.parentElement.clientWidth;
+                const fontSize = calculateOptimalFontSize(containerWidth, width);
+                // asciiOutput.style.fontSize = `${fontSize}px`;
+            }
         }, 10);
     });
 
@@ -36,7 +50,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const width = parseInt(widthInput.value);
-        const fontSize = 7;
+        
+        // Get the container width for responsive sizing
+        const containerWidth = asciiOutput.parentElement.clientWidth;
+        
+        // Calculate font size based on container width and character count
+        const fontSize = calculateOptimalFontSize(containerWidth, width);
 
         // Create a canvas to process the image
         const canvas = document.createElement('canvas');
@@ -52,8 +71,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const imageData = ctx.getImageData(0, 0, width, height);
         const ascii = convertToAscii(imageData, width, height);
 
-        // Update the output
+        // Update the output with responsive font size
         asciiOutput.style.fontSize = `${fontSize}px`;
+        asciiOutput.style.width = '100%';
+        asciiOutput.style.maxWidth = '525px';
         asciiOutput.textContent = ascii;
     });
 });

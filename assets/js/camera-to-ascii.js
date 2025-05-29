@@ -24,11 +24,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         updateTimeout = setTimeout(() => {
             widthValue.textContent = widthInput.value;
+            
+            // Recalculate font size when width changes
+            if (stream && !isFullscreen) {
+                const width = parseInt(widthInput.value);
+                const containerWidth = asciiOutput.parentElement.clientWidth;
+                const fontSize = calculateOptimalFontSize(containerWidth, width);
+                asciiOutput.style.fontSize = `${fontSize}px`;
+            }
         }, 10);
     });
 
     let stream = null;
     let animationFrameId = null;
+
+    // Calculate the optimal font size to fit the container width
+    function calculateOptimalFontSize(containerWidth, charWidth) {
+        const availableWidth = containerWidth
+        return Math.floor(availableWidth / charWidth * 1.8);
+    }
 
     async function startCamera() {
         try {
@@ -63,8 +77,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         function convert() {
             let width = parseInt(widthInput.value);
-            let fontSize = 7;
-
+            
+            // Get the container width for responsive sizing
+            const containerWidth = asciiOutput.parentElement.clientWidth;
+            
+            // Calculate font size based on container width and character count
+            let fontSize = calculateOptimalFontSize(containerWidth, width);
+            
             if (isFullscreen) {
                 // Calculate optimal width and font size to fill screen
                 const charAspectRatio = 0.5; // Approximate width/height ratio of a character
@@ -94,8 +113,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Reset transformation
             ctx.setTransform(1, 0, 0, 1, 0, 0);
 
-            // Update the output
+            // Update the output with responsive font size
             asciiOutput.style.fontSize = `${fontSize}px`;
+            asciiOutput.style.width = '100%';
             asciiOutput.textContent = ascii;
 
             // Continue the animation loop
