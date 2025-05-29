@@ -82,13 +82,26 @@ function updateThemeIcons() {
 }
 
 function getRandomBackgroundVideo() {
-    const backgroundVideos = [
+    const desktopBackgroundVideos = [
         { src: '/assets/video/grain_slow.mp4', color: '#535F5A' },
         { src: '/assets/video/purple_clouds.mp4', color: '#433E77' },
         { src: '/assets/video/skyclouds.mp4', color: '#223651' },
     ];
-    const randomIndex = Math.floor(Math.random() * backgroundVideos.length);
-    return backgroundVideos[randomIndex];
+    const mobileBackgroundVideos = [
+        { src: '/assets/video/mobile/clouds.mp4', color: '#23456e' },
+        { src: '/assets/video/mobile/flower.mp4', color: '#474B28' },
+    ];
+    
+    // Check if the device is mobile
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+    
+    if (isMobile) {
+        const randomIndex = Math.floor(Math.random() * mobileBackgroundVideos.length);
+        return mobileBackgroundVideos[randomIndex];
+    } else {
+        const randomIndex = Math.floor(Math.random() * desktopBackgroundVideos.length);
+        return desktopBackgroundVideos[randomIndex];
+    }
 }
 
 function handleVideoBackground(active, skipTransition = false) {
