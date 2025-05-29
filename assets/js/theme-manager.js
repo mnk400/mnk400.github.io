@@ -20,16 +20,37 @@ function setTheme(theme, skipTransition = false) {
         }, 500);
     }
     
+    // Set the data-theme attribute
     if (theme === 'video') {
         document.documentElement.setAttribute('data-theme', 'dark');
+        // The video-specific color will be set in handleVideoBackground
     } else {
         document.documentElement.setAttribute('data-theme', theme);
+        updateThemeColorMeta(theme);
     }
     
     updateThemeIcons();
     handleVideoBackground(theme === 'video', skipTransition);
     
     isInitialLoad = false;
+}
+
+function updateThemeColorMeta(theme, videoColor = null) {
+    let metaThemeColor = document.querySelector('meta[name="theme-color"]');
+
+    if (!metaThemeColor) {
+        metaThemeColor = document.createElement('meta');
+        metaThemeColor.name = 'theme-color';
+        document.head.appendChild(metaThemeColor);
+    }
+    
+    if (theme === 'video' && videoColor) {
+        metaThemeColor.content = videoColor;
+    } else if (theme === 'dark') {
+        metaThemeColor.content = '#1a1a1a';
+    } else {
+        metaThemeColor.content = '#f2f0ef';
+    }
 }
 
 function updateThemeIcons() {
@@ -62,9 +83,9 @@ function updateThemeIcons() {
 
 function getRandomBackgroundVideo() {
     const backgroundVideos = [
-        '/assets/video/grain_slow.mp4',
-        '/assets/video/purple_clouds.mp4',
-        '/assets/video/skyclouds.mp4',
+        { src: '/assets/video/grain_slow.mp4', color: '#535F5A' },
+        { src: '/assets/video/purple_clouds.mp4', color: '#433E77' },
+        { src: '/assets/video/skyclouds.mp4', color: '#223651' },
     ];
     const randomIndex = Math.floor(Math.random() * backgroundVideos.length);
     return backgroundVideos[randomIndex];
@@ -73,15 +94,19 @@ function getRandomBackgroundVideo() {
 function handleVideoBackground(active, skipTransition = false) {
     if (active) {
         if (!document.getElementById('background-video')) {
+            const videoData = getRandomBackgroundVideo();
             const video = document.createElement('video');
             video.id = 'background-video';
-            video.src = getRandomBackgroundVideo();
+            video.src = videoData.src;
             video.autoplay = true;
             video.loop = true;
             video.muted = true;
             video.playsInline = true; // for iOS
             video.setAttribute('playsinline', ''); // for iOS
             video.setAttribute('webkit-playsinline', '');
+            video.dataset.themeColor = videoData.color; // store the color in a data attribute
+            
+            updateThemeColorMeta('video', videoData.color);
             
             document.body.prepend(video);
             
@@ -102,6 +127,10 @@ function handleVideoBackground(active, skipTransition = false) {
             const video = document.getElementById('background-video');
             video.style.display = 'block';
             video.play().catch(e => console.log('Could not play video:', e));
+            
+            if (video.dataset.themeColor) {
+                updateThemeColorMeta('video', video.dataset.themeColor);
+            }
             
             if (!skipTransition) {
                 setTimeout(() => {
