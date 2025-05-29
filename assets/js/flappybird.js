@@ -212,7 +212,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function drawBackground() {
-        ctx.fillStyle = '#B0E2FF';
+        ctx.fillStyle = 'rgba(127, 195, 250, 0.7)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 

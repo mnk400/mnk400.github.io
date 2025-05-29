@@ -38,15 +38,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Colors based on theme
     const colors = {
-        background: getCSSVariable('--background-main'),
         cell: getCSSVariable('--red-accent'),
         cellStroke: getCSSVariable('--red-accent')
     };
     
     // Function to update colors based on current theme
     function updateThemeColors() {
-        // Get background color from CSS variable
-        colors.background = getCSSVariable('--background-main');
+        // Update cell colors based on theme
+        colors.cell = getCSSVariable('--red-accent');
+        colors.cellStroke = getCSSVariable('--red-accent');
         if (typeof render === 'function') {
             render();
         }
@@ -155,8 +155,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function render() {
-        ctx.fillStyle = colors.background;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         
         for (let i = 0; i < rows; i++) {
             for (let j = 0; j < cols; j++) {
@@ -188,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     ctx.lineWidth = 0.5;
                     ctx.stroke();
                 } else {
-                    // Dead cell border (slightly darker)
+                    // Dead cell border
                     ctx.strokeStyle = '#a0a0a0';
                     ctx.lineWidth = 0.4;
                     ctx.stroke();

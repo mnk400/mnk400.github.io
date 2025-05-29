@@ -7,6 +7,10 @@
 @import "reset";
 @import "config";
 
+html {
+    background-color: var(--background-main);
+}
+
 * {
     font-family: "-apple-system", "inter", san-serif;
 }
@@ -63,6 +67,7 @@
 
 .minimal-header {
     background-color: var(--min-translucent);
+    backdrop-filter: blur(10px);
     padding: 5px 10px 5px 10px;
     border-radius: 6px;
     margin-bottom: 1em;
@@ -139,11 +144,9 @@
 
 body {
     color: var(--text-color);
-    background: var(--background-main);
     font-family: "-apple-system", "inter", san-serif;
     font-weight: 300;
     word-wrap: break-word;
-    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 hr {
@@ -192,6 +195,7 @@ ul {
     max-width: 525px;
     margin: auto;
     padding: 60px 30px 60px 30px;
+    min-height: 100vh; /* Ensure wrapper takes up at least full viewport height */
 
     @media screen and (max-width: $br) {
         padding: 20px;
@@ -453,10 +457,19 @@ button {
     font-weight: 400 !important;
     cursor: pointer;
     transition: background-color 0.2s ease;
+    backdrop-filter: blur(10px);
+}
+
+.button-dark-forced {
+    background-color: rgba(0, 0, 0, 0.7);
 }
 
 button:hover {
     background-color: var(--black-accent-hover);
+}
+
+.button-dark-forced:hover {
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
 .controls {
@@ -813,6 +826,7 @@ input[type=file]::file-selector-button {
 
 #flappyCanvas {
     border-radius: 8px;
+    backdrop-filter: blur(10px)
 }
 
 #flappy-ui {
@@ -914,6 +928,7 @@ input[type=file]::file-selector-button {
     transition: background-color 0.2s ease;
     border: 1px solid var(--min-translucent);
     aspect-ratio: 1;
+    backdrop-filter: blur(10px)
 }
 
 .ttt-cell::before {
@@ -932,11 +947,11 @@ input[type=file]::file-selector-button {
 }
 
 .ttt-cell.x::before {
-    color: #2196F3;
+    color: #66b5f5;
 }
 
 .ttt-cell.o::before {
-    color: #F44336;
+    color: #ff7369;
 }
 
 .ttt-cell.winning-cell {
