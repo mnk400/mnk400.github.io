@@ -358,6 +358,17 @@ svg:active path {
     margin-top: 5px;
 }
 
+.press-play-message {
+    text-align: center;
+    margin-top: 10px;
+    color: #333;
+    font-weight: bold;
+    font-size: 14px;
+    padding: 5px;
+    animation: blink 2s infinite;
+    display: none; /* Hidden by default */
+}
+
 #youtube-player {
     position: absolute;
     top: -9999px;

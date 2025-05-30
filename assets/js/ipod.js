@@ -178,24 +178,22 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Function called when player is ready
     function onPlayerReady(event) {
-        // Try to play the video
-        event.target.playVideo();
-        
         // Check if we're on iOS
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-        
+        event.target.playVideo();
+
         if (isIOS) {
-            // On iOS, automatically trigger the play button after a short delay
-            setTimeout(() => {
-                if (player && player.getPlayerState() !== YT.PlayerState.PLAYING) {
-                    // Programmatically click the play button
-                    playPauseButton.click();
-                }
-            }, 500);
+            // On iOS, show the "Press Play" message because play/pause doesn't work always!
+            document.querySelector('.press-play-message').style.display = 'block';
+            isPlaying = false;
+            updatePlayPauseIcon(false);
+        } else {
+            // For non-iOS devices, try to autoplay
+            event.target.playVideo();
+            isPlaying = true;
+            updatePlayPauseIcon(true); // Set to pause icon when playing
         }
         
-        isPlaying = true;
-        updatePlayPauseIcon(true); // Set to pause icon when playing
         updateProgress();
     }
     
@@ -248,7 +246,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Function to return to menu
     function returnToMenu() {
-        if (isPlaying) {
+        if (player || isPlaying) {
             // Stop the player
             if (player) {
                 player.stopVideo();
@@ -262,6 +260,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // Remove the now playing screen
             const nowPlayingContainer = document.getElementById('now-playing');
             if (nowPlayingContainer) {
+                // Hide the "press play" message
+                document.querySelector('.press-play-message').style.display = 'none';
                 nowPlayingContainer.style.display = 'none';
             }
             
