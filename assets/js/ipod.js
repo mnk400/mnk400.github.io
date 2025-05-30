@@ -208,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function updatePlayPauseIcon(isPlaying) {
         const playPauseIcon = document.querySelector('.play-pause-icon i');
         if (playPauseIcon) {
-            playPauseIcon.className = isPlaying ? 'fa-solid fa-play' : 'fa-solid fa-pause';
+            playPauseIcon.className = isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-play';
         }
     }
     
@@ -292,8 +292,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Event listener for center button (select current option)
     centerButton.addEventListener('click', function() {
-        if (isPlaying) {
-            // If song is playing, return to menu
+        if (nowPlayingContainer.style.display === 'block') {
+            // If now playing screen is visible, return to menu regardless of play state
             returnToMenu();
         } else {
             // Get the selected song
@@ -301,8 +301,6 @@ document.addEventListener('DOMContentLoaded', function() {
             if (selectedOption) {
                 const songName = selectedOption.textContent;
                 createNowPlayingScreen(songName);
-                
-                // For iOS, we'll handle play in the onPlayerReady function
             }
         }
     });
@@ -335,7 +333,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Add event listener for the "back" text
     document.querySelector('textPath').parentElement.addEventListener('click', function() {
-        if (isPlaying) {
+        if (nowPlayingContainer.style.display === 'block') {
             returnToMenu();
         }
     });

@@ -9,14 +9,31 @@ disabled: true
 ---
 
 <link rel="stylesheet" type="text/css" href="/assets/css/ipod.css">
+<link rel="stylesheet" type="text/css" href="/assets/css/expandable-section.css">
 <script src="/assets/js/ipod.js"></script>
+<script src="/assets/js/expandable-section.js"></script>
+
+{% capture ipod_explanation %}
+<div class="ipod-explanation">
+  <h3>iPod Playlist</h3>
+  <p>This interactive iPod is built using HTML, CSS, and JavaScript to play some of my favorite songs. It's designed to minic the very first iPod classic.</p>
+  <p>To interact, use the buttons on the iPod as you would on a real iPod. The music is streamed from YouTube.</p>
+</div>
+{% endcapture %}
+
+{% include expandable-section.html 
+  id="ipod-explanation" 
+  title="Learn more" 
+  content=ipod_explanation 
+  expanded=false 
+%}
 
 <div class="container">
     <div class="ipod small">
       <div class="screen">
               <div class="title-bar">
                   <div class="title">iPod</div>
-                  <div class="play-pause-icon"><i class="fa-solid fa-pause"></i></div>
+                  <div class="play-pause-icon"><i class="fa-solid fa-play"></i></div>
                   <div class="battery small"></div>	
               </div>
         <div class="menu-options">
@@ -36,7 +53,7 @@ disabled: true
       <div class="outer-ring">
         <svg viewBox="-150 5 350 350">
                   <path id="curve" d="m0,30 c16,-4 32,-4 48,0" />
-                  <text>
+                  <text class="menu-text">
                       <textPath xlink:href="#curve">menu</textPath>
                   </text>
               </svg>
