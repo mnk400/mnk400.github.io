@@ -4,19 +4,8 @@ title: Art
 permalink: /art
 ---
 
-<head>
-    <script>const ALBUM_HASH = 'bG03wE9';</script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
-</head>
+<p>
+    Sometimes I make art too.
+</p>
 
-<body>
-    <p>
-        Sometimes I make art too.
-    </p>
-    <br>
-    <div id="loading">
-        <p>Loading images...</p>
-    </div>
-    <div class="album-container" id="album-container"></div>
-    <script src="assets/js/imgurreader.js"></script>
-</body>
+{% include imgur-album.html album_hash="bG03wE9" %}

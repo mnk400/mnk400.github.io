@@ -5,14 +5,26 @@ function getRandomNumber(min, max) {
 }
 
 function createLightbox() {
-    const lightbox = document.createElement('div');
+    let lightbox = document.getElementById('lightbox');
+    if (lightbox) return lightbox;
+  
+    lightbox = document.createElement('div');
     lightbox.className = 'lightbox';
     lightbox.id = 'lightbox';
+  
+    const closeButton = document.createElement('div');
+    closeButton.className = 'lightbox-close';
+    closeButton.innerHTML = '<i class="fas fa-times"></i>';
+    closeButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        lightbox.style.display = 'none';
+    });
     
     lightbox.addEventListener('click', () => {
         lightbox.style.display = 'none';
     });
     
+    lightbox.appendChild(closeButton);
     document.body.appendChild(lightbox);
     return lightbox;
 }
@@ -22,6 +34,15 @@ function showInLightbox(imageSrc) {
     
     lightbox.innerHTML = '';
     
+    // Create close button using FontAwesome
+    const closeButton = document.createElement('div');
+    closeButton.className = 'lightbox-close';
+    closeButton.innerHTML = '<i class="fas fa-times"></i>';
+    closeButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        lightbox.style.display = 'none';
+    });
+    
     const img = document.createElement('img');
     img.src = imageSrc;
     
@@ -29,13 +50,22 @@ function showInLightbox(imageSrc) {
         e.stopPropagation();
     });
     
+    lightbox.appendChild(closeButton);
     lightbox.appendChild(img);
     lightbox.style.display = 'block';
 }
 
 async function loadAlbum() {
-    const albumContainer = document.getElementById('album-container');
-    const loadingIndicator = document.getElementById('loading');
+    const containerID = typeof ALBUM_CONTAINER_ID !== 'undefined' ? ALBUM_CONTAINER_ID : 'album-container';
+    const loadingID = typeof LOADING_ID !== 'undefined' ? LOADING_ID : 'loading';
+
+    const albumContainer = document.getElementById(containerID);
+    const loadingIndicator = document.getElementById(loadingID);
+
+    if (!albumContainer || !loadingIndicator) {
+        console.error('Album container or loading indicator not found');
+        return;
+    }
 
     try {
         const response = await axios.get(`https://api.imgur.com/3/album/${ALBUM_HASH}/images`, {
@@ -76,4 +106,8 @@ async function loadAlbum() {
 }
 
 // Load album on page load
-loadAlbum()
+if (document.readyState === 'complete') {
+    loadAlbum();
+} else {
+    window.addEventListener('load', loadAlbum);
+}

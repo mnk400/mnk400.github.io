@@ -5,21 +5,10 @@ permalink: /photos
 image: /assets/images/metadata/photo.jpg
 ---
 
-<head>
-    <script>const ALBUM_HASH = 'Hq3ctL4';</script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
-</head>
+<p>
+    I occasially update this webpage with new pictures.
+    You can also follow my <a id="tiktok-link" href="https://www.tiktok.com/@fake4plastic4trees">TikTok</a> or my <a
+        id="insta-link" href="https://www.instagram.com/m.xnik" class>Instagram!</a>
+</p>
 
-<body>
-    <p>
-        I occasially update this webpage with new pictures.
-        You can also follow my <a id="tiktok-link" href="https://www.tiktok.com/@fake4plastic4trees">TikTok</a> or my <a
-            id="insta-link" href="https://www.instagram.com/m.xnik" class>Instagram!</a>
-    </p>
-    <br>
-    <div id="loading">
-        <p>Loading images...</p>
-    </div>
-    <div class="album-container" id="album-container"></div>
-    <script src="assets/js/imgurreader.js"></script>
-</body>
+{% include imgur-album.html album_hash="Hq3ctL4" %}
