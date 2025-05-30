@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const centerButton = document.querySelector('.center-button');
     const playPauseButton = document.querySelector('.play-pause');
     const menuContainer = document.querySelector('.menu-options');
+    const nowPlayingContainer = document.getElementById('now-playing');
     
     let songs = {};
     let menuOptions = [];
@@ -106,8 +107,6 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const song = songs[songName];
         currentSong = songName;
-        
-        const nowPlayingContainer = document.getElementById('now-playing');
 
         nowPlayingContainer.querySelector('.song-title').textContent = songName;
         nowPlayingContainer.querySelector('.artist-name').textContent = song.artist;
@@ -179,10 +178,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function called when player is ready
     function onPlayerReady(event) {
         event.target.playVideo();
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-        if (isIOS) {
-            // On iOS, show the "Press Play" message because play/pause doesn't work always!
+        if (isMobile) {
+            // On mobile devices, show the "Press Play" message because autoplay restrictions
             document.querySelector('.press-play-message').style.display = 'block';
             updatePlayPauseIcon(false);
         } 
@@ -225,6 +224,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 progressBar.style.width = `${progressPercent}%`;
                 timeDisplay.textContent = `${formatTime(currentTime)} / ${formatTime(duration)}`;
             }
+            // Hide the "press play" message if playing
+            if (nowPlayingContainer) {
+                document.querySelector('.press-play-message').style.display = 'none';
+            }
         }
 
         setTimeout(updateProgress, 1000);
@@ -252,7 +255,6 @@ document.addEventListener('DOMContentLoaded', function() {
             updatePlayPauseIcon(false);
             
             // Remove the now playing screen
-            const nowPlayingContainer = document.getElementById('now-playing');
             if (nowPlayingContainer) {
                 // Hide the "press play" message
                 document.querySelector('.press-play-message').style.display = 'none';
