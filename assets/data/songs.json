@@ -1,0 +1,50 @@
+{
+    "Ms. Jackson": {
+        "id": "MYxAiK6VnXw",
+        "artist": "Outkast",
+        "album": "Stankonia",
+        "year": "2000"
+    },
+    "Rill Rill": {
+        "id": "nmFgejWZjtg",
+        "artist": "Sleigh Bells",
+        "album": "Treats",
+        "year": "2010"
+    },
+    "Obstacle 1": {
+        "id": "OC5zHACynR4",
+        "artist": "Interpol",
+        "album": "Turn On The Bright Lights",
+        "year": "2002"
+    },
+    "Someday": {
+        "id": "knU9gRUWCno",
+        "artist": "The Strokes",
+        "album": "Is This It",
+        "year": "2001"
+    },
+    "Baby One More Time": {
+        "id": "C-u5WLJ9Yk4",
+        "artist": "Britney Spears",
+        "album": "...Baby One More Time",
+        "year": "1999"
+    },
+    "No Surprises": {
+        "id": "u5CVsCnxyXg",
+        "artist": "Radiohead",
+        "album": "OK Computer",
+        "year": "1997"
+    },
+    "Heavy Metal Drum..": {
+        "id": "yeuIQFF7z6E",
+        "artist": "Wilco",
+        "album": "Yankee Hotel Foxtrot",
+        "year": "2002"
+    },
+    "Pink + White": {
+        "id": "uzS3WG6__G4",
+        "artist": "Frank Ocean",
+        "album": "Blonde",
+        "year": "2016"
+    }
+}

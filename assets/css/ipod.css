@@ -1,3 +1,9 @@
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0.3; }
+    100% { opacity: 1; }
+}
+
 @font-face {
     font-family: 'ChicagoFont';
     src: url('https://dangasson.github.io/Resources/Fonts/ChicagoFLF.ttf') format('truetype');
@@ -12,18 +18,23 @@
     align-items: center;
     max-width: 415px; /* Set max-width to prevent container from growing too large */
     margin: 0 auto; /* Center the container horizontally */
+    user-select: none; /* Prevent text selection */
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
 }
 
 .ipod {
     width: 415px;
     min-width: 415px; /* Ensure the iPod does not shrink below its intended width */
     height: 692px;
-    border: 1px solid transparent;
     border-radius: 38px;
-    margin-top: -50px;
+    margin-top: -60px;
     background: linear-gradient(45deg,#E3E4E5,#FFFFFF);
-    box-shadow: inset 5px -5px 15px 0px grey;
+    box-shadow: inset 5px -5px 15px 0px grey,
+                0px 0px 15px rgba(0, 0, 0, 0.1);
 }
+
 .ipod.small {
     transform: scale(0.67,0.67);
 }
@@ -42,7 +53,7 @@
 .title {
     position: absolute;
     top: 50%;
-    left: 50%;
+    left: 30px;
     transform: translate(-50%,-50%);
 }
 .title-bar {
@@ -53,17 +64,11 @@
     border-bottom: 2px solid #484647;
     text-align: center;
 }
-.play-icon {
+.play-pause-icon {
     position: absolute;
     display: inline-block;
-    top: 50%;
-    left: 10px;
-    transform: translate(0,-50%);
-    border-left: 18px solid #484647;
-    border-top: 9px solid transparent;
-    border-bottom: 9px solid transparent;
-    height: 0;
-    width: 0;
+    top: 25%;
+    left: 50%;
 }
 .battery {
     position: absolute;
@@ -102,13 +107,15 @@
 .menu-options {
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
     position: relative;
     top: 17%;
     height: 81%;
 }
 .option {
-    padding-left: 12px;
+    padding: 8px 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .option:after {
     content: '';
@@ -268,41 +275,12 @@ _:-ms-lang(x), .touch-wheel {
     display: none;
 }
 
-/* Add active states for buttons to create debossed effect */
-.skip:active {
-    background-color: #777777; /* Darker background when pressed */
-    transform: translate(0,-50%) scale(0.9);
-}
-.skip:active:before, .skip:active:after {
-    border-left-color: #777777; /* Darker color for arrows when pressed */
-}
-.skip.next:active {
-    transform: rotate(90deg) translate(0,50%) scale(0.9);
-    background-color: #777777; /* Ensure darker background for next button */
-}
-.skip.prev:active {
-    transform: rotate(-90deg) translate(0,50%) scale(0.9);
-    background-color: #777777; /* Ensure darker background for prev button */
-}
-
-.play-pause {
-    cursor: pointer;
-    transition: all 0.1s ease;
-}
-.play-pause:active {
-    border-left-color: #777777; /* Darker triangle when pressed */
-    transform: translate(-13px,0) scale(0.9);
-}
-.play-pause:active:before {
-    background: repeating-linear-gradient(to right,#777777,#777777 4px,transparent 4px,transparent 6px,#777777 6px,#777777 10px);
-}
-
 .touch-wheel {
     cursor: pointer;
-    transition: box-shadow 0.2s ease, background 0.1s ease;
+    transition: box-shadow 0.4s ease, background 0.4s ease;
 }
 .touch-wheel:active {
-    box-shadow: 5px -5px 20px -7px #595959, inset 2px 2px 5px rgba(0,0,0,0.3);
+    box-shadow: 5px -5px 20px -7px #595959, inset 2px 2px 5px rgba(0,0,0,0.2);
     background: radial-gradient(farthest-side at 60% -70%,#888888,#E5E5E5); /* Slightly darker gradient */
 }
 
@@ -313,4 +291,77 @@ svg {
 svg:active path {
     stroke: #AAAAAA; /* Add a visible stroke when pressed */
     stroke-width: 1px;
+}
+
+/* Now Playing Screen Styles */
+#now-playing {
+    position: absolute;
+    top: 25%;
+    left: 0;
+    width: 100%;
+    height: 84%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    box-sizing: border-box;
+    font-family: "ChicagoFont", "Arial";
+    color: #484647;
+    text-align: center;
+}
+
+#now-playing .song-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    width: 100%;
+}
+
+#now-playing .artist-name {
+    font-size: 14px;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+#now-playing .album-info {
+    font-size: 12px;
+    margin-bottom: 20px;
+    font-style: italic;
+    width: 100%;
+}
+
+#now-playing .progress-container {
+    width: 80%;
+    height: 10px;
+    background-color: #939389;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 10px;
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#now-playing #progress-bar {
+    width: 0%;
+    height: 100%;
+    background-color: #484647;
+    border-radius: 5px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#now-playing #time-display {
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+#youtube-player {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
 }
