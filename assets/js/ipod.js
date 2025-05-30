@@ -178,22 +178,16 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Function called when player is ready
     function onPlayerReady(event) {
-        // Check if we're on iOS
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
         event.target.playVideo();
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
         if (isIOS) {
             // On iOS, show the "Press Play" message because play/pause doesn't work always!
             document.querySelector('.press-play-message').style.display = 'block';
-            isPlaying = false;
             updatePlayPauseIcon(false);
-        } else {
-            // For non-iOS devices, try to autoplay
-            event.target.playVideo();
-            isPlaying = true;
-            updatePlayPauseIcon(true); // Set to pause icon when playing
-        }
-        
+        } 
+        isPlaying = true;
+        updatePlayPauseIcon(true); // Set to pause icon when playing
         updateProgress();
     }
     
