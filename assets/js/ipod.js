@@ -178,13 +178,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function called when player is ready
     function onPlayerReady(event) {
         event.target.playVideo();
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
-        if (isMobile) {
-            // On mobile devices, show the "Press Play" message because autoplay restrictions
-            document.querySelector('.press-play-message').style.display = 'block';
-            updatePlayPauseIcon(false);
-        } 
+        // Initially show the "Press Play" message until we confirm playback has started
+        document.querySelector('.press-play-message').style.display = 'block';
+        updatePlayPauseIcon(false);
+        
         isPlaying = true;
         updatePlayPauseIcon(true); // Set to pause icon when playing
         updateProgress();
@@ -195,8 +192,13 @@ document.addEventListener('DOMContentLoaded', function() {
         if (event.data === YT.PlayerState.PLAYING) {
             isPlaying = true;
             updatePlayPauseIcon(true); // Set to pause icon when playing
+            // Hide the "press play" message when video is playing
+            document.querySelector('.press-play-message').style.display = 'none';
         } else if (event.data === YT.PlayerState.PAUSED) {
+            isPlaying = false;
             updatePlayPauseIcon(false); // Set to play icon when paused
+            // Show the "press play" message when video is paused
+            document.querySelector('.press-play-message').style.display = 'block';
         } else if (event.data === YT.PlayerState.ENDED) {
             playNextSong();
         }
@@ -212,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Function to update progress bar
     function updateProgress() {
-        if (player && isPlaying) {
+        if (player) {
             const progressBar = document.getElementById('progress-bar');
             const timeDisplay = document.getElementById('time-display');
             
@@ -224,9 +226,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 progressBar.style.width = `${progressPercent}%`;
                 timeDisplay.textContent = `${formatTime(currentTime)} / ${formatTime(duration)}`;
             }
-            // Hide the "press play" message if playing
+            
+            // Update the play/pause message based on player state
             if (nowPlayingContainer) {
-                document.querySelector('.press-play-message').style.display = 'none';
+                const playerState = player.getPlayerState();
+                if (playerState === YT.PlayerState.PLAYING) {
+                    document.querySelector('.press-play-message').style.display = 'none';
+                } else {
+                    document.querySelector('.press-play-message').style.display = 'block';
+                }
             }
         }
 
@@ -301,7 +309,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Play/Pause button functionality
     playPauseButton.addEventListener('click', function() {
-        if (isPlaying && player) {
+        if (player) {
             const state = player.getPlayerState();
             const playPauseIcon = document.querySelector('.play-pause-icon i');
             
@@ -311,12 +319,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (playPauseIcon) {
                     playPauseIcon.className = 'fa-solid fa-play';
                 }
+                // Show the "press play" message when paused
+                document.querySelector('.press-play-message').style.display = 'block';
             } else {
                 player.playVideo();
                 // Update icon to pause when playing
                 if (playPauseIcon) {
                     playPauseIcon.className = 'fa-solid fa-pause';
                 }
+                // Hide the "press play" message when playing
+                document.querySelector('.press-play-message').style.display = 'none';
             }
         }
     });
