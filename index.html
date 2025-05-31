@@ -11,12 +11,9 @@ layout: default
     </p>
 <br>
 
+{% capture blog_content %}
 <div class="blog">
-    <h1>Archive</h1>
-	<hr>
     <ol>
-        <li>
-        </li>
         {% for post in site.posts %}
         <li>
             {% if post.type == "external" %}
@@ -28,3 +25,11 @@ layout: default
         {% endfor %}
     </ol>
 </div>
+{% endcapture %}
+
+{% include expandable-section.html 
+   id="blog-archive" 
+   title="<b>Archive</b>" 
+   content=blog_content 
+   expanded=true 
+%}
