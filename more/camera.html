@@ -16,10 +16,12 @@ category: Fun Tools
         <video id="video" style="display: none;"></video>
         
         <div class="controls">
-            <label>
-                <b>Width: <span id="width-value">80</span> Characters</b>
-                <input type="range" id="width-input" value="80" min="15" max="150">
-            </label>
+            <div class="range-width-container">
+                <p id="range-value">
+                    <span id="width-value">80</span> Characters
+                </p>
+                <input type="range" id="width-input" value="80" min="15" max="150" style="width: 100%; position: relative; z-index: 0;">
+            </div>
             <br/>
             <button id="start-btn" class="normal-btn">Start Camera</button>
             <button id="fullscreen-btn" class="normal-btn">Fullscreen</button>

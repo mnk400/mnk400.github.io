@@ -1,23 +1,16 @@
 <header class="{% if page.minimal %}minimal-mode{% endif %}">
     <div class="minimal-header" id="minimalHeader">
-        <div class="header-content">
-        <table>
-            <tr>
-                <th class="min-back-arrow">
-                    {% if page.url != "/" %}
-                    <a id="back-button" href="#" onclick="handleBackNavigation(); return false;">
-                        <i class="fa fa-angle-left"></i>
-                    </a>
-                    {% endif %}
-                    <span style="padding-left: 10px;"><b>{{ page.title }}</b></span>
-                </th>
-                <th class="min-down-arrow">
-                    <a href="#" onclick="toggleHeaderVisibility(true); return false;">
+        <div class="header-content" onclick="toggleHeaderVisibility(true); return false;">
+            <table>
+                <tr>
+                    <th class="min-title">
+                        <span style="padding-left: 10px;"><b>{{ page.title }}</b></span>
+                    </th>
+                    <th class="min-down-arrow">
                         <i class="fa fa-chevron-circle-down"></i>
-                    </a>
-                </th>
-            </tr>
-        </table>
+                    </th>
+                </tr>
+            </table>
         </div>
     </div>
     <div class="full-header" id="fullHeader">
