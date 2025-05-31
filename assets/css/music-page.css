@@ -1,0 +1,101 @@
+/*
+ *
+ *   Music Page with Last.fm data
+ *
+ */
+
+ /* Now Playing Container, with album metadata/art */
+
+.now-playing-container {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+    padding: 5px 15px;
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+    background: var(--min-translucent);
+}
+
+.now-playing-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+
+.now-playing-info {
+    flex-grow: 1;
+    margin-top: -5px;
+}
+
+.playing-or-no {
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-bottom: 15px;
+}
+
+.track-title, .artist-name, .album-name {
+    font-size: 0.9em;
+}
+
+/* Toggle Buttons to change things */
+
+.view-toggle {
+    margin: 1em 0;
+}
+
+.view-option {
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.view-option:hover {
+    color: var(--red-accent);
+}
+
+.view-option.active {
+    font-weight: 600 !important;
+}
+
+/* Album Grid and Artist List */
+
+.album-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.album-item {
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    margin-bottom: -0.7em;
+}
+
+.album-item img {
+    width: 100%;
+    object-fit: fill;
+}
+
+.album-item p {
+    margin-top: -0.8em;
+    font-weight: 400 !important;
+    font-size: 0.8em !important;
+}
+
+.period-option {
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.period-option:hover {
+    color: var(--red-accent);
+}
+
+.period-option.active {
+    font-weight: 600 !important;
+}
+
+.loading {
+    margin: 20px 0;
+}
