@@ -18,7 +18,7 @@ permalink: /more
         {% assign unique_categories = unique_categories | uniq | sort %}
 
         {% for category_name in unique_categories %}
-            <h3>{{ category_name }}</h3>
+            {% capture category_content %}
             <p>
                 {% for page in pages_in_more_dir %}
                     {% if page.title and page.category == category_name %}
@@ -28,7 +28,15 @@ permalink: /more
                             {% endif %}      
                     {% endif %}
                 {% endfor %}
-            </p>      
+            </p>
+            {% endcapture %}
+            {% assign category_name_strong = '<strong>' | append: category_name | append: '</strong>' %}
+            {% include expandable-section.html 
+               id=category_name 
+               title=category_name_strong
+               content=category_content 
+               expanded=true 
+            %}
         {% endfor %}
     </div>
 </div>

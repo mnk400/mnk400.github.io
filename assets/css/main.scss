@@ -840,10 +840,6 @@ input[type=file]::file-selector-button {
   color: var(--text-color);
 }
 
-// .toggle-text {
-//     font-weight: 500;
-// }
-
 .expandable-toggle:hover {
   background-color: var(--black-accent);
   color: white;
@@ -860,15 +856,32 @@ input[type=file]::file-selector-button {
 .expandable-content {
   padding: 10px 10px 0px 15px;
   margin-top: 10px;
-  border-radius: 6px;
+  margin-bottom: 10px;
   background-color: var(--min-translucent);
   backdrop-filter: blur(10px);
+  border-radius: 6px;
   overflow: hidden;
+  opacity: 1;
+
   transition: max-height 0.3s ease, 
               opacity 0.3s ease,
+              margin-top 0.3s ease,
+              margin-bottom 0.3s ease,
               padding-top 0.3s ease,
               padding-bottom 0.3s ease;
-  will-change: max-height, opacity, padding-top, padding-bottom;
+  will-change: max-height, opacity, margin-top, margin-bottom, padding-top, padding-bottom;
+
+  &.collapsed {
+    max-height: 0px !important; 
+    opacity: 0;
+    margin-bottom: 0px !important;
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+  }
+
+  p {
+    padding-bottom: 5px;
+  }
 }
 
 ///////////////////////////
