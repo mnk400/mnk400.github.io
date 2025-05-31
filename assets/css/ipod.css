@@ -16,17 +16,17 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    max-width: 415px; /* Set max-width to prevent container from growing too large */
-    margin: 0 auto; /* Center the container horizontally */
-    user-select: none; /* Prevent text selection */
-    -webkit-user-select: none; /* Safari */
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
+    max-width: 415px;
+    margin: 0 auto;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
 }
 
 .ipod {
     width: 415px;
-    min-width: 415px; /* Ensure the iPod does not shrink below its intended width */
+    min-width: 415px;
     height: 692px;
     border-radius: 38px;
     margin-top: -60px;
@@ -360,7 +360,7 @@ _:-ms-lang(x), .touch-wheel {
     font-size: 14px;
     padding: 5px;
     animation: blink 2s infinite;
-    display: none; /* Hidden by default */
+    display: none;
 }
 
 #youtube-player {

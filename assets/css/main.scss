@@ -9,6 +9,8 @@
 
 html {
     background-color: var(--background-main);
+    height: 100%;
+    min-height: 100vh;
 }
 
 * {
@@ -77,27 +79,40 @@ strong {
     margin-bottom: 1em;
     vertical-align: center;
     overflow: hidden;
-    transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+    transition: max-height 0.3s ease, 
+                opacity 0.3s ease,
+                margin-bottom 0.3s ease,
+                transform 0.3s ease;
+    will-change: max-height, opacity, margin-bottom, transform;
     max-height: 0;
     opacity: 0;
+    transform: translateY(-10px);
 }
 
 .minimal-mode .minimal-header {
     max-height: 50px;
     opacity: 1;
     margin-bottom: 40px;
+    transform: translateY(0);
 }
 
 .full-header {
     overflow: hidden;
-    transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+    transition: max-height 0.3s ease, 
+                opacity 0.3s ease,
+                margin-top 0.3s ease,
+                transform 0.3s ease;
+    will-change: max-height, opacity, margin-top, transform;
     max-height: 200px;
     margin-top: -25px;
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .minimal-mode .full-header {
     max-height: 0;
     opacity: 0;
+    transform: translateY(10px);
 }
 
 .min-down-arrow {
@@ -151,6 +166,8 @@ body {
     font-family: "-apple-system", "inter", san-serif;
     font-weight: 300;
     word-wrap: break-word;
+    height: 100%;
+    min-height: 100vh;
 }
 
 hr {
@@ -270,12 +287,6 @@ i {
     content: " · ";
 }
 
-.picture {
-    img {
-        width: 100%;
-    }
-}
-
 // Photo page
 .album-container {
     max-width: 100%;
@@ -296,7 +307,6 @@ i {
     height: auto;
     display: block;
     object-fit: contain;
-    transition: opacity 0.2s ease;
 }
 
 .lightbox {
@@ -314,6 +324,7 @@ i {
 .lightbox img {
     max-width: 90%;
     max-height: 90vh;
+    border-radius: 8px !important;
     margin: auto;
     position: absolute;
     top: 50%;
@@ -338,6 +349,7 @@ i {
     display: flex;
     align-items: center;
     justify-content: center;
+    backdrop-filter: blur(10px);
     transition: background-color 0.2s ease;
 }
 
@@ -553,8 +565,8 @@ button:hover {
 
 input[type=file]::file-selector-button {
     padding: 8px 16px;
-    background-color: #333;
-    color: white;
+    background-color: var(--black-accent);
+    color: var(--background-main);
     border: none;
     border-radius: 6px;
     font-family: "-apple-system", "inter", sans-serif !important;
@@ -833,7 +845,7 @@ input[type=file]::file-selector-button {
 
 .expandable-toggle:hover {
   background-color: var(--black-accent);
-  color: white;
+  color: var(--background-main);
 }
 
 .expandable-toggle .toggle-icon {
@@ -873,175 +885,4 @@ input[type=file]::file-selector-button {
   p {
     padding-bottom: 10px;
   }
-}
-
-///////////////////////////
-/// Game Related Styles
-//////////////////////////
-
-.game-wrapper {
-    height: 100vh;
-    width: 100%;
-    justify-content: center;
-    position: relative;
-}
-
-// Flappy Bird styles
-#flappy-game-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    margin: 20px 0;
-}
-
-#flappyCanvas {
-    border-radius: 8px;
-    backdrop-filter: blur(10px)
-}
-
-#flappy-ui {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
-}
-
-#flappy-ui>* {
-    pointer-events: auto;
-}
-
-#score,
-#high-score {
-    position: absolute;
-    top: 20px;
-    font-weight: 600;
-    font-size: 18px;
-    color: #3b3b3b;
-    font-weight: 500;
-    background: rgba(255, 255, 255, 0.6);
-    padding: 8px 16px;
-    border-radius: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-}
-
-#score {
-    left: 20px;
-}
-
-#high-score {
-    right: 20px;
-}
-
-#game-over,
-#start-screen {
-    background: rgba(255, 255, 255, 0.7);
-    padding: 30px;
-    border-radius: 12px;
-    text-align: center;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-
-    p,
-    h2 {
-        color: #3b3b3b !important;
-    }
-}
-
-// Mobile-specific styles for flappy bird
-@media screen and (max-width: 768px) {
-    #flappy-game-container {
-        width: 100%;
-        max-width: 100vw;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-
-        #flappyCanvas {
-            max-width: 95vw;
-            max-height: 70vh;
-            width: 100%;
-            height: auto;
-            border-radius: 8px;
-            touch-action: none;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-    }
-}
-
-// Tic Tac Toe styles
-
-#ttt-game-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    grid-gap: 8px;
-}
-
-.ttt-cell {
-    position: relative;
-    border-radius: 6px;
-    cursor: pointer;
-    font-family: 'IBM Plex Mono', monospace;
-    transition: background-color 0.2s ease;
-    border: 1px solid var(--min-translucent);
-    aspect-ratio: 1;
-    backdrop-filter: blur(10px)
-}
-
-.ttt-cell::before {
-    content: attr(data-content);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 1.3em;
-    font-weight: 500;
-    line-height: 100;
-}
-
-.ttt-cell:hover {
-    background-color: var(--min-translucent);
-}
-
-.ttt-cell.x::before {
-    color: #66b5f5;
-}
-
-.ttt-cell.o::before {
-    color: #ff7369;
-}
-
-.ttt-cell.winning-cell {
-    background-color: #4CAF50 !important;
-}
-
-.ttt-cell.winning-cell::before {
-    color: white !important;
-}
-
-
-//// Game of Life styles
-#game-of-life-container {
-    display: flex;
-    flex-direction: column;
-    position: relative;
-}
-
-#game-of-life-canvas {
-    justify-content: center;
-    align-items: center;
 }
