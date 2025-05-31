@@ -74,26 +74,51 @@ strong {
     font-weight: 600;
 }
 
+.minimal-header-wrapper {
+    display: flex;
+    align-items: start;
+    gap: 5px;
+    margin-bottom: 1.8em;
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: max-height 0.3s ease, 
+                opacity 0.3s ease,
+                transform 0.3s ease;
+    will-change: max-height, opacity, transform;
+}
+
+.minimal-mode .minimal-header-wrapper {
+    max-height: 50px;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.minimal-back-button {
+    background-color: var(--min-translucent);
+    backdrop-filter: blur(10px);
+    padding: 11px 14px;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+    cursor: pointer;
+}
+
+.minimal-back-button:hover {
+    background-color: var(--black-accent);
+    color: var(--background-main);
+}
+
 .minimal-header {
     background-color: var(--min-translucent);
     backdrop-filter: blur(10px);
     padding: 11px 14px 11px 5px;
     border-radius: 6px;
-    margin-bottom: 1em;
     font-weight: 500;
     vertical-align: center;
-    overflow: hidden;
-    transition: max-height 0.3s ease, 
-                opacity 0.3s ease,
-                margin-bottom 0.3s ease,
-                transform 0.3s ease,
-                background-color 0.2s ease,
-                color 0.2s ease;
-    will-change: max-height, opacity, margin-bottom, transform;
-    max-height: 0;
-    opacity: 0;
-    transform: translateY(-10px);
+    flex: 1;
     cursor: pointer;
+    transition: background-color 0.2s ease,
+                color 0.2s ease;
 }
 
 .minimal-header:hover {
