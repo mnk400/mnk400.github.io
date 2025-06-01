@@ -379,11 +379,11 @@ button:hover {
     padding-bottom: 10px;
     flex-wrap: wrap;
     gap: 8px;
-    /* Ensure vertical spacing for wrapped items */
+
     & > * {
         margin-bottom: 10px;
     }
-    /* Remove margin from the last item in a row to prevent extra space */
+
     &:last-child {
         margin-bottom: 0;
     }
@@ -438,6 +438,11 @@ button:hover {
             transition: background 0.15s ease-in-out;
         }
     }
+
+    a {
+        display: inline-block;
+        vertical-align: top;
+    }
 }
 
 input[type=file]::file-selector-button {
@@ -461,6 +466,9 @@ input[type=file]::file-selector-button {
         margin: 0 1.5px 1.5px 0;
         list-style: none;
         line-height: 1.5em;
+    }
+    p {
+        padding-bottom: 10px !important;
     }
 }
 
@@ -578,10 +586,18 @@ input[type=file]::file-selector-button {
         img {
             max-width: 100%;
             padding-top: 10px;
-            padding-bottom: 15px;
+            padding-bottom: 10px;
             display: block;
             margin: 0 auto;
+        }
 
+        .img-curved-edges {
+            padding: 0 !important;
+            max-width: 100%;
+            display: block;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            border-radius: 6px;
         }
 
         .note {
@@ -734,7 +750,7 @@ input[type=file]::file-selector-button {
 }
 
 .expandable-content {
-  padding: 10px 10px 0px 15px;
+  padding: 10px 15px 0px 15px;
   margin-top: 10px;
   margin-bottom: 10px;
   background-color: var(--min-translucent);
@@ -759,9 +775,6 @@ input[type=file]::file-selector-button {
     padding-bottom: 0px !important;
   }
 
-  p {
-    padding-bottom: 10px;
-  }
 }
 /* Wiki page styles */
 
