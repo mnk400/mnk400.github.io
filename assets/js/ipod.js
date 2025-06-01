@@ -1,21 +1,21 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Prevent text selection on the entire iPod interface
     document.querySelector('.container').style.userSelect = 'none';
     document.querySelector('.container').style.webkitUserSelect = 'none';
     document.querySelector('.container').style.mozUserSelect = 'none';
     document.querySelector('.container').style.msUserSelect = 'none';
-    
+
     const nextButton = document.querySelector('.skip.next');
     const prevButton = document.querySelector('.skip.prev');
     const centerButton = document.querySelector('.center-button');
     const playPauseButton = document.querySelector('.play-pause');
     const menuContainer = document.querySelector('.menu-options');
     const nowPlayingContainer = document.getElementById('now-playing');
-    
+
     let songs = {};
     let menuOptions = [];
     let currentIndex = 0;
-    
+
     // Fetch songs data from JSON file and populate menu
     fetch('/assets/data/songs.json')
         .then(response => response.json())
@@ -26,58 +26,58 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => {
             console.error('Error loading songs data:', error);
         });
-    
+
     // Track all songs and which ones are currently visible
     let allSongs = [];
     let visibleStartIndex = 0;
     const songsPerPage = 6;
-    
+
     function populateMenuOptions(songsData) {
         menuContainer.innerHTML = '';
         allSongs = Object.keys(songsData);
 
         updateVisibleSongs();
-        
+
         if (menuOptions.length > 0) {
             menuOptions[0].classList.add('selected');
             currentIndex = 0;
         }
     }
-    
+
     function updateVisibleSongs() {
         menuContainer.innerHTML = '';
-        
+
         const endIndex = Math.min(visibleStartIndex + songsPerPage, allSongs.length);
-        
+
         for (let i = visibleStartIndex; i < endIndex; i++) {
             const songName = allSongs[i];
             const option = document.createElement('div');
             option.className = 'option';
             option.textContent = songName;
             option.dataset.index = i;
-            
+
             menuContainer.appendChild(option);
         }
-        
+
         // Update menupptions
         menuOptions = document.querySelectorAll('.menu-options .option');
     }
-    
+
     // Track if a song is currently playing
     let isPlaying = false;
     let player = null;
-    
+
     function updateSelection(newIndex) {
         menuOptions.forEach(option => option.classList.remove('selected'));
-        
+
         let globalIndex;
-        
+
         if (typeof newIndex === 'number') {
             globalIndex = visibleStartIndex + newIndex;
-            
+
             if (globalIndex < 0) globalIndex = allSongs.length - 1;
             if (globalIndex >= allSongs.length) globalIndex = 0;
-            
+
             if (globalIndex < visibleStartIndex) {
                 // Scroll up
                 visibleStartIndex = Math.max(0, globalIndex - (songsPerPage - 1));
@@ -96,60 +96,60 @@ document.addEventListener('DOMContentLoaded', function() {
             if (currentIndex < 0) currentIndex = menuOptions.length - 1;
             if (currentIndex >= menuOptions.length) currentIndex = 0;
         }
-        
+
         if (menuOptions[currentIndex]) {
             menuOptions[currentIndex].classList.add('selected');
         }
     }
-    
+
     function createNowPlayingScreen(songName) {
         menuContainer.style.display = 'none';
-        
+
         const song = songs[songName];
         currentSong = songName;
 
         nowPlayingContainer.querySelector('.song-title').textContent = songName;
         nowPlayingContainer.querySelector('.artist-name').textContent = song.artist;
         nowPlayingContainer.querySelector('.album-info').textContent = `${song.album} (${song.year})`;
-        
+
         // Reset progress bar and time display
         const progressBar = document.getElementById('progress-bar');
         if (progressBar) {
             progressBar.style.width = '0%';
         }
-        
+
         const timeDisplay = document.getElementById('time-display');
         if (timeDisplay) {
             timeDisplay.textContent = '0:00 / 0:00';
         }
-        
+
         // Show the now playing screen
         nowPlayingContainer.style.display = 'block';
-        
+
         // Load YouTube API if not already loaded
         if (!window.YT) {
             const tag = document.createElement('script');
             tag.src = 'https://www.youtube.com/iframe_api';
             const firstScriptTag = document.getElementsByTagName('script')[0];
             firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-            
-            window.onYouTubeIframeAPIReady = function() {
+
+            window.onYouTubeIframeAPIReady = function () {
                 createPlayer(song.id);
             };
         } else {
             createPlayer(song.id);
         }
-        
+
         isPlaying = true;
     }
-    
+
     // Function to create the YouTube player (audio only)
     function createPlayer(videoId) {
         // Create a hidden player
         const playerContainer = document.createElement('div');
         playerContainer.id = 'youtube-player';
         document.body.appendChild(playerContainer);
-        
+
         // Set appropriate player options
         const playerOptions = {
             height: '1',
@@ -171,22 +171,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 'onStateChange': onPlayerStateChange
             }
         };
-        
+
         player = new YT.Player('youtube-player', playerOptions);
     }
-    
+
     // Function called when player is ready
     function onPlayerReady(event) {
         event.target.playVideo();
         // Initially show the "Press Play" message until we confirm playback has started
         document.querySelector('.press-play-message').style.display = 'block';
         updatePlayPauseIcon(false);
-        
+
         isPlaying = true;
         updatePlayPauseIcon(true); // Set to pause icon when playing
         updateProgress();
     }
-    
+
     // Function to handle player state changes
     function onPlayerStateChange(event) {
         if (event.data === YT.PlayerState.PLAYING) {
@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function() {
             playNextSong();
         }
     }
-    
+
     // Function to update play/pause icon
     function updatePlayPauseIcon(isPlaying) {
         const playPauseIcon = document.querySelector('.play-pause-icon i');
@@ -211,22 +211,22 @@ document.addEventListener('DOMContentLoaded', function() {
             playPauseIcon.className = isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-play';
         }
     }
-    
+
     // Function to update progress bar
     function updateProgress() {
         if (player) {
             const progressBar = document.getElementById('progress-bar');
             const timeDisplay = document.getElementById('time-display');
-            
+
             if (progressBar && timeDisplay) {
                 const currentTime = player.getCurrentTime() || 0;
                 const duration = player.getDuration() || 0;
-                const progressPercent = (currentTime / duration) * 100;   
+                const progressPercent = (currentTime / duration) * 100;
 
                 progressBar.style.width = `${progressPercent}%`;
                 timeDisplay.textContent = `${formatTime(currentTime)} / ${formatTime(duration)}`;
             }
-            
+
             // Update the play/pause message based on player state
             if (nowPlayingContainer) {
                 const playerState = player.getPlayerState();
@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         setTimeout(updateProgress, 1000);
     }
-    
+
     // Format time in MM:SS
     function formatTime(seconds) {
         seconds = Math.floor(seconds);
@@ -248,7 +248,7 @@ document.addEventListener('DOMContentLoaded', function() {
         seconds = seconds % 60;
         return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
     }
-    
+
     // Function to return to menu
     function returnToMenu() {
         if (player || isPlaying) {
@@ -258,40 +258,40 @@ document.addEventListener('DOMContentLoaded', function() {
                 player.destroy();
                 player = null;
             }
-            
+
             // Reset play/pause icon to play
             updatePlayPauseIcon(false);
-            
+
             // Remove the now playing screen
             if (nowPlayingContainer) {
                 // Hide the "press play" message
                 document.querySelector('.press-play-message').style.display = 'none';
                 nowPlayingContainer.style.display = 'none';
             }
-            
+
             // Show the menu again
             menuContainer.style.display = 'flex';
             isPlaying = false;
             currentSong = null;
         }
     }
-    
+
     // Event listener for next button
-    nextButton.addEventListener('click', function() {
+    nextButton.addEventListener('click', function () {
         if (!isPlaying) {
             updateSelection(currentIndex + 1);
         }
     });
-    
+
     // Event listener for previous button
-    prevButton.addEventListener('click', function() {
+    prevButton.addEventListener('click', function () {
         if (!isPlaying) {
             updateSelection(currentIndex - 1);
         }
     });
-    
+
     // Event listener for center button (select current option)
-    centerButton.addEventListener('click', function() {
+    centerButton.addEventListener('click', function () {
         if (nowPlayingContainer.style.display === 'block') {
             // If now playing screen is visible, return to menu regardless of play state
             returnToMenu();
@@ -304,13 +304,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-    
+
     // Play/Pause button functionality
-    playPauseButton.addEventListener('click', function() {
+    playPauseButton.addEventListener('click', function () {
         if (player) {
             const state = player.getPlayerState();
             const playPauseIcon = document.querySelector('.play-pause-icon i');
-            
+
             if (state === YT.PlayerState.PLAYING) {
                 player.pauseVideo();
                 // Update icon to play when paused
@@ -330,11 +330,24 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-    
+
     // Add event listener for the "back" text
-    document.querySelector('textPath').parentElement.addEventListener('click', function() {
+    document.querySelector('textPath').parentElement.addEventListener('click', function () {
         if (nowPlayingContainer.style.display === 'block') {
             returnToMenu();
+        }
+    });
+    
+    // Add keyboard navigation
+    document.addEventListener('keydown', function (event) {
+        if (event.key === 'ArrowDown') {
+            nextButton.click();
+        } else if (event.key === 'ArrowUp') {
+            prevButton.click();
+        } else if (event.key === 'Enter') {
+            centerButton.click();
+        } else if (event.key === ' ') {
+            playPauseButton.click();
         }
     });
 });

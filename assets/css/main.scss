@@ -254,7 +254,6 @@ ul {
     max-width: 525px;
     margin: auto;
     padding: 60px 30px 60px 30px;
-    min-height: 100vh; /* Ensure wrapper takes up at least full viewport height */
 
     @media screen and (max-width: $br) {
         padding: 20px;

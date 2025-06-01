@@ -50,10 +50,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // This barely works, iframe src is not updated when iframe content changes ugh
     function updateUrlBarFromIframe() {
         try {
-            const iframeDoc = iframeContainer.contentDocument || iframeContainer.contentWindow.document;
-            const currentIframeUrl = iframeDoc.location.href;
+            const currentIframeUrl = iframeContainer.src;
             // The URL from Wayback Machine will be in the format: https://web.archive.org/web/YYYYMMDDhhmmss/original_url
             // we want to extract the original_url part
             const waybackPrefix = 'https://web.archive.org/web/';
@@ -76,20 +76,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (urlInput && goButton) {
         goButton.addEventListener('click', () => {
-            const url = urlInput.value.trim();
+            const url = urlInput.value;
+            const year = yearSelector.value;
             if (url) {
-                const selectedYear = yearSelector ? yearSelector.value : '2007';
-                loadUrlInWaybackMachine(url, selectedYear);
+                loadUrlInWaybackMachine(url, year);
             }
         });
 
-        urlInput.addEventListener('keypress', (event) => {
+        urlInput.addEventListener('keydown', (event) => {
             if (event.key === 'Enter') {
-                const url = urlInput.value.trim();
-                if (url) {
-                    const selectedYear = yearSelector ? yearSelector.value : '2007';
-                    loadUrlInWaybackMachine(url, selectedYear);
-                }
+                event.preventDefault();
+                goButton.click();
             }
         });
     } else {
