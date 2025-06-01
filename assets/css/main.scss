@@ -376,6 +376,7 @@ button:hover {
 
 .controls {
     margin-top: 10px;
+    padding-bottom: 10px;
     flex-wrap: wrap;
     gap: 8px;
     /* Ensure vertical spacing for wrapped items */
@@ -761,4 +762,9 @@ input[type=file]::file-selector-button {
   p {
     padding-bottom: 10px;
   }
+}
+/* Wiki page styles */
+
+.wiki-image img {
+    width: 100%;
 }

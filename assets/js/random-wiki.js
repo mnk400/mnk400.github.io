@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const fetchButton = document.getElementById('fetch-wiki');
     const wikiContent = document.getElementById('wiki-content');
     const wikiTitle = document.getElementById('wiki-title');
+    const wikiImage = document.getElementById('wiki-image');
     const wikiExtract = document.getElementById('wiki-extract');
     const wikiLink = document.getElementById('wiki-link');
     
@@ -12,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function fetchRandomWiki() {
         // Clear previous content and show loading state
         wikiTitle.textContent = '';
+        wikiImage.innerHTML = '';
         wikiExtract.innerHTML = '<p>Loading...</p>';
         wikiLink.innerHTML = '';
         wikiContent.classList.add('loading');
@@ -28,6 +30,15 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 const title = data.title;
                 wikiTitle.textContent = title;
+                
+                // Display the thumbnail image if available
+                if (data.thumbnail && data.thumbnail.source) {
+                    const img = document.createElement('img');
+                    img.src = data.thumbnail.source;
+                    img.alt = title;
+                    img.style.maxWidth = '100%';
+                    wikiImage.appendChild(img);
+                }
                 
                 const articleLink = document.createElement('a');
                 articleLink.href = data.content_urls.desktop.page;

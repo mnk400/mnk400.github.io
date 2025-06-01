@@ -159,7 +159,7 @@
 }
 
 .ttt-cell.winning-cell {
-    background-color: #4CAF50 !important;
+    background-color: #4CAF5080 !important;
 }
 
 .ttt-cell.winning-cell::before {
