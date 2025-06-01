@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const playPauseButton = document.querySelector('.play-pause');
     const menuContainer = document.querySelector('.menu-options');
     const nowPlayingContainer = document.getElementById('now-playing');
+    const titleElement = document.querySelector('.title-bar .title');
 
     let songs = {};
     let menuOptions = [];
@@ -95,10 +96,15 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             if (currentIndex < 0) currentIndex = menuOptions.length - 1;
             if (currentIndex >= menuOptions.length) currentIndex = 0;
+            globalIndex = visibleStartIndex + currentIndex; // Ensure globalIndex is set for title update
         }
 
         if (menuOptions[currentIndex]) {
             menuOptions[currentIndex].classList.add('selected');
+        }
+
+        if (allSongs.length > 0) {
+            titleElement.textContent = `${globalIndex + 1}/${allSongs.length}`;
         }
     }
 
@@ -107,6 +113,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const song = songs[songName];
         currentSong = songName;
+
+        // Find the index of the current song
+        const currentSongIndex = allSongs.indexOf(songName);
+        if (currentSongIndex !== -1 && allSongs.length > 0) {
+            titleElement.textContent = `${currentSongIndex + 1}/${allSongs.length}`;
+        }
 
         nowPlayingContainer.querySelector('.song-title').textContent = songName;
         nowPlayingContainer.querySelector('.artist-name').textContent = song.artist;

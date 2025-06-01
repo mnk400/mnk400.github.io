@@ -78,6 +78,7 @@ strong {
 .minimal-header-wrapper {
     display: flex;
     align-items: start;
+    backdrop-filter: blur(10px);
     gap: 5px;
     margin-bottom: 1.8em;
     max-height: 0;

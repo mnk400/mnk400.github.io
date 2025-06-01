@@ -5,29 +5,17 @@
         "album": "Stankonia",
         "year": "2000"
     },
-    "Rill Rill": {
-        "id": "nmFgejWZjtg",
-        "artist": "Sleigh Bells",
-        "album": "Treats",
-        "year": "2010"
-    },
-    "Obstacle 1": {
-        "id": "OC5zHACynR4",
-        "artist": "Interpol",
-        "album": "Turn On The Bright Lights",
-        "year": "2002"
+    "Pink + White": {
+        "id": "uzS3WG6__G4",
+        "artist": "Frank Ocean",
+        "album": "Blonde",
+        "year": "2016"
     },
     "Someday": {
         "id": "knU9gRUWCno",
         "artist": "The Strokes",
         "album": "Is This It",
         "year": "2001"
-    },
-    "Baby One More Time": {
-        "id": "C-u5WLJ9Yk4",
-        "artist": "Britney Spears",
-        "album": "...Baby One More Time",
-        "year": "1999"
     },
     "No Surprises": {
         "id": "u5CVsCnxyXg",
@@ -41,10 +29,46 @@
         "album": "Yankee Hotel Foxtrot",
         "year": "2002"
     },
-    "Pink + White": {
-        "id": "uzS3WG6__G4",
-        "artist": "Frank Ocean",
-        "album": "Blonde",
+    "Shampoo Bottles": {
+        "id": "DCi9I7ylt14",
+        "artist": "Peach Pit",
+        "album": "You and Your Friends",
+        "year": "2020"
+    },
+    "Baby One More Time": {
+        "id": "C-u5WLJ9Yk4",
+        "artist": "Britney Spears",
+        "album": "...Baby One More Time",
+        "year": "1999"
+    },
+    "Paul": {
+        "id": "0AyIHYjqWow",
+        "artist": "Big Thief",
+        "album": "Masterpiece",
         "year": "2016"
+    },
+    "Rill Rill": {
+        "id": "nmFgejWZjtg",
+        "artist": "Sleigh Bells",
+        "album": "Treats",
+        "year": "2010"
+    },
+    "Obstacle 1": {
+        "id": "OC5zHACynR4",
+        "artist": "Interpol",
+        "album": "Turn On The Bright Lights",
+        "year": "2002"
+    },
+    "Bloodstream": {
+        "id": "Sn3-1kvv6u4",
+        "artist": "Stateless",
+        "album": "Stateless",
+        "year": "2007"
+    },
+    "Accordion": {
+        "id": "DNc20yNB8nM",
+        "artist": "Madvillain",
+        "album": "Madvillainy",
+        "year": "2004"
     }
 }
