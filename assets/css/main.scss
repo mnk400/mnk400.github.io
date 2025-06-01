@@ -78,11 +78,14 @@ strong {
 .minimal-header-wrapper {
     display: flex;
     align-items: start;
-    backdrop-filter: blur(10px);
     gap: 5px;
-    margin-bottom: 1.8em;
+    margin-bottom: 1.6em;
+    border-radius: 6px;
     max-height: 0;
     opacity: 0;
+}
+
+.minimal-header-wrapper::before {
     transform: translateY(-10px);
     transition: max-height 0.3s ease, 
                 opacity 0.3s ease,
@@ -92,6 +95,7 @@ strong {
 
 .minimal-mode .minimal-header-wrapper {
     max-height: 50px;
+    margin-bottom: 2.5em;
     opacity: 1;
     transform: translateY(0);
 }
@@ -126,13 +130,6 @@ strong {
 .minimal-header:hover {
   background-color: var(--black-accent);
   color: var(--background-main);
-}
-
-.minimal-mode .minimal-header {
-    max-height: 50px;
-    opacity: 1;
-    margin-bottom: 40px;
-    transform: translateY(0);
 }
 
 .full-header {
