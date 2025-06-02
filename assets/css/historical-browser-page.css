@@ -81,10 +81,10 @@
 }
 
 .historical-browser-content {
-    width: calc(100% / 0.85);
-    max-width: calc(100% / 0.85);
-    height: calc(600px / 0.85);
-    transform: scale(0.85);
+    width: calc(100% / 0.70);
+    max-width: calc(100% / 0.70);
+    height: calc(500px / 0.70);
+    transform: scale(0.70);
     transform-origin: top left;
     margin-top: 15px;
     border-radius: 6px;

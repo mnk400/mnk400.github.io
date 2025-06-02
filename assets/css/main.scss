@@ -83,14 +83,14 @@ strong {
     border-radius: 6px;
     max-height: 0;
     opacity: 0;
+    transition: max-height 0.3s ease, 
+                opacity 0.3s ease,
+                transform 0.3s ease;
+    will-change: max-height, transform;
 }
 
 .minimal-header-wrapper::before {
     transform: translateY(-10px);
-    transition: max-height 0.3s ease, 
-                opacity 0.3s ease,
-                transform 0.3s ease;
-    will-change: max-height, opacity, transform;
 }
 
 .minimal-mode .minimal-header-wrapper {
