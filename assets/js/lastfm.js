@@ -1,4 +1,3 @@
-
 const username = 'mnk_400';
 let currentView = 'albums';
 let currentPeriod = '7day';
@@ -34,7 +33,7 @@ async function fetchNowPlaying() {
 
             nowPlayingSection.innerHTML = `
                 <div class="now-playing-container">
-                    <img src="${imageUrl}" alt="${track.name}" class="now-playing-image">
+                    <img src="${imageUrl}" alt="${track.name}" class="now-playing-image img-curved-edges">
                     <div class="now-playing-info">
                         <span class="playing-or-no">${isNowPlaying ? 'Now Playing' : 'Last Played'}</span> 
                         ${timeAgo ? `<span class="description"> - ${timeAgo}</span>` : ''}<br/><br/>
@@ -136,11 +135,35 @@ async function fetchTopAlbums() {
             const imageUrl = album.image.find(img => img.size === 'large')['#text'] || '/assets/album-placeholder.png';
             return `
                 <div class="album-item">
-                    <img src="${imageUrl}" alt="${album.name}">
-                    <p>${album.name} - ${album.artist.name}</p>
+                    <div class="album-image-container">
+                        <img src="${imageUrl}" alt="${album.name}" class="img-curved-edges">
+                        <div class="album-info-overlay">
+                        <center>
+                            <p class="album-title">${album.name}</p>
+                            <p class="artist-name-overlay">${album.artist.name}</p>
+                        </center>
+                        </div>
+                    </div>
                 </div>
             `;
         }).join('');
+
+        // Add event listeners for tap support on mobile
+        const albumItems = grid.querySelectorAll('.album-image-container');
+        albumItems.forEach(item => {
+            item.addEventListener('click', function() {
+                // Close any other open overlays first
+                albumItems.forEach(otherItem => {
+                    if (otherItem !== this) {
+                        otherItem.querySelector('.album-info-overlay').classList.remove('show-overlay');
+                    }
+                });
+                // Toggle current overlay
+                const overlay = this.querySelector('.album-info-overlay');
+                overlay.classList.toggle('show-overlay');
+            });
+        });
+
     } catch (error) {
         grid.innerHTML = `<p>Error fetching albums: ${error.message}</p>`;
     } finally {
