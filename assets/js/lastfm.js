@@ -49,25 +49,6 @@ async function fetchNowPlaying() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    // View toggle event listeners
-    document.getElementById('albums-toggle').addEventListener('click', () => switchView('albums'));
-    document.getElementById('artists-toggle').addEventListener('click', () => switchView('artists'));
-
-    // Initial now playing fetch and interval setup
-    fetchNowPlaying();
-    nowPlayingInterval = setInterval(fetchNowPlaying, 30000); // Update every 30 seconds
-
-    // Period toggle event listeners
-    const periodOptions = document.querySelectorAll('.period-option');
-    periodOptions.forEach(option => {
-        option.addEventListener('click', () => switchPeriod(option.id));
-    });
-
-    // Initial load
-    fetchData();
-});
-
 function switchView(view) {
     currentView = view;
     updateToggleStates();
@@ -90,7 +71,7 @@ function switchPeriod(period) {
 
 function updateToggleStates() {
     // Update view toggle states
-    document.querySelectorAll('.view-option').forEach(option => {
+    document.querySelectorAll('.view-toggle .switch-option').forEach(option => {
         option.classList.remove('active');
         if (option.id === `${currentView}-toggle`) {
             option.classList.add('active');
@@ -98,7 +79,7 @@ function updateToggleStates() {
     });
 
     // Update period toggle states
-    document.querySelectorAll('.period-option').forEach(option => {
+    document.querySelectorAll('.period-toggle .switch-option').forEach(option => {
         option.classList.remove('active');
         if (option.id === currentPeriod) {
             option.classList.add('active');
@@ -202,42 +183,24 @@ async function fetchTopArtists() {
     }
 }
 
-function handleViewChange(view) {
-    const grid = document.getElementById('album-grid');
-    const albumsToggle = document.getElementById('albums-toggle');
-    const artistsToggle = document.getElementById('artists-toggle');
-    const periodSelect = document.getElementById('period-select');
-    const selectedPeriod = periodSelect.value;
-
-    // Update active states
-    if (view === 'albums') {
-        albumsToggle.classList.add('active');
-        artistsToggle.classList.remove('active');
-    } else {
-        albumsToggle.classList.remove('active');
-        artistsToggle.classList.add('active');
-    }
-
-    grid.style.display = 'none';
-    
-    if (view === 'albums') {
-        fetchTopAlbums(selectedPeriod);
-    } else {
-        fetchTopArtists(selectedPeriod);
-    }
-}
-
 document.addEventListener('DOMContentLoaded', () => {
-    const albumsToggle = document.getElementById('albums-toggle');
-    const artistsToggle = document.getElementById('artists-toggle');
-    const periodSelect = document.getElementById('period-select');
-
-    albumsToggle.addEventListener('click', () => handleViewChange('albums'));
-    artistsToggle.addEventListener('click', () => handleViewChange('artists'));
-    periodSelect.addEventListener('change', () => {
-        const currentView = document.getElementById('albums-toggle').classList.contains('active') ? 'albums' : 'artists';
-        handleViewChange(currentView);
+    // View toggle event listeners
+    document.querySelectorAll('.view-toggle .switch-option').forEach(option => {
+        option.addEventListener('click', function() {
+            const view = this.id.replace('-toggle', '');
+            switchView(view);
+        });
     });
 
-    fetchTopAlbums(); // Load albums by default
+    // Period toggle event listeners
+    document.querySelectorAll('.period-toggle .switch-option').forEach(option => {
+        option.addEventListener('click', function() {
+            switchPeriod(this.id);
+        });
+    });
+
+    // Initial fetch
+    fetchNowPlaying();
+    nowPlayingInterval = setInterval(fetchNowPlaying, 30000);
+    fetchData();
 });

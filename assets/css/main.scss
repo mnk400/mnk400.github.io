@@ -7,6 +7,7 @@
 @import url(photo-album-page.css);
 @import url(music-page.css);
 @import url(historical-browser-page.css);
+@import url(printer.css);
 @import url('https://rsms.me/inter/inter.css');
 @import "reset";
 @import "config";
@@ -778,4 +779,37 @@ input[type=file]::file-selector-button {
 
 .wiki-image img {
     width: 100%;
+}
+////////////////////////////
+/// Selection Switch Component
+////////////////////////////
+
+.selection-switch {
+    display: flex;
+    margin: 15px 0;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-self: center;
+    
+    .switch-option {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 20px;
+        background-color: var(--min-translucent);
+        color: var(--text-color);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: 'Inter', sans-serif;
+        display: inline-block;
+        
+        &:hover {
+            background-color: var(--black-accent);
+            color: white;
+        }
+        
+        &.active {
+            background-color: var(--black-accent);
+            color: white;
+        }
+    }
 }

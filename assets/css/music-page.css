@@ -40,23 +40,22 @@
 
 /* Toggle Buttons to change things */
 
-.view-toggle {
-    margin: 1em 0;
+.view-controls {
+    margin-bottom: 20px;
 }
 
-.view-option {
-    cursor: pointer;
-    transition: color 0.2s ease;
+/* Removed specific button styling as it's now in main.scss */
+
+.loading {
+    margin: 20px 0;
 }
 
-.view-option:hover {
-    color: var(--red-accent);
+/* Media query for mobile devices */
+@media (max-width: 768px) {
+    .album-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
-
-.view-option.active {
-    font-weight: 600 !important;
-}
-
 /* Album Grid and Artist List */
 
 .album-grid {
@@ -118,28 +117,4 @@
     font-weight: 600;
     margin-top: -10px;
     word-break: break-word;
-}
-
-.period-option {
-    cursor: pointer;
-    transition: color 0.2s ease;
-}
-
-.period-option:hover {
-    color: var(--red-accent);
-}
-
-.period-option.active {
-    font-weight: 600 !important;
-}
-
-.loading {
-    margin: 20px 0;
-}
-
-/* Media query for mobile devices */
-@media (max-width: 768px) {
-    .album-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
 }

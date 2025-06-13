@@ -1,0 +1,28 @@
+---
+layout: post
+title: Minesweeper
+description: Classic Minesweeper Game
+permalink: /more/minesweeper
+minimal: true
+category: Games
+---
+
+<div class="game-wrapper">
+    <div id="minesweeper-container">
+        <div id="minesweeper-header">
+            <div id="mine-counter">Mines: 10</div>
+            <div id="game-timer">Time: 0</div>
+        </div>
+        <div id="minesweeper-grid"></div>
+    </div>
+    <div id="minesweeper-controls">
+        <div class="selection-switch difficulty-selector">
+            <button class="switch-option difficulty-btn active" data-difficulty="beginner">Beginner</button>
+            <button class="switch-option difficulty-btn" data-difficulty="intermediate">Intermediate</button>
+            <button class="switch-option difficulty-btn" data-difficulty="expert">Expert</button>
+        </div>
+        <button id="new-game-btn" class="normal-btn">New Game</button>
+        <span id="game-status"></span>
+    </div>
+    <script src="/assets/js/minesweeper.js"></script>
+</div>

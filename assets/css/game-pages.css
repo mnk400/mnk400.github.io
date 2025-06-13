@@ -11,6 +11,8 @@
     width: 100%;
     justify-content: center;
     position: relative;
+    box-sizing: border-box;
+    overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
 /* 
@@ -180,4 +182,103 @@
 #game-of-life-canvas {
     justify-content: center;
     align-items: center;
+}
+
+/* 
+ *   Minesweeper 
+ */
+
+#minesweeper-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 10px auto;
+}
+
+#minesweeper-header {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+#mine-counter,
+#game-timer {
+    font-weight: 600;
+    font-size: 18px;
+    color: var(--text-color);
+    background: var(--min-translucent);
+    padding: 8px 16px;
+    border-radius: 20px;
+    backdrop-filter: blur(4px);
+}
+
+#minesweeper-grid {
+    display: grid;
+    grid-gap: 5px;
+    max-width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.ms-cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid var(--min-translucent);
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s ease;
+    user-select: none;
+    position: relative;
+    font-size: calc(100% - 2px);
+    box-sizing: border-box; /* Include padding and border in width calculation */
+    max-width: 100%; /* Ensure cells don't exceed their container */
+}
+
+.ms-cell:hover {
+    background-color: var(--min-translucent);
+}
+
+.ms-cell.revealed {
+    border-style: dashed;
+}
+
+.ms-cell.flagged::before {
+    content: "🚩";
+    font-size: 16px;
+}
+
+.ms-cell.mine::before {
+    content: "💣";
+    font-size: 16px;
+}
+
+.ms-cell.flagged-correct::before {
+    content: "🚩";
+    font-size: 16px;
+}
+
+.ms-cell.flagged-wrong::before {
+    content: "❌";
+    font-size: 16px;
+}
+
+.ms-cell.adjacent-1 { color: #0000FF; }
+.ms-cell.adjacent-2 { color: #007B00; }
+.ms-cell.adjacent-3 { color: #FF0000; }
+.ms-cell.adjacent-4 { color: #00007B; }
+.ms-cell.adjacent-5 { color: #7B0000; }
+.ms-cell.adjacent-6 { color: #007B7B; }
+.ms-cell.adjacent-7 { color: #000000; }
+.ms-cell.adjacent-8 { color: #7B7B7B; }
+
+#game-status.win {
+    color: #4CAF50;
+}
+
+#game-status.lose {
+    color: #F44336;
 }
