@@ -23,6 +23,11 @@ html {
     font-family: "-apple-system", "inter", san-serif;
 }
 
+@view-transition {
+    navigation: auto;
+    animation-duration: 0.2s;
+}
+
 .me {
     width: 100%;
 }
@@ -193,7 +198,7 @@ strong {
 }
 
 .nav ul li:not(:last-child):after {
-    content: '/';
+    content: '∙';
     position: relative;
     padding: 5px;
     color: var(--text-color);
