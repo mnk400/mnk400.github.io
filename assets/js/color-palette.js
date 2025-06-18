@@ -1,15 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
     const imageInput = document.getElementById('image-input');
     const imagePreview = document.getElementById('image-preview');
+    const imageSelector = document.getElementById('image-selector');
     const colorsInput = document.getElementById('colors-input');
     const colorsValue = document.getElementById('colors-value');
     const extractBtn = document.getElementById('extract-btn');
-    const uploadBtn = document.getElementById('upload-btn');
     const paletteOutput = document.getElementById('palette-output');
     const colorInfo = document.getElementById('color-info');
     
-    // Hide image preview initially if not already hidden
-    if (imagePreview && !imagePreview.style.display) {
+    if (imagePreview) {
         imagePreview.style.display = 'none';
     }
     
@@ -24,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
             reader.onload = function(e) {
                 imagePreview.src = e.target.result;
                 imagePreview.style.display = 'block';
+                imageSelector.style.display = 'none';
                 paletteOutput.innerHTML = '';
                 // Don't clear the HTML structure, just hide it
                 colorInfo.style.display = 'none';

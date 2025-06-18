@@ -18,12 +18,12 @@ function toggleHeaderVisibility(showFull) {
 
 document.addEventListener('DOMContentLoaded', () => {
     const imageInput = document.getElementById('image-input');
-    const uploadBtn = document.getElementById('upload-btn');
+    const imageSelector = document.getElementById('image-selector');
 
     // Listen to handle upload button clicks
-    if (uploadBtn) {
-        uploadBtn.addEventListener('click', () => {
-            imageInput.click();
+    if (imageSelector) {
+        imageSelector.addEventListener('click', function() {
+          imageInput.click();
         });
     }
 

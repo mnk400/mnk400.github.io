@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const imageInput = document.getElementById('image-input');
     const imagePreview = document.getElementById('image-preview');
+    const imageSelector = document.getElementById('image-selector');
     const widthInput = document.getElementById('width-input');
     const widthValue = document.getElementById('width-value');
     const convertBtn = document.getElementById('convert-btn');
@@ -38,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
             reader.onload = (e) => {
                 imagePreview.src = e.target.result;
                 imagePreview.style.display = 'block';
+                imageSelector.style.display = 'none';
             };
             reader.readAsDataURL(file);
         }
