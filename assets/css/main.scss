@@ -7,6 +7,7 @@
 @import url(photo-album-page.css);
 @import url(music-page.css);
 @import url(historical-browser-page.css);
+@import url(color-palette.css);
 @import url(printer.css);
 @import url('https://rsms.me/inter/inter.css');
 @import "reset";
@@ -102,7 +103,7 @@ strong {
 }
 
 .minimal-back-button {
-    background-color: var(--min-translucent);
+    background-color: var(--mid-translucent);
     backdrop-filter: blur(10px);
     padding: 11px 14px;
     border-radius: 6px;
@@ -116,7 +117,7 @@ strong {
 }
 
 .minimal-header {
-    background-color: var(--min-translucent);
+    background-color: var(--mid-translucent);
     backdrop-filter: blur(10px);
     padding: 11px 14px 11px 5px;
     border-radius: 6px;
@@ -216,7 +217,7 @@ a {
     line-height: 25px;
     color: var(--link-color);
     text-decoration: underline;
-    text-decoration-color: var(--min-translucent);
+    text-decoration-color: var(--mid-translucent);
     text-decoration-thickness: .1em;
 }
 
@@ -412,10 +413,13 @@ button:hover {
         -webkit-appearance: none;
         appearance: none;
         height: 25px;
-        background: var(--min-translucent);
+        background: linear-gradient(to right, 
+                                    var(--hg-translucent) var(--value-percent, 0%), 
+                                    var(--mid-translucent) var(--value-percent, 0%));
         backdrop-filter: blur(10px);
         border-radius: 4px;
         outline: none;
+        transition: all 0.15s ease-in-out;
 
         &::-webkit-slider-thumb {
             -webkit-appearance: none;
@@ -425,7 +429,6 @@ button:hover {
             background: var(--sec-text-color);
             border-radius: 10px;
             cursor: pointer;
-            transition: background 0.15s ease-in-out;
         }
 
         &::-moz-range-thumb {
@@ -434,7 +437,6 @@ button:hover {
             background: var(--sec-text-color);
             border-radius: 10px;
             cursor: pointer;
-            transition: background 0.15s ease-in-out;
         }
     }
 
@@ -696,7 +698,7 @@ input[type=file]::file-selector-button {
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: var(--min-translucent);
+        background-color: var(--mid-translucent);
         border-radius: 8px;
         backdrop-filter: blur(10px)
     }
@@ -723,7 +725,7 @@ input[type=file]::file-selector-button {
 .expandable-toggle {
   width: 100%;
   padding: 10px 15px;
-  background-color: var(--min-translucent);
+  background-color: var(--mid-translucent);
   backdrop-filter: blur(10px);
   border: none;
   border-radius: 6px;
@@ -752,7 +754,7 @@ input[type=file]::file-selector-button {
   padding: 10px 15px 0px 15px;
   margin-top: 10px;
   margin-bottom: 10px;
-  background-color: var(--min-translucent);
+  background-color: var(--mid-translucent);
   backdrop-filter: blur(10px);
   border-radius: 6px;
   overflow: hidden;
@@ -780,6 +782,7 @@ input[type=file]::file-selector-button {
 .wiki-image img {
     width: 100%;
 }
+
 ////////////////////////////
 /// Selection Switch Component
 ////////////////////////////
@@ -795,7 +798,7 @@ input[type=file]::file-selector-button {
         padding: 8px 16px;
         border: none;
         border-radius: 20px;
-        background-color: var(--min-translucent);
+        background-color: var(--mid-translucent);
         color: var(--text-color);
         cursor: pointer;
         transition: all 0.2s ease;

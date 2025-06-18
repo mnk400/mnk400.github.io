@@ -1,0 +1,71 @@
+---
+layout: post
+title: Color Palette Extractor
+description: Extract a color palette from any image
+permalink: /more/color-palette
+category: Image Tools
+minimal: True
+---
+
+<body>
+    <p>
+        Upload an image to extract its color palette.
+    </p>
+    <p>
+        This tool uses K-means clustering to identify the dominant colors in your image. All processing occurs locally in your browser - no images are uploaded to external servers.
+    </p>
+    <div class="palette-container">
+        <img id="image-preview" class="img-curved-edges">
+        <div class="controls">
+            <div class="range-width-container">
+                <p id="range-value">
+                    <span id="colors-value">5</span> Colors
+                </p>
+                <input type="range" id="colors-input" value="5" min="2" max="10" style="width: 100%; position: relative; z-index: 0;">
+            </div>
+            
+            <div>
+                <button id="upload-btn">Choose Image</button>
+                <input type="file" id="image-input" accept="image/*" style="display: none;">
+                <button id="extract-btn">Extract Palette</button>
+            </div>
+        </div>
+
+        <div id="palette-output" class="palette-output">
+            <!-- Color swatches will be added here -->
+        </div>
+        
+        <!-- Templates -->
+        <template id="color-swatch-template">
+            <div class="color-swatch" data-color="" data-index=""></div>
+        </template>
+        
+        <div id="color-info" class="color-info" style="display: none;">
+            <!-- Color details will be populated here -->
+            <div class="color-detail">
+                <div id="color-preview" class="color-preview"></div>
+                <div class="color-values">
+                    <div class="color-value">
+                        <b>HEX: </b><span id="hex-value" class="color-code"></span>
+                        <button class="copy-btn" data-value="" data-type="hex">Copy</button>
+                    </div>
+                    <div class="color-value">
+                        <b>RGB: </b><span id="rgb-value" class="color-code"></span>
+                        <button class="copy-btn" data-value="" data-type="rgb">Copy</button>
+                    </div>
+                    <div class="color-value">
+                        <b>HSL: </b><span id="hsl-value" class="color-code"></span>
+                        <button class="copy-btn" data-value="" data-type="hsl">Copy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Error message template -->
+        <template id="error-template">
+            <p>No colors could be extracted from this image.</p>
+        </template>
+    </div>
+
+    <script src="/assets/js/color-palette.js"></script>
+</body>

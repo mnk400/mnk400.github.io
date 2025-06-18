@@ -26,4 +26,19 @@ document.addEventListener('DOMContentLoaded', () => {
             imageInput.click();
         });
     }
+
+    // Handle dynamic fill for range inputs
+    const rangeInputs = document.querySelectorAll('input[type="range"]');
+
+    function updateRangeFill(input) {
+        const value = (input.value - input.min) / (input.max - input.min) * 100;
+        input.style.setProperty('--value-percent', value + '%');
+    }
+
+    rangeInputs.forEach(input => {
+        // Set initial fill value
+        updateRangeFill(input);
+        // Update fill value on input
+        input.addEventListener('input', () => updateRangeFill(input));
+    });
 });

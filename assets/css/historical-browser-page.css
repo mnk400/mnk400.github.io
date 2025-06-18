@@ -4,7 +4,7 @@
     align-items: center;
     max-width: 100%;
     padding: 10px 10px;
-    background-color: var(--min-translucent);
+    background-color: var(--mid-translucent);
     backdrop-filter: blur(10px);
     border-radius: 6px;
 
@@ -13,8 +13,8 @@
         flex-grow: 1;
         min-width: 100px;
         padding: 9px 10px;
-        background-color: var(--min-translucent);
-        border: var(--min-translucent);
+        background-color: var(--mid-translucent);
+        border: var(--mid-translucent);
         border-radius: 6px;
         color: var(--text-color);
     }
@@ -26,7 +26,7 @@
         border-radius: 6px;
         font-size: 0.8em;
         font-weight: 600;
-        background-color: var(--min-translucent);
+        background-color: var(--mid-translucent);
         color: var(--text-color);
         border: none;
         -webkit-appearance: none;
@@ -89,7 +89,7 @@
     margin-top: 15px;
     border-radius: 6px;
     overflow: hidden;
-    background-color: var(--min-translucent, #fff);
+    background-color: var(--mid-translucent, #fff);
     backdrop-filter: blur(10px);
 
     iframe {

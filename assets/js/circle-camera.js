@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
         video.srcObject = null;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        canvas.style.backgroundColor = getCSSVariable(`--min-translucent`);
+        canvas.style.backgroundColor = getCSSVariable(`--mid-translucent`);
         
         startBtn.textContent = 'Start Camera';
     }

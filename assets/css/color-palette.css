@@ -1,0 +1,83 @@
+/* Color Palette Extractor styles */
+.palette-container {
+    margin: -10px 0;
+}
+
+.palette-output {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    width: 100%;
+    margin-bottom: 20px;
+    grid-auto-rows: 1fr;
+}
+
+.color-swatch {
+    aspect-ratio: 1/1;
+    width: 100%;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.color-swatch:hover {
+    transform: scale(1.05);
+}
+
+.color-info {
+    background-color: var(--mid-translucent);
+    border-radius: 6px;
+    backdrop-filter: blur(10px);
+}
+
+.color-detail {
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.color-preview {
+    width: 80px;
+    height: 80px;
+    border-radius: 6px;
+}
+
+.color-values {
+    line-height: 1.5em;
+}
+
+.color-value {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.color-code {
+    font-family: 'IBM Plex Mono', monospace;
+}
+
+.copy-btn {
+    padding: 2px 8px;
+    font-size: 0.8em;
+    background-color: var(--mid-translucent);
+    color: var(--text-color);
+}
+
+.copy-btn:hover {
+    background-color: var(--black-accent);
+    color: var(--background-main);
+}
+
+@media (max-width: 600px) {
+    .palette-output {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .color-preview {
+        width: 60px;
+        height: 60px;
+    }
+}

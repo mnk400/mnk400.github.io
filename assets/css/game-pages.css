@@ -132,7 +132,7 @@
     cursor: pointer;
     font-family: 'IBM Plex Mono', monospace;
     transition: background-color 0.2s ease;
-    border: 1px solid var(--min-translucent);
+    border: 1px solid var(--mid-translucent);
     aspect-ratio: 1;
     backdrop-filter: blur(10px)
 }
@@ -149,7 +149,7 @@
 }
 
 .ttt-cell:hover {
-    background-color: var(--min-translucent);
+    background-color: var(--mid-translucent);
 }
 
 .ttt-cell.x::before {
@@ -207,7 +207,7 @@
     font-weight: 600;
     font-size: 18px;
     color: var(--text-color);
-    background: var(--min-translucent);
+    background: var(--mid-translucent);
     padding: 8px 16px;
     border-radius: 20px;
     backdrop-filter: blur(4px);
@@ -225,7 +225,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 2px solid var(--min-translucent);
+    border: 2px solid var(--mid-translucent);
     border-radius: 6px;
     cursor: pointer;
     font-weight: 600;
@@ -239,7 +239,7 @@
 }
 
 .ms-cell:hover {
-    background-color: var(--min-translucent);
+    background-color: var(--mid-translucent);
 }
 
 .ms-cell.revealed {
