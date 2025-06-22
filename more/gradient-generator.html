@@ -1,0 +1,92 @@
+---
+layout: post
+title: Gradient Generator
+description: Create gradient images
+permalink: /more/gradient-images
+category: Image Tools
+minimal: True
+---
+
+<body>
+    <p>
+        Create beautiful gradient images with custom colors and orientations.
+    </p>
+    
+    <div class="gradient-container">
+        <div class="controls">
+            <div class="color-inputs-container">
+                <div class="color-input-group">
+                    <label for="color1"><b>Start Color:</b></label>
+                    <div class="color-input-wrapper">
+                        <input type="color" id="color1" value="#C6A58F">
+                        <input type="text" id="color1-text" value="#C6A58F" placeholder="#C6A58F">
+                    </div>
+                </div>
+                
+                <div class="color-input-group">
+                    <label for="color2"><b>End Color:</b></label>
+                    <div class="color-input-wrapper">
+                        <input type="color" id="color2" value="#7C95AF">
+                        <input type="text" id="color2-text" value="#7C95AF" placeholder="#7C95AF">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label><b>Orientation:</b></label>
+                <div class="selection-switch orientation-toggle">
+                    <span id="landscape" class="switch-option active" data-value="landscape">Landscape (3840×2160)</span>
+                    <span id="portrait" class="switch-option" data-value="portrait">Portrait (2160×3840)</span>
+                    <span id="square" class="switch-option" data-value="square">Square (2160×2160)</span>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label><b>Gradient Direction:</b></label>
+                <div class="selection-switch direction-toggle">
+                    <span id="dir-0" class="switch-option active" data-value="0">Top to Bottom</span>
+                    <span id="dir-90" class="switch-option" data-value="90">Left to Right</span>
+                    <span id="dir-45" class="switch-option" data-value="45">Diagonal (↘)</span>
+                    <span id="dir-135" class="switch-option" data-value="135">Diagonal (↗)</span>
+                    <span id="dir-180" class="switch-option" data-value="180">Bottom to Top</span>
+                    <span id="dir-270" class="switch-option" data-value="270">Right to Left</span>
+                    <span id="dir-225" class="switch-option" data-value="225">Diagonal (↖)</span>
+                    <span id="dir-315" class="switch-option" data-value="315">Diagonal (↙)</span>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label><b>Gradient Type:</b></label>
+                <div class="selection-switch type-toggle">
+                    <span id="linear" class="switch-option active" data-value="linear">Linear</span>
+                    <span id="radial" class="switch-option" data-value="radial">Radial</span>
+                </div>
+            </div>
+            
+            <div class="controls" id="smoothness-control" style="display: none;">
+                <div class="range-width-container">
+                    <p id="range-value">
+                        <b><span id="smoothness-display">50</span>%</b>
+                    </p>
+                    <input type="range" id="smoothness" value="50" min="0" max="100">
+                </div>
+            </div>
+            
+            <div class="button-group">
+                <button id="download-btn">Download</button>
+            </div>
+        </div>
+        
+        <div class="preview-container">
+            <div id="gradient-preview" class="gradient-preview">
+            </div>
+            <canvas id="gradient-canvas" style="display: none;"></canvas>
+        </div>
+        
+        <div id="generation-status" class="status-message" style="display: none;">
+            <p>Generating...</p>
+        </div>
+    </div>
+
+    <script src="/assets/js/gradient-generator.js"></script>
+</body>
