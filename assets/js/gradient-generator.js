@@ -13,8 +13,7 @@ class GradientWallpaperGenerator {
         this.orientationToggle = document.querySelector('.orientation-toggle');
         this.directionToggle = document.querySelector('.direction-toggle');
         this.typeToggle = document.querySelector('.type-toggle');
-        this.smoothnessSlider = document.getElementById('smoothness');
-        this.smoothnessDisplay = document.getElementById('smoothness-display');
+        this.smoothnessSlider = document.getElementById('smoothness-input');
         this.downloadBtn = document.getElementById('download-btn');
         this.gradientPreview = document.getElementById('gradient-preview');
         this.canvas = document.getElementById('gradient-canvas');
@@ -72,7 +71,6 @@ class GradientWallpaperGenerator {
         });
         
         this.smoothnessSlider.addEventListener('input', () => {
-            this.smoothnessDisplay.textContent = this.smoothnessSlider.value;
             this.updatePreview();
         });
 

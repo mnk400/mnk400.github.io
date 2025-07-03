@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('canvas-output');
     const ctx = canvas.getContext('2d');
     const resolutionInput = document.getElementById('resolution-input');
-    const resolutionValue = document.getElementById('resolution-value');
     const startBtn = document.getElementById('start-btn');
     const fullscreenBtn = document.getElementById('fullscreen-btn');
     
@@ -21,15 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let isFullscreen = false;
 
-    let updateTimeout;
-    resolutionInput.addEventListener('input', () => {
-        if (updateTimeout) {
-            clearTimeout(updateTimeout);
-        }
-        updateTimeout = setTimeout(() => {
-            resolutionValue.textContent = resolutionInput.value;
-        }, 10);
-    });
+
 
     let stream = null;
     let animationFrameId = null;

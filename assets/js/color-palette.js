@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const imagePreview = document.getElementById('image-preview');
     const imageSelector = document.getElementById('image-selector');
     const colorsInput = document.getElementById('colors-input');
-    const colorsValue = document.getElementById('colors-value');
     const extractBtn = document.getElementById('extract-btn');
     const paletteOutput = document.getElementById('palette-output');
     const colorInfo = document.getElementById('color-info');
@@ -12,9 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
         imagePreview.style.display = 'none';
     }
     
-    colorsInput.addEventListener('input', function() {
-        colorsValue.textContent = this.value;
-    });
+
 
     imageInput.addEventListener('change', function(e) {
         const file = this.files[0];

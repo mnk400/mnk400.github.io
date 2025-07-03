@@ -64,12 +64,7 @@ minimal: True
             </div>
             
             <div class="controls" id="smoothness-control" style="display: none;">
-                <div class="range-width-container">
-                    <p id="range-value">
-                        <b><span id="smoothness-display">50</span>%</b>
-                    </p>
-                    <input type="range" id="smoothness" value="50" min="0" max="100">
-                </div>
+                {% include range-slider.html id='smoothness' value='50' min='0' max='100' unit='' %}
             </div>
             
             <div class="button-group">

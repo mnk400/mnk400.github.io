@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const imagePreview = document.getElementById('image-preview');
     const imageSelector = document.getElementById('image-selector');
     const widthInput = document.getElementById('width-input');
-    const widthValue = document.getElementById('width-value');
     const convertBtn = document.getElementById('convert-btn');
     const asciiOutput = document.getElementById('ascii-output');
 
@@ -13,24 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return Math.floor(availableWidth / charWidth * 1.8);
     }
 
-    // Update width value display when slider moves
-    let updateTimeout;
-    widthInput.addEventListener('input', () => {
-        if (updateTimeout) {
-            clearTimeout(updateTimeout);
-        }
-        updateTimeout = setTimeout(() => {
-            widthValue.textContent = widthInput.value;
-            
-            // Recalculate font size when width changes if an image has been converted
-            if (asciiOutput.textContent) {
-                const width = parseInt(widthInput.value);
-                const containerWidth = asciiOutput.parentElement.clientWidth;
-                const fontSize = calculateOptimalFontSize(containerWidth, width);
-                // asciiOutput.style.fontSize = `${fontSize}px`;
-            }
-        }, 10);
-    });
+
 
     imageInput.addEventListener('change', (e) => {
         const file = e.target.files[0];

@@ -19,12 +19,7 @@ category: Fun Tools
         </div>
         
         <div class="controls">
-            <div class="range-width-container">
-                <p id="range-value">
-                    Resolution: <span id="resolution-value">40</span>
-                </p>
-                <input type="range" id="resolution-input" value="40" min="10" max="100">
-            </div>
+            {% include range-slider.html id='resolution' value='40' min='10' max='100' unit='Resolution' %}
             <br/>
             <button id="start-btn" class="normal-btn">Start Camera</button>
             <button id="fullscreen-btn" class="normal-btn">Fullscreen</button>

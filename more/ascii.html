@@ -13,18 +13,10 @@ category: Image Tools
     <div class="ascii-container">
         <img id="image-preview" class="img-curved-edges">
         <div class="controls">
-            <div id="image-selector" class="image-selector">
-                <span>Select Image</span>
-            </div>
-            <div class="range-width-container">
-                <p id="range-value">
-                    <b><span id="width-value">80</span> Characters</b>
-                </p>
-                <input type="range" id="width-input" value="80" min="15" max="150" style="width: 100%; position: relative; z-index: 0;">
-            </div>
+            {% include image-upload.html %}
+            {% include range-slider.html id='width' value='80' min='15' max='150' unit='Characters' %}
             
             <div class="button-container">
-                <input type="file" id="image-input" accept="image/*" style="display: none;">
                 <button id="convert-btn" class="normal-btn">Convert to ASCII</button>
             </div>
         </div>

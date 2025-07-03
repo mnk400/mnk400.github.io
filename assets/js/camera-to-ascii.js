@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     const video = document.getElementById('video');
     const widthInput = document.getElementById('width-input');
-    const widthValue = document.getElementById('width-value');
     const startBtn = document.getElementById('start-btn');
     const fullscreenBtn = document.getElementById('fullscreen-btn');
     const asciiOutput = document.getElementById('ascii-output');
@@ -16,24 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let isFullscreen = false;
 
-    // Update width value display when slider moves
-    let updateTimeout;
-    widthInput.addEventListener('input', () => {
-        if (updateTimeout) {
-            clearTimeout(updateTimeout);
-        }
-        updateTimeout = setTimeout(() => {
-            widthValue.textContent = widthInput.value;
-            
-            // Recalculate font size when width changes
-            if (stream && !isFullscreen) {
-                const width = parseInt(widthInput.value);
-                const containerWidth = asciiOutput.parentElement.clientWidth;
-                const fontSize = calculateOptimalFontSize(containerWidth, width);
-                asciiOutput.style.fontSize = `${fontSize}px`;
-            }
-        }, 10);
-    });
+
 
     let stream = null;
     let animationFrameId = null;

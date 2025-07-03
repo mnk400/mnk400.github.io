@@ -1,0 +1,43 @@
+{% comment %}
+  Range Slider Component
+  
+  Usage:
+  {% include range-slider.html id="your-id" value="50" min="0" max="100" unit="Units" %}
+  
+  Parameters:
+  - id: Required. The base ID for the slider elements.
+  - value: Required. The initial value of the slider.
+  - min: Required. The minimum value of the slider.
+  - max: Required. The maximum value of the slider.
+  - unit: Required. The unit to display next to the value.
+{% endcomment %}
+
+<div class="range-width-container">
+    <p id="range-value">
+        <b><span id="{{ include.id }}-value">{{ include.value }}</span> {{ include.unit }}</b>
+    </p>
+    <input type="range" id="{{ include.id }}-input" value="{{ include.value }}" min="{{ include.min }}" max="{{ include.max }}" style="width: 100%; position: relative; z-index: 0;">
+</div>
+
+<script>
+    (function() {
+        const input = document.getElementById('{{ include.id }}-input');
+        if (!input) return;
+
+        const value = document.getElementById('{{ include.id }}-value');
+
+        function updateRangeFill(input) {
+            const val = (input.value - input.min) / (input.max - input.min) * 100;
+            input.style.setProperty('--value-percent', val + '%');
+        }
+
+        updateRangeFill(input);
+
+        input.addEventListener('input', () => {
+            if (value) {
+                value.textContent = input.value;
+            }
+            updateRangeFill(input);
+        });
+    })();
+</script>
