@@ -34,33 +34,20 @@ minimal: True
             
             <div class="control-group">
                 <label><b>Orientation:</b></label>
-                <div class="selection-switch orientation-toggle">
-                    <span id="landscape" class="switch-option active" data-value="landscape">Landscape (3840×2160)</span>
-                    <span id="portrait" class="switch-option" data-value="portrait">Portrait (2160×3840)</span>
-                    <span id="square" class="switch-option" data-value="square">Square (2160×2160)</span>
-                </div>
+                {% assign orientation_options = "landscape:Landscape (3840×2160),portrait:Portrait (2160×3840),square:Square (2160×2160)" | split: "," %}
+                {% include selection-switch.html id="orientation-toggle" class="orientation-toggle" options=orientation_options default_active="landscape" %}
             </div>
             
             <div class="control-group">
                 <label><b>Gradient Direction:</b></label>
-                <div class="selection-switch direction-toggle">
-                    <span id="dir-0" class="switch-option active" data-value="0">Top to Bottom</span>
-                    <span id="dir-90" class="switch-option" data-value="90">Left to Right</span>
-                    <span id="dir-45" class="switch-option" data-value="45">Diagonal (↘)</span>
-                    <span id="dir-135" class="switch-option" data-value="135">Diagonal (↗)</span>
-                    <span id="dir-180" class="switch-option" data-value="180">Bottom to Top</span>
-                    <span id="dir-270" class="switch-option" data-value="270">Right to Left</span>
-                    <span id="dir-225" class="switch-option" data-value="225">Diagonal (↖)</span>
-                    <span id="dir-315" class="switch-option" data-value="315">Diagonal (↙)</span>
-                </div>
+                {% assign direction_options = "0:Top to Bottom,90:Left to Right,45:Diagonal (↘),135:Diagonal (↗),180:Bottom to Top,270:Right to Left,225:Diagonal (↖),315:Diagonal (↙)" | split: "," %}
+                {% include selection-switch.html id="direction-toggle" class="direction-toggle" options=direction_options default_active="0" %}
             </div>
             
             <div class="control-group">
                 <label><b>Gradient Type:</b></label>
-                <div class="selection-switch type-toggle">
-                    <span id="linear" class="switch-option active" data-value="linear">Linear</span>
-                    <span id="radial" class="switch-option" data-value="radial">Radial</span>
-                </div>
+                {% assign type_options = "linear:Linear,radial:Radial" | split: "," %}
+                {% include selection-switch.html id="type-toggle" class="type-toggle" options=type_options default_active="linear" %}
             </div>
             
             <div class="controls" id="smoothness-control" style="display: none;">

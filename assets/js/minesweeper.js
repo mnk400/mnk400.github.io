@@ -4,7 +4,6 @@ const mineCounterElement = document.getElementById('mine-counter');
 const timerElement = document.getElementById('game-timer');
 const newGameButton = document.getElementById('new-game-btn');
 const gameStatusElement = document.getElementById('game-status');
-const difficultyButtons = document.querySelectorAll('.difficulty-btn');
 
 // Game configuration
 const difficulties = {
@@ -296,14 +295,8 @@ function startTimer() {
 function changeDifficulty(difficulty) {
     gameConfig = difficulties[difficulty];
     
-    // Update active button
-    difficultyButtons.forEach(button => {
-        if (button.getAttribute('data-difficulty') === difficulty) {
-            button.classList.add('active');
-        } else {
-            button.classList.remove('active');
-        }
-    });
+    // Update active button using switchManager
+    window.switchManager['difficulty-selector'].setActive(difficulty);
     
     initGame();
 }
@@ -314,12 +307,10 @@ newGameButton.addEventListener('click', () => {
     initGame();
 });
 
-difficultyButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        const difficulty = button.getAttribute('data-difficulty');
-        gameStatusElement.classList.remove('win', 'lose');
-        changeDifficulty(difficulty);
-    });
+// Initialize difficulty selector
+initSwitch('difficulty-selector', (difficulty) => {
+    gameStatusElement.classList.remove('win', 'lose');
+    changeDifficulty(difficulty);
 });
 
 // Initialize the game on load

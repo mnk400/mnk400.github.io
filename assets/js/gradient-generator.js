@@ -54,17 +54,18 @@ class GradientWallpaperGenerator {
             }
         });
 
-        this.bindSelectionSwitch(this.orientationToggle, (value) => {
+        // Initialize selection switches
+        initSwitch('orientation-toggle', (value) => {
             this.currentOrientation = value;
             this.updatePreview();
         });
         
-        this.bindSelectionSwitch(this.directionToggle, (value) => {
+        initSwitch('direction-toggle', (value) => {
             this.currentDirection = value;
             this.updatePreview();
         });
         
-        this.bindSelectionSwitch(this.typeToggle, (value) => {
+        initSwitch('type-toggle', (value) => {
             this.currentType = value;
             this.updateDirectionOptions();
             this.updatePreview();
@@ -77,65 +78,57 @@ class GradientWallpaperGenerator {
         this.downloadBtn.addEventListener('click', () => this.downloadImage());
     }
 
-    bindSelectionSwitch(container, callback) {
-        const options = container.querySelectorAll('.switch-option');
-        options.forEach(option => {
-            option.addEventListener('click', () => {
-                options.forEach(opt => opt.classList.remove('active'));
-                option.classList.add('active');
-                callback(option.dataset.value);
-            });
-        });
-    }
-
     isValidHexColor(hex) {
         return /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(hex);
     }
 
     updateDirectionOptions() {
         const type = this.currentType;
-        const directionContainer = this.directionToggle;
-        
-        directionContainer.innerHTML = '';
+        const container = document.getElementById('direction-toggle');
         
         let options = [];
         
         if (type === 'linear') {
             options = [
-                { value: '0', text: 'Top to Bottom', id: 'dir-0' },
-                { value: '90', text: 'Left to Right', id: 'dir-90' },
-                { value: '45', text: 'Diagonal (↗)', id: 'dir-45' },
-                { value: '135', text: 'Diagonal (↘)', id: 'dir-135' },
-                { value: '180', text: 'Bottom to Top', id: 'dir-180' },
-                { value: '270', text: 'Right to Left', id: 'dir-270' },
-                { value: '225', text: 'Diagonal (↙)', id: 'dir-225' },
-                { value: '315', text: 'Diagonal (↖)', id: 'dir-315' }
+                '0:Top to Bottom',
+                '90:Left to Right', 
+                '45:Diagonal (↗)',
+                '135:Diagonal (↘)',
+                '180:Bottom to Top',
+                '270:Right to Left',
+                '225:Diagonal (↙)',
+                '315:Diagonal (↖)'
             ];
         } else if (type === 'radial') {
             options = [
-                { value: 'center', text: 'Center', id: 'dir-center' },
-                { value: 'top', text: 'Top', id: 'dir-top' },
-                { value: 'bottom', text: 'Bottom', id: 'dir-bottom' },
-                { value: 'left', text: 'Left', id: 'dir-left' },
-                { value: 'right', text: 'Right', id: 'dir-right' },
-                { value: 'top-left', text: 'Top Left', id: 'dir-top-left' },
-                { value: 'top-right', text: 'Top Right', id: 'dir-top-right' },
-                { value: 'bottom-left', text: 'Bottom Left', id: 'dir-bottom-left' },
-                { value: 'bottom-right', text: 'Bottom Right', id: 'dir-bottom-right' }
+                'center:Center',
+                'top:Top',
+                'bottom:Bottom',
+                'left:Left',
+                'right:Right',
+                'top-left:Top Left',
+                'top-right:Top Right',
+                'bottom-left:Bottom Left',
+                'bottom-right:Bottom Right'
             ];
         }
         
+        // Clear and rebuild options
+        container.innerHTML = '';
         options.forEach((opt, index) => {
+            const parts = opt.split(':');
             const span = document.createElement('span');
-            span.id = opt.id;
+            span.id = parts[0];
             span.className = `switch-option${index === 0 ? ' active' : ''}`;
-            span.dataset.value = opt.value;
-            span.textContent = opt.text;
-            directionContainer.appendChild(span);
+            span.dataset.value = parts[0];
+            span.textContent = parts[1];
+            container.appendChild(span);
         });
         
-        this.currentDirection = options[0].value;
-        this.bindSelectionSwitch(directionContainer, (value) => {
+        this.currentDirection = options[0].split(':')[0];
+        
+        // Re-initialize the switch
+        initSwitch('direction-toggle', (value) => {
             this.currentDirection = value;
             this.updatePreview();
         });

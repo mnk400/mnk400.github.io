@@ -16,11 +16,8 @@ category: Games
         <div id="minesweeper-grid"></div>
     </div>
     <div id="minesweeper-controls">
-        <div class="selection-switch difficulty-selector">
-            <button class="switch-option difficulty-btn active" data-difficulty="beginner">Beginner</button>
-            <button class="switch-option difficulty-btn" data-difficulty="intermediate">Intermediate</button>
-            <button class="switch-option difficulty-btn" data-difficulty="expert">Expert</button>
-        </div>
+        {% assign difficulty_options = "beginner:Beginner,intermediate:Intermediate,expert:Expert" | split: "," %}
+        {% include selection-switch.html id="difficulty-selector" class="difficulty-selector" options=difficulty_options default_active="beginner" %}
         <button id="new-game-btn" class="normal-btn">New Game</button>
         <span id="game-status"></span>
     </div>

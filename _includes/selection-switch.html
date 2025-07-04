@@ -1,0 +1,82 @@
+{% comment %}
+  Selection Switch Component
+  
+  Usage:
+  {% assign my_options = "option1:Label 1,option2:Label 2,option3:Label 3" | split: "," %}
+  {% include selection-switch.html id="my-switch" options=my_options default_active="option1" %}
+  
+  Parameters:
+  - id: Required. Unique identifier for this switch group.
+  - class: Optional. Additional CSS classes to apply to the switch container.
+  - options: Required. Array of options in format "value:label".
+  - default_active: Optional. The value of the option that should be active by default.
+{% endcomment %}
+
+<div class="selection-switch {{ include.class }}" id="{{ include.id }}">
+  {% for option_raw in include.options %}
+    {% assign option_parts = option_raw | split: ":" %}
+    {% assign option_value = option_parts[0] %}
+    {% assign option_label = option_parts[1] | default: option_parts[0] %}
+    
+    {% assign is_active = false %}
+    {% if include.default_active == option_value %}
+      {% assign is_active = true %}
+    {% elsif include.default_active == null and forloop.first %}
+      {% assign is_active = true %}
+    {% endif %}
+    
+    <span 
+      id="{{ option_value }}" 
+      class="switch-option{% if is_active %} active{% endif %}"
+      data-value="{{ option_value }}"
+    >
+      {{ option_label }}
+    </span>
+  {% endfor %}
+</div>
+
+<script>
+(function() {
+  const container = document.getElementById('{{ include.id }}');
+  if (!container) return;
+  
+  const options = container.querySelectorAll('.switch-option');
+  
+  // Global switch manager
+  window.switchManager = window.switchManager || {};
+  
+  // Store switch reference
+  window.switchManager['{{ include.id }}'] = {
+    setActive: (value) => {
+      options.forEach(opt => {
+        opt.classList.toggle('active', (opt.dataset.value || opt.id) === value);
+      });
+    },
+    getActive: () => {
+      const active = container.querySelector('.switch-option.active');
+      return active ? (active.dataset.value || active.id) : null;
+    }
+  };
+  
+  // Click handlers
+  options.forEach(option => {
+    option.onclick = () => {
+      options.forEach(opt => opt.classList.remove('active'));
+      option.classList.add('active');
+      
+      const value = option.dataset.value || option.id;
+      container.dispatchEvent(new CustomEvent('change', { 
+        detail: { value, element: option } 
+      }));
+    };
+  });
+})();
+
+// Function for easy initialization
+window.initSwitch = window.initSwitch || function(id, callback) {
+  const container = document.getElementById(id);
+  if (container) {
+    container.addEventListener('change', e => callback(e.detail.value, e.detail.element));
+  }
+};
+</script>

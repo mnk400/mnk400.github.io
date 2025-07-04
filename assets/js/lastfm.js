@@ -70,21 +70,9 @@ function switchPeriod(period) {
 }
 
 function updateToggleStates() {
-    // Update view toggle states
-    document.querySelectorAll('.view-toggle .switch-option').forEach(option => {
-        option.classList.remove('active');
-        if (option.id === `${currentView}-toggle`) {
-            option.classList.add('active');
-        }
-    });
-
-    // Update period toggle states
-    document.querySelectorAll('.period-toggle .switch-option').forEach(option => {
-        option.classList.remove('active');
-        if (option.id === currentPeriod) {
-            option.classList.add('active');
-        }
-    });
+    // Update states using the switchManager
+    window.switchManager['view-toggle'].setActive(currentView);
+    window.switchManager['period-toggle'].setActive(currentPeriod);
 }
 
 function fetchData() {
@@ -184,19 +172,13 @@ async function fetchTopArtists() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // View toggle event listeners
-    document.querySelectorAll('.view-toggle .switch-option').forEach(option => {
-        option.addEventListener('click', function() {
-            const view = this.id.replace('-toggle', '');
-            switchView(view);
-        });
+    // Initialize selection switches
+    initSwitch('view-toggle', (value) => {
+        switchView(value);
     });
 
-    // Period toggle event listeners
-    document.querySelectorAll('.period-toggle .switch-option').forEach(option => {
-        option.addEventListener('click', function() {
-            switchPeriod(this.id);
-        });
+    initSwitch('period-toggle', (value) => {
+        switchPeriod(value);
     });
 
     // Initial fetch
