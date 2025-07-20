@@ -1,0 +1,75 @@
+// =============================================================================
+// VARIABLES
+// =============================================================================
+
+// Color Schemes
+:root[data-theme="light"] {
+    --background-main: #f2f0ef;
+    --background-darker: #f8f5f3;
+    --text-color: #3b3b3b;
+    --sec-text-color: #656565;
+    --link-color: #1153bf;
+    --red-accent: #cf778c;
+    --black-accent: rgba(0, 0, 0, 0.7);
+    --black-accent-hover: rgba(0, 0, 0, 0.5);
+    --min-translucent: rgb(0, 0, 0, 0.03);
+    --mid-translucent: rgb(0, 0, 0, 0.07);
+    --hg-translucent: rgb(0, 0, 0, 0.2);
+    --code-bg: #ebe9e8;
+    --note-bg: #d8f2fd;
+}
+
+:root[data-theme="dark"] {
+    --background-main: #1a1a1a;
+    --background-darker: #2a2a2a;
+    --text-color: #d0d0d0;
+    --sec-text-color: #c2c2c2;
+    --link-color: #1153bf;
+    --red-accent: #cf778c;
+    --black-accent: rgba(256, 256, 256, 0.3);
+    --black-accent-hover: rgba(256, 256, 256, 0.5);
+    --mid-translucent: rgb(256, 256, 256, 0.07);
+    --hg-translucent: rgb(256, 256, 256, 0.2);
+    --code-bg: #212121;
+    --note-bg: #4a606a;
+}
+
+// Spacing Scale
+:root {
+    --spacing-xs: 5px;
+    --spacing-sm: 8px;
+    --spacing-md: 10px;
+    --spacing-lg: 15px;
+    --spacing-xl: 20px;
+    --spacing-2xl: 30px;
+    --spacing-3xl: 60px;
+    
+    // Border Radius
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+    --radius-xl: 12px;
+    --radius-round: 50%;
+    
+    // Transitions
+    --transition-fast: 0.1s ease;
+    --transition-medium: 0.2s ease;
+    --transition-slow: 0.3s ease;
+    --transition-backdrop: 0.4s ease;
+    
+    // Shadows
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.1);
+    
+    // Z-index scale
+    --z-dropdown: 100;
+    --z-sticky: 200;
+    --z-fixed: 300;
+    --z-modal: 1000;
+    --z-tooltip: 1100;
+}
+
+// SCSS Variables (for use in calculations)
+$breakpoint-mobile: 600px;
+$max-content-width: 525px;

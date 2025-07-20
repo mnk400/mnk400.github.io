@@ -1,0 +1,122 @@
+// =============================================================================
+// BUTTONS
+// =============================================================================
+
+// Base button styles
+button, .btn {
+    padding: var(--spacing-sm) 16px;
+    background-color: var(--black-accent);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 1em;
+    font-weight: 400 !important;
+    cursor: pointer;
+    transition: background-color var(--transition-medium);
+    backdrop-filter: blur(10px);
+    font-family: "-apple-system", "inter", sans-serif;
+    
+    &:hover {
+        background-color: var(--black-accent-hover);
+    }
+    
+    // Button variants
+    &--dark-forced {
+        background-color: rgba(0, 0, 0, 0.7);
+        
+        &:hover {
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+    }
+    
+    &--small {
+        padding: 2px var(--spacing-sm);
+        font-size: 0.8em;
+    }
+    
+    &--copy {
+        padding: 2px var(--spacing-sm);
+        font-size: 0.8em;
+        background-color: var(--mid-translucent);
+        color: var(--text-color);
+        
+        &:hover {
+            background-color: var(--black-accent);
+            color: var(--background-main);
+        }
+    }
+}
+
+// File input button styling
+input[type=file]::file-selector-button {
+    padding: var(--spacing-sm) 16px;
+    background-color: var(--black-accent);
+    color: var(--background-main);
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: "-apple-system", "inter", sans-serif !important;
+    font-size: 1.2em;
+    font-weight: 400 !important;
+    cursor: pointer;
+    transition: background-color var(--transition-medium);
+}
+
+// Expandable toggle button
+.expandable-toggle {
+    width: 100%;
+    padding: var(--spacing-md) var(--spacing-lg);
+    background-color: var(--mid-translucent);
+    backdrop-filter: blur(10px);
+    border: none;
+    border-radius: var(--radius-md);
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-color);
+    
+    &:hover {
+        background-color: var(--black-accent);
+        color: var(--background-main);
+    }
+    
+    .toggle-icon {
+        transition: transform var(--transition-slow);
+    }
+    
+    &[aria-expanded="true"] .toggle-icon {
+        transform: rotate(45deg);
+    }
+}
+
+// Selection switch component
+.selection-switch {
+    display: flex;
+    margin: var(--spacing-lg) 0;
+    gap: var(--spacing-md);
+    flex-wrap: wrap;
+    align-self: center;
+    
+    .switch-option {
+        padding: var(--spacing-sm) 16px;
+        border: none;
+        border-radius: 20px;
+        background-color: var(--mid-translucent);
+        color: var(--text-color);
+        cursor: pointer;
+        transition: all var(--transition-medium);
+        font-family: 'Inter', sans-serif;
+        display: inline-block;
+        
+        &:hover {
+            background-color: var(--black-accent);
+            color: white;
+        }
+        
+        &.active {
+            background-color: var(--black-accent);
+            color: white;
+        }
+    }
+}

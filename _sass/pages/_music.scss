@@ -1,0 +1,49 @@
+// =============================================================================
+// MUSIC PAGE STYLES
+// =============================================================================
+
+// Music page container
+.music-container {
+    // No specific styles needed, inherits from wrapper
+}
+
+// Music now playing section
+#music-now-playing {
+    // No specific styles needed, uses component styles
+}
+
+// View controls
+.view-controls {
+    margin-bottom: 20px;
+}
+
+// Loading state
+.loading {
+    margin: 20px 0;
+}
+
+// Artist list view (when not showing albums)
+.artist-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+
+    .music-artist-item {
+        padding: var(--spacing-md);
+        background-color: var(--mid-translucent);
+        backdrop-filter: blur(10px);
+        border-radius: var(--radius-md);
+        transition: background-color var(--transition-medium);
+
+        &:hover {
+            background-color: var(--hg-translucent);
+        }
+
+        .music-artist-name {
+            font-size: 1em;
+            font-weight: 500;
+            color: var(--text-color);
+            margin: 0;
+        }
+    }
+}

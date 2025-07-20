@@ -1,0 +1,126 @@
+// =============================================================================
+// GRID LAYOUTS
+// =============================================================================
+
+// Base grid component
+.grid {
+    display: grid;
+    gap: var(--spacing-md);
+
+    // Grid variants
+    &--2-col {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    &--3-col {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    &--4-col {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    &--5-col {
+        grid-template-columns: repeat(5, 1fr);
+    }
+
+    &--auto-fit {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+
+    &--auto-fill {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    }
+
+    // Masonry layout (for photo albums)
+    &--masonry {
+        column-count: 2;
+        column-gap: var(--spacing-md);
+        display: block; // Override grid display
+    }
+
+    // Equal height rows
+    &--equal-rows {
+        grid-auto-rows: 1fr;
+    }
+
+    // Gap variants
+    &--gap-sm {
+        gap: var(--spacing-xs);
+    }
+
+    &--gap-lg {
+        gap: var(--spacing-xl);
+    }
+
+    &--no-gap {
+        gap: 0;
+    }
+}
+
+// Album grid (music page)
+.album-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+
+    @media (max-width: 768px) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+// Photo album container
+.album-container {
+    max-width: 100%;
+    padding: 0;
+    margin: 0 auto;
+    column-count: 2;
+    column-gap: var(--spacing-md);
+}
+
+// Color palette grid
+.palette-output {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--spacing-md);
+    width: 100%;
+    margin-bottom: var(--spacing-xl);
+    grid-auto-rows: 1fr;
+
+    @media (max-width: 600px) {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+// Color swatch
+.color-swatch {
+    aspect-ratio: 1/1;
+    width: 100%;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: transform var(--transition-medium);
+
+    &:hover {
+        transform: scale(1.05);
+    }
+}
+
+// Game grids
+.game-grid {
+    display: grid;
+    gap: var(--spacing-sm);
+
+    // Tic tac toe
+    &--ttt {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        gap: var(--spacing-sm);
+    }
+
+    // Minesweeper (dynamic grid set via JS)
+    &--minesweeper {
+        max-width: 100%;
+        overflow: hidden;
+        box-sizing: border-box;
+    }
+}

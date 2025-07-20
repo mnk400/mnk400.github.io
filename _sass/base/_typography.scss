@@ -1,0 +1,109 @@
+// =============================================================================
+// TYPOGRAPHY
+// =============================================================================
+
+// Font imports
+@import url('https://rsms.me/inter/inter.css');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap');
+
+// Base typography
+* {
+    font-family: "-apple-system", "inter", sans-serif;
+}
+
+body {
+    color: var(--text-color);
+    font-family: "-apple-system", "inter", sans-serif;
+    font-weight: 300;
+    word-wrap: break-word;
+}
+
+// Headings
+h1 {
+    font-weight: 400;
+    margin-bottom: var(--spacing-md);
+    font-size: 16pt;
+    color: var(--text-color);
+    font-weight: 800;
+    margin-top: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+}
+
+h2 {
+    font-size: 14pt;
+    color: var(--text-color);
+    font-weight: 700;
+    margin-top: var(--spacing-xs);
+    margin-bottom: var(--spacing-md);
+}
+
+h3 {
+    font-size: 12pt;
+    color: var(--text-color);
+    font-weight: 700;
+    margin-top: var(--spacing-xs);
+    margin-bottom: var(--spacing-md);
+}
+
+// Body text
+p {
+    font-size: 12pt;
+    font-weight: 300;
+    line-height: 1.25em;
+    
+    // In post content
+    .post__content & {
+        font-size: 11.5pt;
+        font-weight: 300;
+        line-height: 16pt;
+        padding-bottom: var(--spacing-lg);
+        text-align: left;
+        word-wrap: break-word;
+        letter-spacing: 0.2px;
+        color: var(--sec-text-color);
+    }
+}
+
+// Text utilities
+strong, b {
+    font-weight: 600;
+}
+
+em, i {
+    font-style: italic;
+}
+
+// Links
+a {
+    line-height: 25px;
+    color: var(--text-color);
+    text-decoration: underline;
+    text-decoration-color: var(--mid-translucent);
+    text-decoration-thickness: .1em;
+    transition: color var(--transition-medium);
+    
+    &:hover {
+        color: var(--red-accent);
+    }
+}
+
+// Code
+code, .highlighter-rouge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11pt;
+    background: var(--code-bg);
+    padding: 0.5px 5px;
+    word-wrap: break-word;
+    font-weight: 400;
+    color: var(--text-color);
+    
+    a {
+        text-decoration: none;
+    }
+}
+
+// Superscript
+sup {
+    vertical-align: super;
+    font-size: 8pt;
+}

@@ -1,0 +1,131 @@
+// =============================================================================
+// UTILITY CLASSES
+// =============================================================================
+
+// Background utilities
+.backdrop-blur {
+    backdrop-filter: blur(10px);
+}
+
+.translucent-bg {
+    background-color: var(--mid-translucent);
+}
+
+.translucent-bg-high {
+    background-color: var(--hg-translucent);
+}
+
+// Layout utilities
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.flex-start {
+    display: flex;
+    align-items: start;
+}
+
+// Text utilities
+.text-center {
+    text-align: center;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-right {
+    text-align: right;
+}
+
+// Sizing utilities
+.full-width {
+    width: 100%;
+}
+
+.full-height {
+    height: 100%;
+}
+
+// Spacing utilities
+.mb-0 { margin-bottom: 0; }
+.mb-sm { margin-bottom: var(--spacing-sm); }
+.mb-md { margin-bottom: var(--spacing-md); }
+.mb-lg { margin-bottom: var(--spacing-lg); }
+.mb-xl { margin-bottom: var(--spacing-xl); }
+
+.mt-0 { margin-top: 0; }
+.mt-sm { margin-top: var(--spacing-sm); }
+.mt-md { margin-top: var(--spacing-md); }
+.mt-lg { margin-top: var(--spacing-lg); }
+.mt-xl { margin-top: var(--spacing-xl); }
+
+.p-0 { padding: 0; }
+.p-sm { padding: var(--spacing-sm); }
+.p-md { padding: var(--spacing-md); }
+.p-lg { padding: var(--spacing-lg); }
+.p-xl { padding: var(--spacing-xl); }
+
+// Visibility utilities
+.hidden {
+    display: none;
+}
+
+.invisible {
+    visibility: hidden;
+}
+
+.opacity-0 {
+    opacity: 0;
+}
+
+.opacity-50 {
+    opacity: 0.5;
+}
+
+// Cursor utilities
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.cursor-not-allowed {
+    cursor: not-allowed;
+}
+
+// Border radius utilities
+.rounded-sm {
+    border-radius: var(--radius-sm);
+}
+
+.rounded-md {
+    border-radius: var(--radius-md);
+}
+
+.rounded-lg {
+    border-radius: var(--radius-lg);
+}
+
+.rounded-full {
+    border-radius: var(--radius-round);
+}
+
+// Transition utilities
+.transition-fast {
+    transition: all var(--transition-fast);
+}
+
+.transition-medium {
+    transition: all var(--transition-medium);
+}
+
+.transition-slow {
+    transition: all var(--transition-slow);
+}

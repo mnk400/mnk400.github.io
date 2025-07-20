@@ -23,7 +23,7 @@ async function fetchNowPlaying() {
         );
         const data = await response.json();
         const track = data.recenttracks.track[0];
-        const nowPlayingSection = document.getElementById('now-playing');
+        const nowPlayingSection = document.getElementById('music-now-playing');
 
         if (track) {
             const isNowPlaying = track['@attr']?.nowplaying === 'true';
@@ -32,14 +32,14 @@ async function fetchNowPlaying() {
             const timeAgo = isNowPlaying ? '' : formatTimeAgo(timestamp);
 
             nowPlayingSection.innerHTML = `
-                <div class="now-playing-container">
-                    <img src="${imageUrl}" alt="${track.name}" class="now-playing-image img-curved-edges">
-                    <div class="now-playing-info">
-                        <span class="playing-or-no">${isNowPlaying ? 'Now Playing' : 'Last Played'}</span> 
+                <div class="music-now-playing-container">
+                    <img src="${imageUrl}" alt="${track.name}" class="music-now-playing-image img-curved-edges">
+                    <div class="music-now-playing-info">
+                        <span class="music-playing-or-no">${isNowPlaying ? 'Now Playing' : 'Last Played'}</span> 
                         ${timeAgo ? `<span class="description"> - ${timeAgo}</span>` : ''}<br/><br/>
-                        <span class="track-title"><b>${track.name}</b></span><br/>
-                        <span class="artist-name"><i>${track.artist['#text']}</i></span><br/>
-                        <span class="album-name">${track.album['#text']}</span><br/>
+                        <span class="music-track-title"><b>${track.name}</b></span><br/>
+                        <span class="music-artist-name"><i>${track.artist['#text']}</i></span><br/>
+                        <span class="music-album-name">${track.album['#text']}</span><br/>
                     </div>
                 </div>
             `;
@@ -106,10 +106,10 @@ async function fetchTopAlbums() {
                 <div class="album-item">
                     <div class="album-image-container">
                         <img src="${imageUrl}" alt="${album.name}" class="img-curved-edges">
-                        <div class="album-info-overlay">
+                        <div class="music-album-info-overlay">
                         <center>
-                            <p class="album-title">${album.name}</p>
-                            <p class="artist-name-overlay">${album.artist.name}</p>
+                            <p class="music-album-title">${album.name}</p>
+                            <p class="music-artist-name-overlay">${album.artist.name}</p>
                         </center>
                         </div>
                     </div>
@@ -124,11 +124,11 @@ async function fetchTopAlbums() {
                 // Close any other open overlays first
                 albumItems.forEach(otherItem => {
                     if (otherItem !== this) {
-                        otherItem.querySelector('.album-info-overlay').classList.remove('show-overlay');
+                        otherItem.querySelector('.music-album-info-overlay').classList.remove('show-overlay');
                     }
                 });
                 // Toggle current overlay
-                const overlay = this.querySelector('.album-info-overlay');
+                const overlay = this.querySelector('.music-album-info-overlay');
                 overlay.classList.toggle('show-overlay');
             });
         });
@@ -159,8 +159,8 @@ async function fetchTopArtists() {
         const artists = data.topartists.artist;
         grid.innerHTML = `<div class="artist-list">${
             artists.map((artist, index) => `
-                <div class="artist-item">
-                    <p class="artist-name">${index + 1}. ${artist.name}</p>
+                <div class="music-artist-item">
+                    <p class="music-artist-name">${index + 1}. ${artist.name}</p>
                 </div>
             `).join('')
         }</div>`;

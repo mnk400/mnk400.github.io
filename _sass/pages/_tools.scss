@@ -1,0 +1,150 @@
+// =============================================================================
+// TOOL PAGES (Color Palette, Gradient Generator, etc.)
+// =============================================================================
+
+// Color palette specific
+.palette-container {
+    margin: -10px 0;
+}
+
+// Gradient generator specific
+.control-group {
+    padding-top: var(--spacing-xs);
+}
+
+.preview-img {
+    object-fit: contain;
+    width: 100%;
+}
+
+// ASCII Art styles
+.ascii-container {
+    margin: var(--spacing-xl) 0;
+
+    .canvas-container {
+        position: relative;
+        width: 100%;
+        padding-bottom: 75%; /* 16:9 aspect ratio */
+    }
+
+    #canvas-output {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: var(--mid-translucent);
+        border-radius: var(--radius-lg);
+        backdrop-filter: blur(10px);
+    }
+
+    #ascii-output {
+        white-space: pre;
+        font-family: 'IBM Plex Mono', monospace;
+        line-height: 1;
+        overflow: hidden;
+        width: 100%;
+        display: block;
+    }
+
+    #image-preview {
+        max-width: 100%;
+        margin: var(--spacing-md) 0;
+    }
+}
+
+// Historical Browser
+.historical-browser-url-bar {
+    display: flex;
+    align-items: center;
+    max-width: 100%;
+    padding: var(--spacing-md);
+    background-color: var(--mid-translucent);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius-md);
+
+    input[type="text"] {
+        margin-left: var(--spacing-xs);
+        flex-grow: 1;
+        min-width: 100px;
+    }
+
+    .historical-browser-year-selector {
+        flex-shrink: 0;
+        margin-left: var(--spacing-xs);
+        padding: var(--spacing-sm) var(--spacing-md);
+        border-radius: var(--radius-md);
+        font-size: 0.8em;
+        font-weight: 600;
+        background-color: var(--mid-translucent);
+        color: var(--text-color);
+        border: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        padding-right: var(--spacing-2xl);
+    }
+
+    .year-selector-container {
+        position: relative;
+        display: inline-block;
+    }
+
+    .year-selector-icon {
+        position: absolute;
+        right: var(--spacing-md);
+        top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        color: var(--text-color);
+    }
+
+    .historical-browser-go-btn {
+        padding: var(--spacing-sm);
+        margin-left: var(--spacing-xs);
+        font-size: 0.8em;
+        font-weight: 600 !important;
+    }
+
+    .historical-browser-go-btn:hover,
+    .historical-browser-year-selector:hover {
+        background-color: var(--red-accent);
+        color: var(--text-color);
+    }
+
+    .browser-controls {
+        flex-shrink: 0;
+        padding-left: 7px;
+        padding-right: 7px;
+        cursor: pointer;
+        
+        &.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        &:not(.disabled):hover {
+            color: var(--red-accent);
+            transition: color var(--transition-medium);
+        }
+    }
+}
+
+.historical-browser-content {
+    width: calc(100% / 0.70);
+    max-width: calc(100% / 0.70);
+    height: calc(500px / 0.70);
+    transform: scale(0.70);
+    transform-origin: top left;
+    margin-top: var(--spacing-lg);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background-color: var(--mid-translucent, #fff);
+    backdrop-filter: blur(10px);
+
+    iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+}

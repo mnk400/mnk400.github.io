@@ -1,0 +1,204 @@
+// =============================================================================
+// HEADER & NAVIGATION
+// =============================================================================
+
+// Site title
+.site-title {
+    color: var(--text-color);
+    text-decoration: none;
+
+    a,
+    .site-title-link {
+        text-decoration: none;
+    }
+
+    .site-title-link:hover {
+        color: var(--text-color);
+    }
+
+    .dark-button a:hover {
+        color: var(--red-accent);
+    }
+    
+    .my-name {
+        animation: normal;
+    }
+    
+    table {
+        width: 100%;
+    }
+}
+
+.site-title-name {
+    font-size: 1.5em;
+    font-weight: 700;
+    text-align: left;
+    padding-bottom: 0.3em;
+}
+
+.dark-button {
+    text-align: right;
+
+    a {
+        text-decoration: none;
+        color: var(--text-color);
+    }
+}
+
+.dark-mode-icon {
+    height: 1.5em;
+}
+
+// Header layout
+.header {
+    display: inline;
+    justify-content: space-between;
+    align-items: baseline;
+
+    @media screen and (max-width: $breakpoint-mobile) {
+        display: block;
+    }
+
+    h1 {
+        font-size: 12pt;
+        font-weight: 400;
+        padding-bottom: var(--spacing-xs);
+        text-align: left;
+    }
+}
+
+// Minimal header functionality
+.minimal-header-wrapper {
+    display: flex;
+    align-items: start;
+    gap: var(--spacing-xs);
+    margin-bottom: 1.6em;
+    border-radius: var(--radius-md);
+    max-height: 0;
+    opacity: 0;
+    transition: max-height var(--transition-slow), 
+                opacity var(--transition-slow),
+                transform var(--transition-slow);
+    will-change: max-height, transform;
+    
+    &::before {
+        transform: translateY(-10px);
+    }
+}
+
+.minimal-mode .minimal-header-wrapper {
+    max-height: 50px;
+    margin-bottom: 2.5em;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.minimal-back-button {
+    background-color: var(--mid-translucent);
+    backdrop-filter: blur(10px);
+    padding: 11px 14px;
+    border-radius: var(--radius-md);
+    transition: background-color var(--transition-medium);
+    cursor: pointer;
+    
+    &:hover {
+        background-color: var(--black-accent);
+        color: var(--background-main);
+    }
+}
+
+.minimal-header {
+    background-color: var(--mid-translucent);
+    backdrop-filter: blur(10px);
+    padding: 11px 14px 11px var(--spacing-xs);
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    vertical-align: center;
+    flex: 1;
+    cursor: pointer;
+    transition: background-color var(--transition-medium),
+                color var(--transition-medium);
+    
+    &:hover {
+        background-color: var(--black-accent);
+        color: var(--background-main);
+    }
+    
+    table {
+        width: 100%;
+    }
+}
+
+.full-header {
+    overflow: hidden;
+    transition: max-height var(--transition-slow), 
+                opacity var(--transition-slow),
+                margin-top var(--transition-slow),
+                transform var(--transition-slow);
+    will-change: max-height, opacity, margin-top, transform;
+    max-height: 200px;
+    margin-top: -25px;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.minimal-mode .full-header {
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.min-down-arrow {
+    text-align: right;
+}
+
+.min-title {
+    text-align: left;
+}
+
+// Navigation
+.nav {
+    width: 100%;
+    font-size: 1em;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 1em;
+    
+    ul {
+        display: flex;
+        list-style: none;
+        flex: -1;
+        max-width: 300px;
+        align-items: center;
+
+        li {
+            padding: 0px;
+        }
+    }
+    
+    ul li:not(:last-child):after {
+        content: '∙';
+        position: relative;
+        padding: var(--spacing-xs);
+        color: var(--text-color);
+    }
+}
+
+#back-button {
+    text-decoration: none !important;
+    font-size: 0.8em;
+    text-align: left;
+}
+
+// Navigation item separation
+#navigation ul li {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    display: inline;
+}
+
+#navigation li:not(:first-child):before {
+    content: " · ";
+}
