@@ -9,12 +9,12 @@
     align-items: center;
     position: relative;
     margin: var(--spacing-xl) 0;
-    
+
     #flappyCanvas {
         border-radius: var(--radius-lg);
         backdrop-filter: blur(10px);
     }
-    
+
     @media screen and (max-width: 768px) {
         width: 100%;
         max-width: 100vw;
@@ -49,8 +49,8 @@
     align-items: center;
     justify-content: center;
     pointer-events: none;
-    
-    & > * {
+
+    &>* {
         pointer-events: auto;
     }
 }
@@ -112,7 +112,7 @@
     border: 1px solid var(--mid-translucent);
     aspect-ratio: 1;
     backdrop-filter: blur(10px);
-    
+
     &::before {
         content: attr(data-content);
         position: absolute;
@@ -123,22 +123,22 @@
         font-weight: 500;
         line-height: 100;
     }
-    
+
     &:hover {
         background-color: var(--mid-translucent);
     }
-    
+
     &.x::before {
         color: #66b5f5;
     }
-    
+
     &.o::before {
         color: #ff7369;
     }
-    
+
     &.winning-cell {
         background-color: #4CAF5080 !important;
-        
+
         &::before {
             color: white !important;
         }
@@ -162,7 +162,7 @@
     height: 15px;
     border: 1px solid #ddd;
     transition: background-color var(--transition-medium);
-    
+
     &.alive {
         background-color: #333;
     }
@@ -217,52 +217,264 @@
     font-size: calc(100% - 2px);
     box-sizing: border-box;
     max-width: 100%;
-    
+
     &:hover {
         background-color: var(--mid-translucent);
     }
-    
+
     &.revealed {
         border-style: dashed;
     }
-    
+
     &.flagged::before {
         content: "🚩";
         font-size: 16px;
     }
-    
+
     &.mine::before {
         content: "💣";
         font-size: 16px;
     }
-    
+
     &.flagged-correct::before {
         content: "🚩";
         font-size: 16px;
     }
-    
+
     &.flagged-wrong::before {
         content: "❌";
         font-size: 16px;
     }
-    
+
     // Adjacent mine count colors
-    &.adjacent-1 { color: #0000FF; }
-    &.adjacent-2 { color: #007B00; }
-    &.adjacent-3 { color: #FF0000; }
-    &.adjacent-4 { color: #00007B; }
-    &.adjacent-5 { color: #7B0000; }
-    &.adjacent-6 { color: #007B7B; }
-    &.adjacent-7 { color: #000000; }
-    &.adjacent-8 { color: #7B7B7B; }
+    &.adjacent-1 {
+        color: #0000FF;
+    }
+
+    &.adjacent-2 {
+        color: #007B00;
+    }
+
+    &.adjacent-3 {
+        color: #FF0000;
+    }
+
+    &.adjacent-4 {
+        color: #00007B;
+    }
+
+    &.adjacent-5 {
+        color: #7B0000;
+    }
+
+    &.adjacent-6 {
+        color: #007B7B;
+    }
+
+    &.adjacent-7 {
+        color: #000000;
+    }
+
+    &.adjacent-8 {
+        color: #7B7B7B;
+    }
 }
 
 #game-status {
     &.win {
         color: #4CAF50;
     }
-    
+
     &.lose {
         color: #F44336;
+    }
+}
+
+// Colordle
+.colordle-container {
+    .target-color {
+        border-radius: var(--radius-lg);
+        margin-top: var(--spacing-sm);
+        margin-bottom: var(--spacing-xl);
+        border: 3px solid var(--mid-translucent);
+        backdrop-filter: blur(10px);
+        overflow: hidden;
+
+        .color-header {
+            background: var(--mid-translucent);
+            padding: var(--spacing-md);
+            font-weight: 600;
+        }
+
+        .color-display {
+            height: 100px;
+        }
+    }
+
+    .guess-row {
+        margin-bottom: var(--spacing-md);
+
+        .hex-cells {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: var(--spacing-xs);
+            width: 100%;
+
+            .hex-cell {
+                aspect-ratio: 1;
+                min-height: 45px;
+                border: 2px solid var(--border-color);
+                border-radius: var(--radius-sm);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-family: 'IBM Plex Mono', monospace;
+                font-size: 1.2rem;
+                font-weight: 700;
+                color: var(--text-color);
+                background: var(--bg-color);
+                backdrop-filter: blur(10px);
+                transition: all 0.3s ease;
+                box-sizing: border-box;
+
+                &.hash-cell {
+                    background: var(--mid-translucent);
+                    border-color: var(--mid-translucent);
+                    color: var(--text-muted);
+
+                    // When cell has a background color, hide text and keep same border size
+                    &[style*="background-color"] {
+                        color: transparent;
+                        border: 2px solid var(--mid-translucent);
+                    }
+                }
+
+                &.empty-cell {
+                    background: var(--mid-translucent);
+                    border-color: var(--mid-translucent);
+                    color: var(--text-muted);
+                }
+
+                &.correct {
+                    background-color: #65c467;
+                    border-color: #65c467;
+                    color: white;
+                }
+
+                &.close {
+                    background-color: #d5a04c;
+                    border-color: #d5a04c;
+                    color: white;
+                }
+
+                &.wrong {
+                    background-color: #757575;
+                    border-color: #757575;
+                    color: white;
+                }
+            }
+        }
+    }
+
+    .input-section {
+        display: flex;
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-lg);
+
+        #guess-input {
+            flex: 1;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 1.1rem;
+        }
+    }
+
+    .game-message {
+        padding: var(--spacing-md);
+        margin-bottom: var(--spacing-md);
+
+        &.success {
+            color: #2E7D32;
+        }
+
+        &.error {
+            color: #C62828;
+        }
+    }
+
+    .game-results {
+        background: var(--mid-translucent);
+        padding: var(--spacing-lg);
+        border-radius: var(--radius-lg);
+        margin-bottom: var(--spacing-lg);
+        backdrop-filter: blur(10px);
+
+        .share-section {
+            margin-top: var(--spacing-lg);
+
+            .share-text {
+                background: var(--bg-color);
+                border: 1px solid var(--border-color);
+                border-radius: var(--radius-md);
+                padding: var(--spacing-md);
+                margin-bottom: var(--spacing-md);
+                font-family: 'IBM Plex Mono', monospace;
+                font-size: 0.9rem;
+                white-space: pre-line;
+                text-align: left;
+                user-select: all;
+                cursor: text;
+            }
+        }
+
+        .game-stats {
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: var(--spacing-md);
+
+                .stat {
+                    .stat-number {
+                        font-size: 2rem;
+                        font-weight: 700;
+                        color: var(--accent-color);
+                    }
+
+                    .stat-label {
+                        font-size: 0.9rem;
+                        color: var(--text-muted);
+                        margin-top: var(--spacing-xs);
+                    }
+                }
+            }
+        }
+    }
+
+    .game-controls {
+        display: flex;
+        gap: var(--spacing-md);
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+}
+
+// Feedback examples for expandable section
+.feedback-example {
+    display: inline-block;
+    vertical-align: bottom;
+    width: 20px;
+    height: 20px;
+    border-radius: var(--radius-sm);
+    margin-right: var(--spacing-xs);
+
+    &.correct {
+        background-color: #65c467;
+    }
+
+    &.close {
+        background-color: #d5a04c;
+    }
+
+    &.wrong {
+        background-color: #757575;
     }
 }

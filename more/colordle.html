@@ -1,0 +1,81 @@
+---
+layout: post
+title: Colordle
+description: Guess the hex color code in 6 tries
+permalink: /more/colordle
+image: /assets/images/metadata/colordle.jpg
+category: Games
+minimal: False
+---
+
+<body>
+    <div class="colordle-container">
+        <p>Guess the hex color code in 6 tries!</p>
+
+        {% capture how_to_play_content %}
+        <p>Guess the target color's hex code in 6 tries.</p>
+        <ul>
+            <li>Enter a valid hex color code (e.g., #FF5733)</li>
+            <li>After each guess, you'll see how close you are:</li>
+            <li><span class="feedback-example correct"></span> Correct hex digit in the right position</li>
+            <li><span class="feedback-example close"></span> Correct hex digit in the wrong position</li>
+            <li><span class="feedback-example wrong"></span> Hex digit not in the target color</li>
+        </ul>
+        <p>The color swatch shows your guessed color vs the target.</p>
+        {% endcapture %}
+    
+        {% include expandable-section.html
+        id="how-to-play"
+        title="<b>How to Play</b>"
+        content=how_to_play_content
+        expanded=false
+        %}
+
+        <div class="target-color" id="target-color">
+            <div class="color-header">Target Color</div>
+            <div class="color-display" id="color-display"></div>
+        </div>
+
+        <div class="game-board" id="game-board">
+            <!-- Guess rows will be added here -->
+        </div>
+
+        <div class="input-section" id="input-section">
+            <input type="text" id="guess-input" placeholder="#000000" maxlength="7" pattern="^#[0-9A-Fa-f]{6}$">
+            <button id="submit-guess">Guess</button>
+        </div>
+
+        <div class="game-message" id="game-message"></div>
+
+        <div class="game-results" id="game-results" style="display: none;">
+            <div class="game-stats" id="game-stats">
+                <h3>Statistics</h3>
+                <div class="stats-grid">
+                    <div class="stat">
+                        <div class="stat-number" id="games-played">0</div>
+                        <div class="stat-label">Played</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number" id="win-percentage">0</div>
+                        <div class="stat-label">Win %</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number" id="current-streak">0</div>
+                        <div class="stat-label">Current Streak</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number" id="max-streak">0</div>
+                        <div class="stat-label">Max Streak</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="share-section">
+                <button id="share-results">Share Results</button>
+                <div id="share-text" class="share-text" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/assets/js/games/colordle.js"></script>
+</body>
