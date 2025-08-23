@@ -12,7 +12,7 @@
 
 <div class="imgur-album">
   {% if include.description %}
-  <p>{{ include.description }}</p>
+  <p class="album-description">{{ include.description }}</p>
   <br>
   {% endif %}
   
@@ -20,7 +20,7 @@
     <p>{{ include.loading_text | default: "Loading images..." }}</p>
   </div>
   
-  <div class="album-container" id="album-container-{{ include.album_hash }}"></div>
+  <div class="album-container masonry-gallery" id="album-container-{{ include.album_hash }}"></div>
   
   <script>
     // Set album hash for the imgurreader.js script
