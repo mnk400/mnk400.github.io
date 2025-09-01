@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "My Personal Ricoh GR III Recipe For Everyday Use"
-date: 2024-03-04
+date: 2025-03-04
 image: /assets/images/blogs/R0001832.jpg
 ---
 
@@ -18,7 +18,7 @@ This is based on a positive film base simulation. This recipe isn't aiming to re
 # Manik's Color Positive Recipe
 
 - Film Simulation: Positive Film
-- Saturation: 0
+- Saturation: +1 (or +2)
 - Hue: 0
 - High/Low Key: 0
 - Contrast: +2
