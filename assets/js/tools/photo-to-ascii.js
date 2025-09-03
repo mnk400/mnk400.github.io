@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const widthInput = document.getElementById('width-input');
     const convertBtn = document.getElementById('convert-btn');
     const asciiOutput = document.getElementById('ascii-output');
+    const downloadBtn = document.getElementById('download-btn');
 
     // Calculate the optimal font size to fit the container width
     function calculateOptimalFontSize(containerWidth, charWidth) {
@@ -34,10 +35,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const width = parseInt(widthInput.value);
-        
+
         // Get the container width for responsive sizing
         const containerWidth = asciiOutput.parentElement.clientWidth;
-        
+
         // Calculate font size based on container width and character count
         const fontSize = calculateOptimalFontSize(containerWidth, width);
 
@@ -60,5 +61,67 @@ document.addEventListener('DOMContentLoaded', () => {
         asciiOutput.style.width = '100%';
         asciiOutput.style.maxWidth = '525px';
         asciiOutput.textContent = ascii;
+
+        // Show the download button
+        downloadBtn.style.display = 'inline-block';
+    });
+
+    downloadBtn.addEventListener('click', () => {
+        if (!asciiOutput.textContent) {
+            alert('Please convert an image to ASCII first!');
+            return;
+        }
+
+        // Create a canvas for the ASCII art image
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set up font properties
+        const fontSize = 12;
+        const fontFamily = 'Courier New, monospace';
+        ctx.font = `${fontSize}px ${fontFamily}`;
+
+        // Calculate canvas dimensions based on ASCII content
+        const lines = asciiOutput.textContent.split('\n');
+        const maxLineLength = Math.max(...lines.map(line => line.length));
+        const lineHeight = fontSize * 1.2;
+        const borderSize = 20;
+
+        const contentWidth = maxLineLength * fontSize * 0.6;
+        const contentHeight = lines.length * lineHeight;
+
+        canvas.width = contentWidth + (borderSize * 2);
+        canvas.height = contentHeight + (borderSize * 2);
+
+        // Set white background
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Draw border
+        ctx.strokeStyle = 'black';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
+
+        // Set black text
+        ctx.fillStyle = 'black';
+        ctx.font = `${fontSize}px ${fontFamily}`;
+        ctx.textBaseline = 'top';
+
+        // Draw each line of ASCII art (offset by border)
+        lines.forEach((line, index) => {
+            ctx.fillText(line, borderSize, borderSize + (index * lineHeight));
+        });
+
+        // Create download link
+        canvas.toBlob((blob) => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ascii-art.png';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
     });
 });

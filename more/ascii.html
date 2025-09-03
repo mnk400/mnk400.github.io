@@ -15,9 +15,10 @@ category: Image Tools
         <div class="controls">
             {% include image-upload.html %}
             {% include range-slider.html id='width' value='80' min='15' max='150' unit='Characters' %}
-            
+
             <div class="button-container">
                 <button id="convert-btn" class="normal-btn">Convert to ASCII</button>
+                <button id="download-btn" class="normal-btn" style="display: none;">Download as Image</button>
             </div>
         </div>
 
