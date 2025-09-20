@@ -1,6 +1,7 @@
 ---
 layout: post
 title: More
+description: "Manik's personal website and blog"
 ---
 <img src="/assets/picture.jpg" class="me">
 

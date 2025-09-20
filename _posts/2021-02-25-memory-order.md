@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "C vs Fortran memory order."
+description: "Understanding the difference between row-major and column-major memory ordering in C/C++ vs Fortran"
 date: 2021-02-25
 image: https://i.imgur.com/XAXOPdT.png
 ---

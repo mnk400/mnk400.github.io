@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "My Personal Ricoh GR III Recipe For Everyday Use"
+description: "A simulation recipe based on positive film simulation for everyday photography"
 date: 2025-03-04
 image: /assets/images/blogs/R0001832.jpg
 ---
