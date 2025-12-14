@@ -1,4 +1,4 @@
-// Theme Manager - Handles light mode, dark mode, and video background
+// Theme Manager - Handles light, blue, and dark modes
 
 let currentTheme = 'light';
 let isInitialLoad = true;
@@ -21,21 +21,15 @@ function setTheme(theme, skipTransition = false) {
     }
     
     // Set the data-theme attribute
-    if (theme === 'video') {
-        document.documentElement.setAttribute('data-theme', 'dark');
-        // The video-specific color will be set in handleVideoBackground
-    } else {
-        document.documentElement.setAttribute('data-theme', theme);
-        updateThemeColorMeta(theme);
-    }
+    document.documentElement.setAttribute('data-theme', theme);
+    updateThemeColorMeta(theme);
     
     updateThemeIcons();
-    handleVideoBackground(theme === 'video', skipTransition);
     
     isInitialLoad = false;
 }
 
-function updateThemeColorMeta(theme, videoColor = null) {
+function updateThemeColorMeta(theme) {
     let metaThemeColor = document.querySelector('meta[name="theme-color"]');
 
     if (!metaThemeColor) {
@@ -44,146 +38,37 @@ function updateThemeColorMeta(theme, videoColor = null) {
         document.head.appendChild(metaThemeColor);
     }
     
-    if (theme === 'video' && videoColor) {
-        metaThemeColor.content = videoColor;
-    } else if (theme === 'dark') {
+    if (theme === 'dark') {
         metaThemeColor.content = '#1a1a1a';
+    } else if (theme === 'blue') {
+        metaThemeColor.content = '#2D3D5A';
     } else {
         metaThemeColor.content = '#f2f0ef';
     }
 }
 
 function updateThemeIcons() {
-    const darkModeIcon = document.querySelector('.dark-mode-icon');
-    const videoModeIcon = document.querySelector('.video-mode-icon');
+    const themeIcon = document.querySelector('.theme-icon');
     
-    if (darkModeIcon) {
+    if (themeIcon) {
+        // Remove all possible icon classes
+        themeIcon.classList.remove('fa-sun', 'fa-moon', 'fa-droplet');
+        
         if (currentTheme === 'light') {
-            darkModeIcon.classList.remove('fa-sun');
-            darkModeIcon.classList.add('fa-moon');
+            themeIcon.classList.add('fa-moon'); // Moon for dark theme next
         } else if (currentTheme === 'dark') {
-            darkModeIcon.classList.remove('fa-moon');
-            darkModeIcon.classList.add('fa-sun');
-        } else if (currentTheme === 'video') {
-            darkModeIcon.classList.remove('fa-moon');
-            darkModeIcon.classList.add('fa-sun');
-        }
-    }
-    
-    if (videoModeIcon) {
-        if (currentTheme === 'video') {
-            videoModeIcon.classList.remove('fa-film');
-            videoModeIcon.classList.add('fa-times-circle');
-        } else {
-            videoModeIcon.classList.remove('fa-times-circle');
-            videoModeIcon.classList.add('fa-film');
+            themeIcon.classList.add('fa-droplet'); // Droplet for blue theme next
+        } else if (currentTheme === 'blue') {
+            themeIcon.classList.add('fa-sun'); // Sun for light theme next
         }
     }
 }
 
-function getRandomBackgroundVideo() {
-    const desktopBackgroundVideos = [
-        { src: '/assets/video/grain_slow.mp4', color: '#535F5A' },
-        { src: '/assets/video/purple_clouds.mp4', color: '#433E77' },
-        { src: '/assets/video/skyclouds.mp4', color: '#223651' },
-    ];
-    const mobileBackgroundVideos = [
-        { src: '/assets/video/mobile/clouds.mp4', color: '#23456e' },
-        { src: '/assets/video/mobile/flower.mp4', color: '#474B28' },
-    ];
-    
-    // Check if the device is mobile
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
-    
-    if (isMobile) {
-        const randomIndex = Math.floor(Math.random() * mobileBackgroundVideos.length);
-        return mobileBackgroundVideos[randomIndex];
-    } else {
-        const randomIndex = Math.floor(Math.random() * desktopBackgroundVideos.length);
-        return desktopBackgroundVideos[randomIndex];
-    }
-}
-
-function handleVideoBackground(active, skipTransition = false) {
-    if (active) {
-        if (!document.getElementById('background-video')) {
-            const videoData = getRandomBackgroundVideo();
-            const video = document.createElement('video');
-            video.id = 'background-video';
-            video.src = videoData.src;
-            video.autoplay = true;
-            video.loop = true;
-            video.muted = true;
-            video.playsInline = true; // for iOS
-            video.setAttribute('playsinline', ''); // for iOS
-            video.setAttribute('webkit-playsinline', '');
-            video.dataset.themeColor = videoData.color; // store the color in a data attribute
-            
-            updateThemeColorMeta('video', videoData.color);
-            
-            document.body.prepend(video);
-            
-            // explicitly play the video for iOS
-            video.play().catch(error => {
-                console.log('Auto-play was prevented by the browser:', error);
-            });
-            
-            if (skipTransition) {
-                video.classList.add('visible');
-            } else {
-                setTimeout(() => {
-                    video.classList.add('visible');
-                }, 50);
-            }
-        } else {
-            // Show existing video
-            const video = document.getElementById('background-video');
-            video.style.display = 'block';
-            video.play().catch(e => console.log('Could not play video:', e));
-            
-            if (video.dataset.themeColor) {
-                updateThemeColorMeta('video', video.dataset.themeColor);
-            }
-            
-            if (!skipTransition) {
-                setTimeout(() => {
-                    video.classList.add('visible');
-                }, 50);
-            } else {
-                video.classList.add('visible');
-            }
-        }
-    } else {
-        // Hide video if it exists
-        const video = document.getElementById('background-video');
-        if (video) {
-            if (!skipTransition) {
-                // Use CSS transition for fade out
-                video.classList.remove('visible');
-                setTimeout(() => {
-                    video.style.display = 'none';
-                }, 1000);
-            } else {
-                video.classList.remove('visible');
-                video.style.display = 'none';
-            }
-        }
-    }
-}
-
-function toggleVideoMode() {
-    if (currentTheme === 'video') {
+function toggleTheme() {
+    if (currentTheme === 'light') {
         setTheme('dark');
-    } else {
-        setTheme('video');
-    }
-}
-
-function toggleLightDark() {
-    if (currentTheme === 'video') {
-        setTheme('light');
-    } else if (currentTheme === 'light') {
-        setTheme('dark');
+    } else if (currentTheme === 'dark') {
+        setTheme('blue');
     } else {
         setTheme('light');
     }
@@ -191,5 +76,9 @@ function toggleLightDark() {
 
 document.addEventListener('DOMContentLoaded', function() {
     const savedTheme = localStorage.getItem('theme') || 'light';
-    setTheme(savedTheme, true);
+    // If saved theme is 'video', default to 'dark' since video mode is removed
+    // Ensure we only use valid themes
+    const validThemes = ['light', 'blue', 'dark'];
+    const theme = validThemes.includes(savedTheme) ? savedTheme : 'light';
+    setTheme(theme, true);
 });
