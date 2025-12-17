@@ -108,7 +108,7 @@
 
     .historical-browser-go-btn:hover,
     .historical-browser-year-selector:hover {
-        background-color: var(--red-accent);
+        background-color: var(--page-accent);
         color: var(--text-color);
     }
 
@@ -124,7 +124,7 @@
         }
         
         &:not(.disabled):hover {
-            color: var(--red-accent);
+            color: var(--page-accent);
             transition: color var(--transition-medium);
         }
     }

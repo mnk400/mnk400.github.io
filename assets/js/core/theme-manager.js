@@ -42,6 +42,8 @@ function updateThemeColorMeta(theme) {
         metaThemeColor.content = '#1a1a1a';
     } else if (theme === 'blue') {
         metaThemeColor.content = '#2D3D5A';
+    } else if (theme === 'red') {
+        metaThemeColor.content = '#2a1a1d';
     } else {
         metaThemeColor.content = '#f2f0ef';
     }
@@ -52,13 +54,15 @@ function updateThemeIcons() {
     
     if (themeIcon) {
         // Remove all possible icon classes
-        themeIcon.classList.remove('fa-sun', 'fa-moon', 'fa-droplet');
+        themeIcon.classList.remove('fa-sun', 'fa-moon', 'fa-droplet', 'fa-heart');
         
         if (currentTheme === 'light') {
             themeIcon.classList.add('fa-moon'); // Moon for dark theme next
         } else if (currentTheme === 'dark') {
             themeIcon.classList.add('fa-droplet'); // Droplet for blue theme next
         } else if (currentTheme === 'blue') {
+            themeIcon.classList.add('fa-heart'); // Heart for red theme next
+        } else if (currentTheme === 'red') {
             themeIcon.classList.add('fa-sun'); // Sun for light theme next
         }
     }
@@ -69,6 +73,8 @@ function toggleTheme() {
         setTheme('dark');
     } else if (currentTheme === 'dark') {
         setTheme('blue');
+    } else if (currentTheme === 'blue') {
+        setTheme('red');
     } else {
         setTheme('light');
     }
@@ -78,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const savedTheme = localStorage.getItem('theme') || 'light';
     // If saved theme is 'video', default to 'dark' since video mode is removed
     // Ensure we only use valid themes
-    const validThemes = ['light', 'blue', 'dark'];
+    const validThemes = ['light', 'blue', 'dark', 'red'];
     const theme = validThemes.includes(savedTheme) ? savedTheme : 'light';
     setTheme(theme, true);
 });

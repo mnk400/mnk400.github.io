@@ -38,15 +38,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Colors based on theme
     const colors = {
-        cell: getCSSVariable('--red-accent'),
-        cellStroke: getCSSVariable('--red-accent')
+        cell: getCSSVariable('--page-accent'),
+        cellStroke: getCSSVariable('--page-accent')
     };
     
     // Function to update colors based on current theme
     function updateThemeColors() {
         // Update cell colors based on theme
-        colors.cell = getCSSVariable('--red-accent');
-        colors.cellStroke = getCSSVariable('--red-accent');
+        colors.cell = getCSSVariable('--page-accent');
+        colors.cellStroke = getCSSVariable('--page-accent');
         if (typeof render === 'function') {
             render();
         }
