@@ -3,7 +3,8 @@
 // =============================================================================
 
 // Base button styles
-button, .btn {
+button,
+.btn {
     padding: var(--spacing-sm) 16px;
     background-color: var(--black-accent);
     color: white;
@@ -15,31 +16,33 @@ button, .btn {
     transition: background-color var(--transition-medium);
     backdrop-filter: blur(10px);
     font-family: "-apple-system", "inter", sans-serif;
-    
+    text-decoration: none !important;
+
     &:hover {
         background-color: var(--black-accent-hover);
+        color: white;
     }
-    
+
     // Button variants
     &--dark-forced {
         background-color: rgba(0, 0, 0, 0.7);
-        
+
         &:hover {
             background-color: rgba(0, 0, 0, 0.5);
         }
     }
-    
+
     &--small {
         padding: 2px var(--spacing-sm);
         font-size: 0.8em;
     }
-    
+
     &--copy {
         padding: 2px var(--spacing-sm);
         font-size: 0.8em;
         background-color: var(--mid-translucent);
         color: var(--text-color);
-        
+
         &:hover {
             background-color: var(--black-accent);
             color: var(--background-main);
@@ -75,16 +78,16 @@ input[type=file]::file-selector-button {
     justify-content: space-between;
     align-items: center;
     color: var(--text-color);
-    
+
     &:hover {
         background-color: var(--black-accent);
         color: var(--background-main);
     }
-    
+
     .toggle-icon {
         transition: transform var(--transition-slow);
     }
-    
+
     &[aria-expanded="true"] .toggle-icon {
         transform: rotate(45deg);
     }
@@ -97,7 +100,7 @@ input[type=file]::file-selector-button {
     gap: var(--spacing-md);
     flex-wrap: wrap;
     align-self: center;
-    
+
     .switch-option {
         padding: var(--spacing-sm) 16px;
         border: none;
@@ -108,12 +111,12 @@ input[type=file]::file-selector-button {
         transition: all var(--transition-medium);
         font-family: 'Inter', sans-serif;
         display: inline-block;
-        
+
         &:hover {
             background-color: var(--black-accent);
             color: white;
         }
-        
+
         &.active {
             background-color: var(--black-accent);
             color: white;
