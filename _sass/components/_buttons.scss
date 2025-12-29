@@ -18,7 +18,14 @@ button,
     font-family: "-apple-system", "inter", sans-serif;
     text-decoration: none !important;
 
-    &:hover {
+    @media (hover: hover) {
+        &:hover {
+            background-color: var(--black-accent-hover);
+            color: white;
+        }
+    }
+
+    &.touch-hover {
         background-color: var(--black-accent-hover);
         color: white;
     }
@@ -27,7 +34,13 @@ button,
     &--dark-forced {
         background-color: rgba(0, 0, 0, 0.7);
 
-        &:hover {
+        @media (hover: hover) {
+            &:hover {
+                background-color: rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        &.touch-hover {
             background-color: rgba(0, 0, 0, 0.5);
         }
     }
@@ -43,7 +56,14 @@ button,
         background-color: var(--mid-translucent);
         color: var(--text-color);
 
-        &:hover {
+        @media (hover: hover) {
+            &:hover {
+                background-color: var(--black-accent);
+                color: var(--background-main);
+            }
+        }
+
+        &.touch-hover {
             background-color: var(--black-accent);
             color: var(--background-main);
         }
@@ -51,7 +71,7 @@ button,
 }
 
 // File input button styling
-input[type=file]::file-selector-button {
+input[type="file"]::file-selector-button {
     padding: var(--spacing-sm) 16px;
     background-color: var(--black-accent);
     color: var(--background-main);
@@ -78,8 +98,18 @@ input[type=file]::file-selector-button {
     justify-content: space-between;
     align-items: center;
     color: var(--text-color);
+    transition:
+        background-color var(--transition-medium),
+        color var(--transition-medium);
 
-    &:hover {
+    @media (hover: hover) {
+        &:hover {
+            background-color: var(--black-accent);
+            color: var(--background-main);
+        }
+    }
+
+    &.touch-hover {
         background-color: var(--black-accent);
         color: var(--background-main);
     }
@@ -109,10 +139,17 @@ input[type=file]::file-selector-button {
         color: var(--text-color);
         cursor: pointer;
         transition: all var(--transition-medium);
-        font-family: 'Inter', sans-serif;
+        font-family: "Inter", sans-serif;
         display: inline-block;
 
-        &:hover {
+        @media (hover: hover) {
+            &:hover {
+                background-color: var(--black-accent);
+                color: white;
+            }
+        }
+
+        &.touch-hover {
             background-color: var(--black-accent);
             color: white;
         }

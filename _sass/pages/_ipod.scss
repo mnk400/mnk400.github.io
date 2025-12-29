@@ -3,14 +3,21 @@
 // =============================================================================
 
 @keyframes blink {
-    0% { opacity: 1; }
-    50% { opacity: 0.3; }
-    100% { opacity: 1; }
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.3;
+    }
+    100% {
+        opacity: 1;
+    }
 }
 
 @font-face {
-    font-family: 'ChicagoFont';
-    src: url('https://dangasson.github.io/Resources/Fonts/ChicagoFLF.ttf') format('truetype');
+    font-family: "ChicagoFont";
+    src: url("https://dangasson.github.io/Resources/Fonts/ChicagoFLF.ttf")
+        format("truetype");
     font-weight: normal;
     font-style: normal;
 }
@@ -26,6 +33,7 @@
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
+    touch-action: manipulation;
 }
 
 .ipod {
@@ -34,12 +42,13 @@
     height: 692px;
     border-radius: 38px;
     margin-top: -70px;
-    background: linear-gradient(45deg,#E3E4E5,#FFFFFF);
-    box-shadow: inset 5px -5px 15px 0px grey,
-                0px 0px 15px rgba(0, 0, 0, 0.1);
-    
+    background: linear-gradient(45deg, #e3e4e5, #ffffff);
+    box-shadow:
+        inset 5px -5px 15px 0px grey,
+        0px 0px 15px rgba(0, 0, 0, 0.1);
+
     &.small {
-        transform: scale(0.67,0.67);
+        transform: scale(0.67, 0.67);
     }
 }
 
@@ -48,9 +57,9 @@
     margin: var(--spacing-2xl) auto 0px auto;
     width: 284px;
     height: 230px;
-    background: linear-gradient(135deg,#A5A59B,#D6D5D0);
+    background: linear-gradient(135deg, #a5a59b, #d6d5d0);
     border-radius: var(--spacing-md);
-    box-shadow: inset 0px 0px 10px 2px #4D4D4D;
+    box-shadow: inset 0px 0px 10px 2px #4d4d4d;
     font-family: "ChicagoFont", "Arial";
     font-size: 130%;
     color: #484647;
@@ -60,7 +69,7 @@
     position: absolute;
     top: 50%;
     left: var(--spacing-2xl);
-    transform: translate(-50%,-50%);
+    transform: translate(-50%, -50%);
 }
 
 .title-bar {
@@ -84,35 +93,47 @@
     right: var(--spacing-xs);
     height: 50px;
     width: 100px;
-    background-color: #C1C1BA;
+    background-color: #c1c1ba;
     border: 5px solid #484647;
-    
+
     &:before {
-        content: '';
+        content: "";
         position: absolute;
         top: 50%;
         right: -12px;
-        transform: translate(0,-50%);
+        transform: translate(0, -50%);
         height: 33%;
         width: 7px;
-        background-color: #C1C1BA;
+        background-color: #c1c1ba;
         border-right: 5px solid #484647;
         border-top: 5px solid #484647;
         border-bottom: 5px solid #484647;
     }
-    
+
     &:after {
-        content: '';
+        content: "";
         position: absolute;
         top: var(--spacing-xs);
         bottom: var(--spacing-xs);
         left: var(--spacing-xs);
         width: 70px;
-        background: repeating-linear-gradient(to right,#484647,#484647 20px,#C1C1BA 20px,#C1C1BA 25px,#484647 25px,#484647 45px,#C1C1BA 45px,#C1C1BA 50px,#484647 50px,#484647 70px);
+        background: repeating-linear-gradient(
+            to right,
+            #484647,
+            #484647 20px,
+            #c1c1ba 20px,
+            #c1c1ba 25px,
+            #484647 25px,
+            #484647 45px,
+            #c1c1ba 45px,
+            #c1c1ba 50px,
+            #484647 50px,
+            #484647 70px
+        );
     }
-    
+
     &.small {
-        transform: scale(0.3,0.3);
+        transform: scale(0.3, 0.3);
         transform-origin: 100% 25%;
     }
 }
@@ -130,27 +151,27 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    
+
     &:after {
-        content: '';
+        content: "";
         position: absolute;
         right: 18px;
         border-bottom: 3px solid #484647;
         border-right: 3px solid #484647;
         width: var(--spacing-sm);
         height: var(--spacing-sm);
-        transform: rotate(-45deg) skew(7deg,7deg);
+        transform: rotate(-45deg) skew(7deg, 7deg);
         transform-origin: 180%;
     }
-    
+
     &.selected {
         background-color: #484647;
         border-bottom: 2px solid #484647;
-        color: #C1C1BA;
-        
+        color: #c1c1ba;
+
         &:after {
-            border-bottom: 3px solid #C1C1BA;
-            border-right: 3px solid #C1C1BA;
+            border-bottom: 3px solid #c1c1ba;
+            border-right: 3px solid #c1c1ba;
         }
     }
 }
@@ -162,22 +183,23 @@
     height: 350px;
     width: 350px;
     border-radius: var(--radius-round);
-    background-color: #FFFFFF;
+    background-color: #ffffff;
     box-shadow: inset 5px -5px 30px -7px #595959;
-    
-    &:before, &:after {
-        content: '';
+
+    &:before,
+    &:after {
+        content: "";
         position: absolute;
         width: 0;
         height: 99%;
-        border: 1px solid #4D4D4D;
+        border: 1px solid #4d4d4d;
     }
-    
+
     &:before {
         left: 50%;
         transform: rotate(45deg);
     }
-    
+
     &:after {
         top: 0;
         left: 50%;
@@ -189,19 +211,27 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%,-50%);
+    transform: translate(-50%, -50%);
     height: 276px;
     width: 276px;
-    border: 2px solid #4D4D4D;
+    border: 2px solid #4d4d4d;
     border-radius: var(--radius-round);
-    background: radial-gradient(farthest-side at 90% -70%,#999999,#F2F2F2);
+    background: radial-gradient(farthest-side at 90% -70%, #999999, #f2f2f2);
     box-shadow: 5px -5px 30px -7px #595959;
     z-index: 1;
-    transition: box-shadow var(--transition-backdrop), background var(--transition-backdrop);
-    
+    transition:
+        box-shadow var(--transition-backdrop),
+        background var(--transition-backdrop);
+
     &:active {
-        box-shadow: 5px -5px 20px -7px #595959, inset 2px 2px 5px rgba(0,0,0,0.2);
-        background: radial-gradient(farthest-side at 60% -70%,#888888,#E5E5E5);
+        box-shadow:
+            5px -5px 20px -7px #595959,
+            inset 2px 2px 5px rgba(0, 0, 0, 0.2);
+        background: radial-gradient(
+            farthest-side at 60% -70%,
+            #888888,
+            #e5e5e5
+        );
     }
 }
 
@@ -209,20 +239,24 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%,-50%);
+    transform: translate(-50%, -50%);
     height: 100px;
     width: 100px;
-    border: 2px solid #BABDC1;
+    border: 2px solid #babdc1;
     border-radius: var(--radius-round);
-    background-color: #CBCCCE;
-    background: radial-gradient(farthest-side at -90% 80%,#999999,#F2F2F2);
+    background-color: #cbccce;
+    background: radial-gradient(farthest-side at -90% 80%, #999999, #f2f2f2);
     transition: all var(--transition-fast);
     cursor: pointer;
-    
+
     &:active {
-        background: radial-gradient(farthest-side at -90% 80%,#777777,#DDDDDD);
-        box-shadow: inset 2px 2px 5px rgba(0,0,0,0.3);
-        transform: translate(-50%,-50%) scale(0.95);
+        background: radial-gradient(
+            farthest-side at -90% 80%,
+            #777777,
+            #dddddd
+        );
+        box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.3);
+        transform: translate(-50%, -50%) scale(0.95);
     }
 }
 
@@ -231,7 +265,7 @@ text {
     font-family: "Arial";
     font-size: 110%;
     font-weight: bold;
-    fill: #BABDC1;
+    fill: #babdc1;
 }
 
 path {
@@ -241,39 +275,40 @@ path {
 .skip {
     position: absolute;
     top: 50%;
-    transform: translate(0,-50%);
-    background-color: #BABDC1;
+    transform: translate(0, -50%);
+    background-color: #babdc1;
     height: 12px;
     width: 4px;
     cursor: pointer;
     transition: all var(--transition-fast);
-    
-    &:before, &:after {
-        content: '';
+
+    &:before,
+    &:after {
+        content: "";
         position: absolute;
-        border-left: 9px solid #BABDC1;
+        border-left: 9px solid #babdc1;
         border-top: 6px solid transparent;
         border-bottom: 6px solid transparent;
         transition: all var(--transition-fast);
     }
-    
+
     &:before {
         left: -9px;
     }
-    
+
     &:after {
         left: -18px;
     }
-    
+
     &.next {
         right: var(--spacing-md);
-        transform: rotate(90deg) translate(0,50%);
+        transform: rotate(90deg) translate(0, 50%);
     }
-    
+
     &.prev {
         left: var(--spacing-md);
         top: 155px;
-        transform: rotate(-90deg) translate(0,50%);
+        transform: rotate(-90deg) translate(0, 50%);
     }
 }
 
@@ -283,20 +318,28 @@ path {
     left: 50%;
     height: 0;
     width: 0;
-    transform: translate(-13px,0);
+    transform: translate(-13px, 0);
     cursor: pointer;
-    border-left: 12px solid #BABDC1;
+    border-left: 12px solid #babdc1;
     border-top: 6px solid transparent;
     border-bottom: 6px solid transparent;
-    
+
     &:before {
-        content: '';
+        content: "";
         position: absolute;
         bottom: -6px;
         left: 4px;
         height: 12px;
         width: var(--spacing-md);
-        background: repeating-linear-gradient(to right,#BABDC1,#BABDC1 4px,transparent 4px,transparent 6px,#BABDC1 6px,#BABDC1 10px);
+        background: repeating-linear-gradient(
+            to right,
+            #babdc1,
+            #babdc1 4px,
+            transparent 4px,
+            transparent 6px,
+            #babdc1 6px,
+            #babdc1 10px
+        );
     }
 }
 
@@ -320,27 +363,27 @@ path {
     font-family: "ChicagoFont", "Arial";
     color: #484647;
     text-align: center;
-    
+
     .song-title {
         font-size: 16px;
         font-weight: bold;
         margin-bottom: var(--spacing-xs);
         width: 100%;
     }
-    
+
     .artist-name {
         font-size: 14px;
         margin-bottom: var(--spacing-lg);
         width: 100%;
     }
-    
+
     .album-info {
         font-size: 12px;
         margin-bottom: var(--spacing-xl);
         font-style: italic;
         width: 100%;
     }
-    
+
     .progress-container {
         width: 80%;
         height: var(--spacing-md);
@@ -352,7 +395,7 @@ path {
         margin-left: auto;
         margin-right: auto;
     }
-    
+
     #progress-bar {
         width: 0%;
         height: 100%;
@@ -362,7 +405,7 @@ path {
         top: 0;
         left: 0;
     }
-    
+
     #time-display {
         font-size: 12px;
         margin-top: var(--spacing-xs);
@@ -393,18 +436,22 @@ path {
 }
 
 // IE/Edge specific fixes
-_:-ms-lang(x), .ipod {
+_:-ms-lang(x),
+.ipod {
     box-shadow: inset 5px -5px 25px 3px #99999950;
 }
 
-_:-ms-lang(x), .screen {
+_:-ms-lang(x),
+.screen {
     box-shadow: inset 0px 0px 20px 1px #59595950;
 }
 
-_:-ms-lang(x), .outer-ring {
+_:-ms-lang(x),
+.outer-ring {
     box-shadow: inset 5px -5px 50px -7px #99999950;
 }
 
-_:-ms-lang(x), .touch-wheel {
+_:-ms-lang(x),
+.touch-wheel {
     box-shadow: 5px -5px 50px -7px #99999950;
 }

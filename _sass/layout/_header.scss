@@ -16,14 +16,20 @@
         color: var(--text-color);
     }
 
-    .dark-button a:hover {
+    @media (hover: hover) {
+        .dark-button a:hover {
+            color: var(--page-accent);
+        }
+    }
+
+    .dark-button a.touch-hover {
         color: var(--page-accent);
     }
-    
+
     .my-name {
         animation: normal;
     }
-    
+
     table {
         width: 100%;
     }
@@ -42,6 +48,7 @@
     a {
         text-decoration: none;
         color: var(--text-color);
+        transition: color var(--transition-medium);
     }
 }
 
@@ -76,11 +83,12 @@
     border-radius: var(--radius-md);
     max-height: 0;
     opacity: 0;
-    transition: max-height var(--transition-slow), 
-                opacity var(--transition-slow),
-                transform var(--transition-slow);
+    transition:
+        max-height var(--transition-slow),
+        opacity var(--transition-slow),
+        transform var(--transition-slow);
     will-change: max-height, transform;
-    
+
     &::before {
         transform: translateY(-10px);
     }
@@ -98,10 +106,19 @@
     backdrop-filter: blur(10px);
     padding: 11px 14px;
     border-radius: var(--radius-md);
-    transition: background-color var(--transition-medium);
+    transition:
+        background-color var(--transition-medium),
+        color var(--transition-medium);
     cursor: pointer;
-    
-    &:hover {
+
+    @media (hover: hover) {
+        &:hover {
+            background-color: var(--black-accent);
+            color: var(--background-main);
+        }
+    }
+
+    &.touch-hover {
         background-color: var(--black-accent);
         color: var(--background-main);
     }
@@ -116,14 +133,22 @@
     vertical-align: center;
     flex: 1;
     cursor: pointer;
-    transition: background-color var(--transition-medium),
-                color var(--transition-medium);
-    
-    &:hover {
+    transition:
+        background-color var(--transition-medium),
+        color var(--transition-medium);
+
+    @media (hover: hover) {
+        &:hover {
+            background-color: var(--black-accent);
+            color: var(--background-main);
+        }
+    }
+
+    &.touch-hover {
         background-color: var(--black-accent);
         color: var(--background-main);
     }
-    
+
     table {
         width: 100%;
     }
@@ -131,10 +156,11 @@
 
 .full-header {
     overflow: hidden;
-    transition: max-height var(--transition-slow), 
-                opacity var(--transition-slow),
-                margin-top var(--transition-slow),
-                transform var(--transition-slow);
+    transition:
+        max-height var(--transition-slow),
+        opacity var(--transition-slow),
+        margin-top var(--transition-slow),
+        transform var(--transition-slow);
     will-change: max-height, opacity, margin-top, transform;
     max-height: 200px;
     margin-top: -25px;
@@ -164,7 +190,7 @@
     flex-wrap: wrap;
     justify-content: space-between;
     margin-bottom: 1em;
-    
+
     ul {
         display: flex;
         list-style: none;
@@ -176,9 +202,9 @@
             padding: 0px;
         }
     }
-    
+
     ul li:not(:last-child):after {
-        content: '∙';
+        content: "∙";
         position: relative;
         padding: var(--spacing-xs);
         color: var(--text-color);
