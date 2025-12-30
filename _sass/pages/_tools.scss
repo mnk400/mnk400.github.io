@@ -33,14 +33,17 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: var(--mid-translucent);
+        background-color: var(--min-translucent);
+        outline: solid;
+        outline-width: 1px;
+        outline-color: var(--mid-translucent);
         border-radius: var(--radius-lg);
         backdrop-filter: blur(10px);
     }
 
     #ascii-output {
         white-space: pre;
-        font-family: 'IBM Plex Mono', monospace;
+        font-family: "IBM Plex Mono", monospace;
         line-height: 1;
         overflow: hidden;
         width: 100%;
@@ -59,9 +62,12 @@
     align-items: center;
     max-width: 100%;
     padding: var(--spacing-md);
-    background-color: var(--mid-translucent);
+    background-color: var(--min-translucent);
     backdrop-filter: blur(10px);
     border-radius: var(--radius-md);
+    outline: solid;
+    outline-width: 1px;
+    outline-color: var(--mid-translucent);
 
     input[type="text"] {
         margin-left: var(--spacing-xs);
@@ -76,13 +82,16 @@
         border-radius: var(--radius-md);
         font-size: 0.8em;
         font-weight: 600;
-        background-color: var(--mid-translucent);
+        background-color: var(--min-translucent);
         color: var(--text-color);
         border: none;
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
         padding-right: var(--spacing-2xl);
+        outline: solid;
+        outline-width: 1px;
+        outline-color: var(--mid-translucent);
     }
 
     .year-selector-container {
@@ -117,12 +126,12 @@
         padding-left: 7px;
         padding-right: 7px;
         cursor: pointer;
-        
+
         &.disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
-        
+
         &:not(.disabled):hover {
             color: var(--page-accent);
             transition: color var(--transition-medium);
@@ -131,16 +140,19 @@
 }
 
 .historical-browser-content {
-    width: calc(100% / 0.70);
-    max-width: calc(100% / 0.70);
-    height: calc(500px / 0.70);
-    transform: scale(0.70);
+    width: calc(100% / 0.7);
+    max-width: calc(100% / 0.7);
+    height: calc(500px / 0.7);
+    transform: scale(0.7);
     transform-origin: top left;
     margin-top: var(--spacing-lg);
     border-radius: var(--radius-md);
     overflow: hidden;
-    background-color: var(--mid-translucent, #fff);
+    background-color: var(--min-translucent);
     backdrop-filter: blur(10px);
+    outline: solid;
+    outline-width: 1px;
+    outline-color: var(--mid-translucent);
 
     iframe {
         width: 100%;

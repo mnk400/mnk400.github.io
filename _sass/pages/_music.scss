@@ -12,6 +12,12 @@
     margin-bottom: var(--spacing-xs);
     font-size: 0.8em;
     color: var(--sec-text-color);
+
+    .pr {
+        font-size: 1.2em;
+        color: var(--text-color);
+        font-weight: 600;
+    }
 }
 
 .music-widget {
@@ -28,17 +34,25 @@
 .music-widget-content {
     display: flex;
     align-items: center;
+    text-align: left;
     gap: var(--spacing-lg);
     padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm)
         var(--spacing-md);
-    background-color: var(--mid-translucent);
+    background-color: var(--min-translucent);
     backdrop-filter: blur(10px);
     border-radius: var(--radius-lg);
     transition: background-color var(--transition-medium);
     line-height: 1em;
+    outline: solid;
+    outline-width: 1px;
+    outline-color: var(--mid-translucent);
+
     &:hover {
         background-color: var(--black-accent);
         color: var(--background-main);
+    }
+    img {
+        margin: 0px !important;
     }
 }
 
@@ -60,7 +74,7 @@
 }
 
 .music-widget-track {
-    font-size: 0.85em;
+    font-size: 0.95em;
     font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
@@ -69,13 +83,13 @@
 }
 
 .music-widget-separator {
-    font-size: 0.85em;
+    font-size: 0.9em;
     flex-shrink: 0;
     padding: 0 4px;
 }
 
 .music-widget-artist {
-    font-size: 0.85em;
+    font-size: 0.9em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -91,16 +105,6 @@
 // =============================================================================
 // MUSIC PAGE
 // =============================================================================
-
-// Music page container
-.music-container {
-    // No specific styles needed, inherits from wrapper
-}
-
-// Music now playing section
-#music-now-playing {
-    // No specific styles needed, uses component styles
-}
 
 // View controls
 .view-controls {
@@ -120,13 +124,16 @@
 
     .music-artist-item {
         padding: var(--spacing-md);
-        background-color: var(--mid-translucent);
+        background-color: var(--min-translucent);
         backdrop-filter: blur(10px);
         border-radius: var(--radius-md);
         transition: background-color var(--transition-medium);
+        outline: solid;
+        outline-width: 1px;
+        outline-color: var(--mid-translucent);
 
         &:hover {
-            background-color: var(--hg-translucent);
+            background-color: var(--mid-translucent);
         }
 
         .music-artist-name {

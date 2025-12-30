@@ -78,7 +78,7 @@
 .minimal-header-wrapper {
     display: flex;
     align-items: start;
-    gap: var(--spacing-xs);
+    gap: calc(var(--spacing-xs) + 1px);
     margin-bottom: 1.6em;
     border-radius: var(--radius-md);
     max-height: 0;
@@ -102,7 +102,7 @@
 }
 
 .minimal-back-button {
-    background-color: var(--mid-translucent);
+    background-color: var(--min-translucent);
     backdrop-filter: blur(10px);
     padding: 11px 14px;
     border-radius: var(--radius-md);
@@ -110,6 +110,9 @@
         background-color var(--transition-medium),
         color var(--transition-medium);
     cursor: pointer;
+    outline: solid;
+    outline-width: 1px;
+    outline-color: var(--mid-translucent);
 
     @media (hover: hover) {
         &:hover {
@@ -125,7 +128,7 @@
 }
 
 .minimal-header {
-    background-color: var(--mid-translucent);
+    background-color: var(--min-translucent);
     backdrop-filter: blur(10px);
     padding: 11px 14px 11px var(--spacing-xs);
     border-radius: var(--radius-md);
@@ -136,6 +139,9 @@
     transition:
         background-color var(--transition-medium),
         color var(--transition-medium);
+    outline: solid;
+    outline-width: 1px;
+    outline-color: var(--mid-translucent);
 
     @media (hover: hover) {
         &:hover {

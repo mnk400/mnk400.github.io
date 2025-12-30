@@ -6,7 +6,7 @@ html {
     background-color: var(--background-main);
     height: 100%;
     min-height: 100vh;
-    
+
     &.theme-transition {
         transition: background-color var(--transition-backdrop);
     }
@@ -50,22 +50,28 @@ body {
     padding: var(--spacing-md) var(--spacing-lg) 0px var(--spacing-lg);
     margin-top: var(--spacing-md);
     margin-bottom: var(--spacing-md);
-    background-color: var(--mid-translucent);
+    background-color: var(--min-translucent);
     backdrop-filter: blur(10px);
     border-radius: var(--radius-md);
     overflow: hidden;
     opacity: 1;
+    outline: solid;
+    outline-width: 1px;
+    outline-color: var(--mid-translucent);
 
-    transition: max-height var(--transition-slow), 
-                opacity var(--transition-slow),
-                margin-top var(--transition-slow),
-                margin-bottom var(--transition-slow),
-                padding-top var(--transition-slow),
-                padding-bottom var(--transition-slow);
-    will-change: max-height, opacity, margin-top, margin-bottom, padding-top, padding-bottom;
+    transition:
+        max-height var(--transition-slow),
+        opacity var(--transition-slow),
+        margin-top var(--transition-slow),
+        margin-bottom var(--transition-slow),
+        padding-top var(--transition-slow),
+        padding-bottom var(--transition-slow);
+    will-change:
+        max-height, opacity, margin-top, margin-bottom, padding-top,
+        padding-bottom;
 
     &.collapsed {
-        max-height: 0px !important; 
+        max-height: 0px !important;
         opacity: 0;
         margin-bottom: 0px !important;
         padding-top: 0px !important;

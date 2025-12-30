@@ -7,7 +7,7 @@ button,
 .btn {
     padding: var(--spacing-sm) 16px;
     background-color: var(--black-accent);
-    color: white;
+    color: var(--background-main);
     border: none;
     border-radius: var(--radius-md);
     font-size: 1em;
@@ -21,13 +21,11 @@ button,
     @media (hover: hover) {
         &:hover {
             background-color: var(--black-accent-hover);
-            color: white;
         }
     }
 
     &.touch-hover {
         background-color: var(--black-accent-hover);
-        color: white;
     }
 
     // Button variants
@@ -88,7 +86,7 @@ input[type="file"]::file-selector-button {
 .expandable-toggle {
     width: 100%;
     padding: var(--spacing-md) var(--spacing-lg);
-    background-color: var(--mid-translucent);
+    background-color: var(--min-translucent);
     backdrop-filter: blur(10px);
     border: none;
     border-radius: var(--radius-md);
@@ -101,6 +99,9 @@ input[type="file"]::file-selector-button {
     transition:
         background-color var(--transition-medium),
         color var(--transition-medium);
+    outline: solid;
+    outline-width: 1px;
+    outline-color: var(--mid-translucent);
 
     @media (hover: hover) {
         &:hover {
@@ -135,28 +136,32 @@ input[type="file"]::file-selector-button {
         padding: var(--spacing-sm) 16px;
         border: none;
         border-radius: 20px;
-        background-color: var(--mid-translucent);
+        background-color: var(--min-translucent);
         color: var(--text-color);
         cursor: pointer;
         transition: all var(--transition-medium);
         font-family: "Inter", sans-serif;
         display: inline-block;
+        outline: solid;
+        outline-width: 1px;
+        outline-color: var(--mid-translucent);
 
         @media (hover: hover) {
             &:hover {
                 background-color: var(--black-accent);
-                color: white;
+                color: var(--background-main);
             }
         }
 
         &.touch-hover {
             background-color: var(--black-accent);
-            color: white;
+            color: var(--background-main);
         }
 
         &.active {
             background-color: var(--black-accent);
-            color: white;
+            color: var(--background-main);
+            outline: none;
         }
     }
 }

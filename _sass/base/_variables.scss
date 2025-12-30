@@ -11,7 +11,7 @@
     --page-accent: #c6866d;
     --black-accent: rgba(0, 0, 0, 0.7);
     --black-accent-hover: rgba(0, 0, 0, 0.5);
-    --min-translucent: rgb(0, 0, 0, 0.03);
+    --min-translucent: rgb(0, 0, 0, 0.05);
     --mid-translucent: rgb(0, 0, 0, 0.07);
     --hg-translucent: rgb(0, 0, 0, 0.2);
     --code-bg: #ebe9e8;
@@ -19,18 +19,18 @@
 }
 
 :root[data-theme="blue"] {
-    --background-main: #2D3D5A;
-    --background-darker: #1F2A3F;
-    --text-color: #E8EDF5;
+    --background-main: #2d3d5a;
+    --background-darker: #1f2a3f;
+    --text-color: #e8edf5;
     --sec-text-color: #c6cfdc;
     --page-accent: #99aac9;
-    --black-accent: rgba(255, 255, 255, 0.4);
-    --black-accent-hover: rgba(255, 255, 255, 0.55);
+    --black-accent: rgba(255, 255, 255, 0.7);
+    --black-accent-hover: rgba(255, 255, 255, 0.5);
     --min-translucent: rgb(255, 255, 255, 0.03);
     --mid-translucent: rgb(255, 255, 255, 0.07);
     --hg-translucent: rgb(255, 255, 255, 0.2);
-    --code-bg: #1F2A3F;
-    --note-bg: #3A4F6B;
+    --code-bg: #1f2a3f;
+    --note-bg: #3a4f6b;
 }
 
 :root[data-theme="dark"] {
@@ -39,8 +39,9 @@
     --text-color: #d0d0d0;
     --sec-text-color: #c2c2c2;
     --page-accent: #b47d68;
-    --black-accent: rgba(256, 256, 256, 0.3);
+    --black-accent: rgba(256, 256, 256, 0.7);
     --black-accent-hover: rgba(256, 256, 256, 0.5);
+    --min-translucent: rgb(256, 256, 256, 0.03);
     --mid-translucent: rgb(256, 256, 256, 0.07);
     --hg-translucent: rgb(256, 256, 256, 0.2);
     --code-bg: #212121;
@@ -53,7 +54,7 @@
     --text-color: #f5e8ea;
     --sec-text-color: #d7cbd0;
     --page-accent: #a88088;
-    --black-accent: rgba(255, 255, 255, 0.35);
+    --black-accent: rgba(255, 255, 255, 0.7);
     --black-accent-hover: rgba(255, 255, 255, 0.5);
     --min-translucent: rgb(255, 255, 255, 0.03);
     --mid-translucent: rgb(255, 255, 255, 0.07);
@@ -71,25 +72,25 @@
     --spacing-xl: 20px;
     --spacing-2xl: 30px;
     --spacing-3xl: 60px;
-    
+
     // Border Radius
     --radius-sm: 4px;
     --radius-md: 6px;
     --radius-lg: 8px;
     --radius-xl: 12px;
     --radius-round: 50%;
-    
+
     // Transitions
     --transition-fast: 0.1s ease;
     --transition-medium: 0.2s ease;
     --transition-slow: 0.3s ease;
     --transition-backdrop: 0.4s ease;
-    
+
     // Shadows
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
     --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.1);
-    
+
     // Z-index scale
     --z-dropdown: 100;
     --z-sticky: 200;

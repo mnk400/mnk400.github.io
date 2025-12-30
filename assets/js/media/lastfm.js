@@ -2,20 +2,6 @@ const username = "mnk_400";
 const apiKey = "15606af7854e910d497469811c1ddbd4";
 let currentView = "albums";
 let currentPeriod = "7day";
-let nowPlayingInterval;
-
-function formatTimeAgo(timestamp) {
-  const now = Date.now();
-  const diff = now - timestamp;
-  const minutes = Math.floor(diff / 60000);
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
-
-  if (days > 0) return `${days} day${days > 1 ? "s" : ""} ago`;
-  if (hours > 0) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
-  if (minutes > 0) return `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
-  return "just now";
-}
 
 async function fetchRecentTrack() {
   const response = await fetch(
@@ -23,37 +9,6 @@ async function fetchRecentTrack() {
   );
   const data = await response.json();
   return data.recenttracks.track[0];
-}
-
-async function fetchNowPlaying() {
-  try {
-    const track = await fetchRecentTrack();
-    const nowPlayingSection = document.getElementById("music-now-playing");
-
-    if (track && nowPlayingSection) {
-      const isNowPlaying = track["@attr"]?.nowplaying === "true";
-      const imageUrl =
-        track.image.find((img) => img.size === "large")["#text"] ||
-        "/assets/album-placeholder.png";
-      const timestamp = parseInt(track.date?.uts * 1000) || Date.now();
-      const timeAgo = isNowPlaying ? "" : formatTimeAgo(timestamp);
-
-      nowPlayingSection.innerHTML = `
-                <div class="music-now-playing-container">
-                    <img src="${imageUrl}" alt="${track.name}" class="music-now-playing-image img-curved-edges">
-                    <div class="music-now-playing-info">
-                        <span class="music-playing-or-no">${isNowPlaying ? "Now Playing" : "Last Played"}</span>
-                        ${timeAgo ? `<span class="description"> - ${timeAgo}</span>` : ""}<br/><br/>
-                        <span class="music-track-title"><b>${track.name}</b></span><br/>
-                        <span class="music-artist-name"><i>${track.artist["#text"]}</i></span><br/>
-                        <span class="music-album-name">${track.album["#text"]}</span><br/>
-                    </div>
-                </div>
-            `;
-    }
-  } catch (error) {
-    console.error("Error fetching now playing:", error);
-  }
 }
 
 async function fetchMusicWidget() {
@@ -251,8 +206,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // Initial fetch for music page
-    fetchNowPlaying();
-    nowPlayingInterval = setInterval(fetchNowPlaying, 30000);
     fetchData();
   }
 

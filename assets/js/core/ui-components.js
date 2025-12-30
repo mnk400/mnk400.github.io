@@ -24,22 +24,39 @@ function toggleHeaderVisibility(showFull) {
 
 // Touch hover handler for mobile devices
 if ("ontouchstart" in window) {
+  const SELECTORS =
+    "button, .btn, .switch-option, .expandable-toggle, .minimal-header, .dark-button a";
+  let touchStart = 0;
+  let activeTarget = null;
+
   document.addEventListener(
     "touchstart",
-    function (e) {
-      const target = e.target.closest(
-        "button, .btn, .switch-option, .expandable-toggle, .minimal-header, .dark-button a",
-      );
-      if (target) {
-        target.classList.add("touch-hover");
-        setTimeout(() => target.classList.remove("touch-hover"), 150);
+    (e) => {
+      activeTarget = e.target.closest(SELECTORS);
+      if (activeTarget) {
+        touchStart = Date.now();
+        activeTarget.classList.add("touch-hover");
       }
     },
     { passive: true },
   );
+
+  const endTouch = () => {
+    if (!activeTarget) return;
+    const elapsed = Date.now() - touchStart;
+    const target = activeTarget;
+    activeTarget = null;
+    setTimeout(
+      () => target.classList.remove("touch-hover"),
+      Math.max(0, 150 - elapsed),
+    );
+  };
+
+  document.addEventListener("touchend", endTouch, { passive: true });
+  document.addEventListener("touchcancel", endTouch, { passive: true });
 }
 
-// Initialize UI components when DOM is ready
+// Initialize UI components when DOM is ready=
 document.addEventListener("DOMContentLoaded", function () {
   // Initialize image selector functionality
   const imageInput = document.getElementById("image-input");

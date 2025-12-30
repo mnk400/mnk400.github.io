@@ -1,17 +1,30 @@
-<a href="/more/music" class="music-widget" id="music-widget">
-    <div class="music-widget-content">
-        <img
-            id="music-widget-art"
-            class="music-widget-art img-curved-edges"
-            src=""
-            alt="Album art"
-        />
-        <div class="music-widget-info">
-            <span id="music-widget-track" class="music-widget-track"></span>
-            <span class="music-widget-separator"> - </span>
-            <span id="music-widget-artist" class="music-widget-artist"></span>
+{% if page.url contains '/more/music' %}
+<a
+    href="https://www.last.fm/user/mnk_400"
+    class="music-widget"
+    id="music-widget"
+    target="_blank"
+>
+    {% else %}
+    <a href="/more/music" class="music-widget" id="music-widget">
+        {% endif %}
+        <div class="music-widget-content">
+            <img
+                id="music-widget-art"
+                class="music-widget-art img-curved-edges"
+                src=""
+                alt="Album art"
+            />
+            <div class="music-widget-info">
+                <span id="music-widget-track" class="music-widget-track"></span>
+                <span class="music-widget-separator"> - </span>
+                <span
+                    id="music-widget-artist"
+                    class="music-widget-artist"
+                ></span>
+            </div>
+            <i class="fa-solid fa-link music-widget-arrow"></i>
         </div>
-        <i class="fa-solid fa-link music-widget-arrow"></i>
-    </div>
+    </a>
+    <script src="/assets/js/media/lastfm.js"></script>
 </a>
-<script src="/assets/js/media/lastfm.js"></script>
