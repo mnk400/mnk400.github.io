@@ -4,15 +4,38 @@
 
 // Blog list/archive
 .blog {
-    padding-bottom: var(--spacing-md);
-    
+    padding-bottom: var(--spacing-sm);
+
+    ul {
+        padding: 0;
+        margin: 0;
+    }
+
     li {
         font-size: 11.5pt;
-        margin: 0 1.5px 1.5px 0;
+        margin: 0;
+        padding: 1px 0;
         list-style: none;
-        line-height: 1.5em;
+        line-height: 1.3em;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
     }
-    
+
+    li a {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .date {
+        color: var(--sec-text-color);
+        font-family: ui-monospace, "IBM Plex Mono", monospace;
+        font-size: 0.8em;
+        white-space: nowrap;
+        flex-shrink: 0;
+        opacity: 80%;
+    }
+
     p {
         padding-bottom: var(--spacing-md) !important;
     }
@@ -63,12 +86,12 @@
             color: var(--sec-text-color);
         }
 
-        p+ol {
+        p + ol {
             margin-top: -8px;
             margin-bottom: var(--spacing-md);
         }
 
-        p+ul {
+        p + ul {
             margin-top: -10px;
             margin-bottom: var(--spacing-md);
         }
@@ -115,8 +138,8 @@
                 text-decoration: underline;
                 text-decoration-color: currentcolor;
                 text-decoration-thickness: auto;
-                text-decoration-color: #DADADA;
-                text-decoration-thickness: .125em;
+                text-decoration-color: #dadada;
+                text-decoration-thickness: 0.125em;
                 text-underline-offset: 2.5px;
             }
         }
@@ -132,7 +155,7 @@
             overflow-x: scroll;
             background: var(--code-bg);
             font-size: 11pt;
-            font-family: 'IBM Plex Mono', monospace;
+            font-family: "IBM Plex Mono", monospace;
             font-weight: 400;
             color: var(--text-color);
             margin-bottom: var(--spacing-lg);

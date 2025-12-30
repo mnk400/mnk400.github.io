@@ -35,9 +35,7 @@ async function fetchMusicWidget() {
       artistEl.textContent = track.artist["#text"];
 
       if (labelEl) {
-        labelEl.textContent = isNowPlaying
-          ? "Now playing..."
-          : "Last listened to...";
+        labelEl.textContent = isNowPlaying ? "Now playing" : "Last listened to";
       }
 
       // Update time and location
@@ -46,7 +44,7 @@ async function fetchMusicWidget() {
         const timeString = now.toLocaleTimeString("en-US", {
           hour: "numeric",
           minute: "2-digit",
-          hour12: false,
+          hour12: true,
           timeZone: "America/Los_Angeles",
         });
         timeLocationEl.textContent = `${timeString} - Seattle, WA`;

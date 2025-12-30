@@ -3,8 +3,8 @@
 // =============================================================================
 
 // Font imports
-@import url('https://rsms.me/inter/inter.css');
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap');
+@import url("https://rsms.me/inter/inter.css");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap");
 
 // Base typography
 * {
@@ -50,7 +50,7 @@ p {
     font-size: 12pt;
     font-weight: 300;
     line-height: 1.25em;
-    
+
     // In post content
     .post__content & {
         font-size: 11.5pt;
@@ -65,11 +65,13 @@ p {
 }
 
 // Text utilities
-strong, b {
+strong,
+b {
     font-weight: 600;
 }
 
-em, i {
+em,
+i {
     font-style: italic;
 }
 
@@ -77,26 +79,25 @@ em, i {
 a {
     line-height: 25px;
     color: var(--text-color);
-    text-decoration: underline;
-    text-decoration-color: var(--mid-translucent);
-    text-decoration-thickness: .1em;
+    text-decoration: none;
     transition: color var(--transition-medium);
-    
+
     &:hover {
         color: var(--page-accent);
     }
 }
 
 // Code
-code, .highlighter-rouge {
-    font-family: 'IBM Plex Mono', monospace;
+code,
+.highlighter-rouge {
+    font-family: "IBM Plex Mono", monospace;
     font-size: 11pt;
     background: var(--code-bg);
     padding: 0.5px 5px;
     word-wrap: break-word;
     font-weight: 400;
     color: var(--text-color);
-    
+
     a {
         text-decoration: none;
     }
