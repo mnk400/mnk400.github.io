@@ -18,7 +18,7 @@ button,
     font-family: "-apple-system", "inter", sans-serif;
     text-decoration: none !important;
 
-    @media (hover: hover) {
+    @media (any-hover: hover) {
         &:hover {
             background-color: var(--black-accent-hover);
         }
@@ -32,7 +32,7 @@ button,
     &--dark-forced {
         background-color: rgba(0, 0, 0, 0.7);
 
-        @media (hover: hover) {
+        @media (any-hover: hover) {
             &:hover {
                 background-color: rgba(0, 0, 0, 0.5);
             }
@@ -54,7 +54,7 @@ button,
         background-color: var(--mid-translucent);
         color: var(--text-color);
 
-        @media (hover: hover) {
+        @media (any-hover: hover) {
             &:hover {
                 background-color: var(--black-accent);
                 color: var(--background-main);
@@ -103,7 +103,7 @@ input[type="file"]::file-selector-button {
     outline-width: 1px;
     outline-color: var(--mid-translucent);
 
-    @media (hover: hover) {
+    @media (any-hover: hover) {
         &:hover {
             background-color: var(--black-accent);
             color: var(--background-main);
@@ -146,7 +146,7 @@ input[type="file"]::file-selector-button {
         outline-width: 1px;
         outline-color: var(--mid-translucent);
 
-        @media (hover: hover) {
+        @media (any-hover: hover) {
             &:hover {
                 background-color: var(--black-accent);
                 color: var(--background-main);

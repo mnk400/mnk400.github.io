@@ -25,7 +25,7 @@ function toggleHeaderVisibility(showFull) {
 // Touch hover handler for mobile devices
 if ("ontouchstart" in window) {
   const SELECTORS =
-    "button, .btn, .switch-option, .expandable-toggle, .minimal-header, .dark-button a";
+    "button, .btn, .switch-option, .expandable-toggle, .minimal-header, .dark-button a, .minimal-back-button";
   let touchStart = 0;
   let activeTarget = null;
 

@@ -16,7 +16,7 @@
         color: var(--text-color);
     }
 
-    @media (hover: hover) {
+    @media (any-hover: hover) {
         .dark-button a:hover {
             color: var(--page-accent);
         }
@@ -114,7 +114,7 @@
     outline-width: 1px;
     outline-color: var(--mid-translucent);
 
-    @media (hover: hover) {
+    @media (any-hover: hover) {
         &:hover {
             background-color: var(--black-accent);
             color: var(--background-main);
@@ -143,7 +143,7 @@
     outline-width: 1px;
     outline-color: var(--mid-translucent);
 
-    @media (hover: hover) {
+    @media (any-hover: hover) {
         &:hover {
             background-color: var(--black-accent);
             color: var(--background-main);
@@ -202,7 +202,6 @@
         list-style: none;
         flex: -1;
         max-width: 300px;
-        align-items: center;
 
         li {
             padding: 0px;

@@ -3,3 +3,5 @@
 .jekyll-cache
 _site
 Gemfile.lock
+_posts/_site
+ _posts/.jekyll-cache

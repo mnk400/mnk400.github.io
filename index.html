@@ -23,7 +23,13 @@ description: "Manik's personal website and blog"
                 <a href="{{ post.link }}" target="_blank">{{ post.title }}</a>
                 <span class="date">{{ post.date | date: '%b-%y' }}</span>
                 {% else %}
-                <a href="{{ post.url }}">{{ post.title }}</a>
+                <a href="{{ post.url }}">
+                    {{ post.title }}
+                    <i
+                        class="ph-bold ph-arrow-right"
+                        style="opacity: 25%; font-size: 0.8em"
+                    ></i>
+                </a>
                 <span class="date">{{ post.date | date: '%b-%y' }}</span>
                 {% endif %}
             </li>
@@ -35,13 +41,15 @@ description: "Manik's personal website and blog"
 
     <br />
     <div class="music-widget-header">
-        <span class="music-widget-label" id="music-widget-label"
-            >Last listened to</span
-        >
+        <span class="music-widget-label" id="music-widget-label">
+            Last listened to …
+        </span>
         <span
             class="music-widget-time-location"
             id="music-widget-time-location"
-        ></span>
+        >
+            X:XX YY - Seattle, WA
+        </span>
     </div>
     {% include music-widget.html %}
 </div>

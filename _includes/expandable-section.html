@@ -1,19 +1,16 @@
-{% comment %}
-  Expandable Section Component
-  
-  Parameters:
-  - id: Unique identifier for this expandable section (required)
-  - title: Text to show on the toggle button (required)
-  - content: The content to show/hide (required)
-  - expanded: Whether the section is expanded by default (optional, default: false)
-{% endcomment %}
+{% comment %} Expandable Section Component Parameters: - id: Unique identifier
+for this expandable section (required) - title: Text to show on the toggle
+button (required) - content: The content to show/hide (required) - expanded:
+Whether the section is expanded by default (optional, default: false) {%
+endcomment %}
 
 <div class="expandable-section" id="{{ include.id }}">
-  <button class="expandable-toggle" aria-expanded="{% if include.expanded %}true{% else %}false{% endif %}">
-    <span class="toggle-text">{{ include.title }}</span>
-    <span class="toggle-icon"><i class="fa-solid fa-plus"></i></span>
-  </button>
-  <div class="expandable-content">
-    {{ include.content }}
-  </div>
+    <button
+        class="expandable-toggle"
+        aria-expanded="{% if include.expanded %}true{% else %}false{% endif %}"
+    >
+        <span class="toggle-text">{{ include.title }}</span>
+        <span class="toggle-icon"><i class="ph-bold ph-plus"></i></span>
+    </button>
+    <div class="expandable-content">{{ include.content }}</div>
 </div>

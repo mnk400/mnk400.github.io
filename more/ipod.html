@@ -8,60 +8,62 @@ minimal: true
 category: Music
 ---
 
-<link rel="stylesheet" type="text/css" href="/assets/css/ipod-page.css">
+<link rel="stylesheet" type="text/css" href="/assets/css/ipod-page.css" />
 <script src="/assets/js/media/ipod.js"></script>
 
 {% capture ipod_explanation %}
 <div class="ipod-explanation">
-  <h3>iPod Playlist</h3>
-  <p>This interactive iPod is built using HTML, CSS, and JS to play some of my favorite songs. It's designed to mimic the very first iPod classic.</p>
-  <p>To interact, use the buttons on the iPod as you would on a real iPod. You can also use the keyboard: 'Up' and 'Down' arrows for navigation, 'Enter' to select or exit, and 'Space' for play/pause.</p>
-  <p>The music is streamed from YouTube.</p>
+    <h3>iPod Playlist</h3>
+    <p>
+        This interactive iPod is built using HTML, CSS, and JS to play some of
+        my favorite songs. It's designed to mimic the very first iPod classic.
+    </p>
+    <p>
+        To interact, use the buttons on the iPod as you would on a real iPod.
+        You can also use the keyboard: 'Up' and 'Down' arrows for navigation,
+        'Enter' to select or exit, and 'Space' for play/pause.
+    </p>
+    <p>The music is streamed from YouTube.</p>
 </div>
-{% endcapture %}
-
-{% include expandable-section.html 
-  id="ipod-explanation" 
-  title="<b>Learn more</b>" 
-  content=ipod_explanation 
-  expanded=false 
-%}
+{% endcapture %} {% include expandable-section.html id="ipod-explanation"
+title="<b>Learn more</b>" content=ipod_explanation expanded=false %}
 
 <div class="container">
     <div class="ipod small">
-      <div class="screen">
-              <div class="title-bar">
-                  <div class="title">1/12</div>
-                  <div class="play-pause-icon"><i class="fa-solid fa-play"></i></div>
-                  <div class="battery small"></div>	
-              </div>
-        <div class="menu-options">
-        </div>
-        <!-- Now Playing Screen (hidden by default) -->
-        <div id="now-playing" style="display: none;">
-            <div class="song-title"></div>
-            <div class="artist-name"></div>
-            <div class="album-info"></div>
-            <div class="progress-container">
-                <div id="progress-bar"></div>
+        <div class="screen">
+            <div class="title-bar">
+                <div class="title">1/12</div>
+                <div class="play-pause-icon">
+                    <i class="ph-fill ph-play"></i>
+                </div>
+                <div class="battery small"></div>
             </div>
-            <div id="time-display">0:00 / 0:00</div>
-            <div class="press-play-message">Press Play</div>
+            <div class="menu-options"></div>
+            <!-- Now Playing Screen (hidden by default) -->
+            <div id="now-playing" style="display: none">
+                <div class="song-title"></div>
+                <div class="artist-name"></div>
+                <div class="album-info"></div>
+                <div class="progress-container">
+                    <div id="progress-bar"></div>
+                </div>
+                <div id="time-display">0:00 / 0:00</div>
+                <div class="press-play-message">Press Play</div>
+            </div>
         </div>
-       </div>	
-      <div class="outer-ring">
-        <svg viewBox="-150 5 350 350">
-                  <path id="curve" d="m0,30 c16,-4 32,-4 48,0" />
-                  <text class="menu-text">
-                      <textPath xlink:href="#curve">menu</textPath>
-                  </text>
-              </svg>
-        <div class="skip prev"></div>
-        <div class="skip next"></div>
-        <div class="play-pause"></div>
-              <div class="touch-wheel">
-                  <div class="center-button"></div>
-              </div>				
-          </div>
+        <div class="outer-ring">
+            <svg viewBox="-150 5 350 350">
+                <path id="curve" d="m0,30 c16,-4 32,-4 48,0" />
+                <text class="menu-text">
+                    <textPath xlink:href="#curve">menu</textPath>
+                </text>
+            </svg>
+            <div class="skip prev"></div>
+            <div class="skip next"></div>
+            <div class="play-pause"></div>
+            <div class="touch-wheel">
+                <div class="center-button"></div>
+            </div>
+        </div>
     </div>
-  </div>
+</div>

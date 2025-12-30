@@ -3,15 +3,14 @@
 // =============================================================================
 
 // =============================================================================
-// MUSIC WIDGET (Homepage)
+// MUSIC WIDGET
 // =============================================================================
 .music-widget-header {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: var(--spacing-xs);
     font-size: 0.8em;
     color: var(--sec-text-color);
+    padding-bottom: var(--spacing-sm);
 
     .pr {
         font-size: 1.2em;
@@ -21,13 +20,13 @@
 }
 
 .music-widget {
-    display: none;
     text-decoration: none;
     color: inherit;
-    margin-top: var(--spacing-sm);
+    opacity: 0;
+    transition: all var(--transition-medium);
 
     &.loaded {
-        display: block;
+        opacity: 1;
     }
 }
 

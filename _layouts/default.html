@@ -1,121 +1,134 @@
-<!-- 
+<!--
 
       |\      _,,,---,,_
 ZZZzz /,`.-'`'    -.  ;-;;,_
      |,4-  ) )-,_. ,\ (  `'-'
-    '---''(_/--'  `-'\_)  
-    
+    '---''(_/--'  `-'\_)
+
     Hello!
- 
+
 -->
-<!DOCTYPE html>
+<!doctype html>
 
 <html>
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, user-scalable=no"
+        />
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-
-    <meta name="author" content="Manik Kumar">
-    <meta name="keywords" content="portfolio, developer, software engineer, projects, blog">
-    {% if page.description %}
-    <meta name="description" content="{{ page.description }}">
-    {% else %}
-    <meta name="description" content="{{ site.description }}">
-    {% endif %}
-
-    <!-- Open Graph-->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ site.url }}{{ page.url }}">
-    <meta property="og:title" content="{% if page.title %}{{ page.title }} — Manik{% else %}Manik{% endif %}">
-    {% if page.description %}
-    <meta property="og:description" content="{{ page.description }}">
-    {% else %}
-    <meta property="og:description" content="{{ site.description }}">
-    {% endif %}
-    {% if page.image %}
-    <meta property="og:image" content="{{ site.url }}{{ page.image }}">
-    {% else %}
-    <meta property="og:image" content="{{ site.url }}/assets/images/metadata/pixelated.jpg">
-    {% endif %}
-
-    {% if page.title %}
-    <title>{{ page.title }} — Manik</title>
-    {% else %}
-    <title>Manik</title>
-    {% endif %}
-
-    <!-- Favicon -->
-    <link rel="icon" href="/assets/favicon.ico">
-
-    <!-- Custom CSS for the website -->
-    <link rel="stylesheet" type="text/css" href="/assets/css/main.css">
-
-    <!-- Core JavaScript modules -->
-    <script src="/assets/js/core/theme-manager.js"></script>
-    <script src="/assets/js/core/navigation.js"></script>
-    <script src="/assets/js/core/ui-components.js"></script>
-
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/1793033470.js" crossorigin="anonymous"></script>
-
-    <!-- Google Analytics and config -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WLJ3VCYPD9"></script>
-    <meta name="p:domain_verify" content="bba1d80d0778741b7525ee227f44f5ff" />
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-        gtag('config', 'G-WLJ3VCYPD9');
-    </script>
-
-    <!-- Structured Data -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "{% if page.layout == 'post' %}Article{% else %}WebPage{% endif %}",
-        "headline": "{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}",
-        "author": {
-            "@type": "Person",
-            "name": "Manik Kumar"
-        },
-        "publisher": {
-            "@type": "Person",
-            "name": "Manik Kumar"
-        },
-        "url": "{{ site.url }}{{ page.url }}",
+        <meta name="author" content="Manik Kumar" />
+        <meta
+            name="keywords"
+            content="portfolio, developer, software engineer, projects, blog"
+        />
         {% if page.description %}
-        "description": "{{ page.description }}",
+        <meta name="description" content="{{ page.description }}" />
+        {% else %}
+        <meta name="description" content="{{ site.description }}" />
         {% endif %}
-        {% if page.image %}
-        "image": "{{ site.url }}{{ page.image }}",
-        {% endif %}
-        "mainEntityOfPage": "{{ site.url }}{{ page.url }}"
-    }
-    </script>
 
-    <!-- Config for LaTeX rendering -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
-        type="text/javascript"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
-    <script type="text/x-mathjax-config">
+        <!-- Open Graph-->
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="{{ site.url }}{{ page.url }}" />
+        <meta
+            property="og:title"
+            content="{% if page.title %}{{ page.title }} — Manik{% else %}Manik{% endif %}"
+        />
+        {% if page.description %}
+        <meta property="og:description" content="{{ page.description }}" />
+        {% else %}
+        <meta property="og:description" content="{{ site.description }}" />
+        {% endif %} {% if page.image %}
+        <meta property="og:image" content="{{ site.url }}{{ page.image }}" />
+        {% else %}
+        <meta
+            property="og:image"
+            content="{{ site.url }}/assets/images/metadata/pixelated.jpg"
+        />
+        {% endif %} {% if page.title %}
+        <title>{{ page.title }} — Manik</title>
+        {% else %}
+        <title>Manik</title>
+        {% endif %}
+
+        <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+
+        <!-- Favicon -->
+        <link rel="icon" href="/assets/favicon.ico" />
+
+        <!-- Custom CSS for the website -->
+        <link rel="stylesheet" type="text/css" href="/assets/css/main.css" />
+
+        <!-- Core JavaScript modules -->
+        <script src="/assets/js/core/theme-manager.js"></script>
+        <script src="/assets/js/core/navigation.js"></script>
+        <script src="/assets/js/core/ui-components.js"></script>
+
+        <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+        <!-- Google Analytics and config -->
+        <script
+            async
+            src="https://www.googletagmanager.com/gtag/js?id=G-WLJ3VCYPD9"
+        ></script>
+        <meta
+            name="p:domain_verify"
+            content="bba1d80d0778741b7525ee227f44f5ff"
+        />
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+            gtag("js", new Date());
+            gtag("config", "G-WLJ3VCYPD9");
+        </script>
+
+        <!-- Structured Data -->
+        <script type="application/ld+json">
+            {
+                "@context": "https://schema.org",
+                "@type": "{% if page.layout == 'post' %}Article{% else %}WebPage{% endif %}",
+                "headline": "{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}",
+                "author": {
+                    "@type": "Person",
+                    "name": "Manik Kumar"
+                },
+                "publisher": {
+                    "@type": "Person",
+                    "name": "Manik Kumar"
+                },
+                "url": "{{ site.url }}{{ page.url }}",
+                {% if page.description %}
+                "description": "{{ page.description }}",
+                {% endif %}
+                {% if page.image %}
+                "image": "{{ site.url }}{{ page.image }}",
+                {% endif %}
+                "mainEntityOfPage": "{{ site.url }}{{ page.url }}"
+            }
+        </script>
+
+        <!-- Config for LaTeX rendering -->
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"
+            type="text/javascript"
+        ></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+        <script type="text/x-mathjax-config">
             MathJax.Hub.Config({
                 "HTML-CSS" : {
                     availableFonts : ["Tex"],
                     scale : 70
                 }
             });
-    </script>
+        </script>
+    </head>
 
-</head>
-
-<body>
-    <div class="wrapper">
-        {% include header.html %}
-        {{ content }}
-    </div>
-</body>
-
+    <body>
+        <div class="wrapper">{% include header.html %} {{ content }}</div>
+    </body>
 </html>

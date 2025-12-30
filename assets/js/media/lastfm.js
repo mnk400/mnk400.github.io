@@ -35,7 +35,9 @@ async function fetchMusicWidget() {
       artistEl.textContent = track.artist["#text"];
 
       if (labelEl) {
-        labelEl.textContent = isNowPlaying ? "Now playing" : "Last listened to";
+        labelEl.innerHTML = isNowPlaying
+          ? "Now playing"
+          : "Last listened to" + ` …`;
       }
 
       // Update time and location

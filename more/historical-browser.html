@@ -9,20 +9,29 @@ category: Fun Tools
 ---
 
 <div class="historical-browser-explanation">
-  <p>This is an interactive browser that lets you visit websites from a set date in the past. The source for the data is wayback-machine.</p>
+    <p>
+        This is an interactive browser that lets you visit websites from a set
+        date in the past. The source for the data is wayback-machine.
+    </p>
 </div>
 
 <div class="historical-browser">
     <div class="historical-browser-url-bar">
-        <span id="browser-home" class="browser-controls"><i class="fa-solid fa-house"></i></span>
-        <span id="browser-back" class="browser-controls"><i class="fa-solid fa-arrow-left"></i></span>
-        <span id="browser-forward" class="browser-controls"><i class="fa-solid fa-arrow-right"></i></span>
-        <input type="text" id="url-input" placeholder="Enter URL">
+        <span id="browser-home" class="browser-controls"
+            ><i class="ph-bold ph-house"></i
+        ></span>
+        <span id="browser-back" class="browser-controls"
+            ><i class="ph-bold ph-arrow-left"></i
+        ></span>
+        <span id="browser-forward" class="browser-controls"
+            ><i class="ph-bold ph-arrow-right"></i
+        ></span>
+        <input type="text" id="url-input" placeholder="Enter URL" />
         <div class="year-selector-container">
-          <select id="year-selector" class="historical-browser-year-selector">
-            <!-- Years will be populated by JavaScript -->
-          </select>
-          <i class="fa-solid fa-angle-down year-selector-icon"></i>
+            <select id="year-selector" class="historical-browser-year-selector">
+                <!-- Years will be populated by JavaScript -->
+            </select>
+            <i class="ph-bold ph-caret-down year-selector-icon"></i>
         </div>
         <button id="go-button" class="historical-browser-go-btn">Go</button>
     </div>

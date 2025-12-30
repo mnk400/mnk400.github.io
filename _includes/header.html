@@ -2,7 +2,7 @@
     <div class="minimal-header-wrapper">
         {% if page.url != "/" %}
         <div class="minimal-back-button" id="minimalBackButton" onclick="handleBackNavigation(); return false;">
-            <i class="fa fa-angle-left"></i>
+            <i class="ph-bold ph-arrow-down-left"></i>
         </div>
         {% endif %}
         <div class="minimal-header" id="minimalHeader">
@@ -13,7 +13,7 @@
                             <span style="padding-left: 10px;"><b>{{ page.title }}</b></span>
                         </th>
                         <th class="min-down-arrow">
-                            <i class="fa fa-chevron-circle-down"></i>
+                            <i class="ph-fill ph-caret-circle-down"></i>
                         </th>
                     </tr>
                 </table>
@@ -30,11 +30,11 @@
                     </th>
                     <th class="dark-button">
                         <a href="#" onclick="toggleTheme(); return false;">
-                            <i class="fas fa-moon theme-icon"></i>
+                            <i class="ph-fill ph-moon theme-icon"></i>
                         </a>
                         {% if page.minimal == true %}
                         <a href="#" onclick="toggleHeaderVisibility(false); return false;" style="margin-left: 10px;">
-                            <i class="fa fa-chevron-circle-up"></i>
+                            <i class="ph-fill ph-caret-circle-up"></i>
                         </a>
                         {% endif %}
                     </th>
@@ -45,7 +45,7 @@
             <ul>
                 {% if page.url != "/" %}
                 <li><a id="back-button" href="#" onclick="handleBackNavigation(); return false;">
-                        <i class="fa fa-angle-left"></i>
+                        <i class="ph-bold ph-arrow-down-left"></i>
                     </a></li>
                 {% endif %}
                 {% if page.url != "/more" %}
