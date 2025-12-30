@@ -3,7 +3,7 @@ layout: default
 description: "Manik's personal website and blog"
 ---
 <div class="desc">
-	<p> 
+	<p>
         Hi! I am <b>Manik,</b> a software developer who lives in Seattle, these days I help build software for <b>Kindle</b> apps and devices. I graduated from <b>Northeastern University</b> in Boston.
         <br/><br/>
         I'm also an amateur photographer who spends a lot of my free time exploring photography.
@@ -27,9 +27,16 @@ description: "Manik's personal website and blog"
 </div>
 {% endcapture %}
 
-{% include expandable-section.html 
-   id="blog-archive" 
-   title="<b>Archive</b>" 
-   content=blog_content 
-   expanded=true 
+{% include expandable-section.html
+   id="blog-archive"
+   title="<b>Archive</b>"
+   content=blog_content
+   expanded=true
 %}
+
+<br/>
+<div class="music-widget-header">
+    <span class="music-widget-label" id="music-widget-label">Last listened to...</span>
+    <span class="music-widget-time-location" id="music-widget-time-location"></span>
+</div>
+{% include music-widget.html %}
