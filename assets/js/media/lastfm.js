@@ -21,9 +21,7 @@ async function fetchMusicWidget() {
       const trackEl = document.getElementById("music-widget-track");
       const artistEl = document.getElementById("music-widget-artist");
       const labelEl = document.getElementById("music-widget-label");
-      const timeLocationEl = document.getElementById(
-        "music-widget-time-location",
-      );
+      const timeEl = document.getElementById("music-widget-time");
 
       const isNowPlaying = track["@attr"]?.nowplaying === "true";
       const imageUrl =
@@ -36,20 +34,29 @@ async function fetchMusicWidget() {
 
       if (labelEl) {
         labelEl.innerHTML = isNowPlaying
-          ? "Now playing"
-          : "Last listened to" + ` …`;
+          ? "Now playing …"
+          : "Last listened to …";
       }
 
-      // Update time and location
-      if (timeLocationEl) {
-        const now = new Date();
-        const timeString = now.toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "2-digit",
-          hour12: true,
-          timeZone: "America/Los_Angeles",
-        });
-        timeLocationEl.textContent = `${timeString} - Seattle, WA`;
+      // Update playback time from Last.fm data
+      if (timeEl) {
+        if (isNowPlaying) {
+          timeEl.textContent = "";
+        } else if (track.date?.uts) {
+          const playedAt = new Date(parseInt(track.date.uts) * 1000);
+          const now = new Date();
+          const diffMs = now - playedAt;
+          const diffMins = Math.round(diffMs / 60000);
+          const diffHours = Math.round(diffMs / 3600000);
+
+          if (diffMins < 1) {
+            timeEl.textContent = "just now";
+          } else if (diffMins < 60) {
+            timeEl.textContent = `${diffMins} minute${diffMins === 1 ? "" : "s"} ago`;
+          } else {
+            timeEl.textContent = `${diffHours} hour${diffHours === 1 ? "" : "s"} ago`;
+          }
+        }
       }
 
       widget.classList.add("loaded");
