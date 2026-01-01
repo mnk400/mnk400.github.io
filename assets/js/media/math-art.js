@@ -8,7 +8,7 @@ async function loadImages() {
     try {
         const response = await fetch(api_url + '/api/images');
         if (!response.ok) throw new Error('Network response was not ok');
-        
+
         const data = await response.json();
         loading.style.display = 'none';
         // Display first 20 images
@@ -21,9 +21,18 @@ async function loadImages() {
             gallery.appendChild(img);
         });
     } catch (error) {
-        loading.style.display = 'none';
+        console.error('Error loading images from RPi:', error);
         errorMessage.style.display = 'block';
-        console.error('Error loading images:', error);
+
+        const BACKUP_ALBUM_HASH = '7JwJMMz';
+
+        if (typeof loadAlbum === 'function') {
+            console.log('Attempting to load backup Imgur album...');
+            loading.style.display = 'block'; // Show loading again for the backup load
+            loadAlbum(BACKUP_ALBUM_HASH, 'gallery', 'loading');
+        } else {
+            loading.style.display = 'none';
+        }
     }
 }
 

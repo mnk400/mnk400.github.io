@@ -55,24 +55,32 @@ function showInLightbox(imageSrc) {
   lightbox.style.display = "block";
 }
 
-async function loadAlbum() {
+async function loadAlbum(hashArg, containerIdArg, loadingIdArg) {
+  const hash = hashArg || (typeof ALBUM_HASH !== "undefined" ? ALBUM_HASH : null);
   const containerID =
-    typeof ALBUM_CONTAINER_ID !== "undefined"
+    containerIdArg ||
+    (typeof ALBUM_CONTAINER_ID !== "undefined"
       ? ALBUM_CONTAINER_ID
-      : "album-container";
-  const loadingID = typeof LOADING_ID !== "undefined" ? LOADING_ID : "loading";
+      : "album-container");
+  const loadingID =
+    loadingIdArg || (typeof LOADING_ID !== "undefined" ? LOADING_ID : "loading");
+
+  if (!hash) {
+    console.log("No Imgur album hash provided, skipping auto-load.");
+    return;
+  }
 
   const albumContainer = document.getElementById(containerID);
   const loadingIndicator = document.getElementById(loadingID);
 
-  if (!albumContainer || !loadingIndicator) {
-    console.error("Album container or loading indicator not found");
+  if (!albumContainer) {
+    console.error("Album container not found:", containerID);
     return;
   }
 
   try {
     const response = await axios.get(
-      `https://api.imgur.com/3/album/${ALBUM_HASH}/images`,
+      `https://api.imgur.com/3/album/${hash}/images`,
       {
         headers: {
           Authorization: `Client-ID ${CLIENT_ID}`,
@@ -80,7 +88,7 @@ async function loadAlbum() {
       },
     );
 
-    loadingIndicator.style.display = "none";
+    if (loadingIndicator) loadingIndicator.style.display = "none";
 
     // Clear any existing content
     albumContainer.innerHTML = "";
@@ -130,16 +138,22 @@ async function loadAlbum() {
 
     createLightbox();
   } catch (error) {
-    loadingIndicator.style.display = "none";
+    if (loadingIndicator) loadingIndicator.style.display = "none";
     console.error("Error loading album:", error);
     albumContainer.innerHTML =
       '<p class="error-message">Failed to load images. Please try again later.</p>';
   }
 }
 
-// Load album on page load
+// Load album on page load if global ALBUM_HASH is defined
+function init() {
+  if (typeof ALBUM_HASH !== "undefined") {
+    loadAlbum();
+  }
+}
+
 if (document.readyState === "complete") {
-  loadAlbum();
+  init();
 } else {
-  window.addEventListener("load", loadAlbum);
+  window.addEventListener("load", init);
 }
