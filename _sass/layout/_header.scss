@@ -2,6 +2,28 @@
 // HEADER & NAVIGATION
 // =============================================================================
 
+// Title photo reveal animation
+.title-photo-container {
+    width: 200px;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all var(--transition-slow);
+
+    &.revealed {
+        margin-top: calc(var(--spacing-2xl) * -1);
+        max-height: 300px;
+        padding-bottom: calc(var(--spacing-2xl) * 1.5);
+        opacity: 1;
+    }
+
+    .title-photo {
+        width: 150px;
+        display: block;
+        border-radius: var(--radius-md);
+    }
+}
+
 // Site title
 .site-title {
     color: var(--text-color);

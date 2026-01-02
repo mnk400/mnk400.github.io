@@ -3,6 +3,22 @@
  * Consolidates expandable sections, image selectors, and header visibility
  */
 
+// Title photo reveal animation (homepage only)
+let photoRevealTimeout = null;
+
+function triggerPhotoReveal() {
+  const container = document.getElementById("titlePhotoContainer");
+  if (!container || container.classList.contains("revealed")) return;
+
+  container.classList.add("revealed");
+
+  if (photoRevealTimeout) clearTimeout(photoRevealTimeout);
+  photoRevealTimeout = setTimeout(() => {
+    container.classList.remove("revealed");
+    photoRevealTimeout = null;
+  }, 2500);
+}
+
 // Header visibility toggle functionality
 function toggleHeaderVisibility(showFull) {
   const header = document.querySelector("header");
