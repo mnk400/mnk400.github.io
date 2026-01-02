@@ -22,10 +22,15 @@ permalink: /more
             <p>
                 {% for page in pages_in_more_dir %}
                     {% if page.title and page.category == category_name %}
+                        {% if page.external_url %}
+                            <a href="{{ page.external_url }}" target="_blank" rel="noopener noreferrer">{{ page.title }} <i class="ph-bold ph-arrow-up-right va-mid"></i></a>
+                        {% else %}
                             <a href="{{ page.url | relative_url }}">{{ page.title }}</a>
-                            {% if page.description %}
-                                <span class="description">{{ page.description }}</span><br>
-                            {% endif %}      
+                        {% endif %}  
+                        {% if page.description %}
+                            <span class="description">{{ page.description }}</span>
+                            <br>
+                        {% endif %}      
                     {% endif %}
                 {% endfor %}
             </p>
