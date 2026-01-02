@@ -72,8 +72,25 @@ if ("ontouchstart" in window) {
   document.addEventListener("touchcancel", endTouch, { passive: true });
 }
 
-// Initialize UI components when DOM is ready=
+// Initialize UI components when DOM is ready
 document.addEventListener("DOMContentLoaded", function () {
+  // Name font rotation (homepage only)
+  const nameEl = document.getElementById("name-rotate");
+  if (nameEl) {
+    const fonts = [
+      '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      "'OverTheRainbow', cursive",
+      "'Pacifico', cursive",
+      "'RubikBeastly', cursive",
+      "'SourceSerif4', serif",
+      "'UnifrakturMaguntia', serif",
+    ];
+    let currentIndex = 0;
+    setInterval(function () {
+      currentIndex = (currentIndex + 1) % fonts.length;
+      nameEl.style.fontFamily = fonts[currentIndex];
+    }, 500);
+  }
   // Initialize image selector functionality
   const imageInput = document.getElementById("image-input");
   const imageSelector = document.getElementById("image-selector");

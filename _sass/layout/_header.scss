@@ -2,6 +2,42 @@
 // HEADER & NAVIGATION
 // =============================================================================
 
+// Font rotation fonts for name
+@font-face {
+    font-family: "OverTheRainbow";
+    src: url("/assets/data/fonts/Over_the_Rainbow/OvertheRainbow-Regular.ttf")
+        format("truetype");
+    font-display: swap;
+}
+@font-face {
+    font-family: "Pacifico";
+    src: url("/assets/data/fonts/Pacifico/Pacifico-Regular.ttf")
+        format("truetype");
+    font-display: swap;
+}
+@font-face {
+    font-family: "RubikBeastly";
+    src: url("/assets/data/fonts/Rubik_Beastly/RubikBeastly-Regular.ttf")
+        format("truetype");
+    font-display: swap;
+}
+@font-face {
+    font-family: "SourceSerif4";
+    src: url("/assets/data/fonts/Source_Serif_4/SourceSerif4-VariableFont_opsz,wght.ttf")
+        format("truetype");
+    font-display: swap;
+}
+@font-face {
+    font-family: "UnifrakturMaguntia";
+    src: url("/assets/data/fonts/UnifrakturMaguntia/UnifrakturMaguntia-Regular.ttf")
+        format("truetype");
+    font-display: swap;
+}
+
+.name-rotate {
+    display: inline-block;
+}
+
 // Title photo reveal animation
 .title-photo-container {
     width: 200px;
@@ -61,7 +97,9 @@
     font-size: 1.5em;
     font-weight: 700;
     text-align: left;
-    padding-bottom: 0.3em;
+    padding-bottom: 0.1em;
+    height: 1.3em;
+    vertical-align: middle;
 }
 
 .dark-button {
