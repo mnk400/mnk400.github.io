@@ -33,6 +33,12 @@
         format("truetype");
     font-display: swap;
 }
+@font-face {
+    font-family: "Bytesized";
+    src: url("/assets/data/fonts/Bytesized/Bytesized-Regular.ttf")
+        format("truetype");
+    font-display: swap;
+}
 
 .name-rotate {
     display: inline-block;

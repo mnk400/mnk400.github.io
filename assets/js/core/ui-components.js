@@ -84,12 +84,16 @@ document.addEventListener("DOMContentLoaded", function () {
       "'RubikBeastly', cursive",
       "'SourceSerif4', serif",
       "'UnifrakturMaguntia', serif",
+      "'Bytesized', monospace",
     ];
     let currentIndex = 0;
-    setInterval(function () {
-      currentIndex = (currentIndex + 1) % fonts.length;
-      nameEl.style.fontFamily = fonts[currentIndex];
-    }, 500);
+    // Wait 1 second before starting rotation to ensure fonts are loaded
+    setTimeout(function () {
+      setInterval(function () {
+        currentIndex = (currentIndex + 1) % fonts.length;
+        nameEl.style.fontFamily = fonts[currentIndex];
+      }, 500);
+    }, 1000);
   }
   // Initialize image selector functionality
   const imageInput = document.getElementById("image-input");
