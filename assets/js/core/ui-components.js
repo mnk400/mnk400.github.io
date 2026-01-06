@@ -5,18 +5,53 @@
 
 // Title photo reveal animation (homepage only)
 let photoRevealTimeout = null;
+let isTransitioning = false;
 
-function triggerPhotoReveal() {
+function triggerPhotoReveal(imagePath = "/assets/images/me.jpg") {
   const container = document.getElementById("titlePhotoContainer");
-  if (!container || container.classList.contains("revealed")) return;
+  if (!container || isTransitioning) return;
 
-  container.classList.add("revealed");
+  const img = container.querySelector(".title-photo");
+  if (!img) return;
 
-  if (photoRevealTimeout) clearTimeout(photoRevealTimeout);
-  photoRevealTimeout = setTimeout(() => {
-    container.classList.remove("revealed");
+  // Clear any existing timeout
+  if (photoRevealTimeout) {
+    clearTimeout(photoRevealTimeout);
     photoRevealTimeout = null;
-  }, 2500);
+  }
+
+  const revealWithImage = () => {
+    container.classList.add("revealed");
+    photoRevealTimeout = setTimeout(() => {
+      container.classList.remove("revealed");
+      photoRevealTimeout = null;
+    }, 2500);
+  };
+
+  const preloadAndReveal = () => {
+    // Preload the new image before showing
+    const preloader = new Image();
+    preloader.onload = () => {
+      img.src = imagePath;
+      revealWithImage();
+      isTransitioning = false;
+    };
+    preloader.onerror = () => {
+      isTransitioning = false;
+    };
+    preloader.src = imagePath;
+  };
+
+  isTransitioning = true;
+
+  // If already revealed, hide first, then preload and reveal new image
+  if (container.classList.contains("revealed")) {
+    container.classList.remove("revealed");
+    // Wait for hide transition to complete
+    setTimeout(preloadAndReveal, 300);
+  } else {
+    preloadAndReveal();
+  }
 }
 
 // Header visibility toggle functionality
@@ -41,7 +76,7 @@ function toggleHeaderVisibility(showFull) {
 // Touch hover handler for mobile devices
 if ("ontouchstart" in window) {
   const SELECTORS =
-    "button, .btn, .switch-option, .expandable-toggle, .minimal-header, .dark-button a, .minimal-back-button";
+    "a, button, .btn, .switch-option, .expandable-toggle, .minimal-header, .minimal-back-button";
   let touchStart = 0;
   let activeTarget = null;
 
@@ -74,27 +109,6 @@ if ("ontouchstart" in window) {
 
 // Initialize UI components when DOM is ready
 document.addEventListener("DOMContentLoaded", function () {
-  // Name font rotation (homepage only)
-  const nameEl = document.getElementById("name-rotate");
-  if (nameEl) {
-    const fonts = [
-      '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-      "'OverTheRainbow', cursive",
-      "'Pacifico', cursive",
-      "'RubikBeastly', cursive",
-      "'SourceSerif4', serif",
-      "'UnifrakturMaguntia', serif",
-      "'Bytesized', monospace",
-    ];
-    let currentIndex = 0;
-    // Wait 1 second before starting rotation to ensure fonts are loaded
-    setTimeout(function () {
-      setInterval(function () {
-        currentIndex = (currentIndex + 1) % fonts.length;
-        nameEl.style.fontFamily = fonts[currentIndex];
-      }, 500);
-    }, 1000);
-  }
   // Initialize image selector functionality
   const imageInput = document.getElementById("image-input");
   const imageSelector = document.getElementById("image-selector");

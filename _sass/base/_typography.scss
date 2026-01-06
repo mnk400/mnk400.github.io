@@ -82,7 +82,13 @@ a {
     text-decoration: none;
     transition: color var(--transition-medium);
 
-    &:hover {
+    @media (any-hover: hover) {
+        &:hover {
+            color: var(--page-accent);
+        }
+    }
+
+    &.touch-hover {
         color: var(--page-accent);
     }
 }

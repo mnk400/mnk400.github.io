@@ -1,16 +1,25 @@
 <header class="{% if page.minimal %}minimal-mode{% endif %}">
     <div class="minimal-header-wrapper">
         {% if page.url != "/" %}
-        <div class="minimal-back-button" id="minimalBackButton" onclick="handleBackNavigation(); return false;">
+        <div
+            class="minimal-back-button"
+            id="minimalBackButton"
+            onclick="handleBackNavigation(); return false;"
+        >
             <i class="ph-bold ph-arrow-down-left"></i>
         </div>
         {% endif %}
         <div class="minimal-header" id="minimalHeader">
-            <div class="header-content" onclick="toggleHeaderVisibility(true); return false;">
+            <div
+                class="header-content"
+                onclick="toggleHeaderVisibility(true); return false;"
+            >
                 <table>
                     <tr>
                         <th class="min-title">
-                            <span style="padding-left: 10px;"><b>{{ page.title }}</b></span>
+                            <span style="padding-left: 10px"
+                                ><b>{{ page.title }}</b></span
+                            >
                         </th>
                         <th class="min-down-arrow">
                             <i class="ph-fill ph-caret-circle-down"></i>
@@ -29,8 +38,13 @@
                 <tr>
                     <th class="site-title-name">
                         {% if page.url == "/" %}
-                        <a href="#" class="site-title-link" id="title-photo-trigger" onclick="triggerPhotoReveal(); return false;">
-                            <span class="name-rotate" id="name-rotate">Manik</span>
+                        <a
+                            href="#"
+                            class="site-title-link"
+                            id="title-photo-trigger"
+                            onclick="triggerPhotoReveal('/assets/images/me.jpg'); return false;"
+                        >
+                            <span>Manik</span>
                         </a>
                         {% else %}
                         <a href="/" class="site-title-link">
@@ -43,7 +57,11 @@
                             <i class="ph-fill ph-moon theme-icon"></i>
                         </a>
                         {% if page.minimal == true %}
-                        <a href="#" onclick="toggleHeaderVisibility(false); return false;" style="margin-left: 10px;">
+                        <a
+                            href="#"
+                            onclick="toggleHeaderVisibility(false); return false;"
+                            style="margin-left: 10px"
+                        >
                             <i class="ph-fill ph-caret-circle-up"></i>
                         </a>
                         {% endif %}
@@ -54,24 +72,34 @@
         <div class="nav">
             <ul>
                 {% if page.url != "/" %}
-                <li><a id="back-button" href="#" onclick="handleBackNavigation(); return false;">
+                <li>
+                    <a
+                        id="back-button"
+                        href="#"
+                        onclick="handleBackNavigation(); return false;"
+                    >
                         <i class="ph-bold ph-arrow-down-left"></i>
-                    </a></li>
-                {% endif %}
-                {% if page.url != "/more" %}
+                    </a>
+                </li>
+                {% endif %} {% if page.url != "/more" %}
                 <li><a href="/more">more</a></li>
-                {% endif %}
-                {% if page.url != "/photos" %}
+                {% endif %} {% if page.url != "/photos" %}
                 <li><a href="/photos">photos</a></li>
                 {% endif %}
-                <li><a href="https://linkedin.com/in/manik-kumar" target="_blank">linkedin</a></li>
+                <li>
+                    <a
+                        href="https://linkedin.com/in/manik-kumar"
+                        target="_blank"
+                        >linkedin</a
+                    >
+                </li>
                 <li><a href="mailto:me@manik.cc">email</a></li>
             </ul>
         </div>
         <!-- page/post title is in header file so we can hide/unhide it based on minimial mode  -->
         <div>
             {% if page.title %}
-            <br>
+            <br />
             <h1 class="post__title">{{ page.title }}</h1>
             {% endif %}
         </div>
