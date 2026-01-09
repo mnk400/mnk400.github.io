@@ -7,7 +7,7 @@ permalink: /more
     <p>
         This page is an ongoing collection of random stuff I make out of boredom.
     </p>
-    <div class="blog">
+    <div>
         {% assign pages_in_more_dir = site.pages | where_exp: "page", "page.path contains 'more/'" | where_exp: "page", "page.name != 'index.html'" | where_exp: "page", "page.disabled != true" %}
 
         {% comment %} Separate category pages from standalone pages {% endcomment %}

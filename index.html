@@ -3,7 +3,7 @@ layout: default
 description: "Manik's personal website and blog"
 ---
 
-<div class="desc">
+<div class="about">
     <p>
         Hi! I am
         <b>
@@ -23,15 +23,13 @@ description: "Manik's personal website and blog"
         </b>
         in Boston. <br />
     </p>
-    <p style="padding-top: var(--spacing-md);"> 
+    <p> 
         I'm also an amateur photographer who spends a lot of my free time
         exploring photography.
-        <br />
     </p>
-    <br />
 
     {% capture blog_content %}
-    <div class="blog">
+    <div class="archive">
         <ul>
             {% for post in site.posts %}
             <li>
@@ -52,7 +50,6 @@ description: "Manik's personal website and blog"
     {% endcapture %} 
     {% include expandable-section.html id="blog-archive" title="<b>Archive</b>" content=blog_content expanded=true %}
 
-    <br />
     <div class="music-widget-header">
         <span class="music-widget-label" id="music-widget-label">
             Last listened to …
