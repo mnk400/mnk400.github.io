@@ -1,8 +1,9 @@
-{% comment %} Expandable Section Component Parameters: - id: Unique identifier
-for this expandable section (required) - title: Text to show on the toggle
-button (required) - content: The content to show/hide (required) - expanded:
-Whether the section is expanded by default (optional, default: false) {%
-endcomment %}
+{% comment %} Expandable Section Component Parameters:
+- id: Unique identifier for this expandable section (required)
+- title: Text to show on the toggle button (required)
+- content: The content to show/hide (required)
+- expanded: Whether the section is expanded by default (optional, default: false)
+{% endcomment %}
 
 <div class="expandable-section" id="{{ include.id }}">
     <button

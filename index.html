@@ -6,34 +6,24 @@ description: "Manik's personal website and blog"
 <div class="desc">
     <p>
         Hi! I am
-        <b
-            ><a
-                href="#"
-                class="site-title-link"
-                onclick="triggerPhotoReveal('/assets/images/me.jpg'); return false;"
-                >Manik,</a
-            ></b
-        >
-        a software developer who lives in Seattle, these days I help build
-        software for
-        <b
-            ><a
-                href="#"
-                class="site-title-link"
-                onclick="triggerPhotoReveal('/assets/images/kindle.png'); return false;"
-                >Kindle</a
-            ></b
-        >
+        <b>
+            <a href="#" class="site-title-link" onclick="triggerPhotoReveal('/assets/images/me.jpg'); return false;">Manik</a>,
+        </b>
+        a software developer who lives in Seattle, these days I help build software for
+        <b>
+            <a href="#" class="site-title-link" onclick="triggerPhotoReveal('/assets/images/kindle.png'); return false;">
+                Kindle
+            </a>
+        </b>
         apps and devices. I graduated from
-        <b
-            ><a
-                href="#"
-                class="site-title-link"
-                onclick="triggerPhotoReveal('/assets/images/paws.jpg'); return false;"
-                >Northeastern University</a
-            ></b
-        >
-        in Boston. <br /><br />
+        <b>
+            <a href="#" class="site-title-link" onclick="triggerPhotoReveal('/assets/images/paws.jpg'); return false;">
+                Northeastern University
+            </a>
+        </b>
+        in Boston. <br />
+    </p>
+    <p style="padding-top: var(--spacing-md);"> 
         I'm also an amateur photographer who spends a lot of my free time
         exploring photography.
         <br />
@@ -51,10 +41,7 @@ description: "Manik's personal website and blog"
                 {% else %}
                 <a href="{{ post.url }}">
                     {{ post.title }}
-                    <i
-                        class="ph-bold ph-arrow-right"
-                        style="opacity: 25%; font-size: 0.8em"
-                    ></i>
+                    <i class="ph-bold ph-arrow-right" style="opacity: 25%; font-size: 0.8em"></i>
                 </a>
                 <span class="date">{{ post.date | date: '%b-%y' }}</span>
                 {% endif %}
@@ -62,19 +49,15 @@ description: "Manik's personal website and blog"
             {% endfor %}
         </ul>
     </div>
-    {% endcapture %} {% include expandable-section.html id="blog-archive"
-    title="<b>Archive</b>" content=blog_content expanded=true %}
+    {% endcapture %} 
+    {% include expandable-section.html id="blog-archive" title="<b>Archive</b>" content=blog_content expanded=true %}
 
     <br />
     <div class="music-widget-header">
         <span class="music-widget-label" id="music-widget-label">
             Last listened to …
         </span>
-        <span
-            class="music-widget-time"
-            id="music-widget-time"
-            style="opacity: 80%; font-size: 0.9em"
-        ></span>
+        <span class="music-widget-time" id="music-widget-time" style="opacity: 80%; font-size: 0.9em"></span>
     </div>
     {% include music-widget.html %}
 

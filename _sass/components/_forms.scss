@@ -134,6 +134,10 @@ input[type="color"] {
         margin: var(--spacing-md) 0;
     }
 
+    a {
+        margin-left: 5px;
+    }
+
     .range-width-container {
         display: flex;
         position: relative;
@@ -145,11 +149,6 @@ input[type="color"] {
             font-size: 0.7em;
             z-index: 1;
         }
-    }
-
-    a {
-        display: inline-block;
-        vertical-align: top;
     }
 }
 

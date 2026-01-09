@@ -8,40 +8,86 @@ permalink: /more
         This page is an ongoing collection of random stuff I make out of boredom.
     </p>
     <div class="blog">
-        {% assign pages_in_more_dir = site.pages | where_exp: "page", "page.path contains 'more/'" | where_exp: "page", "page.name != 'index.html'" | where_exp: "page", "page.disabled != true" | where_exp: "page", "page.category" %}
+        {% assign pages_in_more_dir = site.pages | where_exp: "page", "page.path contains 'more/'" | where_exp: "page", "page.name != 'index.html'" | where_exp: "page", "page.disabled != true" %}
+
+        {% comment %} Separate category pages from standalone pages {% endcomment %}
+        {% assign category_pages = pages_in_more_dir | where_exp: "page", "page.category" | where_exp: "page", "page.standalone != true" %}
+        {% assign standalone_pages = pages_in_more_dir | where_exp: "page", "page.standalone == true" %}
+
+        {% comment %} Build unique categories list {% endcomment %}
         {% assign unique_categories = "" | split: "," %}
-        {% for page in pages_in_more_dir %}
+        {% for page in category_pages %}
             {% if page.category %}
                 {% assign unique_categories = unique_categories | push: page.category %}
             {% endif %}
         {% endfor %}
         {% assign unique_categories = unique_categories | uniq | sort %}
 
-        {% for category_name in unique_categories %}
-            {% capture category_content %}
-            <p>
-                {% for page in pages_in_more_dir %}
-                    {% if page.title and page.category == category_name %}
-                        {% if page.external_url %}
-                            <a href="{{ page.external_url }}" target="_blank" rel="noopener noreferrer">{{ page.title }} <i class="ph-bold ph-arrow-up-right va-mid"></i></a>
-                        {% else %}
-                            <a href="{{ page.url | relative_url }}">{{ page.title }}</a>
-                        {% endif %}  
-                        {% if page.description %}
-                            <span class="description">{{ page.description }}</span>
-                            <br>
-                        {% endif %}      
+        {% comment %} Build combined sections list (cat: prefix for categories, sta: for standalone) {% endcomment %}
+        {% assign all_sections = "" | split: "," %}
+        {% for cat in unique_categories %}
+            {% assign section_item = "cat:" | append: cat %}
+            {% assign all_sections = all_sections | push: section_item %}
+        {% endfor %}
+        {% for page in standalone_pages %}
+            {% assign section_item = "sta:" | append: page.title %}
+            {% assign all_sections = all_sections | push: section_item %}
+        {% endfor %}
+        {% assign all_sections = all_sections | sort_natural %}
+
+        {% comment %} Render each section in alphabetical order {% endcomment %}
+        {% for section in all_sections %}
+            {% assign section_type = section | slice: 0, 4 %}
+            {% assign section_name = section | slice: 4, 1000 %}
+
+            {% if section_type == "cat:" %}
+                {% comment %} Render category section with links {% endcomment %}
+                {% capture category_content %}
+                <p>
+                    {% for page in category_pages %}
+                        {% if page.title and page.category == section_name %}
+                            {% if page.external_url %}
+                                <a href="{{ page.external_url }}" target="_blank" rel="noopener noreferrer">{{ page.title }} <i class="ph-bold ph-arrow-up-right va-mid"></i></a>
+                            {% else %}
+                                <a href="{{ page.url | relative_url }}">{{ page.title }}</a>
+                            {% endif %}
+                            {% if page.description %}
+                                <span class="description">{{ page.description }}</span>
+                                <br>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                </p>
+                {% endcapture %}
+                {% assign category_name_strong = '<strong>' | append: section_name | append: '</strong>' %}
+                {% include expandable-section.html
+                   id=section_name
+                   title=category_name_strong
+                   content=category_content
+                   expanded=true
+                %}
+            {% else %}
+                {% comment %} Render standalone section with summary content (before <!--more-->) {% endcomment %}
+                {% for page in standalone_pages %}
+                    {% if page.title == section_name %}
+                        {% capture standalone_content %}
+                        {% assign content_parts = page.content | split: '<!--more-->' %}
+                        {{ content_parts[0] }}
+                        {% if content_parts.size > 1 %}
+                        <a class="btn btn--link-variant" href="{{ page.url | relative_url }}"><span>View full page</span><i class="ph-bold ph-arrow-up-right"></i></a>
+                        {% endif %}
+                        {% endcapture %}
+                        {% assign standalone_title = '<strong>' | append: page.title | append: '</strong>' %}
+                        {% assign standalone_id = page.title | slugify %}
+                        {% include expandable-section.html
+                           id=standalone_id
+                           title=standalone_title
+                           content=standalone_content
+                           expanded=true
+                        %}
                     {% endif %}
                 {% endfor %}
-            </p>
-            {% endcapture %}
-            {% assign category_name_strong = '<strong>' | append: category_name | append: '</strong>' %}
-            {% include expandable-section.html 
-               id=category_name 
-               title=category_name_strong
-               content=category_content 
-               expanded=true 
-            %}
+            {% endif %}
         {% endfor %}
     </div>
 </div>

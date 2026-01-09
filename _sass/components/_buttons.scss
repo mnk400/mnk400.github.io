@@ -21,11 +21,13 @@ button,
     @media (any-hover: hover) {
         &:hover {
             background-color: var(--black-accent-hover);
+            color: var(--background-main);
         }
     }
 
     &.touch-hover {
         background-color: var(--black-accent-hover);
+        color: var(--background-main);
     }
 
     // Button variants
@@ -46,6 +48,21 @@ button,
     &--small {
         padding: 2px var(--spacing-sm);
         font-size: 0.8em;
+    }
+
+    &--link-variant {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: var(--min-translucent);
+        backdrop-filter: none;
+        font-size: 0.9em;
+        color: var(--sec-text-color);
+        padding: 3px var(--spacing-sm) 3px var(--spacing-sm);
+        outline: solid;
+        outline-width: 1px;
+        outline-color: var(--mid-translucent);
+        margin-bottom: var(--spacing-lg);
     }
 
     &--copy {
