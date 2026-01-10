@@ -22,7 +22,7 @@
     font-style: normal;
 }
 
-.container {
+.ipod-container {
     position: relative;
     display: flex;
     justify-content: center;
@@ -36,7 +36,7 @@
     touch-action: manipulation;
 }
 
-.ipod {
+.ipod-device {
     width: 415px;
     min-width: 415px;
     height: 692px;
@@ -52,7 +52,7 @@
     }
 }
 
-.screen {
+.ipod-screen {
     position: relative;
     margin: var(--spacing-2xl) auto 0px auto;
     width: 284px;
@@ -65,14 +65,14 @@
     color: #484647;
 }
 
-.title {
+.ipod-title {
     position: absolute;
     top: 50%;
     left: var(--spacing-2xl);
     transform: translate(-50%, -50%);
 }
 
-.title-bar {
+.ipod-title-bar {
     position: absolute;
     left: var(--spacing-xs);
     right: var(--spacing-xs);
@@ -81,14 +81,14 @@
     text-align: center;
 }
 
-.play-pause-icon {
+.ipod-play-pause-icon {
     position: absolute;
     display: inline-block;
     top: 25%;
     left: 50%;
 }
 
-.battery {
+.ipod-battery {
     position: absolute;
     right: var(--spacing-xs);
     height: 50px;
@@ -138,7 +138,7 @@
     }
 }
 
-.menu-options {
+.ipod-menu-options {
     display: flex;
     flex-direction: column;
     position: relative;
@@ -146,7 +146,7 @@
     height: 81%;
 }
 
-.option {
+.ipod-option {
     padding: var(--spacing-sm) 12px;
     white-space: nowrap;
     overflow: hidden;
@@ -176,7 +176,7 @@
     }
 }
 
-.outer-ring {
+.ipod-outer-ring {
     position: relative;
     margin: 0 auto;
     top: var(--spacing-2xl);
@@ -207,7 +207,7 @@
     }
 }
 
-.touch-wheel {
+.ipod-touch-wheel {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -235,7 +235,7 @@
     }
 }
 
-.center-button {
+.ipod-center-button {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -272,7 +272,7 @@ path {
     fill: transparent;
 }
 
-.skip {
+.ipod-skip {
     position: absolute;
     top: 50%;
     transform: translate(0, -50%);
@@ -312,7 +312,7 @@ path {
     }
 }
 
-.play-pause {
+.ipod-play-pause {
     position: absolute;
     bottom: 12px;
     left: 50%;
@@ -343,7 +343,7 @@ path {
     }
 }
 
-.menu-text {
+.ipod-menu-text {
     cursor: pointer;
 }
 
@@ -412,7 +412,7 @@ path {
     }
 }
 
-.press-play-message {
+.ipod-press-play-message {
     text-align: center;
     margin-top: var(--spacing-md);
     color: #333;
@@ -437,21 +437,21 @@ path {
 
 // IE/Edge specific fixes
 _:-ms-lang(x),
-.ipod {
+.ipod-device {
     box-shadow: inset 5px -5px 25px 3px #99999950;
 }
 
 _:-ms-lang(x),
-.screen {
+.ipod-screen {
     box-shadow: inset 0px 0px 20px 1px #59595950;
 }
 
 _:-ms-lang(x),
-.outer-ring {
+.ipod-outer-ring {
     box-shadow: inset 5px -5px 50px -7px #99999950;
 }
 
 _:-ms-lang(x),
-.touch-wheel {
+.ipod-touch-wheel {
     box-shadow: 5px -5px 50px -7px #99999950;
 }

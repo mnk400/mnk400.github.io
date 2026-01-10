@@ -25,7 +25,7 @@ category: Music
             {% assign period_options = "7day:Past Week,1month:Past Month,6month:Past 6 Months,12month:Past Year" | split: "," %}
             {% include selection-switch.html id="period-toggle" class="period-toggle" options=period_options default_active="7day" %}
         </div>
-        <div id="loading" class="loading">Loading...</div>
+        <div id="loading" class="music-loading">Loading...</div>
         <div id="album-grid" class="album-grid"></div>
     </div>
 

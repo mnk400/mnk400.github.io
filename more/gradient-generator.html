@@ -32,19 +32,19 @@ minimal: True
                 </div>
             </div>
             
-            <div class="control-group">
+            <div class="tool-control-group">
                 <label><b>Orientation:</b></label>
                 {% assign orientation_options = "landscape:Landscape (3840×2160),portrait:Portrait (2160×3840),square:Square (2160×2160)" | split: "," %}
                 {% include selection-switch.html id="orientation-toggle" class="orientation-toggle" options=orientation_options default_active="landscape" %}
             </div>
             
-            <div class="control-group">
+            <div class="tool-control-group">
                 <label><b>Gradient Direction:</b></label>
                 {% assign direction_options = "0:Top to Bottom,90:Left to Right,45:Diagonal (↘),135:Diagonal (↗),180:Bottom to Top,270:Right to Left,225:Diagonal (↖),315:Diagonal (↙)" | split: "," %}
                 {% include selection-switch.html id="direction-toggle" class="direction-toggle" options=direction_options default_active="0" %}
             </div>
             
-            <div class="control-group">
+            <div class="tool-control-group">
                 <label><b>Gradient Type:</b></label>
                 {% assign type_options = "linear:Linear,radial:Radial" | split: "," %}
                 {% include selection-switch.html id="type-toggle" class="type-toggle" options=type_options default_active="linear" %}

@@ -1,17 +1,17 @@
 document.addEventListener("DOMContentLoaded", function () {
   // Prevent text selection on the entire iPod interface
-  document.querySelector(".container").style.userSelect = "none";
-  document.querySelector(".container").style.webkitUserSelect = "none";
-  document.querySelector(".container").style.mozUserSelect = "none";
-  document.querySelector(".container").style.msUserSelect = "none";
+  document.querySelector(".ipod-container").style.userSelect = "none";
+  document.querySelector(".ipod-container").style.webkitUserSelect = "none";
+  document.querySelector(".ipod-container").style.mozUserSelect = "none";
+  document.querySelector(".ipod-container").style.msUserSelect = "none";
 
-  const nextButton = document.querySelector(".skip.next");
-  const prevButton = document.querySelector(".skip.prev");
-  const centerButton = document.querySelector(".center-button");
-  const playPauseButton = document.querySelector(".play-pause");
-  const menuContainer = document.querySelector(".menu-options");
+  const nextButton = document.querySelector(".ipod-skip.next");
+  const prevButton = document.querySelector(".ipod-skip.prev");
+  const centerButton = document.querySelector(".ipod-center-button");
+  const playPauseButton = document.querySelector(".ipod-play-pause");
+  const menuContainer = document.querySelector(".ipod-menu-options");
   const nowPlayingContainer = document.getElementById("now-playing");
-  const titleElement = document.querySelector(".title-bar .title");
+  const titleElement = document.querySelector(".ipod-title-bar .ipod-title");
 
   let songs = {};
   let menuOptions = [];
@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
     for (let i = visibleStartIndex; i < endIndex; i++) {
       const songName = allSongs[i];
       const option = document.createElement("div");
-      option.className = "option";
+      option.className = "ipod-option";
       option.textContent = songName;
       option.dataset.index = i;
 
@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Update menupptions
-    menuOptions = document.querySelectorAll(".menu-options .option");
+    menuOptions = document.querySelectorAll(".ipod-menu-options .ipod-option");
   }
 
   // Track if a song is currently playing
@@ -198,7 +198,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function onPlayerReady(event) {
     event.target.playVideo();
     // Initially show the "Press Play" message until we confirm playback has started
-    document.querySelector(".press-play-message").style.display = "block";
+    document.querySelector(".ipod-press-play-message").style.display = "block";
     updatePlayPauseIcon(false);
 
     isPlaying = true;
@@ -212,12 +212,12 @@ document.addEventListener("DOMContentLoaded", function () {
       isPlaying = true;
       updatePlayPauseIcon(true); // Set to pause icon when playing
       // Hide the "press play" message when video is playing
-      document.querySelector(".press-play-message").style.display = "none";
+      document.querySelector(".ipod-press-play-message").style.display = "none";
     } else if (event.data === YT.PlayerState.PAUSED) {
       isPlaying = false;
       updatePlayPauseIcon(false); // Set to play icon when paused
       // Show the "press play" message when video is paused
-      document.querySelector(".press-play-message").style.display = "block";
+      document.querySelector(".ipod-press-play-message").style.display = "block";
     } else if (event.data === YT.PlayerState.ENDED) {
       playNextSong();
     }
@@ -225,7 +225,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Function to update play/pause icon
   function updatePlayPauseIcon(isPlaying) {
-    const playPauseIcon = document.querySelector(".play-pause-icon i");
+    const playPauseIcon = document.querySelector(".ipod-play-pause-icon i");
     if (playPauseIcon) {
       playPauseIcon.className = isPlaying
         ? "ph-fill ph-pause"
@@ -252,9 +252,9 @@ document.addEventListener("DOMContentLoaded", function () {
       if (nowPlayingContainer) {
         const playerState = player.getPlayerState();
         if (playerState === YT.PlayerState.PLAYING) {
-          document.querySelector(".press-play-message").style.display = "none";
+          document.querySelector(".ipod-press-play-message").style.display = "none";
         } else {
-          document.querySelector(".press-play-message").style.display = "block";
+          document.querySelector(".ipod-press-play-message").style.display = "block";
         }
       }
     }
@@ -286,7 +286,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // Remove the now playing screen
       if (nowPlayingContainer) {
         // Hide the "press play" message
-        document.querySelector(".press-play-message").style.display = "none";
+        document.querySelector(".ipod-press-play-message").style.display = "none";
         nowPlayingContainer.style.display = "none";
       }
 
@@ -330,7 +330,7 @@ document.addEventListener("DOMContentLoaded", function () {
   playPauseButton.addEventListener("click", function () {
     if (player) {
       const state = player.getPlayerState();
-      const playPauseIcon = document.querySelector(".play-pause-icon i");
+      const playPauseIcon = document.querySelector(".ipod-play-pause-icon i");
 
       if (state === YT.PlayerState.PLAYING) {
         player.pauseVideo();
@@ -339,7 +339,7 @@ document.addEventListener("DOMContentLoaded", function () {
           playPauseIcon.className = "ph-fill ph-play";
         }
         // Show the "press play" message when paused
-        document.querySelector(".press-play-message").style.display = "block";
+        document.querySelector(".ipod-press-play-message").style.display = "block";
       } else {
         player.playVideo();
         // Update icon to pause when playing
@@ -347,7 +347,7 @@ document.addEventListener("DOMContentLoaded", function () {
           playPauseIcon.className = "ph-fill ph-pause";
         }
         // Hide the "press play" message when playing
-        document.querySelector(".press-play-message").style.display = "none";
+        document.querySelector(".ipod-press-play-message").style.display = "none";
       }
     }
   });

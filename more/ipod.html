@@ -28,17 +28,17 @@ category: Music
 {% endcapture %} {% include expandable-section.html id="ipod-explanation"
 title="<b>Learn more</b>" content=ipod_explanation expanded=false %}
 
-<div class="container">
-    <div class="ipod small">
-        <div class="screen">
-            <div class="title-bar">
-                <div class="title">1/12</div>
-                <div class="play-pause-icon">
+<div class="ipod-container">
+    <div class="ipod-device small">
+        <div class="ipod-screen">
+            <div class="ipod-title-bar">
+                <div class="ipod-title">1/12</div>
+                <div class="ipod-play-pause-icon">
                     <i class="ph-fill ph-play"></i>
                 </div>
-                <div class="battery small"></div>
+                <div class="ipod-battery small"></div>
             </div>
-            <div class="menu-options"></div>
+            <div class="ipod-menu-options"></div>
             <!-- Now Playing Screen (hidden by default) -->
             <div id="now-playing" style="display: none">
                 <div class="song-title"></div>
@@ -48,21 +48,21 @@ title="<b>Learn more</b>" content=ipod_explanation expanded=false %}
                     <div id="progress-bar"></div>
                 </div>
                 <div id="time-display">0:00 / 0:00</div>
-                <div class="press-play-message">Press Play</div>
+                <div class="ipod-press-play-message">Press Play</div>
             </div>
         </div>
-        <div class="outer-ring">
+        <div class="ipod-outer-ring">
             <svg viewBox="-150 5 350 350">
                 <path id="curve" d="m0,30 c16,-4 32,-4 48,0" />
-                <text class="menu-text">
+                <text class="ipod-menu-text">
                     <textPath xlink:href="#curve">menu</textPath>
                 </text>
             </svg>
-            <div class="skip prev"></div>
-            <div class="skip next"></div>
-            <div class="play-pause"></div>
-            <div class="touch-wheel">
-                <div class="center-button"></div>
+            <div class="ipod-skip prev"></div>
+            <div class="ipod-skip next"></div>
+            <div class="ipod-play-pause"></div>
+            <div class="ipod-touch-wheel">
+                <div class="ipod-center-button"></div>
             </div>
         </div>
     </div>
