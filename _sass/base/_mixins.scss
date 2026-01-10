@@ -1,0 +1,71 @@
+// =============================================================================
+// MIXINS
+// =============================================================================
+
+// Translucent surface with blur and outline
+@mixin translucent-surface($bg: var(--translucent-low), $blur: 10px) {
+    background-color: $bg;
+    backdrop-filter: blur($blur);
+    border-radius: var(--radius-md);
+    outline: 1px solid var(--translucent-medium);
+}
+
+// Hover with touch fallback
+@mixin hover-interactive {
+    @media (any-hover: hover) {
+        &:hover {
+            @content;
+        }
+    }
+
+    &.touch-hover {
+        @content;
+    }
+}
+
+// Standard hover state (dark overlay style)
+@mixin hover-state-dark {
+    @include hover-interactive {
+        background-color: var(--contrast-overlay);
+        color: var(--background-main);
+    }
+}
+
+// Standard hover state (subtle)
+@mixin hover-state-subtle {
+    @include hover-interactive {
+        background-color: var(--translucent-medium);
+    }
+}
+
+// Disable text selection
+@mixin no-select {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+// System font stack
+@mixin system-font {
+    font-family: -apple-system, "Inter", sans-serif;
+}
+
+// Monospace font
+@mixin mono-font {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+// Visually hidden but accessible
+@mixin visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}

@@ -12,7 +12,7 @@ select {
     border: var(--translucent-medium);
     border-radius: var(--radius-md);
     color: var(--text-color);
-    font-family: "-apple-system", "inter", sans-serif;
+    @include system-font;
     transition: background-color var(--transition-medium);
     outline: solid;
     outline-width: 1px;
@@ -197,7 +197,7 @@ input[type="color"] {
     outline-width: 1px;
     outline-color: var(--translucent-medium);
 
-    &:hover {
+    @include hover-interactive {
         background-color: var(--translucent-high);
     }
 }

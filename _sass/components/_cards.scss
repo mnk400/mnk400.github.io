@@ -10,7 +10,7 @@
     padding: var(--spacing-lg);
     transition: background-color var(--transition-medium);
 
-    &:hover {
+    @include hover-interactive {
         background-color: var(--translucent-high);
     }
 
@@ -98,12 +98,7 @@
 
 // Color info card (color palette page)
 .color-info {
-    background-color: var(--translucent-low);
-    border-radius: var(--radius-md);
-    backdrop-filter: blur(10px);
-    outline: solid;
-    outline-width: 1px;
-    outline-color: var(--translucent-medium);
+    @include translucent-surface;
 
     .color-detail {
         padding: var(--spacing-lg);
@@ -131,6 +126,6 @@
     }
 
     .color-code {
-        font-family: "IBM Plex Mono", monospace;
+        @include mono-font;
     }
 }

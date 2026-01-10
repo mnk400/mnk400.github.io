@@ -43,8 +43,8 @@
     justify-content: center;
     backdrop-filter: blur(10px);
     transition: background-color var(--transition-medium);
-    
-    &:hover {
+
+    @include hover-interactive {
         background-color: var(--page-accent);
     }
 }

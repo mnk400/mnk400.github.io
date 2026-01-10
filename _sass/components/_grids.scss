@@ -115,7 +115,7 @@
     cursor: pointer;
     transition: transform var(--transition-medium);
 
-    &:hover {
+    @include hover-interactive {
         transform: scale(1.05);
     }
 }

@@ -15,17 +15,10 @@ button,
     cursor: pointer;
     transition: background-color var(--transition-medium);
     backdrop-filter: blur(10px);
-    font-family: "-apple-system", "inter", sans-serif;
+    @include system-font;
     text-decoration: none !important;
 
-    @media (any-hover: hover) {
-        &:hover {
-            background-color: var(--contrast-overlay-hover);
-            color: var(--background-main);
-        }
-    }
-
-    &.touch-hover {
+    @include hover-interactive {
         background-color: var(--contrast-overlay-hover);
         color: var(--background-main);
     }
@@ -34,13 +27,7 @@ button,
     &--dark-forced {
         background-color: rgba(0, 0, 0, 0.7);
 
-        @media (any-hover: hover) {
-            &:hover {
-                background-color: rgba(0, 0, 0, 0.5);
-            }
-        }
-
-        &.touch-hover {
+        @include hover-interactive {
             background-color: rgba(0, 0, 0, 0.5);
         }
     }
@@ -71,17 +58,7 @@ button,
         background-color: var(--translucent-medium);
         color: var(--text-color);
 
-        @media (any-hover: hover) {
-            &:hover {
-                background-color: var(--contrast-overlay);
-                color: var(--background-main);
-            }
-        }
-
-        &.touch-hover {
-            background-color: var(--contrast-overlay);
-            color: var(--background-main);
-        }
+        @include hover-state-dark;
     }
 }
 
@@ -92,7 +69,7 @@ input[type="file"]::file-selector-button {
     color: var(--background-main);
     border: none;
     border-radius: var(--radius-md);
-    font-family: "-apple-system", "inter", sans-serif !important;
+    @include system-font;
     font-size: 1.2em;
     font-weight: 400 !important;
     cursor: pointer;
@@ -120,17 +97,7 @@ input[type="file"]::file-selector-button {
     outline-width: 1px;
     outline-color: var(--translucent-medium);
 
-    @media (any-hover: hover) {
-        &:hover {
-            background-color: var(--contrast-overlay);
-            color: var(--background-main);
-        }
-    }
-
-    &.touch-hover {
-        background-color: var(--contrast-overlay);
-        color: var(--background-main);
-    }
+    @include hover-state-dark;
 
     .toggle-icon {
         transition: transform var(--transition-slow);
@@ -163,17 +130,7 @@ input[type="file"]::file-selector-button {
         outline-width: 1px;
         outline-color: var(--translucent-medium);
 
-        @media (any-hover: hover) {
-            &:hover {
-                background-color: var(--contrast-overlay);
-                color: var(--background-main);
-            }
-        }
-
-        &.touch-hover {
-            background-color: var(--contrast-overlay);
-            color: var(--background-main);
-        }
+        @include hover-state-dark;
 
         &.active {
             background-color: var(--contrast-overlay);
