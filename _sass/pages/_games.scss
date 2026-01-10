@@ -109,7 +109,7 @@
     cursor: pointer;
     font-family: 'IBM Plex Mono', monospace;
     transition: background-color var(--transition-medium);
-    border: 1px solid var(--mid-translucent);
+    border: 1px solid var(--translucent-medium);
     aspect-ratio: 1;
     backdrop-filter: blur(10px);
 
@@ -125,7 +125,7 @@
     }
 
     &:hover {
-        background-color: var(--mid-translucent);
+        background-color: var(--translucent-medium);
     }
 
     &.x::before {
@@ -188,7 +188,7 @@
     font-weight: 600;
     font-size: 18px;
     color: var(--text-color);
-    background: var(--mid-translucent);
+    background: var(--translucent-medium);
     padding: var(--spacing-sm) 16px;
     border-radius: 20px;
     backdrop-filter: blur(4px);
@@ -206,7 +206,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 2px solid var(--mid-translucent);
+    border: 2px solid var(--translucent-medium);
     border-radius: var(--radius-md);
     cursor: pointer;
     font-weight: 600;
@@ -219,7 +219,7 @@
     max-width: 100%;
 
     &:hover {
-        background-color: var(--mid-translucent);
+        background-color: var(--translucent-medium);
     }
 
     &.revealed {
@@ -296,12 +296,12 @@
         border-radius: var(--radius-lg);
         margin-top: var(--spacing-sm);
         margin-bottom: var(--spacing-xl);
-        border: 3px solid var(--mid-translucent);
+        border: 3px solid var(--translucent-medium);
         backdrop-filter: blur(10px);
         overflow: hidden;
 
         .color-header {
-            background: var(--mid-translucent);
+            background: var(--translucent-medium);
             padding: var(--spacing-md);
             font-weight: 600;
         }
@@ -338,20 +338,20 @@
                 box-sizing: border-box;
 
                 &.hash-cell {
-                    background: var(--mid-translucent);
-                    border-color: var(--mid-translucent);
+                    background: var(--translucent-medium);
+                    border-color: var(--translucent-medium);
                     color: var(--text-muted);
 
                     // When cell has a background color, hide text and keep same border size
                     &[style*="background-color"] {
                         color: transparent;
-                        border: 2px solid var(--mid-translucent);
+                        border: 2px solid var(--translucent-medium);
                     }
                 }
 
                 &.empty-cell {
-                    background: var(--mid-translucent);
-                    border-color: var(--mid-translucent);
+                    background: var(--translucent-medium);
+                    border-color: var(--translucent-medium);
                     color: var(--text-muted);
                 }
 
@@ -402,7 +402,7 @@
     }
 
     .game-results {
-        background: var(--mid-translucent);
+        background: var(--translucent-medium);
         padding: var(--spacing-lg);
         border-radius: var(--radius-lg);
         margin-bottom: var(--spacing-lg);

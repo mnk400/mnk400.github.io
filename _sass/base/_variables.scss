@@ -9,11 +9,11 @@
     --text-color: #3b3b3b;
     --sec-text-color: #656565;
     --page-accent: #c6866d;
-    --black-accent: rgba(0, 0, 0, 0.7);
-    --black-accent-hover: rgba(0, 0, 0, 0.5);
-    --min-translucent: rgb(0, 0, 0, 0.05);
-    --mid-translucent: rgb(0, 0, 0, 0.07);
-    --hg-translucent: rgb(0, 0, 0, 0.2);
+    --contrast-overlay: rgba(0, 0, 0, 0.7);
+    --contrast-overlay-hover: rgba(0, 0, 0, 0.5);
+    --translucent-low: rgb(0, 0, 0, 0.05);
+    --translucent-medium: rgb(0, 0, 0, 0.07);
+    --translucent-high: rgb(0, 0, 0, 0.2);
     --code-bg: #ebe9e8;
     --note-bg: #d8f2fd;
 }
@@ -24,11 +24,11 @@
     --text-color: #e8edf5;
     --sec-text-color: #c6cfdc;
     --page-accent: #99aac9;
-    --black-accent: rgba(255, 255, 255, 0.7);
-    --black-accent-hover: rgba(255, 255, 255, 0.5);
-    --min-translucent: rgb(255, 255, 255, 0.03);
-    --mid-translucent: rgb(255, 255, 255, 0.07);
-    --hg-translucent: rgb(255, 255, 255, 0.2);
+    --contrast-overlay: rgba(255, 255, 255, 0.7);
+    --contrast-overlay-hover: rgba(255, 255, 255, 0.5);
+    --translucent-low: rgb(255, 255, 255, 0.03);
+    --translucent-medium: rgb(255, 255, 255, 0.07);
+    --translucent-high: rgb(255, 255, 255, 0.2);
     --code-bg: #1f2a3f;
     --note-bg: #3a4f6b;
 }
@@ -39,11 +39,11 @@
     --text-color: #d0d0d0;
     --sec-text-color: #c2c2c2;
     --page-accent: #b47d68;
-    --black-accent: rgba(256, 256, 256, 0.7);
-    --black-accent-hover: rgba(256, 256, 256, 0.5);
-    --min-translucent: rgb(256, 256, 256, 0.03);
-    --mid-translucent: rgb(256, 256, 256, 0.07);
-    --hg-translucent: rgb(256, 256, 256, 0.2);
+    --contrast-overlay: rgba(255, 255, 255, 0.7);
+    --contrast-overlay-hover: rgba(255, 255, 255, 0.5);
+    --translucent-low: rgba(255, 255, 255, 0.03);
+    --translucent-medium: rgba(255, 255, 255, 0.07);
+    --translucent-high: rgba(255, 255, 255, 0.2);
     --code-bg: #212121;
     --note-bg: #4a606a;
 }
@@ -54,11 +54,11 @@
     --text-color: #f5e8ea;
     --sec-text-color: #d7cbd0;
     --page-accent: #a88088;
-    --black-accent: rgba(255, 255, 255, 0.7);
-    --black-accent-hover: rgba(255, 255, 255, 0.5);
-    --min-translucent: rgb(255, 255, 255, 0.03);
-    --mid-translucent: rgb(255, 255, 255, 0.07);
-    --hg-translucent: rgb(255, 255, 255, 0.2);
+    --contrast-overlay: rgba(255, 255, 255, 0.7);
+    --contrast-overlay-hover: rgba(255, 255, 255, 0.5);
+    --translucent-low: rgb(255, 255, 255, 0.03);
+    --translucent-medium: rgb(255, 255, 255, 0.07);
+    --translucent-high: rgb(255, 255, 255, 0.2);
     --code-bg: #3d1f24;
     --note-bg: #4a2d33;
 }

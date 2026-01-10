@@ -7,7 +7,7 @@
     padding-bottom: var(--spacing-2xl);
 
     &__back {
-        display: in-line;
+        display: inline;
         text-align: left;
         display: block;
         margin-bottom: 25px;
@@ -89,7 +89,7 @@
 
         .note {
             background: var(--note-bg);
-            text-decoration: italic;
+            font-style: italic;
             display: inline-block;
             padding: var(--spacing-md);
             color: var(--sec-text-color);

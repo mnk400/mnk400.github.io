@@ -50,14 +50,14 @@ body {
     padding: var(--spacing-md) var(--spacing-lg) 0px var(--spacing-lg);
     margin-top: var(--spacing-md);
     margin-bottom: var(--spacing-md);
-    background-color: var(--min-translucent);
+    background-color: var(--translucent-low);
     backdrop-filter: blur(10px);
     border-radius: var(--radius-md);
     overflow: hidden;
     opacity: 1;
     outline: solid;
     outline-width: 1px;
-    outline-color: var(--mid-translucent);
+    outline-color: var(--translucent-medium);
 
     transition:
         max-height var(--transition-slow),

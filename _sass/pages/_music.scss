@@ -39,17 +39,17 @@
     gap: var(--spacing-lg);
     padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm)
         var(--spacing-md);
-    background-color: var(--min-translucent);
+    background-color: var(--translucent-low);
     backdrop-filter: blur(10px);
     border-radius: var(--radius-lg);
     transition: background-color var(--transition-medium);
     line-height: 1em;
     outline: solid;
     outline-width: 1px;
-    outline-color: var(--mid-translucent);
+    outline-color: var(--translucent-medium);
 
     &:hover {
-        background-color: var(--black-accent);
+        background-color: var(--contrast-overlay);
         color: var(--background-main);
     }
     img {
@@ -125,16 +125,16 @@
 
     .music-artist-item {
         padding: var(--spacing-md);
-        background-color: var(--min-translucent);
+        background-color: var(--translucent-low);
         backdrop-filter: blur(10px);
         border-radius: var(--radius-md);
         transition: background-color var(--transition-medium);
         outline: solid;
         outline-width: 1px;
-        outline-color: var(--mid-translucent);
+        outline-color: var(--translucent-medium);
 
         &:hover {
-            background-color: var(--mid-translucent);
+            background-color: var(--translucent-medium);
         }
 
         .music-artist-name {

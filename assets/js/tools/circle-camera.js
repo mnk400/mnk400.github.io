@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
         video.srcObject = null;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        canvas.style.backgroundColor = getCSSVariable(`--mid-translucent`);
+        canvas.style.backgroundColor = getCSSVariable(`--translucent-medium`);
         
         startBtn.textContent = 'Start Camera';
     }
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
             const pixels = imageData.data;
             
-            ctx.fillStyle = getCSSVariable('--black-accent-hover');
+            ctx.fillStyle = getCSSVariable('--contrast-overlay-hover');
             
             for (let y = 0; y < tempCanvas.height; y++) {
                 for (let x = 0; x < tempCanvas.width; x++) {

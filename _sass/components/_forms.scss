@@ -8,19 +8,19 @@ input[type="email"],
 input[type="url"],
 select {
     padding: 9px var(--spacing-md);
-    background-color: var(--min-translucent);
-    border: var(--mid-translucent);
+    background-color: var(--translucent-low);
+    border: var(--translucent-medium);
     border-radius: var(--radius-md);
     color: var(--text-color);
     font-family: "-apple-system", "inter", sans-serif;
     transition: background-color var(--transition-medium);
     outline: solid;
     outline-width: 1px;
-    outline-color: var(--mid-translucent);
+    outline-color: var(--translucent-medium);
 
     &:focus {
         outline: none;
-        background-color: var(--hg-translucent);
+        background-color: var(--translucent-high);
     }
 
     &::placeholder {
@@ -39,8 +39,8 @@ input[type="range"] {
     height: 30px;
     background: linear-gradient(
         to right,
-        var(--hg-translucent) var(--value-percent, 0%),
-        var(--min-translucent) var(--value-percent, 0%)
+        var(--translucent-high) var(--value-percent, 0%),
+        var(--translucent-low) var(--value-percent, 0%)
     );
     backdrop-filter: blur(10px);
     border-radius: var(--radius-sm);
@@ -48,7 +48,7 @@ input[type="range"] {
     transition: all var(--transition-fast) ease-in-out;
     outline: solid;
     outline-width: 1px;
-    outline-color: var(--mid-translucent);
+    outline-color: var(--translucent-medium);
 
     &::-webkit-slider-thumb {
         -webkit-appearance: none;
@@ -87,7 +87,7 @@ input[type="color"] {
     height: 40px;
     border: none;
     border-radius: var(--radius-md);
-    background-color: var(--min-translucent);
+    background-color: var(--translucent-low);
     backdrop-filter: blur(10px);
     cursor: pointer;
     transition: all var(--transition-medium);
@@ -95,7 +95,7 @@ input[type="color"] {
     overflow: hidden;
     outline: solid;
     outline-width: 1px;
-    outline-color: var(--mid-translucent);
+    outline-color: var(--translucent-medium);
 
     &::-webkit-color-swatch-wrapper {
         padding: 0;
@@ -182,7 +182,7 @@ input[type="color"] {
 .image-selector {
     width: 100%;
     height: 200px;
-    background-color: var(--min-translucent);
+    background-color: var(--translucent-low);
     border-radius: var(--radius-md);
     display: flex;
     justify-content: center;
@@ -195,9 +195,9 @@ input[type="color"] {
     transition: all var(--transition-medium);
     outline: solid;
     outline-width: 1px;
-    outline-color: var(--mid-translucent);
+    outline-color: var(--translucent-medium);
 
     &:hover {
-        background-color: var(--hg-translucent);
+        background-color: var(--translucent-high);
     }
 }

@@ -136,7 +136,7 @@
 }
 
 .minimal-back-button {
-    background-color: var(--min-translucent);
+    background-color: var(--translucent-low);
     backdrop-filter: blur(10px);
     padding: 11px 14px;
     border-radius: var(--radius-md);
@@ -146,28 +146,28 @@
     cursor: pointer;
     outline: solid;
     outline-width: 1px;
-    outline-color: var(--mid-translucent);
+    outline-color: var(--translucent-medium);
 
     @media (any-hover: hover) {
         &:hover {
-            background-color: var(--black-accent);
+            background-color: var(--contrast-overlay);
             color: var(--background-main);
         }
     }
 
     &.touch-hover {
-        background-color: var(--black-accent);
+        background-color: var(--contrast-overlay);
         color: var(--background-main);
     }
 }
 
 .minimal-header {
-    background-color: var(--min-translucent);
+    background-color: var(--translucent-low);
     backdrop-filter: blur(10px);
     padding: 11px 14px 11px var(--spacing-xs);
     border-radius: var(--radius-md);
     font-weight: 500;
-    vertical-align: center;
+    vertical-align: middle;
     flex: 1;
     cursor: pointer;
     transition:
@@ -175,17 +175,17 @@
         color var(--transition-medium);
     outline: solid;
     outline-width: 1px;
-    outline-color: var(--mid-translucent);
+    outline-color: var(--translucent-medium);
 
     @media (any-hover: hover) {
         &:hover {
-            background-color: var(--black-accent);
+            background-color: var(--contrast-overlay);
             color: var(--background-main);
         }
     }
 
     &.touch-hover {
-        background-color: var(--black-accent);
+        background-color: var(--contrast-overlay);
         color: var(--background-main);
     }
 
