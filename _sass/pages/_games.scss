@@ -57,11 +57,11 @@
     top: var(--spacing-xl);
     font-weight: 600;
     font-size: 18px;
-    color: #3b3b3b;
+    color: var(--game-flappy-text);
     font-weight: 500;
-    background: rgba(255, 255, 255, 0.6);
-    padding: var(--spacing-sm) 16px;
-    border-radius: 20px;
+    background: var(--game-flappy-overlay);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: var(--spacing-xl);
     box-shadow: var(--shadow-sm);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
@@ -77,7 +77,7 @@
 
 #game-over,
 #start-screen {
-    background: rgba(255, 255, 255, 0.7);
+    background: var(--game-flappy-overlay-strong);
     padding: var(--spacing-2xl);
     border-radius: var(--radius-xl);
     text-align: center;
@@ -87,7 +87,7 @@
 
     p,
     h2 {
-        color: #3b3b3b !important;
+        color: var(--game-flappy-text) !important;
     }
 }
 
@@ -125,15 +125,15 @@
     }
 
     &.x::before {
-        color: #66b5f5;
+        color: var(--game-ttt-x);
     }
 
     &.o::before {
-        color: #ff7369;
+        color: var(--game-ttt-o);
     }
 
     &.winning-cell {
-        background-color: #4CAF5080 !important;
+        background-color: color-mix(in srgb, var(--game-ttt-win) 50%, transparent) !important;
 
         &::before {
             color: white !important;
@@ -156,11 +156,11 @@
 .gol-cell {
     width: 15px;
     height: 15px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--game-gol-cell-border);
     transition: background-color var(--transition-medium);
 
     &.alive {
-        background-color: #333;
+        background-color: var(--game-gol-cell-alive);
     }
 }
 
@@ -185,8 +185,8 @@
     font-size: 18px;
     color: var(--text-color);
     background: var(--translucent-medium);
-    padding: var(--spacing-sm) 16px;
-    border-radius: 20px;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: var(--spacing-xl);
     backdrop-filter: blur(4px);
 }
 
@@ -224,65 +224,65 @@
 
     &.flagged::before {
         content: "🚩";
-        font-size: 16px;
+        font-size: var(--spacing-lg);
     }
 
     &.mine::before {
         content: "💣";
-        font-size: 16px;
+        font-size: var(--spacing-lg);
     }
 
     &.flagged-correct::before {
         content: "🚩";
-        font-size: 16px;
+        font-size: var(--spacing-lg);
     }
 
     &.flagged-wrong::before {
         content: "❌";
-        font-size: 16px;
+        font-size: var(--spacing-lg);
     }
 
     // Adjacent mine count colors
     &.adjacent-1 {
-        color: #0000FF;
+        color: var(--game-ms-1);
     }
 
     &.adjacent-2 {
-        color: #007B00;
+        color: var(--game-ms-2);
     }
 
     &.adjacent-3 {
-        color: #FF0000;
+        color: var(--game-ms-3);
     }
 
     &.adjacent-4 {
-        color: #00007B;
+        color: var(--game-ms-4);
     }
 
     &.adjacent-5 {
-        color: #7B0000;
+        color: var(--game-ms-5);
     }
 
     &.adjacent-6 {
-        color: #007B7B;
+        color: var(--game-ms-6);
     }
 
     &.adjacent-7 {
-        color: #000000;
+        color: var(--game-ms-7);
     }
 
     &.adjacent-8 {
-        color: #7B7B7B;
+        color: var(--game-ms-8);
     }
 }
 
 #game-status {
     &.win {
-        color: #4CAF50;
+        color: var(--game-status-win);
     }
 
     &.lose {
-        color: #F44336;
+        color: var(--game-status-lose);
     }
 }
 
@@ -352,20 +352,20 @@
                 }
 
                 &.correct {
-                    background-color: #65c467;
-                    border-color: #65c467;
+                    background-color: var(--game-colordle-correct);
+                    border-color: var(--game-colordle-correct);
                     color: white;
                 }
 
                 &.close {
-                    background-color: #d5a04c;
-                    border-color: #d5a04c;
+                    background-color: var(--game-colordle-close);
+                    border-color: var(--game-colordle-close);
                     color: white;
                 }
 
                 &.wrong {
-                    background-color: #757575;
-                    border-color: #757575;
+                    background-color: var(--game-colordle-wrong);
+                    border-color: var(--game-colordle-wrong);
                     color: white;
                 }
             }
@@ -389,11 +389,11 @@
         margin-bottom: var(--spacing-md);
 
         &.success {
-            color: #2E7D32;
+            color: var(--game-status-success);
         }
 
         &.error {
-            color: #C62828;
+            color: var(--game-status-error);
         }
     }
 
@@ -457,20 +457,20 @@
 .feedback-example {
     display: inline-block;
     vertical-align: bottom;
-    width: 20px;
-    height: 20px;
+    width: var(--spacing-xl);
+    height: var(--spacing-xl);
     border-radius: var(--radius-sm);
     margin-right: var(--spacing-xs);
 
     &.correct {
-        background-color: #65c467;
+        background-color: var(--game-colordle-correct);
     }
 
     &.close {
-        background-color: #d5a04c;
+        background-color: var(--game-colordle-close);
     }
 
     &.wrong {
-        background-color: #757575;
+        background-color: var(--game-colordle-wrong);
     }
 }

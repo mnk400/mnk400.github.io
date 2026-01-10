@@ -97,6 +97,54 @@
     --z-fixed: 300;
     --z-modal: 1000;
     --z-tooltip: 1100;
+
+    // Game Colors (theme-independent for game visibility)
+    // Flappy Bird
+    --game-flappy-text: #3b3b3b;
+    --game-flappy-overlay: rgba(255, 255, 255, 0.6);
+    --game-flappy-overlay-strong: rgba(255, 255, 255, 0.7);
+
+    // Tic Tac Toe
+    --game-ttt-x: #66b5f5;
+    --game-ttt-o: #ff7369;
+    --game-ttt-win: #4CAF50;
+
+    // Game of Life
+    --game-gol-cell-alive: #333333;
+    --game-gol-cell-border: #dddddd;
+
+    // Minesweeper
+    --game-ms-1: #0000FF;
+    --game-ms-2: #007B00;
+    --game-ms-3: #FF0000;
+    --game-ms-4: #00007B;
+    --game-ms-5: #7B0000;
+    --game-ms-6: #007B7B;
+    --game-ms-7: #000000;
+    --game-ms-8: #7B7B7B;
+
+    // Colordle
+    --game-colordle-correct: #65c467;
+    --game-colordle-close: #d5a04c;
+    --game-colordle-wrong: #757575;
+
+    // Status colors
+    --game-status-win: #4CAF50;
+    --game-status-lose: #F44336;
+    --game-status-success: #2E7D32;
+    --game-status-error: #C62828;
+
+    // Code/Syntax
+    --color-line-number: #d9d9d9;
+    --color-code-border: #d9d9d9;
+    --color-code-break: #606060;
+
+    // Links (note context)
+    --color-link-underline: #dadada;
+
+    // Social
+    --color-social-instagram: #b6393d;
+    --color-social-tiktok: #9860d5;
 }
 
 // SCSS Variables (for use in calculations)

@@ -99,7 +99,7 @@
                 text-decoration: underline;
                 text-decoration-color: currentcolor;
                 text-decoration-thickness: auto;
-                text-decoration-color: #dadada;
+                text-decoration-color: var(--color-link-underline);
                 text-decoration-thickness: 0.125em;
                 text-underline-offset: 2.5px;
             }
@@ -123,9 +123,9 @@
         }
 
         .lineno {
-            color: #d9d9d9;
+            color: var(--color-line-number);
             padding-right: var(--spacing-sm);
-            border-right: 1px solid #d9d9d9;
+            border-right: 1px solid var(--color-code-border);
             margin-right: var(--spacing-md);
             -webkit-touch-callout: none;
             -webkit-user-select: none;
@@ -138,7 +138,7 @@
         .codebreak {
             margin: var(--spacing-lg);
             border: 0;
-            border-bottom: 1px dashed #606060;
+            border-bottom: 1px dashed var(--color-code-break);
         }
     }
 }

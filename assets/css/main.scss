@@ -67,18 +67,18 @@ ul {
 // Social link hover colors
 @media (any-hover: hover) {
     #insta-link:hover {
-        color: #b6393d;
+        color: var(--color-social-instagram);
     }
 
     #tiktok-link:hover {
-        color: #9860d5;
+        color: var(--color-social-tiktok);
     }
 }
 
 #insta-link.touch-hover {
-    color: #b6393d;
+    color: var(--color-social-instagram);
 }
 
 #tiktok-link.touch-hover {
-    color: #9860d5;
+    color: var(--color-social-tiktok);
 }

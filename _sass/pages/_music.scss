@@ -102,12 +102,12 @@
 
 // View controls
 .view-controls {
-    margin-bottom: 20px;
+    margin-bottom: var(--spacing-xl);
 }
 
 // Loading state
 .music-loading {
-    margin: 20px 0;
+    margin: var(--spacing-xl) 0;
 }
 
 // Artist list view (when not showing albums)

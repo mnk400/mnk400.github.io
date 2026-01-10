@@ -133,7 +133,7 @@
 
 .minimal-back-button {
     @include translucent-surface;
-    padding: 11px 14px;
+    padding: var(--spacing-md) var(--spacing-lg);
     transition:
         background-color var(--transition-medium),
         color var(--transition-medium);
@@ -144,7 +144,7 @@
 
 .minimal-header {
     @include translucent-surface;
-    padding: 11px 14px 11px var(--spacing-xs);
+    padding: var(--spacing-md) var(--spacing-lg);
     font-weight: 500;
     vertical-align: middle;
     flex: 1;
