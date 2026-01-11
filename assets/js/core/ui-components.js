@@ -129,7 +129,6 @@ document.addEventListener("DOMContentLoaded", function () {
       content.classList.add("collapsed");
     } else {
       content.classList.remove("collapsed");
-      content.style.maxHeight = content.scrollHeight + "px";
     }
 
     button.addEventListener("click", function () {
@@ -154,6 +153,26 @@ document.addEventListener("DOMContentLoaded", function () {
           }
         });
       }
+    });
+  });
+
+  // Initialize copy-to-clipboard buttons
+  // Usage: <button data-copy="text to copy" data-copy-feedback="Copied!">Original content</button>
+  const copyButtons = document.querySelectorAll("[data-copy]");
+
+  copyButtons.forEach((button) => {
+    button.addEventListener("click", function (e) {
+      e.preventDefault();
+      const textToCopy = this.dataset.copy;
+      const feedbackText = this.dataset.copyFeedback || "Copied!";
+      const originalContent = this.innerHTML;
+
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        this.innerHTML = `<i class="ph-bold ph-check"></i> ${feedbackText}`;
+        setTimeout(() => {
+          this.innerHTML = originalContent;
+        }, 1500);
+      });
     });
   });
 });

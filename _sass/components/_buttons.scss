@@ -60,6 +60,21 @@ button,
 
         @include hover-state-dark;
     }
+
+    &--outline {
+        background-color: var(--translucent-low);
+        color: var(--text-color);
+        outline: solid 1px var(--translucent-high);
+    }
+
+    &--outline:hover {
+        background-color: var(--translucent-high);
+        color: var(--text-color);
+    }
+
+    code {
+        background-color: transparent;
+    }
 }
 
 // File input button styling
