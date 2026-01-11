@@ -1,5 +1,5 @@
 async function loadImages() {
-    const api_url = "https://gen-image-api.manik.cc/"
+    const api_url = "https://pi-images.eepy.pink//"
     const gallery = document.getElementById('gallery');
     const loading = document.getElementById('loading');
     const errorMessage = document.getElementById('error-message');
