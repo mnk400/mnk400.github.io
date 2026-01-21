@@ -1,0 +1,12 @@
+{% comment %}
+  Zoomable Image Component
+
+  Usage:
+  {% include zoomable-image.html src="/path/to/image.jpg" alt="Description" %}
+
+  Parameters:
+  - src: Required. The image source URL.
+  - alt: Optional. Alt text for the image. Default: "Image"
+  - class: Optional. Additional CSS classes for the image.
+{% endcomment %}
+<img src="{{ include.src }}" alt="{{ include.alt | default: 'Image' }}" data-zoomable {% if include.class %}class="{{ include.class }}"{% endif %} loading="lazy">

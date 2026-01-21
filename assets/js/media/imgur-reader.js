@@ -4,57 +4,6 @@ function getRandomNumber(min, max) {
   return Math.random() * (max - min) + min;
 }
 
-function createLightbox() {
-  let lightbox = document.getElementById("lightbox");
-  if (lightbox) return lightbox;
-
-  lightbox = document.createElement("div");
-  lightbox.className = "lightbox";
-  lightbox.id = "lightbox";
-
-  const closeButton = document.createElement("div");
-  closeButton.className = "lightbox-close";
-  closeButton.innerHTML = '<i class="ph-bold ph-x"></i>';
-  closeButton.addEventListener("click", (e) => {
-    e.stopPropagation();
-    lightbox.style.display = "none";
-  });
-
-  lightbox.addEventListener("click", () => {
-    lightbox.style.display = "none";
-  });
-
-  lightbox.appendChild(closeButton);
-  document.body.appendChild(lightbox);
-  return lightbox;
-}
-
-function showInLightbox(imageSrc) {
-  const lightbox = document.getElementById("lightbox") || createLightbox();
-
-  lightbox.innerHTML = "";
-
-  // Create close button
-  const closeButton = document.createElement("div");
-  closeButton.className = "lightbox-close";
-  closeButton.innerHTML = '<i class="ph-bold ph-x"></i>';
-  closeButton.addEventListener("click", (e) => {
-    e.stopPropagation();
-    lightbox.style.display = "none";
-  });
-
-  const img = document.createElement("img");
-  img.src = imageSrc;
-
-  img.addEventListener("click", (e) => {
-    e.stopPropagation();
-  });
-
-  lightbox.appendChild(closeButton);
-  lightbox.appendChild(img);
-  lightbox.style.display = "block";
-}
-
 async function loadAlbum(hashArg, containerIdArg, loadingIdArg) {
   const hash = hashArg || (typeof ALBUM_HASH !== "undefined" ? ALBUM_HASH : null);
   const containerID =
@@ -114,11 +63,7 @@ async function loadAlbum(hashArg, containerIdArg, loadingIdArg) {
       img.src = image.link;
       img.alt = image.title || "Gallery Image";
       img.loading = "lazy";
-
-      // Add click handler for lightbox
-      imageCard.addEventListener("click", () => {
-        showInLightbox(image.link);
-      });
+      img.setAttribute("data-zoomable", "");
 
       imageCard.appendChild(img);
 
@@ -135,8 +80,6 @@ async function loadAlbum(hashArg, containerIdArg, loadingIdArg) {
         rightColumnHeight += estimatedHeight;
       }
     });
-
-    createLightbox();
   } catch (error) {
     if (loadingIndicator) loadingIndicator.style.display = "none";
     console.error("Error loading album:", error);

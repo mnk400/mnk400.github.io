@@ -6,7 +6,7 @@ date: 2025-03-04
 image: /assets/images/blogs/R0001832.jpg
 ---
 
-![](/assets/images/blogs/R0001832.jpg)
+{% include zoomable-image.html src="/assets/images/blogs/R0001832.jpg" alt="Sample photo taken with Ricoh GR III" %}
 
 This is a recipe for a Ricoh GR III that I use every day. This started as Reggie's recipe but, with minor changes over time, evolved into a completely different recipe.
 
@@ -42,16 +42,16 @@ This recipe can potentially be reproduced on older Ricoh GR cameras if they supp
 
 All shots taken on GR III, some have been cropped.
 
-![](/assets/images/blogs/R0002447.jpg)
+{% include zoomable-image.html src="/assets/images/blogs/R0002447.jpg" alt="Sample photo" %}
 
-![](/assets/images/blogs/R0002265.JPG)
+{% include zoomable-image.html src="/assets/images/blogs/R0002265.JPG" alt="Sample photo" %}
 
-![](/assets/images/blogs/R0002054.JPG)
+{% include zoomable-image.html src="/assets/images/blogs/R0002054.JPG" alt="Sample photo" %}
 
-![](/assets/images/blogs/R0001744.jpg)
+{% include zoomable-image.html src="/assets/images/blogs/R0001744.jpg" alt="Sample photo" %}
 
-![](/assets/images/blogs/R0001496.JPG)
+{% include zoomable-image.html src="/assets/images/blogs/R0001496.JPG" alt="Sample photo" %}
 
-![](/assets/images/blogs/R0001553.JPG)
+{% include zoomable-image.html src="/assets/images/blogs/R0001553.JPG" alt="Sample photo" %}
 
-![](/assets/images/blogs/R0001833.JPG)
+{% include zoomable-image.html src="/assets/images/blogs/R0001833.JPG" alt="Sample photo" %}
