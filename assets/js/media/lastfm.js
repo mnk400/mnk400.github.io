@@ -100,6 +100,47 @@ function fetchData() {
   }
 }
 
+function renderMusicGrid(grid, items) {
+  const template = document.getElementById("music-card-template");
+  grid.innerHTML = "";
+  grid.style.display = "grid";
+
+  items.forEach((item) => {
+    const card = template.content.cloneNode(true);
+    const img = card.querySelector('[data-field="image"]');
+    const title = card.querySelector('[data-field="title"]');
+    const subtitle = card.querySelector('[data-field="subtitle"]');
+    const playcount = card.querySelector('[data-field="playcount"]');
+
+    img.src = item.imageUrl;
+    img.alt = item.title;
+    title.textContent = item.title;
+    if (item.subtitle) {
+      subtitle.textContent = item.subtitle;
+    } else {
+      subtitle.remove();
+    }
+    playcount.textContent = `${item.playcount} Plays`;
+
+    grid.appendChild(card);
+  });
+
+  // Add event listeners for tap support on mobile
+  const containers = grid.querySelectorAll(".album-image-container");
+  containers.forEach((item) => {
+    item.addEventListener("click", function () {
+      containers.forEach((otherItem) => {
+        if (otherItem !== this) {
+          otherItem
+            .querySelector(".music-card-overlay")
+            .classList.remove("show-overlay");
+        }
+      });
+      this.querySelector(".music-card-overlay").classList.toggle("show-overlay");
+    });
+  });
+}
+
 async function fetchTopAlbums() {
   const loading = document.getElementById("loading");
   const grid = document.getElementById("album-grid");
@@ -109,57 +150,62 @@ async function fetchTopAlbums() {
       `https://ws.audioscrobbler.com/2.0/?method=user.gettopalbums&user=${username}&period=${currentPeriod}&api_key=${apiKey}&format=json&limit=9`,
     );
     const data = await response.json();
-    grid.style.display = "grid";
 
     if (data.error) {
       grid.innerHTML = `<p>Error: ${data.message}</p>`;
       return;
     }
 
-    const albums = data.topalbums.album;
-    grid.innerHTML = albums
-      .map((album) => {
-        const imageUrl =
-          album.image.find((img) => img.size === "large")["#text"] ||
-          "/assets/album-placeholder.png";
-        return `
-                <div class="album-item">
-                    <div class="album-image-container">
-                        <img src="${imageUrl}" alt="${album.name}" class="img-curved-edges">
-                        <div class="music-album-info-overlay">
-                        <center>
-                            <p class="music-album-title">${album.name}</p>
-                            <p class="music-artist-name-overlay">${album.artist.name}</p>
-                        </center>
-                        </div>
-                    </div>
-                </div>
-            `;
-      })
-      .join("");
+    const items = data.topalbums.album.map((album) => ({
+      imageUrl:
+        album.image.find((img) => img.size === "large")["#text"] ||
+        "/assets/album-placeholder.png",
+      title: album.name,
+      subtitle: album.artist.name,
+      playcount: album.playcount,
+    }));
 
-    // Add event listeners for tap support on mobile
-    const albumItems = grid.querySelectorAll(".album-image-container");
-    albumItems.forEach((item) => {
-      item.addEventListener("click", function () {
-        // Close any other open overlays first
-        albumItems.forEach((otherItem) => {
-          if (otherItem !== this) {
-            otherItem
-              .querySelector(".music-album-info-overlay")
-              .classList.remove("show-overlay");
-          }
-        });
-        // Toggle current overlay
-        const overlay = this.querySelector(".music-album-info-overlay");
-        overlay.classList.toggle("show-overlay");
-      });
-    });
+    renderMusicGrid(grid, items);
   } catch (error) {
     grid.innerHTML = `<p>Error fetching albums: ${error.message}</p>`;
   } finally {
     loading.style.display = "none";
   }
+}
+
+function fetchArtistImage(artistName) {
+  return new Promise((resolve) => {
+    const callbackName = `deezer_cb_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    const script = document.createElement("script");
+
+    const cleanup = () => {
+      delete window[callbackName];
+      script.remove();
+    };
+
+    const timeout = setTimeout(() => {
+      cleanup();
+      resolve("/assets/album-placeholder.png");
+    }, 5000);
+
+    window[callbackName] = (data) => {
+      clearTimeout(timeout);
+      cleanup();
+      if (data.data && data.data.length > 0) {
+        resolve(data.data[0].picture_medium);
+      } else {
+        resolve("/assets/album-placeholder.png");
+      }
+    };
+
+    script.src = `https://api.deezer.com/search/artist?q=${encodeURIComponent(artistName)}&limit=1&output=jsonp&callback=${callbackName}`;
+    script.onerror = () => {
+      clearTimeout(timeout);
+      cleanup();
+      resolve("/assets/album-placeholder.png");
+    };
+    document.head.appendChild(script);
+  });
 }
 
 async function fetchTopArtists() {
@@ -171,7 +217,6 @@ async function fetchTopArtists() {
       `https://ws.audioscrobbler.com/2.0/?method=user.gettopartists&user=${username}&period=${currentPeriod}&api_key=${apiKey}&format=json&limit=9`,
     );
     const data = await response.json();
-    grid.style.display = "block";
 
     if (data.error) {
       grid.innerHTML = `<p>Error: ${data.message}</p>`;
@@ -179,15 +224,21 @@ async function fetchTopArtists() {
     }
 
     const artists = data.topartists.artist;
-    grid.innerHTML = `<div class="artist-list">${artists
-      .map(
-        (artist, index) => `
-                <div class="music-artist-item">
-                    <p class="music-artist-name">${index + 1}. ${artist.name}</p>
-                </div>
-            `,
-      )
-      .join("")}</div>`;
+    const imageResults = await Promise.allSettled(
+      artists.map((artist) => fetchArtistImage(artist.name)),
+    );
+
+    const items = artists.map((artist, index) => ({
+      imageUrl:
+        imageResults[index].status === "fulfilled"
+          ? imageResults[index].value
+          : "/assets/album-placeholder.png",
+      title: artist.name,
+      subtitle: null,
+      playcount: artist.playcount,
+    }));
+
+    renderMusicGrid(grid, items);
   } catch (error) {
     grid.innerHTML = `<p>Error fetching artists: ${error.message}</p>`;
   } finally {

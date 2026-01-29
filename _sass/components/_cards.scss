@@ -62,7 +62,7 @@
         }
     }
 
-    .music-album-info-overlay {
+    .music-card-overlay {
         position: absolute;
         top: var(--spacing-md);
         bottom: -10px;
@@ -73,24 +73,34 @@
         border-radius: var(--radius-md);
         opacity: 0;
         transition: opacity var(--transition-slow);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
 
-        .music-album-title {
+        .music-card-title {
             color: rgba(255, 255, 255, 0.9);
             font-size: 1.2em !important;
             word-break: break-word;
         }
 
-        .music-artist-name-overlay {
+        .music-card-subtitle {
             color: rgba(255, 255, 255, 0.9);
             font-size: 0.8em !important;
             font-weight: 600;
             margin-top: -10px;
             word-break: break-word;
         }
+
+        .music-card-playcount {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.8em;
+            padding-bottom: 5px;
+            text-align: left;
+        }
     }
 
-    .album-image-container:hover .music-album-info-overlay,
-    .music-album-info-overlay.show-overlay {
+    .album-image-container:hover .music-card-overlay,
+    .music-card-overlay.show-overlay {
         opacity: 1;
         border-radius: var(--radius-md);
     }
