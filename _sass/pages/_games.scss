@@ -330,7 +330,7 @@
                 color: var(--text-color);
                 background: var(--bg-color);
                 backdrop-filter: blur(10px);
-                transition: all 0.3s ease;
+                transition: all var(--transition-slow);
                 box-sizing: border-box;
 
                 &.hash-cell {

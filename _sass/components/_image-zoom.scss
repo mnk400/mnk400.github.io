@@ -30,10 +30,10 @@
 // Cloned image during zoom
 .image-zoom-clone {
     z-index: calc(var(--z-modal) + 1);
-    transition: top 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-                left 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-                width 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-                height 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: top var(--transition-slow),
+                left var(--transition-slow),
+                width var(--transition-slow),
+                height var(--transition-slow);
     cursor: default;
     border-radius: 0 !important;
     object-fit: contain;

@@ -81,10 +81,10 @@
     --radius-round: 50%;
 
     // Transitions
-    --transition-fast: 0.1s ease;
-    --transition-medium: 0.2s ease;
-    --transition-slow: 0.3s ease;
-    --transition-backdrop: 0.4s ease;
+    --transition-fast: 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-medium: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-backdrop: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 
     // Shadows
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
