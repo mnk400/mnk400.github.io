@@ -40,6 +40,7 @@ async function fetchMusicWidget() {
 
       // Update playback time from Last.fm data
       if (timeEl) {
+        const timeWrapper = timeEl.closest(".music-widget-time-wrapper");
         if (isNowPlaying) {
           timeEl.textContent = "";
         } else if (track.date?.uts) {
@@ -57,32 +58,50 @@ async function fetchMusicWidget() {
             timeEl.textContent = `${diffHours} hour${diffHours === 1 ? "" : "s"} ago`;
           }
         }
+        if (timeWrapper) timeWrapper.classList.add("loaded");
       }
 
-      widget.classList.add("loaded");
+      const infoEl = document.querySelector(".music-widget-info");
+      if (infoEl) infoEl.classList.add("loaded");
+
+      const revealArt = () => artEl.classList.add("loaded");
+      if (artEl.complete) {
+        revealArt();
+      } else {
+        artEl.addEventListener("load", revealArt, { once: true });
+        artEl.addEventListener("error", revealArt, { once: true });
+      }
     }
   } catch (error) {
     console.error("Error fetching music widget:", error);
   }
 }
 
-function switchView(view) {
+function fadeOutGrid() {
+  return new Promise((resolve) => {
+    const grid = document.getElementById("album-grid");
+    if (!grid || grid.children.length === 0) {
+      resolve();
+      return;
+    }
+    grid.classList.add("grid-fade-out");
+    grid.addEventListener("transitionend", () => resolve(), { once: true });
+    // Fallback in case transitionend doesn't fire
+    setTimeout(resolve, 350);
+  });
+}
+
+async function switchView(view) {
   currentView = view;
   updateToggleStates();
-  const grid = document.getElementById("album-grid");
-  const loading = document.getElementById("loading");
-  grid.style.display = "none";
-  loading.style.display = "block";
+  await fadeOutGrid();
   fetchData();
 }
 
-function switchPeriod(period) {
+async function switchPeriod(period) {
   currentPeriod = period;
   updateToggleStates();
-  const grid = document.getElementById("album-grid");
-  const loading = document.getElementById("loading");
-  grid.style.display = "none";
-  loading.style.display = "block";
+  await fadeOutGrid();
   fetchData();
 }
 
@@ -103,6 +122,7 @@ function fetchData() {
 function renderMusicGrid(grid, items) {
   const template = document.getElementById("music-card-template");
   grid.innerHTML = "";
+  grid.classList.remove("grid-fade-out");
   grid.style.display = "grid";
 
   items.forEach((item) => {
@@ -125,6 +145,14 @@ function renderMusicGrid(grid, items) {
     grid.appendChild(card);
   });
 
+  // Staggered fade-in for each card
+  const cards = grid.querySelectorAll(".album-item");
+  cards.forEach((card, index) => {
+    setTimeout(() => {
+      card.classList.add("card-visible");
+    }, index * 60);
+  });
+
   // Add event listeners for tap support on mobile
   const containers = grid.querySelectorAll(".album-image-container");
   containers.forEach((item) => {
@@ -142,7 +170,6 @@ function renderMusicGrid(grid, items) {
 }
 
 async function fetchTopAlbums() {
-  const loading = document.getElementById("loading");
   const grid = document.getElementById("album-grid");
 
   try {
@@ -168,8 +195,6 @@ async function fetchTopAlbums() {
     renderMusicGrid(grid, items);
   } catch (error) {
     grid.innerHTML = `<p>Error fetching albums: ${error.message}</p>`;
-  } finally {
-    loading.style.display = "none";
   }
 }
 
@@ -209,7 +234,6 @@ function fetchArtistImage(artistName) {
 }
 
 async function fetchTopArtists() {
-  const loading = document.getElementById("loading");
   const grid = document.getElementById("album-grid");
 
   try {
@@ -241,8 +265,6 @@ async function fetchTopArtists() {
     renderMusicGrid(grid, items);
   } catch (error) {
     grid.innerHTML = `<p>Error fetching artists: ${error.message}</p>`;
-  } finally {
-    loading.style.display = "none";
   }
 }
 

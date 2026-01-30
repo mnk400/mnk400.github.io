@@ -12,8 +12,11 @@ category: Music
             What music am I listening to, or what music have I listened to the most in the past?
         </p>
         <div class="music-widget-header">
-            <span class="pr" id="music-widget-label">Last listened to</span>
-            <span  id="music-widget-time"></span>
+            <span class="pr" id="music-widget-label">Last listened to …</span>
+            <span class="music-widget-time-wrapper">
+                <span class="music-widget-time-placeholder">…</span>
+                <span class="music-widget-time" id="music-widget-time"></span>
+            </span>
         </div>
         {% include music-widget.html %}
         <p></p>
@@ -25,7 +28,6 @@ category: Music
             {% assign period_options = "7day:Past Week,1month:Past Month,6month:Past 6 Months,12month:Past Year" | split: "," %}
             {% include selection-switch.html id="period-toggle" class="period-toggle" options=period_options default_active="7day" %}
         </div>
-        <div id="loading" class="music-loading">Loading...</div>
         <div id="album-grid" class="album-grid"></div>
     </div>
 

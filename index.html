@@ -54,7 +54,10 @@ description: "Manik's personal website and blog"
         <span class="music-widget-label" id="music-widget-label">
             Last listened to …
         </span>
-        <span class="music-widget-time" id="music-widget-time" style="opacity: 80%; font-size: 0.9em"></span>
+        <span class="music-widget-time-wrapper" style="opacity: 80%; font-size: 0.9em">
+            <span class="music-widget-time-placeholder">…</span>
+            <span class="music-widget-time" id="music-widget-time"></span>
+        </span>
     </div>
     {% include music-widget.html %}
 

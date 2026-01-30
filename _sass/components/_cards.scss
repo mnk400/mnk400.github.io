@@ -44,6 +44,14 @@
     height: 100%;
     margin-bottom: -0.7em;
     position: relative;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity var(--transition-slow), transform var(--transition-slow);
+
+    &.card-visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
 
     .album-image-container {
         position: relative;
@@ -94,7 +102,6 @@
         .music-card-playcount {
             color: rgba(255, 255, 255, 0.8);
             font-size: 0.8em;
-            padding-bottom: 5px;
             text-align: left;
         }
     }

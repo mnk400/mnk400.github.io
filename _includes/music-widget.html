@@ -9,13 +9,17 @@
     <a href="/more/music" class="music-widget" id="music-widget">
         {% endif %}
         <div class="music-widget-content">
-            <img
-                id="music-widget-art"
-                class="music-widget-art img-curved-edges"
-                src="/assets/album-placeholder.png"
-                alt="Album art"
-            />
+            <div class="music-widget-art-wrapper">
+                <div class="music-widget-art-placeholder"></div>
+                <img
+                    id="music-widget-art"
+                    class="music-widget-art img-curved-edges"
+                    src="/assets/album-placeholder.png"
+                    alt="Album art"
+                />
+            </div>
             <div class="music-widget-info">
+                <span class="music-widget-info-placeholder">Loading track…</span>
                 <span id="music-widget-track" class="music-widget-track"></span>
                 <span class="music-widget-separator"> - </span>
                 <span

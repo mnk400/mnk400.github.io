@@ -21,15 +21,29 @@
     }
 }
 
+.music-widget-time-placeholder {
+    color: var(--sec-text-color);
+    opacity: 0.7;
+}
+
+.music-widget-time-wrapper.loaded {
+    .music-widget-time-placeholder {
+        display: none;
+    }
+
+    .music-widget-time {
+        opacity: 1;
+    }
+}
+
+.music-widget-time {
+    opacity: 0;
+    transition: opacity var(--transition-slow);
+}
+
 .music-widget {
     text-decoration: none;
     color: inherit;
-    opacity: 0;
-    transition: all var(--transition-medium);
-
-    &.loaded {
-        opacity: 1;
-    }
 }
 
 .music-widget-content {
@@ -50,12 +64,33 @@
     }
 }
 
+.music-widget-art-wrapper {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    flex-shrink: 0;
+}
+
+.music-widget-art-placeholder {
+    position: absolute;
+    inset: 0;
+    background-color: var(--translucent-high);
+    border-radius: var(--radius-md);
+}
+
 .music-widget-art {
+    position: relative;
     width: 30px;
     height: 30px;
     object-fit: cover;
     flex-shrink: 0;
     border-radius: var(--radius-md);
+    opacity: 0;
+    transition: opacity var(--transition-slow);
+
+    &.loaded {
+        opacity: 1;
+    }
 }
 
 .music-widget-info {
@@ -65,6 +100,31 @@
     gap: 0;
     min-width: 0;
     overflow: hidden;
+
+    .music-widget-info-placeholder {
+        font-size: 0.9em;
+        color: var(--sec-text-color);
+        opacity: 0.7;
+    }
+
+    .music-widget-track,
+    .music-widget-separator,
+    .music-widget-artist {
+        opacity: 0;
+        transition: opacity var(--transition-slow);
+    }
+
+    &.loaded {
+        .music-widget-info-placeholder {
+            display: none;
+        }
+
+        .music-widget-track,
+        .music-widget-separator,
+        .music-widget-artist {
+            opacity: 1;
+        }
+    }
 }
 
 .music-widget-track {
@@ -103,11 +163,6 @@
 // View controls
 .view-controls {
     margin-bottom: var(--spacing-xl);
-}
-
-// Loading state
-.music-loading {
-    margin: var(--spacing-xl) 0;
 }
 
 // Artist list view (when not showing albums)
