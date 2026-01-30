@@ -1,0 +1,695 @@
+================================================================================
+MANIK.CC DESIGN SYSTEM — EXPORT & REUSE GUIDE
+================================================================================
+
+This document describes every reusable component exported from manik.cc. Use it
+to build pages that share the same aesthetic without duplicating code. Import the
+stylesheet, pick the JS modules you need, and follow the patterns below.
+
+Source: https://manik.cc
+Repository: https://github.com/mnk400/mnk400.github.io
+
+
+================================================================================
+1. QUICK START
+================================================================================
+
+Minimal HTML boilerplate to get the full design system:
+
+    <!DOCTYPE html>
+    <html data-theme="light">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#f2f0ef">
+
+        <!-- Design system CSS (includes reset, typography, all components) -->
+        <link rel="stylesheet" href="https://manik.cc/style/export.css">
+
+        <!-- Fonts (required — the CSS references these) -->
+        <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap">
+
+        <!-- Icons (optional — used by image-zoom close button and copy feedback) -->
+        <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web">
+
+        <!-- Prevent flash of wrong theme -->
+        <script>
+            (function() {
+                var t = localStorage.getItem('theme') || 'light';
+                if (['light','dark','blue','red'].indexOf(t) === -1) t = 'light';
+                document.documentElement.setAttribute('data-theme', t);
+            })();
+        </script>
+    </head>
+    <body>
+        <div class="wrapper">
+            <!-- Your content here -->
+        </div>
+
+        <!-- Core JS (order matters) -->
+        <script src="https://manik.cc/assets/js/core/theme-manager.js"></script>
+        <script src="https://manik.cc/assets/js/core/ui-components.js"></script>
+        <script src="https://manik.cc/assets/js/components/image-zoom.js"></script>
+    </body>
+    </html>
+
+
+================================================================================
+2. CSS — WHAT THE STYLESHEET INCLUDES
+================================================================================
+
+The single stylesheet at /style/export.css bundles these modules:
+
+    base/variables       Design tokens (themes, spacing, radius, shadows, etc.)
+    base/mixins          Reusable SCSS patterns (compiled into component styles)
+    base/reset           Meyer reset + HTML5 elements
+    base/typography      Font imports, heading scale, body text, links, code
+    components/buttons   Buttons, expandable toggles, selection switches
+    components/cards     Cards, image cards, color info cards
+    components/grids     Grid system (2–5 col, auto-fit, masonry, gap variants)
+    components/forms     Text inputs, range sliders, color pickers, controls
+    components/image-zoom  Zoom overlay, backdrop, close button
+    layout/wrapper       Page wrapper, fullscreen, expandable content
+    utilities/helpers    Flex, text, spacing, visibility, cursor, radius, transition
+
+
+================================================================================
+3. THEME SYSTEM
+================================================================================
+
+Four themes: light, dark, blue, red.
+
+Set via the data-theme attribute on <html>:
+
+    <html data-theme="dark">
+
+Each theme defines these CSS custom properties:
+
+    --background-main          Primary background
+    --background-darker        Secondary/deeper background
+    --text-color               Primary text color
+    --sec-text-color           Secondary/muted text
+    --page-accent              Accent color (links on hover, highlights)
+    --contrast-overlay         High-contrast overlay (button backgrounds)
+    --contrast-overlay-hover   Overlay hover state
+    --translucent-low          Subtle backdrop (0.03–0.05 opacity)
+    --translucent-medium       Medium backdrop (0.07 opacity)
+    --translucent-high         Strong backdrop (0.2 opacity)
+    --code-bg                  Code block background
+    --note-bg                  Note/callout background
+
+Theme values:
+
+    LIGHT   background: #f2f0ef  text: #3b3b3b  accent: #c6866d
+    DARK    background: #1a1a1a  text: #d0d0d0  accent: #b47d68
+    BLUE    background: #2d3d5a  text: #e8edf5  accent: #99aac9
+    RED     background: #2a1a1d  text: #f5e8ea  accent: #a88088
+
+To add a theme toggle button:
+
+    <button onclick="toggleTheme()" aria-label="Toggle theme">
+        <i class="ph-bold ph-moon theme-icon"></i>
+    </button>
+
+The theme-manager.js script handles localStorage persistence, meta theme-color
+updates, and icon cycling automatically.
+
+
+================================================================================
+4. DESIGN TOKENS — FULL REFERENCE
+================================================================================
+
+SPACING
+    --spacing-xs     5px
+    --spacing-sm     8px
+    --spacing-md     10px
+    --spacing-lg     15px
+    --spacing-xl     20px
+    --spacing-2xl    30px
+    --spacing-3xl    60px
+
+BORDER RADIUS
+    --radius-sm      4px
+    --radius-md      6px      (default for most components)
+    --radius-lg      8px
+    --radius-xl      12px
+    --radius-round   50%      (circles)
+
+TRANSITIONS (all use cubic-bezier(0.4, 0, 0.2, 1))
+    --transition-fast      0.1s
+    --transition-medium    0.2s    (default for most interactions)
+    --transition-slow      0.3s
+    --transition-backdrop  0.4s
+
+SHADOWS
+    --shadow-sm    0 2px 4px rgba(0,0,0,0.1)
+    --shadow-md    0 4px 8px rgba(0,0,0,0.1)
+    --shadow-lg    0 8px 16px rgba(0,0,0,0.1)
+
+Z-INDEX SCALE
+    --z-dropdown   100
+    --z-sticky     200
+    --z-fixed      300
+    --z-modal      1000
+    --z-tooltip    1100
+
+BREAKPOINTS (SCSS only, not custom properties)
+    $breakpoint-mobile: 600px
+    $max-content-width: 525px
+
+
+================================================================================
+5. TYPOGRAPHY
+================================================================================
+
+Fonts:
+    Body:  -apple-system, "Inter", sans-serif  (weight 300)
+    Mono:  "IBM Plex Mono", ui-monospace, monospace
+    Bold:  weight 600
+    H1:    16pt, weight 800
+    H2:    14pt, weight 700
+    H3:    12pt, weight 700
+    Body:  12pt, weight 300, line-height 1.25em
+
+Links transition color to --page-accent on hover.
+Code gets --code-bg background with IBM Plex Mono at 11pt.
+
+
+================================================================================
+6. COMPONENT CLASSES
+================================================================================
+
+--- BUTTONS ---
+
+Base button (applies to <button> and .btn):
+    <button>Default Button</button>
+    <a href="#" class="btn">Link Button</a>
+
+Variants (add as modifier class):
+    .btn--dark-forced     Always dark background regardless of theme
+    .btn--small           Compact size (0.8em)
+    .btn--link-variant    Outlined link-style button
+    .btn--copy            Small copy-action button
+    .btn--outline         Translucent with outline border
+
+Expandable toggle:
+    <button class="expandable-toggle" aria-expanded="false">
+        Section Title
+        <i class="ph-bold ph-plus toggle-icon"></i>
+    </button>
+    <div class="expandable-content collapsed">
+        Content here...
+    </div>
+
+    The JS in ui-components.js auto-initializes these on DOMContentLoaded.
+
+Selection switch (radio-like toggle group):
+    <div class="selection-switch">
+        <button class="switch-option active" data-value="opt1">Option 1</button>
+        <button class="switch-option" data-value="opt2">Option 2</button>
+    </div>
+
+    Toggle .active class on click. Uses pill shape (border-radius: 20px).
+
+
+--- CARDS ---
+
+Base card:
+    <div class="card">Content</div>
+
+Variants:
+    .card--interactive     Adds pointer cursor
+    .card--no-padding      Removes padding
+
+Image card (for photo layouts):
+    <div class="image-card">
+        <div class="image-wrapper">
+            <img src="photo.jpg" alt="Description">
+        </div>
+    </div>
+
+Color info card:
+    <div class="color-info">
+        <div class="color-detail">
+            <div class="color-preview" style="background: #c6866d"></div>
+            <div class="color-values">
+                <div class="color-value">
+                    <span class="color-code">#c6866d</span>
+                    <button class="btn--copy" data-copy="#c6866d">Copy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+--- FORMS ---
+
+Text inputs (styled automatically):
+    <input type="text" placeholder="Enter text...">
+    <input type="email" placeholder="Email...">
+    <select><option>Choose...</option></select>
+
+Range slider with fill tracking:
+    <input type="range" min="0" max="100" value="50"
+        style="--value-percent: 50%"
+        oninput="this.style.setProperty('--value-percent',
+            (this.value-this.min)/(this.max-this.min)*100+'%')">
+
+    The --value-percent CSS variable drives the gradient fill. Update it on
+    input events.
+
+Color picker:
+    <input type="color" value="#c6866d">
+
+Controls container:
+    <div class="controls">
+        <label>Label</label>
+        <input type="text">
+        <button class="btn">Submit</button>
+    </div>
+
+Image upload area:
+    <div class="image-selector">Click or drag to upload</div>
+
+
+--- GRIDS ---
+
+Base grid:
+    <div class="grid grid--3-col">
+        <div>Item</div>
+        <div>Item</div>
+        <div>Item</div>
+    </div>
+
+Column variants:
+    .grid--2-col          2 equal columns
+    .grid--3-col          3 equal columns
+    .grid--4-col          4 equal columns
+    .grid--5-col          5 equal columns
+    .grid--auto-fit       Responsive, min 200px per item
+    .grid--auto-fill      Similar to auto-fit
+
+Layout variants:
+    .grid--masonry        CSS columns masonry (2-column)
+    .grid--equal-rows     All rows same height
+
+Gap variants:
+    .grid--gap-sm         Tight gap (5px)
+    .grid--gap-lg         Wide gap (20px)
+    .grid--no-gap         No gap
+
+
+--- LAYOUT ---
+
+Page wrapper (centered, max-width 525px):
+    <div class="wrapper">Content</div>
+
+Fullscreen (for tools/games):
+    <body class="fullscreen">
+
+Expandable content (pairs with .expandable-toggle button):
+    <div class="expandable-content">
+        Collapsible content
+    </div>
+    Add .collapsed class to start closed.
+
+
+================================================================================
+7. UTILITY CLASSES
+================================================================================
+
+LAYOUT
+    .flex-center          Center both axes
+    .flex-between         Space between, vertically centered
+    .flex-start           Align to start
+
+TEXT
+    .text-center          Center text
+    .text-left            Left-align
+    .text-right           Right-align
+
+SIZING
+    .full-width           width: 100%
+    .full-height          height: 100%
+    .va-mid               vertical-align: middle
+
+SPACING (margin-bottom)
+    .mb-0                 0
+    .mb-sm                8px
+    .mb-md                10px
+    .mb-lg                15px
+    .mb-xl                20px
+
+SPACING (margin-top)
+    .mt-0  .mt-sm  .mt-md  .mt-lg  .mt-xl   (same scale)
+
+SPACING (padding)
+    .p-0  .p-sm  .p-md  .p-lg  .p-xl        (same scale)
+
+VISIBILITY
+    .hidden               display: none
+    .invisible            visibility: hidden
+    .opacity-0            opacity: 0
+    .opacity-50           opacity: 0.5
+
+CURSOR
+    .cursor-pointer       pointer
+    .cursor-not-allowed   not-allowed
+
+BORDER RADIUS
+    .rounded-sm           4px
+    .rounded-md           6px
+    .rounded-lg           8px
+    .rounded-full         50%
+
+TRANSITIONS
+    .transition-fast      0.1s
+    .transition-medium    0.2s
+    .transition-slow      0.3s
+
+BACKDROP
+    .backdrop-blur        backdrop-filter: blur(10px)
+    .translucent-bg       var(--translucent-medium) background
+    .translucent-bg-high  var(--translucent-high) background
+
+
+================================================================================
+8. JAVASCRIPT MODULES
+================================================================================
+
+All scripts are vanilla JS with no dependencies. Load via <script> tags.
+Base URL: https://manik.cc/assets/js/
+
+
+--- theme-manager.js ---
+Path: /assets/js/core/theme-manager.js
+
+Manages the 4-theme system with localStorage persistence.
+
+Globals exposed:
+    setTheme(theme, skipTransition)   Set theme ("light"|"dark"|"blue"|"red")
+    toggleTheme()                     Cycle to next theme
+    updateThemeColorMeta(theme)       Update <meta name="theme-color">
+    updateThemeIcons()                Swap .theme-icon Phosphor class
+
+Auto-initializes on DOMContentLoaded, reads localStorage("theme").
+
+Required HTML: <html data-theme="light">
+Optional HTML: <i class="ph-bold ph-moon theme-icon"></i> (for icon cycling)
+
+The theme toggle button cycles: light -> dark -> blue -> red -> light.
+Icon mapping: light=ph-moon, dark=ph-drop, blue=ph-heart, red=ph-sun.
+
+Theme transition: Temporarily adds .theme-transition class to <html> and <body>
+for 500ms to animate the background-color change.
+
+
+--- ui-components.js ---
+Path: /assets/js/core/ui-components.js
+
+Provides three reusable features (auto-initializes on DOMContentLoaded):
+
+1. Touch hover simulation
+   On touch devices, adds .touch-hover class on touchstart to interactive
+   elements (a, button, .btn, .switch-option, .expandable-toggle). Removes
+   after 150ms. No setup needed — works automatically.
+
+2. Expandable sections
+   Auto-initializes all .expandable-toggle buttons. Toggles aria-expanded
+   and animates the adjacent .expandable-content with smooth max-height.
+   HTML pattern:
+       <button class="expandable-toggle" aria-expanded="false">
+           Title <i class="ph-bold ph-plus toggle-icon"></i>
+       </button>
+       <div class="expandable-content collapsed">Content</div>
+
+3. Copy-to-clipboard
+   Auto-initializes all [data-copy] elements. On click, copies the value
+   and shows feedback.
+   HTML pattern:
+       <button data-copy="text to copy" data-copy-feedback="Copied!">
+           <i class="ph-bold ph-copy"></i> Copy
+       </button>
+
+Note: This file also contains site-specific functions (triggerPhotoReveal,
+toggleHeaderVisibility) that are only used on manik.cc. They are harmless
+to load but not relevant for external use.
+
+
+--- image-zoom.js ---
+Path: /assets/js/components/image-zoom.js
+
+Self-contained image lightbox. Add data-zoomable to any <img> and it works.
+
+    <img src="photo.jpg" alt="Description" data-zoomable>
+
+Features:
+    - Smooth zoom animation from original position to viewport center
+    - Respects natural image dimensions (won't upscale beyond original)
+    - Keyboard ESC to close
+    - Click backdrop to close
+    - Close button (uses Phosphor ph-x icon)
+    - GPU-accelerated transitions
+
+API (exposed on window.ImageZoom):
+    ImageZoom.init()       Re-initialize event listeners
+    ImageZoom.open(img)    Programmatically zoom an image element
+    ImageZoom.close()      Close the current zoom
+
+Requires: image-zoom styles from export.css (included automatically).
+Optional: Phosphor Icons for the close button icon.
+Auto-initializes — no setup needed beyond loading the script.
+
+
+--- canvas-helpers.js ---
+Path: /assets/js/utils/canvas-helpers.js
+
+Pure utility functions for HTML5 Canvas operations. No DOM dependencies.
+
+    CanvasUtils.setupCanvas(canvas, options)
+        Initialize canvas with width, height, imageSmoothingEnabled.
+        Returns the 2D context.
+
+    CanvasUtils.clearCanvas(canvas, ctx)
+        Clear entire canvas.
+
+    CanvasUtils.fillCanvas(ctx, color, width, height)
+        Fill with solid color.
+
+    CanvasUtils.drawPixel(ctx, x, y, color, size)
+        Draw a single pixel/square.
+
+    CanvasUtils.getPixelData(ctx, x, y, width, height)
+        Get ImageData from region.
+
+    CanvasUtils.putPixelData(ctx, imageData, x, y)
+        Put ImageData onto canvas.
+
+    CanvasUtils.resizeCanvas(canvas, maxWidth, maxHeight)
+        Resize maintaining aspect ratio (CSS sizing).
+
+Available as ES module export or window.CanvasUtils global.
+
+
+--- ascii-utils.js ---
+Path: /assets/js/utils/ascii-utils.js
+
+Converts images to ASCII art.
+
+    convertToAscii(imageData, width, height)
+        Takes ImageData, returns ASCII string.
+        Character set: @%#*+=-:. (dark to light)
+
+    calculateHeight(width, sourceWidth, sourceHeight)
+        Calculate character height maintaining aspect ratio.
+        Accounts for characters being ~2x taller than wide.
+
+Available as globals (no module export).
+
+
+================================================================================
+9. AESTHETIC GUIDELINES
+================================================================================
+
+Follow these principles to maintain visual consistency with manik.cc:
+
+SURFACES
+    - Use translucent backgrounds with backdrop-filter: blur(10px)
+    - Default surface: var(--translucent-medium) background + blur
+    - Add outline: 1px solid var(--translucent-medium) for definition
+    - This is the "glassmorphism" look that defines the aesthetic
+
+SPACING
+    - Use the spacing scale, not arbitrary values
+    - Default gap between elements: var(--spacing-md) = 10px
+    - Generous padding on containers: var(--spacing-lg) = 15px
+    - Page padding: var(--spacing-2xl) = 30px on desktop, var(--spacing-xl) on mobile
+
+TYPOGRAPHY
+    - Body weight 300 (light). This is important — most text is light weight.
+    - Bold text uses weight 600, not 700
+    - Headings use 700–800 weight
+    - Font sizes in pt, not px or rem (12pt body, 16pt h1, 14pt h2, 12pt h3)
+    - Line height 1.25em for body text
+
+COLORS
+    - Never hardcode colors. Always use CSS custom properties.
+    - Primary text: var(--text-color)
+    - Muted text: var(--sec-text-color)
+    - Accent/highlight: var(--page-accent)
+    - Buttons: var(--contrast-overlay) background with var(--background-main) text
+
+TRANSITIONS
+    - Always animate state changes
+    - Use --transition-medium (0.2s) as default
+    - Use --transition-fast (0.1s) for tiny elements (thumbs, small toggles)
+    - Use --transition-slow (0.3s) for larger reveals
+    - Easing: cubic-bezier(0.4, 0, 0.2, 1) — already baked into the variables
+
+HOVER STATES
+    - On touch devices, hover doesn't exist. The CSS uses @media (any-hover: hover)
+      and the .touch-hover class as a fallback (handled by ui-components.js).
+    - Default hover: slightly reduce background opacity or shift color
+    - Buttons: contrast-overlay-hover (lighter than resting state)
+    - Cards: translucent-low -> translucent-high on hover
+
+BORDER RADIUS
+    - Default: var(--radius-md) = 6px
+    - Slightly rounded, never sharp corners, never overly rounded
+    - Exception: selection switch pills use 20px radius
+    - Circles: var(--radius-round) = 50%
+
+LAYOUT
+    - Content max-width: 525px, centered
+    - Mobile breakpoint: 600px
+    - Use .wrapper for standard pages
+    - Use .fullscreen for immersive tools/games
+
+ICONS
+    - Phosphor Icons (https://phosphoricons.com)
+    - Use ph-bold weight: <i class="ph-bold ph-icon-name"></i>
+    - Common: ph-moon, ph-sun, ph-drop, ph-heart, ph-x, ph-plus,
+              ph-copy, ph-check, ph-caret-left, ph-arrow-square-out
+
+DO
+    - Use CSS custom properties for all colors
+    - Use the spacing scale for all margins/padding/gaps
+    - Use translucent surfaces with blur for floating elements
+    - Keep text light (weight 300) for body copy
+    - Animate transitions between states
+    - Support all four themes
+
+DON'T
+    - Hardcode color values (no raw hex in component styles)
+    - Use shadows heavier than --shadow-lg
+    - Use border-radius larger than --radius-xl except for pills
+    - Use font weights other than 300, 400, 600, 700, 800
+    - Skip transition animations on interactive elements
+    - Forget the mobile breakpoint at 600px
+
+
+================================================================================
+10. COPY-PASTE PATTERNS
+================================================================================
+
+These are ready-to-use HTML patterns that work with the exported CSS and JS.
+
+--- Theme toggle button ---
+
+    <button onclick="toggleTheme()" aria-label="Toggle theme"
+        style="position:fixed; top:20px; right:20px; z-index:300;
+               width:40px; height:40px; border-radius:50%;
+               display:flex; align-items:center; justify-content:center;">
+        <i class="ph-bold ph-moon theme-icon"></i>
+    </button>
+
+
+--- Expandable section ---
+
+    <button class="expandable-toggle" aria-expanded="false">
+        Section Title
+        <i class="ph-bold ph-plus toggle-icon"></i>
+    </button>
+    <div class="expandable-content collapsed">
+        <p>This content is collapsible.</p>
+    </div>
+
+
+--- Zoomable image ---
+
+    <img src="photo.jpg" alt="Description" data-zoomable>
+
+
+--- Card grid ---
+
+    <div class="grid grid--3-col">
+        <div class="card">Card 1</div>
+        <div class="card">Card 2</div>
+        <div class="card">Card 3</div>
+    </div>
+
+
+--- Form with range slider ---
+
+    <div class="controls">
+        <label>Intensity</label>
+        <input type="range" min="0" max="100" value="50"
+            style="--value-percent: 50%"
+            oninput="this.style.setProperty('--value-percent',
+                (this.value-this.min)/(this.max-this.min)*100+'%')">
+        <label>Color</label>
+        <input type="color" value="#c6866d">
+        <button class="btn">Apply</button>
+    </div>
+
+
+--- Copy button ---
+
+    <button class="btn--copy" data-copy="text to copy"
+        data-copy-feedback="Copied!">
+        <i class="ph-bold ph-copy"></i> Copy
+    </button>
+
+
+--- Selection switch ---
+
+    <div class="selection-switch">
+        <button class="switch-option active" data-value="a">Option A</button>
+        <button class="switch-option" data-value="b">Option B</button>
+        <button class="switch-option" data-value="c">Option C</button>
+    </div>
+
+
+--- Translucent surface (custom element) ---
+
+    <div style="background-color: var(--translucent-medium);
+                backdrop-filter: blur(10px);
+                border-radius: var(--radius-md);
+                outline: 1px solid var(--translucent-medium);
+                padding: var(--spacing-lg);">
+        Glassmorphism container
+    </div>
+
+    Or simply use the .card class which does the same thing.
+
+
+--- Photo masonry ---
+
+    <div class="grid grid--masonry">
+        <div class="image-card">
+            <div class="image-wrapper">
+                <img src="photo1.jpg" alt="" data-zoomable>
+            </div>
+        </div>
+        <div class="image-card">
+            <div class="image-wrapper">
+                <img src="photo2.jpg" alt="" data-zoomable>
+            </div>
+        </div>
+    </div>
+
+
+================================================================================
+END OF GUIDE
+================================================================================

@@ -44,6 +44,10 @@
 .music-widget {
     text-decoration: none;
     color: inherit;
+
+    &:hover {
+        color: inherit;
+    }
 }
 
 .music-widget-content {
