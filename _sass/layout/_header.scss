@@ -106,29 +106,47 @@
 
 // Minimal header functionality
 .minimal-header-wrapper {
-    display: flex;
-    align-items: start;
-    gap: calc(var(--spacing-xs) + 1px);
+    display: grid;
+    grid-template-rows: 0fr;
     margin-bottom: 1.6em;
-    border-radius: var(--radius-md);
-    max-height: 0;
-    opacity: 0;
+    // Collapsing: grid shrinks after content fades out
     transition:
-        max-height var(--transition-slow),
-        opacity var(--transition-slow),
-        transform var(--transition-slow);
-    will-change: max-height, transform;
+        grid-template-rows var(--transition-slow) 0.1s,
+        margin-bottom var(--transition-slow) 0.1s;
 
-    &::before {
-        transform: translateY(-10px);
+    > .collapse-inner {
+        overflow: hidden;
+        min-height: 0;
+        display: flex;
+        align-items: start;
+        gap: calc(var(--spacing-xs) + 1px);
+        margin: -2px;
+        padding: 2px;
+        opacity: 0;
+        transform: translateY(-8px);
+        // Fade + slide out before grid shrinks
+        transition:
+            opacity var(--transition-medium),
+            transform var(--transition-medium);
     }
 }
 
 .minimal-mode .minimal-header-wrapper {
-    max-height: 50px;
+    grid-template-rows: 1fr;
     margin-bottom: 2.5em;
-    opacity: 1;
-    transform: translateY(0);
+    // Expanding: grid grows, then content appears
+    transition:
+        grid-template-rows var(--transition-slow),
+        margin-bottom var(--transition-slow);
+
+    > .collapse-inner {
+        opacity: 1;
+        transform: translateY(0);
+        // Fade + slide in after grid opens
+        transition:
+            opacity var(--transition-slow) 0.1s,
+            transform var(--transition-slow) 0.1s;
+    }
 }
 
 .minimal-back-button {
@@ -161,23 +179,41 @@
 }
 
 .full-header {
-    overflow: hidden;
-    transition:
-        max-height var(--transition-slow),
-        opacity var(--transition-slow),
-        margin-top var(--transition-slow),
-        transform var(--transition-slow);
-    will-change: max-height, opacity, margin-top, transform;
-    max-height: 200px;
+    display: grid;
+    grid-template-rows: 1fr;
     margin-top: -25px;
-    opacity: 1;
-    transform: translateY(0);
+    // Expanding: grid grows, then content appears
+    transition:
+        grid-template-rows var(--transition-slow),
+        margin-top var(--transition-slow);
+
+    > .collapse-inner {
+        overflow: hidden;
+        min-height: 0;
+        opacity: 1;
+        transform: translateY(0);
+        // Fade + slide in after grid opens
+        transition:
+            opacity var(--transition-slow) 0.1s,
+            transform var(--transition-slow) 0.1s;
+    }
 }
 
 .minimal-mode .full-header {
-    max-height: 0;
-    opacity: 0;
-    transform: translateY(10px);
+    grid-template-rows: 0fr;
+    // Collapsing: grid shrinks after content fades out
+    transition:
+        grid-template-rows var(--transition-slow) 0.1s,
+        margin-top var(--transition-slow) 0.1s;
+
+    > .collapse-inner {
+        opacity: 0;
+        transform: translateY(8px);
+        // Fade + slide out before grid shrinks
+        transition:
+            opacity var(--transition-medium),
+            transform var(--transition-medium);
+    }
 }
 
 .min-down-arrow {
