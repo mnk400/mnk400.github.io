@@ -44,6 +44,8 @@ function updateThemeColorMeta(theme) {
     metaThemeColor.content = "#2D3D5A";
   } else if (theme === "red") {
     metaThemeColor.content = "#2a1a1d";
+  } else if (theme === "matcha") {
+    metaThemeColor.content = "#2a2f2a";
   } else {
     metaThemeColor.content = "#f2f0ef";
   }
@@ -54,7 +56,7 @@ function updateThemeIcons() {
 
   if (themeIcon) {
     // Remove all possible icon classes
-    themeIcon.classList.remove("ph-sun", "ph-moon", "ph-drop", "ph-heart");
+    themeIcon.classList.remove("ph-sun", "ph-moon", "ph-drop", "ph-heart", "ph-leaf");
 
     if (currentTheme === "light") {
       themeIcon.classList.add("ph-moon"); // Moon for dark theme next
@@ -63,6 +65,8 @@ function updateThemeIcons() {
     } else if (currentTheme === "blue") {
       themeIcon.classList.add("ph-heart"); // Heart for red theme next
     } else if (currentTheme === "red") {
+      themeIcon.classList.add("ph-leaf"); // Leaf for matcha theme next
+    } else if (currentTheme === "matcha") {
       themeIcon.classList.add("ph-sun"); // Sun for light theme next
     }
   }
@@ -75,16 +79,24 @@ function toggleTheme() {
     setTheme("blue");
   } else if (currentTheme === "blue") {
     setTheme("red");
+  } else if (currentTheme === "red") {
+    setTheme("matcha");
   } else {
     setTheme("light");
   }
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  const savedTheme = localStorage.getItem("theme") || "light";
-  // If saved theme is 'video', default to 'dark' since video mode is removed
-  // Ensure we only use valid themes
-  const validThemes = ["light", "blue", "dark", "red"];
-  const theme = validThemes.includes(savedTheme) ? savedTheme : "light";
+  const overrides = window.__urlOverrides || {};
+  const validThemes = ["light", "blue", "dark", "red", "matcha"];
+
+  let theme;
+  if (overrides.theme) {
+    theme = overrides.theme;
+  } else {
+    const savedTheme = localStorage.getItem("theme") || "light";
+    theme = validThemes.includes(savedTheme) ? savedTheme : "light";
+  }
+
   setTheme(theme, true);
 });

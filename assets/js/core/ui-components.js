@@ -101,6 +101,14 @@ if ("ontouchstart" in window) {
 
 // Initialize UI components when DOM is ready
 document.addEventListener("DOMContentLoaded", function () {
+  // URL param override for header mode
+  const overrides = window.__urlOverrides || {};
+  if (overrides.header === "minimal") {
+    const header = document.querySelector("header");
+    if (header) header.classList.add("minimal-mode");
+    const collapseBtn = document.getElementById("headerCollapseButton");
+    if (collapseBtn) collapseBtn.style.display = "";
+  }
   // Initialize image selector functionality
   const imageInput = document.getElementById("image-input");
   const imageSelector = document.getElementById("image-selector");

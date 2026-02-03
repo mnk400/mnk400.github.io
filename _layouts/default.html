@@ -59,15 +59,7 @@ ZZZzz /,`.-'`'    -.  ;-;;,_
         <!-- Favicon -->
         <link rel="icon" href="/assets/favicon.ico" />
 
-        <script>
-            (function () {
-                var theme = localStorage.getItem("theme");
-                var validThemes = ["light", "dark", "blue", "red"];
-                if (!theme || validThemes.indexOf(theme) === -1)
-                    theme = "light";
-                document.documentElement.setAttribute("data-theme", theme);
-            })();
-        </script>
+        <script src="/assets/js/core/url-params.js"></script>
 
         <!-- Custom CSS for the website -->
         <link rel="stylesheet" type="text/css" href="/assets/css/main.css" />

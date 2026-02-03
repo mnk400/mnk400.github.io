@@ -52,8 +52,8 @@
     --background-main: #2a1a1d;
     --background-darker: #3d1f24;
     --text-color: #f5e8ea;
-    --sec-text-color: #d7cbd0;
-    --page-accent: #a88088;
+    --sec-text-color: #e0d3d8;
+    --page-accent: #a38c90;
     --contrast-overlay: rgba(255, 255, 255, 0.7);
     --contrast-overlay-hover: rgba(255, 255, 255, 0.5);
     --translucent-low: rgb(255, 255, 255, 0.03);
@@ -61,6 +61,21 @@
     --translucent-high: rgb(255, 255, 255, 0.2);
     --code-bg: #3d1f24;
     --note-bg: #4a2d33;
+}
+
+:root[data-theme="matcha"] {
+    --background-main: #2a2f2a;
+    --background-darker: #1e231e;
+    --text-color: #f2faed;
+    --sec-text-color: #e0e6da;
+    --page-accent: #99a892;
+    --contrast-overlay: rgba(255, 255, 255, 0.7);
+    --contrast-overlay-hover: rgba(255, 255, 255, 0.5);
+    --translucent-low: rgb(255, 255, 255, 0.03);
+    --translucent-medium: rgb(255, 255, 255, 0.07);
+    --translucent-high: rgb(255, 255, 255, 0.2);
+    --code-bg: #1e231e;
+    --note-bg: #3a4a36;
 }
 
 // Spacing Scale

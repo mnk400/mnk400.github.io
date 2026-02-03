@@ -18,7 +18,7 @@
                     <table>
                         <tr>
                             <th class="min-title">
-                                <span><b>{{ page.title }}</b></span>
+                                <span><b>{{ page.title | default: "Manik" }}</b></span>
                             </th>
                             <th class="min-down-arrow">
                                 <i class="ph-fill ph-caret-circle-down"></i>
@@ -57,15 +57,14 @@
                             <a href="#" onclick="toggleTheme(); return false;">
                                 <i class="ph-fill ph-moon theme-icon"></i>
                             </a>
-                            {% if page.minimal == true %}
                             <a
                                 href="#"
+                                id="headerCollapseButton"
                                 onclick="toggleHeaderVisibility(false); return false;"
-                                style="margin-left: 10px"
+                                style="margin-left: 10px{% unless page.minimal %}; display: none{% endunless %}"
                             >
                                 <i class="ph-fill ph-caret-circle-up"></i>
                             </a>
-                            {% endif %}
                         </th>
                     </tr>
                 </table>
