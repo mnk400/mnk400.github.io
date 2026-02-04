@@ -187,7 +187,7 @@ input[type="color"] {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: var(--spacing-xl);
+    margin-bottom: var(--spacing-md);
     cursor: pointer;
     font-size: 0.9em;
     font-weight: 500;
@@ -199,5 +199,17 @@ input[type="color"] {
 
     @include hover-interactive {
         background-color: var(--translucent-high);
+    }
+}
+
+#image-preview {
+    max-width: 100%;
+    display: none;
+    margin: 0;
+    transition: opacity 0.5s ease-out;
+    margin-bottom: var(--spacing-md);
+
+    &.fade-out {
+        opacity: 0;
     }
 }
