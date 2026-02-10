@@ -13,7 +13,7 @@ category: Music
         </p>
         <div class="music-widget-header">
             <span class="pr" id="music-widget-label">Last listened to …</span>
-            <span class="music-widget-time-wrapper">
+            <span class="music-widget-time-wrapper" style="opacity: 80%; font-size: 0.9em">
                 <span class="music-widget-time-placeholder">…</span>
                 <span class="music-widget-time" id="music-widget-time"></span>
             </span>
@@ -21,7 +21,7 @@ category: Music
         {% include music-widget.html %}
         <p></p>
         <div class="view-controls">
-            <h1>Top music from the past</h1>
+            <h2>Top music from the past</h2>
             {% assign view_options = "albums:Albums,artists:Artists" | split: "," %}
             {% include selection-switch.html id="view-toggle" class="view-toggle" options=view_options default_active="albums" %}
 

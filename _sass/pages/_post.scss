@@ -17,13 +17,13 @@
         font-size: 0.75em;
         text-align: left;
         color: var(--sec-text-color);
-        font-weight: 300;
+        font-weight: 200;
         margin-bottom: var(--spacing-xl);
     }
 
     &__title {
         font-size: 24pt;
-        font-weight: 900;
+        font-weight: 500;
         margin-bottom: var(--spacing-md);
         text-align: left;
         line-height: 1.1em;
@@ -112,12 +112,12 @@
             transform: translateX(10%);
             padding: 40px;
             line-height: 16pt;
-            font-weight: 400;
+            font-weight: 200;
             overflow-x: scroll;
             background: var(--code-bg);
             font-size: 11pt;
             font-family: "IBM Plex Mono", monospace;
-            font-weight: 400;
+            font-weight: 200;
             color: var(--text-color);
             margin-bottom: var(--spacing-lg);
         }
