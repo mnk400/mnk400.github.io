@@ -54,21 +54,22 @@ function triggerPhotoReveal(imagePath = "/assets/images/me.jpg") {
   }
 }
 
-// Header visibility toggle functionality
-function toggleHeaderVisibility(showFull) {
-  const header = document.querySelector("header");
+// Site name click handler — on touch devices, toggles the nav menu; on desktop, triggers photo
+function handleSiteNameClick(event) {
+  const menu = document.getElementById("siteNameMenu");
+  if (!menu) return;
 
-  if (showFull) {
-    header.classList.remove("minimal-mode");
+  if ("ontouchstart" in window || navigator.maxTouchPoints > 0) {
+    menu.classList.toggle("is-open");
   } else {
-    header.classList.add("minimal-mode");
+    triggerPhotoReveal("/assets/images/me.jpg");
   }
 }
 
 // Touch hover handler for mobile devices
 if ("ontouchstart" in window) {
   const SELECTORS =
-    "a, button, .btn, .switch-option, .expandable-toggle, .minimal-header, .minimal-back-button";
+    "a, button, .btn, .switch-option, .expandable-toggle";
   let touchStart = 0;
   let activeTarget = null;
 
@@ -101,14 +102,6 @@ if ("ontouchstart" in window) {
 
 // Initialize UI components when DOM is ready
 document.addEventListener("DOMContentLoaded", function () {
-  // URL param override for header mode
-  const overrides = window.__urlOverrides || {};
-  if (overrides.header === "minimal") {
-    const header = document.querySelector("header");
-    if (header) header.classList.add("minimal-mode");
-    const collapseBtn = document.getElementById("headerCollapseButton");
-    if (collapseBtn) collapseBtn.style.display = "";
-  }
   // Initialize image selector functionality
   const imageInput = document.getElementById("image-input");
   const imageSelector = document.getElementById("image-selector");

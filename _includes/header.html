@@ -1,107 +1,45 @@
-<header class="{% if page.minimal %}minimal-mode{% endif %}">
-    <div class="minimal-header-wrapper">
-        <div class="collapse-inner">
-            {% if page.url != "/" %}
-            <div
-                class="minimal-back-button"
-                id="minimalBackButton"
-                onclick="handleBackNavigation(); return false;"
-            >
-                <i class="ph-bold ph-arrow-down-left"></i>
-            </div>
-            {% endif %}
-            <div class="minimal-header" id="minimalHeader">
-                <div
-                    class="header-content"
-                    onclick="toggleHeaderVisibility(true); return false;"
-                >
-                    <table>
-                        <tr>
-                            <th class="min-title">
-                                <span><b>{{ page.title | default: "Manik" }}</b></span>
-                            </th>
-                            <th class="min-down-arrow">
-                                <i class="ph-fill ph-caret-circle-down"></i>
-                            </th>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
+<header>
+    <!-- Photo reveal (homepage only) -->
     <div class="title-photo-container" id="titlePhotoContainer">
         <img src="/assets/images/me.jpg" alt="Manik" class="title-photo" />
     </div>
-    <div class="full-header" id="fullHeader">
-        <div class="collapse-inner">
-            <div class="site-title">
-                <table>
-                    <tr>
-                        <th class="site-title-name">
-                            {% if page.url == "/" %}
-                            <a
-                                href="#"
-                                class="site-title-link"
-                                id="title-photo-trigger"
-                                onclick="triggerPhotoReveal('/assets/images/me.jpg'); return false;"
-                            >
-                                <span>Manik</span>
-                            </a>
-                            {% else %}
-                            <a href="/" class="site-title-link">
-                                <span>Manik</span>
-                            </a>
-                            {% endif %}
-                        </th>
-                        <th class="dark-button">
-                            <a href="#" onclick="toggleTheme(); return false;">
-                                <i class="ph-fill ph-moon theme-icon"></i>
-                            </a>
-                            <a
-                                href="#"
-                                id="headerCollapseButton"
-                                onclick="toggleHeaderVisibility(false); return false;"
-                                style="margin-left: 10px{% unless page.minimal %}; display: none{% endunless %}"
-                            >
-                                <i class="ph-fill ph-caret-circle-up"></i>
-                            </a>
-                        </th>
-                    </tr>
-                </table>
+
+    <div class="header-row">
+        <div class="header-left">
+            {% if page.url == "/" %}
+            <div class="site-name-group">
+                <a
+                    href="#"
+                    class="site-name"
+                    id="title-photo-trigger"
+                    onclick="handleSiteNameClick(event); return false;"
+                >Manik</a>
+                <div class="site-name-menu" id="siteNameMenu">
+                    <a href="/more">more</a>
+                    <a href="/photos">photos</a>
+                    <a href="https://linkedin.com/in/manik-kumar" target="_blank">linkedin</a>
+                    <a href="mailto:me@manik.cc">email</a>
+                </div>
             </div>
-            <div class="nav">
-                <ul>
-                    {% if page.url != "/" %}
-                    <li>
-                        <a
-                            id="back-button"
-                            href="#"
-                            onclick="handleBackNavigation(); return false;"
-                        >
-                            <i class="ph-bold ph-arrow-down-left"></i>
-                        </a>
-                    </li>
-                    {% endif %} {% if page.url != "/more" %}
-                    <li><a href="/more">more</a></li>
-                    {% endif %} {% if page.url != "/photos" %}
-                    <li><a href="/photos">photos</a></li>
-                    {% endif %}
-                    <li>
-                        <a
-                            href="https://linkedin.com/in/manik-kumar"
-                            target="_blank"
-                            >linkedin</a
-                        >
-                    </li>
-                    <li><a href="mailto:me@manik.cc">email</a></li>
-                </ul>
-            </div>
-            <!-- page/post title is in header file so we can hide/unhide it based on minimial mode  -->
-            <div>
-                {% if page.title %}
-                <h1 class="post__title">{{ page.title }}</h1>
-                {% endif %}
-            </div>
+            {% else %}
+            <nav class="header-breadcrumb">
+                <a
+                    href="#"
+                    class="breadcrumb-back"
+                    onclick="handleBackNavigation(); return false;"
+                >
+                <i class="ph-bold ph-arrow-down-left"></i>
+                </a>
+                <a href="/" class="breadcrumb-home">Manik</a>
+                <span class="breadcrumb-sep">/</span>
+                <span class="breadcrumb-current">{{ page.title }}</span>
+            </nav>
+            {% endif %}
+        </div>
+        <div class="header-right">
+            <a href="#" onclick="toggleTheme(); return false;">
+                <i class="ph-fill ph-moon theme-icon"></i>
+            </a>
         </div>
     </div>
 </header>
