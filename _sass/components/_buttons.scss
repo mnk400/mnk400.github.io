@@ -11,7 +11,7 @@ button,
     border: none;
     border-radius: var(--radius-md);
     font-size: 1em;
-    font-weight: 400 !important;
+    font-weight: 300 !important;
     cursor: pointer;
     transition: background-color var(--transition-medium);
     backdrop-filter: blur(10px);
@@ -86,7 +86,7 @@ input[type="file"]::file-selector-button {
     border-radius: var(--radius-md);
     @include system-font;
     font-size: 1.2em;
-    font-weight: 400 !important;
+    font-weight: 300 !important;
     cursor: pointer;
     transition: background-color var(--transition-medium);
 }
@@ -129,6 +129,7 @@ input[type="file"]::file-selector-button {
     margin: var(--spacing-md) 0;
     gap: var(--spacing-md);
     flex-wrap: wrap;
+    font-weight: 300;
     align-self: center;
 
     .switch-option {

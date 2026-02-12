@@ -9,7 +9,6 @@
 
   var schema = {
     theme: ["light", "dark", "blue", "red", "matcha"],
-    header: ["minimal"],
   };
 
   var overrides = {};

@@ -23,7 +23,7 @@ body {
     padding: var(--spacing-3xl) var(--spacing-2xl);
 
     @media screen and (max-width: $breakpoint-mobile) {
-        padding: var(--spacing-xl);
+        padding: var(--spacing-2xl) var(--spacing-xl);
     }
 }
 
@@ -37,7 +37,6 @@ body {
 
 // Game wrapper
 .game-wrapper {
-    height: 100vh;
     width: 100%;
     justify-content: center;
     position: relative;

@@ -13,12 +13,11 @@
     color: var(--sec-text-color);
     padding-bottom: var(--spacing-sm);
     padding-top: var(--spacing-sm);
+}
 
-    .pr {
-        font-size: 1.2em;
-        color: var(--text-color);
-        font-weight: 600;
-    }
+.music-widget-time-wrapper--page {
+    opacity: 0.8;
+    font-size: 0.9em;
 }
 
 .music-widget-time-placeholder {
@@ -133,7 +132,7 @@
 
 .music-widget-track {
     font-size: 0.95em;
-    font-weight: 600;
+    font-weight: 400;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -186,7 +185,7 @@
 
         .music-artist-name {
             font-size: 1em;
-            font-weight: 500;
+            font-weight: 400;
             color: var(--text-color);
             margin: 0;
         }

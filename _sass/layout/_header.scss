@@ -10,16 +10,18 @@
     font-display: swap;
 }
 
-// Flex column so we can reorder the photo above minimal header
 header {
     display: flex;
     flex-direction: column;
 }
 
-// Title photo reveal animation
-.title-photo-container {
+// =============================================================================
+// HEADER REVEAL PANELS (shared animation pattern)
+// =============================================================================
+
+// Base reveal animation — collapsed by default, slides down when .revealed
+.header-reveal {
     order: -1;
-    width: 200px;
     max-height: 0;
     overflow: hidden;
     opacity: 0;
@@ -29,9 +31,14 @@ header {
         margin-top: calc(var(--spacing-2xl) * -0.6);
         max-height: 300px;
         padding-bottom: calc(var(--spacing-2xl) * 0.5);
-        /* padding-bottom: var(--spacing-lg); */
         opacity: 1;
     }
+}
+
+// Photo reveal (homepage)
+.title-photo-container {
+    @extend .header-reveal;
+    width: 200px;
 
     .title-photo {
         width: 150px;
@@ -40,240 +47,153 @@ header {
     }
 }
 
-// Site title
-.site-title {
-    color: var(--text-color);
-    text-decoration: none;
+// Settings panel
+.settings-panel {
+    @extend .header-reveal;
 
-    a,
-    .site-title-link {
-        text-decoration: none;
+    .settings-panel-inner {
+        padding: var(--spacing-lg) 2px 0;
     }
 
-    .site-title-link:hover {
+    .settings-row {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-sm);
+    }
+
+    .settings-label {
+        font-size: 0.85em;
+        color: var(--sec-text-color);
+    }
+
+    .selection-switch {
+        margin: 0;
+        align-self: flex-start;
+        gap: var(--spacing-sm);
+
+        .switch-option {
+            font-size: 0.85em;
+            padding: var(--spacing-xs) var(--spacing-md);
+        }
+    }
+}
+
+// =============================================================================
+// HEADER ROW
+// =============================================================================
+
+.header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 1em;
+}
+
+.header-left {
+    display: flex;
+    align-items: baseline;
+}
+
+// Homepage: name with hover menu
+.site-name-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.site-name {
+    font-size: 1.5em;
+    font-weight: 400;
+    text-decoration: none;
+    color: var(--text-color);
+
+    &:hover {
         color: var(--text-color);
     }
+}
 
-    .dark-button a {
-        @include hover-interactive {
+.site-name-menu {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-sm);
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition:
+        max-height 0.3s ease,
+        opacity 0.2s ease,
+        padding-top 0.3s ease;
+    padding-top: 0;
+
+    > a {
+        text-decoration: none;
+        color: var(--sec-text-color);
+        transition:
+            opacity var(--transition-medium),
+            color var(--transition-medium);
+        white-space: nowrap;
+
+        &:hover {
+            opacity: 1;
             color: var(--page-accent);
         }
     }
+}
 
-    .my-name {
-        animation: normal;
-    }
+.menu-sep {
+    opacity: 0.4;
+}
 
-    table {
-        width: 100%;
+.site-name-group:hover .site-name-menu,
+.site-name-group:focus-within .site-name-menu,
+.site-name-menu.is-open {
+    max-height: 2em;
+    opacity: 1;
+    padding-top: var(--spacing-xs);
+}
+
+@media screen and (max-width: $breakpoint-mobile) {
+    .site-name-menu {
+        max-height: 2em;
+        opacity: 1;
+        padding-top: var(--spacing-xs);
     }
 }
 
-.site-title-name {
-    font-size: 1.5em;
-    font-weight: 700;
-    text-align: left;
-    padding-bottom: 0.3em;
-
-    .site-title-link span {
-        font-family: "OverTheRainbow", -apple-system, "inter", sans-serif;
-    }
-}
-
-.dark-button {
-    text-align: right;
+// Subpages: breadcrumb nav
+.header-breadcrumb {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-sm);
+    color: var(--text-color);
 
     a {
         text-decoration: none;
-        color: var(--text-color);
+        color: inherit;
         transition: color var(--transition-medium);
-    }
-}
 
-.dark-mode-icon {
-    height: 1.5em;
-}
-
-// Header layout
-.header {
-    display: inline;
-    justify-content: space-between;
-    align-items: baseline;
-
-    @media screen and (max-width: $breakpoint-mobile) {
-        display: block;
-    }
-
-    h1 {
-        font-size: 12pt;
-        font-weight: 400;
-        padding-bottom: var(--spacing-xs);
-        text-align: left;
-    }
-}
-
-// Minimal header functionality
-.minimal-header-wrapper {
-    display: grid;
-    grid-template-rows: 0fr;
-    margin-bottom: 1.6em;
-    // Collapsing: grid shrinks after content fades out
-    transition:
-        grid-template-rows var(--transition-slow) 0.1s,
-        margin-bottom var(--transition-slow) 0.1s;
-
-    > .collapse-inner {
-        overflow: hidden;
-        min-height: 0;
-        display: flex;
-        align-items: start;
-        gap: calc(var(--spacing-xs) + 1px);
-        margin: -2px;
-        padding: 2px;
-        opacity: 0;
-        transform: translateY(-8px);
-        // Fade + slide out before grid shrinks
-        transition:
-            opacity var(--transition-medium),
-            transform var(--transition-medium);
-    }
-}
-
-.minimal-mode .minimal-header-wrapper {
-    grid-template-rows: 1fr;
-    margin-bottom: 2.5em;
-    // Expanding: grid grows, then content appears
-    transition:
-        grid-template-rows var(--transition-slow),
-        margin-bottom var(--transition-slow);
-
-    > .collapse-inner {
-        opacity: 1;
-        transform: translateY(0);
-        // Fade + slide in after grid opens
-        transition:
-            opacity var(--transition-slow) 0.1s,
-            transform var(--transition-slow) 0.1s;
-    }
-}
-
-.minimal-back-button {
-    @include translucent-surface;
-    padding: var(--spacing-md) var(--spacing-lg);
-    transition:
-        background-color var(--transition-medium),
-        color var(--transition-medium);
-    cursor: pointer;
-
-    @include hover-state-dark;
-}
-
-.minimal-header {
-    @include translucent-surface;
-    padding: var(--spacing-md) var(--spacing-lg);
-    font-weight: 500;
-    vertical-align: middle;
-    flex: 1;
-    cursor: pointer;
-    transition:
-        background-color var(--transition-medium),
-        color var(--transition-medium);
-
-    @include hover-state-dark;
-
-    table {
-        width: 100%;
-    }
-}
-
-.full-header {
-    display: grid;
-    grid-template-rows: 1fr;
-    margin-top: -25px;
-    // Expanding: grid grows, then content appears
-    transition:
-        grid-template-rows var(--transition-slow),
-        margin-top var(--transition-slow);
-
-    > .collapse-inner {
-        overflow: hidden;
-        min-height: 0;
-        opacity: 1;
-        transform: translateY(0);
-        // Fade + slide in after grid opens
-        transition:
-            opacity var(--transition-slow) 0.1s,
-            transform var(--transition-slow) 0.1s;
-    }
-}
-
-.minimal-mode .full-header {
-    grid-template-rows: 0fr;
-    // Collapsing: grid shrinks after content fades out
-    transition:
-        grid-template-rows var(--transition-slow) 0.1s,
-        margin-top var(--transition-slow) 0.1s;
-
-    > .collapse-inner {
-        opacity: 0;
-        transform: translateY(8px);
-        // Fade + slide out before grid shrinks
-        transition:
-            opacity var(--transition-medium),
-            transform var(--transition-medium);
-    }
-}
-
-.min-down-arrow {
-    text-align: right;
-}
-
-.min-title {
-    text-align: left;
-}
-
-// Navigation
-.nav {
-    width: 100%;
-    font-size: 1em;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    margin-bottom: 1em;
-
-    ul {
-        display: flex;
-        list-style: none;
-        flex: -1;
-        max-width: 300px;
-
-        li {
-            padding: 0px;
+        &:hover {
+            color: var(--page-accent);
         }
     }
-
-    ul li:not(:last-child):after {
-        content: "∙";
-        position: relative;
-        padding: var(--spacing-xs);
-        color: var(--text-color);
-    }
 }
 
-#back-button {
-    text-decoration: none !important;
-    font-size: 0.8em;
-    text-align: left;
+.breadcrumb-back {
+   font-size: 0.9em;
 }
 
-// Navigation item separation
-#navigation ul li {
-    margin: 0;
-    padding: 0;
-    list-style-type: none;
-    display: inline;
+.breadcrumb-home {
+    font-weight: 400;
 }
 
-#navigation li:not(:first-child):before {
-    content: " · ";
+.breadcrumb-current {
+    color: var(--sec-text-color);
+}
+
+.breadcrumb-settings {
+    color: var(--sec-text-color);
+}
+
+.breadcrumb-sep {
+    opacity: 0.4;
 }

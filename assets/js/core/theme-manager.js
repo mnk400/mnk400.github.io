@@ -24,7 +24,7 @@ function setTheme(theme, skipTransition = false) {
   document.documentElement.setAttribute("data-theme", theme);
   updateThemeColorMeta(theme);
 
-  updateThemeIcons();
+  updateThemeSwitch();
 
   isInitialLoad = false;
 }
@@ -51,39 +51,15 @@ function updateThemeColorMeta(theme) {
   }
 }
 
-function updateThemeIcons() {
-  const themeIcon = document.querySelector(".theme-icon");
-
-  if (themeIcon) {
-    // Remove all possible icon classes
-    themeIcon.classList.remove("ph-sun", "ph-moon", "ph-drop", "ph-heart", "ph-leaf");
-
-    if (currentTheme === "light") {
-      themeIcon.classList.add("ph-moon"); // Moon for dark theme next
-    } else if (currentTheme === "dark") {
-      themeIcon.classList.add("ph-drop"); // Drop for blue theme next
-    } else if (currentTheme === "blue") {
-      themeIcon.classList.add("ph-heart"); // Heart for red theme next
-    } else if (currentTheme === "red") {
-      themeIcon.classList.add("ph-leaf"); // Leaf for matcha theme next
-    } else if (currentTheme === "matcha") {
-      themeIcon.classList.add("ph-sun"); // Sun for light theme next
+function updateThemeSwitch() {
+  const buttons = document.querySelectorAll("#themeSwitch .switch-option");
+  buttons.forEach((btn) => {
+    if (btn.dataset.theme === currentTheme) {
+      btn.classList.add("active");
+    } else {
+      btn.classList.remove("active");
     }
-  }
-}
-
-function toggleTheme() {
-  if (currentTheme === "light") {
-    setTheme("dark");
-  } else if (currentTheme === "dark") {
-    setTheme("blue");
-  } else if (currentTheme === "blue") {
-    setTheme("red");
-  } else if (currentTheme === "red") {
-    setTheme("matcha");
-  } else {
-    setTheme("light");
-  }
+  });
 }
 
 document.addEventListener("DOMContentLoaded", function () {

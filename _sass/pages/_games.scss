@@ -55,7 +55,7 @@
 #high-score {
     position: absolute;
     top: var(--spacing-xl);
-    font-weight: 600;
+    font-weight: 500;
     font-size: 18px;
     color: var(--game-flappy-text);
     font-weight: 500;
@@ -116,7 +116,7 @@
         left: 50%;
         transform: translate(-50%, -50%);
         font-size: 1.3em;
-        font-weight: 500;
+        font-weight: 300;
         line-height: 100;
     }
 
@@ -181,7 +181,7 @@
 
 #mine-counter,
 #game-timer {
-    font-weight: 600;
+    font-weight: 500;
     font-size: 18px;
     color: var(--text-color);
     background: var(--translucent-medium);
@@ -205,7 +205,7 @@
     border: 2px solid var(--translucent-medium);
     border-radius: var(--radius-md);
     cursor: pointer;
-    font-weight: 600;
+    font-weight: 500;
     font-family: 'Inter', sans-serif;
     transition: all var(--transition-medium);
     user-select: none;
@@ -299,7 +299,7 @@
         .color-header {
             background: var(--translucent-medium);
             padding: var(--spacing-md);
-            font-weight: 600;
+            font-weight: 500;
         }
 
         .color-display {
@@ -326,7 +326,7 @@
                 justify-content: center;
                 @include mono-font;
                 font-size: 1.2rem;
-                font-weight: 700;
+                font-weight: 500;
                 color: var(--text-color);
                 background: var(--bg-color);
                 backdrop-filter: blur(10px);
@@ -431,7 +431,7 @@
                 .stat {
                     .stat-number {
                         font-size: 2rem;
-                        font-weight: 700;
+                        font-weight: 500;
                         color: var(--accent-color);
                     }
 

@@ -48,7 +48,7 @@ description: "Manik's personal website and blog"
         </ul>
     </div>
     {% endcapture %} 
-    {% include expandable-section.html id="blog-archive" title="<b>Archive</b>" content=blog_content expanded=true %}
+    {% include expandable-section.html id="blog-archive" title="<b>Archive</b>" content=blog_content expanded=false %}
 
     <div class="music-widget-header">
         <span class="music-widget-label" id="music-widget-label">
@@ -61,8 +61,6 @@ description: "Manik's personal website and blog"
     </div>
     {% include music-widget.html %}
 
-    <div class="location-time-footer" id="location-time-footer">
-        <span id="current-time-location"></span>
-    </div>
-    <script src="/assets/js/location-time.js"></script>
+    {% include footer.html %}
+
 </div>
