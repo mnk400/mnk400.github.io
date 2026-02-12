@@ -4,6 +4,22 @@
         <img src="/assets/images/me.jpg" alt="Manik" class="title-photo" />
     </div>
 
+    <!-- Settings panel reveal -->
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-panel-inner">
+            <div class="settings-row">
+                <span class="settings-label">Theme</span>
+                <div class="selection-switch" id="themeSwitch">
+                    <button class="switch-option" data-theme="light" onclick="selectTheme('light'); return false;">Light</button>
+                    <button class="switch-option" data-theme="dark" onclick="selectTheme('dark'); return false;">Dark</button>
+                    <button class="switch-option" data-theme="blue" onclick="selectTheme('blue'); return false;">Blue</button>
+                    <button class="switch-option" data-theme="red" onclick="selectTheme('red'); return false;">Red</button>
+                    <button class="switch-option" data-theme="matcha" onclick="selectTheme('matcha'); return false;">Matcha</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="header-row">
         <div class="header-left">
             {% if page.url == "/" %}
@@ -19,6 +35,8 @@
                     <a href="/photos">photos</a>
                     <a href="https://linkedin.com/in/manik-kumar" target="_blank">linkedin</a>
                     <a href="mailto:me@manik.cc">email</a>
+                    <span class="menu-sep">/</span>
+                    <a href="#" onclick="toggleSettings(); return false;"><span class="settings-toggle-text">settings</span></a>
                 </div>
             </div>
             {% else %}
@@ -33,13 +51,10 @@
                 <a href="/" class="breadcrumb-home">Manik</a>
                 <span class="breadcrumb-sep">/</span>
                 <span class="breadcrumb-current">{{ page.title }}</span>
+                <!--<span class="breadcrumb-sep">/</span>
+                <a href="#" class="breadcrumb-settings" onclick="toggleSettings(); return false;"><span class="settings-toggle-text">settings</span></a>-->
             </nav>
             {% endif %}
-        </div>
-        <div class="header-right">
-            <a href="#" onclick="toggleTheme(); return false;">
-                <i class="ph-fill ph-moon theme-icon"></i>
-            </a>
         </div>
     </div>
 </header>

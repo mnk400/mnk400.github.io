@@ -15,10 +15,13 @@ header {
     flex-direction: column;
 }
 
-// Title photo reveal animation
-.title-photo-container {
+// =============================================================================
+// HEADER REVEAL PANELS (shared animation pattern)
+// =============================================================================
+
+// Base reveal animation — collapsed by default, slides down when .revealed
+.header-reveal {
     order: -1;
-    width: 200px;
     max-height: 0;
     overflow: hidden;
     opacity: 0;
@@ -30,11 +33,49 @@ header {
         padding-bottom: calc(var(--spacing-2xl) * 0.5);
         opacity: 1;
     }
+}
+
+// Photo reveal (homepage)
+.title-photo-container {
+    @extend .header-reveal;
+    width: 200px;
 
     .title-photo {
         width: 150px;
         display: block;
         border-radius: var(--radius-md);
+    }
+}
+
+// Settings panel
+.settings-panel {
+    @extend .header-reveal;
+
+    .settings-panel-inner {
+        padding: var(--spacing-lg) 2px 0;
+    }
+
+    .settings-row {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-sm);
+    }
+
+    .settings-label {
+        font-size: 0.85em;
+        color: var(--sec-text-color);
+    }
+
+    .selection-switch {
+        margin: 0;
+        align-self: flex-start;
+        gap: var(--spacing-sm);
+
+        .switch-option {
+            font-size: 0.85em;
+            padding: var(--spacing-xs) var(--spacing-md);
+        }
     }
 }
 
@@ -73,6 +114,7 @@ header {
 
 .site-name-menu {
     display: flex;
+    align-items: baseline;
     gap: var(--spacing-sm);
     overflow: hidden;
     max-height: 0;
@@ -98,12 +140,24 @@ header {
     }
 }
 
+.menu-sep {
+    opacity: 0.4;
+}
+
 .site-name-group:hover .site-name-menu,
 .site-name-group:focus-within .site-name-menu,
 .site-name-menu.is-open {
     max-height: 2em;
     opacity: 1;
     padding-top: var(--spacing-xs);
+}
+
+@media screen and (max-width: $breakpoint-mobile) {
+    .site-name-menu {
+        max-height: 2em;
+        opacity: 1;
+        padding-top: var(--spacing-xs);
+    }
 }
 
 // Subpages: breadcrumb nav
@@ -136,24 +190,10 @@ header {
     color: var(--sec-text-color);
 }
 
-.breadcrumb-sep {
-    opacity: 0.4;
+.breadcrumb-settings {
+    color: var(--sec-text-color);
 }
 
-.header-right {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    color: var(--sec-text-color);
-    font-size: 0.85em;
-
-    a {
-        text-decoration: none;
-        color: var(--text-color);
-        transition: color var(--transition-medium);
-
-        @include hover-interactive {
-            color: var(--page-accent);
-        }
-    }
+.breadcrumb-sep {
+    opacity: 0.4;
 }

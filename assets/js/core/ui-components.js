@@ -54,6 +54,29 @@ function triggerPhotoReveal(imagePath = "/assets/images/me.jpg") {
   }
 }
 
+// Settings panel toggle
+function toggleSettings() {
+  const panel = document.getElementById("settingsPanel");
+  if (!panel) return;
+
+  const isOpen = panel.classList.toggle("revealed");
+  const menu = document.getElementById("siteNameMenu");
+
+  // Keep the nav menu open while settings is open
+  if (menu) {
+    if (isOpen) {
+      menu.classList.add("is-open");
+    } else {
+      menu.classList.remove("is-open");
+    }
+  }
+
+  // Toggle settings/close text on all settings links
+  document.querySelectorAll(".settings-toggle-text").forEach((el) => {
+    el.textContent = isOpen ? "close" : "settings";
+  });
+}
+
 // Site name click handler — on touch devices, toggles the nav menu; on desktop, triggers photo
 function handleSiteNameClick(event) {
   const menu = document.getElementById("siteNameMenu");

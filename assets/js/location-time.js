@@ -9,7 +9,7 @@ function updateLocationTime() {
     hour12: true,
     timeZone: "America/Los_Angeles",
   });
-  el.textContent = `${timeString} – Seattle, WA`;
+  el.textContent = `${timeString} · Seattle, WA`;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
