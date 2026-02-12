@@ -12,13 +12,3 @@
 .footer-sep {
     color: var(--sec-text-color);
 }
-
-.footer-theme-toggle {
-    text-decoration: none;
-    color: var(--sec-text-color);
-    transition: color var(--transition-medium);
-
-    &:hover {
-        color: var(--page-accent);
-    }
-}
