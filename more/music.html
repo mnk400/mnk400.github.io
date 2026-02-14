@@ -25,7 +25,7 @@ category: Music
             {% assign view_options = "albums:Albums,artists:Artists" | split: "," %}
             {% include selection-switch.html id="view-toggle" class="view-toggle" options=view_options default_active="albums" %}
 
-            {% assign period_options = "7day:Week,1month:Month,6month:6 Months,12month:Year" | split: "," %}
+            {% assign period_options = "7day:Week,1month:Month,12month:Year,overall:All Time" | split: "," %}
             {% include selection-switch.html id="period-toggle" class="period-toggle" options=period_options default_active="7day" %}
         </div>
         <div id="album-grid" class="album-grid"></div>

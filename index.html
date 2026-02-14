@@ -35,14 +35,10 @@ description: "Manik's personal website and blog"
             <li>
                 {% if post.type == "external" %}
                 <a href="{{ post.link }}" target="_blank">{{ post.title }}</a>
-                <span class="date">{{ post.date | date: '%b-%y' }}</span>
                 {% else %}
-                <a href="{{ post.url }}">
-                    {{ post.title }}
-                    <i class="ph-bold ph-arrow-right" style="opacity: 25%; font-size: 0.8em"></i>
-                </a>
-                <span class="date">{{ post.date | date: '%b-%y' }}</span>
+                <a href="{{ post.url }}">{{ post.title }}</a>
                 {% endif %}
+                <span class="date">{{ post.date | date: '%b-%y' }}</span>
             </li>
             {% endfor %}
         </ul>
