@@ -52,7 +52,7 @@ header {
     @extend .header-reveal;
 
     .settings-panel-inner {
-        padding: var(--spacing-lg) 2px 0;
+        padding: var(--spacing-md) 2px 0;
     }
 
     .settings-row {
@@ -60,6 +60,7 @@ header {
         flex-direction: column;
         align-items: flex-start;
         gap: var(--spacing-sm);
+        padding-top: var(--spacing-sm);
     }
 
     .selection-switch {
