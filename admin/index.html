@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html data-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f2f0ef">
+    <title>Manik - Admin</title>
+
+    <link rel="stylesheet" href="https://manik.cc/style/export.css">
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+    <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2/src/bold/style.css">
+
+    <style>
+        body {
+            padding: var(--spacing-xl);
+            font-weight: 300;
+        }
+
+        .admin-wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .admin-header h1 { margin: 0; }
+
+        .album-bar {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+
+        .album-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        /* Upload zone — uses .image-selector pattern */
+        .upload-zone {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .upload-zone input[type="file"] { display: none; }
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: var(--spacing-md);
+        }
+
+        .image-tile {
+            position: relative;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            background: var(--translucent-low);
+            cursor: grab;
+            transition: outline var(--transition-medium);
+            outline: 2px solid transparent;
+        }
+
+        .image-tile.dragging { opacity: 0.4; }
+        .image-tile.drag-over { outline: 2px solid var(--page-accent); }
+
+        .image-tile img {
+            width: 100%;
+            display: block;
+            aspect-ratio: 1;
+            object-fit: cover;
+        }
+
+        .image-tile .tile-overlay {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            background: var(--translucent-high);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .image-tile .tile-title {
+            flex: 1;
+            min-width: 0;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 0.7em;
+            font-family: inherit;
+            font-weight: 300;
+            padding: 2px 0;
+            outline: none;
+        }
+
+        .image-tile .tile-title:focus {
+            border-bottom: 1px solid var(--sec-text-color);
+        }
+
+        .image-tile .tile-delete {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 28px;
+            height: 28px;
+            padding: 0;
+            border-radius: 50%;
+            border: none;
+            background: var(--translucent-high);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: #fff;
+            cursor: pointer;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background var(--transition-medium), opacity var(--transition-medium);
+            z-index: 2;
+            opacity: 0;
+        }
+
+        .image-tile .tile-delete i { font-size: 14px; }
+
+        @media (any-hover: hover) {
+            .image-tile:hover .tile-delete { opacity: 1; }
+            .image-tile .tile-delete:hover { background: var(--page-accent); }
+        }
+
+        .image-tile .broken-placeholder {
+            width: 100%;
+            aspect-ratio: 1;
+            background: var(--translucent-high);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--sec-text-color);
+            font-size: 1.5em;
+        }
+
+        .action-bar {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .action-bar .status-bar {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .status-bar {
+            font-size: 0.8em;
+            color: var(--sec-text-color);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .btn--publish {
+            white-space: nowrap;
+            display: none;
+        }
+
+        .btn--publish.has-changes {
+            display: inline-flex;
+            animation: pulse-accent 2s infinite;
+        }
+
+        @keyframes pulse-accent {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        @media (max-width: 600px) {
+            .image-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-wrapper">
+        <!-- TODO: theme toggle -->
+        <div class="admin-header">
+            <h1>Admin</h1>
+        </div>
+
+        <!-- Album selector -->
+        <div class="album-bar">
+            <div class="selection-switch" id="album-switch"></div>
+        </div>
+
+        <div class="album-actions">
+            <button class="btn" onclick="promptNewAlbum()">
+                <i class="ph-bold ph-plus"></i> New Album
+            </button>
+        </div>
+
+        <!-- Upload zone -->
+        <div class="upload-zone image-selector" id="upload-zone">
+            <p>Drop images here or click to upload</p>
+            <input type="file" id="file-input" multiple accept="image/*">
+        </div>
+
+        <!-- Action bar with publish button -->
+        <div class="action-bar">
+            <div class="status-bar" id="status-bar"></div>
+            <button class="btn btn--publish" id="publish-btn" onclick="publish()" disabled>
+                Publish
+            </button>
+        </div>
+
+        <div class="image-grid" id="image-grid"></div>
+    </div>
+
+    <script src="https://manik.cc/assets/js/core/theme-manager.js"></script>
+    <script src="https://manik.cc/assets/js/core/ui-components.js"></script>
+
+    <script>
+    const CONFIG = window.__R2_CONFIG || { publicUrl: '', bucket: '', albums: ['photos', 'art'] };
+
+    let albums = [];
+    let currentAlbum = localStorage.getItem('r2-admin-album') || '';
+    let manifest = { title: '', images: [] };
+    let savedManifestJson = '';
+    let dragSrcIndex = null;
+    let pendingDeletes = [];
+
+    // =========================================================================
+    // R2 helpers
+    // =========================================================================
+
+    async function r2Request(method, objectKey, body, contentType) {
+        const opts = { method };
+        if (contentType) opts.headers = { 'Content-Type': contentType };
+        if (body && method !== 'GET' && method !== 'HEAD') opts.body = body;
+        return fetch('/r2/' + encodeURIComponent(objectKey).replace(/%2F/g, '/'), opts);
+    }
+
+    async function getManifest(album) {
+        const res = await r2Request('GET', `${album}/manifest.json`);
+        if (!res.ok) {
+            if (res.status === 404) return { title: album.charAt(0).toUpperCase() + album.slice(1), images: [] };
+            throw new Error(`Failed to fetch manifest: ${res.status}`);
+        }
+        return res.json();
+    }
+
+    async function putManifest(album, data) {
+        const res = await r2Request('PUT', `${album}/manifest.json`, JSON.stringify(data, null, 2), 'application/json');
+        if (!res.ok) throw new Error(`Failed to save manifest: ${res.status}`);
+    }
+
+    async function putImage(album, folder, key, blob, contentType) {
+        const res = await r2Request('PUT', `${album}/${folder}/${key}`, await blob.arrayBuffer(), contentType);
+        if (!res.ok) throw new Error(`Failed to upload ${folder}/${key}: ${res.status}`);
+    }
+
+    // =========================================================================
+    // Dirty state
+    // =========================================================================
+
+    function isDirty() {
+        return JSON.stringify(manifest) !== savedManifestJson || pendingDeletes.length > 0;
+    }
+
+    function updatePublishButton() {
+        const btn = document.getElementById('publish-btn');
+        const dirty = isDirty();
+        btn.disabled = !dirty;
+        btn.classList.toggle('has-changes', dirty);
+    }
+
+    function markClean() {
+        savedManifestJson = JSON.stringify(manifest);
+        pendingDeletes = [];
+        updatePublishButton();
+    }
+
+    // =========================================================================
+    // Image processing
+    // =========================================================================
+
+    function resizeImage(file, maxSize) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            const url = URL.createObjectURL(file);
+            img.onload = () => {
+                URL.revokeObjectURL(url);
+                let { width, height } = img;
+                const ratio = Math.min(1, maxSize / width, maxSize / height);
+                const nw = Math.round(width * ratio);
+                const nh = Math.round(height * ratio);
+                const c = document.createElement('canvas');
+                c.width = nw; c.height = nh;
+                c.getContext('2d').drawImage(img, 0, 0, nw, nh);
+                c.toBlob(blob => resolve({ blob, width: nw, height: nh }), 'image/jpeg', 0.9);
+            };
+            img.src = url;
+        });
+    }
+
+    function slugify(name) {
+        return name.toLowerCase().replace(/\.[^.]+$/, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '.jpg';
+    }
+
+    // =========================================================================
+    // Albums
+    // =========================================================================
+
+    function renderAlbumSwitch() {
+        const sw = document.getElementById('album-switch');
+        sw.innerHTML = '';
+        albums.forEach(a => {
+            const btn = document.createElement('button');
+            btn.className = 'switch-option' + (a === currentAlbum ? ' active' : '');
+            btn.textContent = a;
+            btn.onclick = () => switchAlbum(a);
+            sw.appendChild(btn);
+        });
+    }
+
+    async function switchAlbum(album) {
+        if (isDirty() && !confirm('You have unpublished changes. Discard them?')) return;
+        currentAlbum = album;
+        localStorage.setItem('r2-admin-album', album);
+        pendingDeletes = [];
+        renderAlbumSwitch();
+        await refreshAlbum();
+    }
+
+    async function refreshAlbum() {
+        setStatus('Loading manifest...');
+        try {
+            manifest = await getManifest(currentAlbum);
+            markClean();
+            renderGrid();
+            setStatus(`${manifest.images.length} image(s) in "${currentAlbum}"`);
+        } catch (e) {
+            setStatus('Error: ' + e.message);
+        }
+    }
+
+    function promptNewAlbum() {
+        const name = prompt('New album name (lowercase, no spaces):');
+        if (!name) return;
+        const slug = name.toLowerCase().replace(/[^a-z0-9-]/g, '');
+        if (!slug) return;
+        if (albums.includes(slug)) { alert('Album already exists.'); return; }
+        albums.push(slug);
+        switchAlbum(slug);
+    }
+
+    // =========================================================================
+    // Publish
+    // =========================================================================
+
+    async function publish() {
+        if (!isDirty()) return;
+        setStatus('Publishing...');
+
+        try {
+            for (const image of pendingDeletes) {
+                setStatus(`Deleting ${image.key}...`);
+                await r2Request('DELETE', image.full);
+                await r2Request('DELETE', image.thumb);
+            }
+
+            setStatus('Saving manifest...');
+            await putManifest(currentAlbum, manifest);
+            markClean();
+            setStatus(`Published! ${manifest.images.length} image(s) in "${currentAlbum}"`);
+
+            // Refresh album list in case a new album was created
+            try {
+                const res = await fetch('/api/albums');
+                if (res.ok) {
+                    const discovered = await res.json();
+                    if (discovered.length) albums = discovered;
+                    if (!albums.includes(currentAlbum)) albums.push(currentAlbum);
+                    renderAlbumSwitch();
+                }
+            } catch {}
+        } catch (e) {
+            setStatus('Publish error: ' + e.message);
+        }
+    }
+
+    // =========================================================================
+    // Image grid (event delegation)
+    // =========================================================================
+
+    function renderGrid() {
+        const grid = document.getElementById('image-grid');
+        grid.innerHTML = '';
+
+        manifest.images.forEach((image, idx) => {
+            const tile = document.createElement('div');
+            tile.className = 'image-tile';
+            tile.draggable = true;
+            tile.dataset.idx = idx;
+
+            tile.innerHTML = `
+                <img src="/r2/${image.thumb}" alt="${image.title || ''}" loading="lazy"
+                    onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'broken-placeholder',innerHTML:'<i class=\\'ph-bold ph-image-broken\\'></i>'}))">
+                <button class="tile-delete" data-idx="${idx}" title="Delete">
+                    <i class="ph-bold ph-trash"></i>
+                </button>
+                <div class="tile-overlay">
+                    <input class="tile-title" type="text" value="${(image.title || '').replace(/"/g, '&quot;')}"
+                        placeholder="Title" data-idx="${idx}">
+                </div>
+            `;
+            grid.appendChild(tile);
+        });
+    }
+
+    // Single delegated listener for all grid interactions
+    (function setupGridEvents() {
+        const grid = document.getElementById('image-grid');
+
+        grid.addEventListener('change', (e) => {
+            if (!e.target.classList.contains('tile-title')) return;
+            const i = parseInt(e.target.dataset.idx);
+            manifest.images[i].title = e.target.value;
+            updatePublishButton();
+            setStatus('Unsaved changes');
+        });
+
+        grid.addEventListener('click', (e) => {
+            const btn = e.target.closest('.tile-delete');
+            if (!btn) return;
+            const i = parseInt(btn.dataset.idx);
+            if (!confirm(`Delete "${manifest.images[i].key}"?`)) return;
+            pendingDeletes.push(manifest.images[i]);
+            manifest.images.splice(i, 1);
+            renderGrid();
+            updatePublishButton();
+            setStatus('Unsaved changes — publish to finalize deletions');
+        });
+
+        grid.addEventListener('dragstart', (e) => {
+            const tile = e.target.closest('.image-tile');
+            if (!tile) return;
+            dragSrcIndex = parseInt(tile.dataset.idx);
+            tile.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        });
+
+        grid.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        });
+
+        grid.addEventListener('dragenter', (e) => {
+            const tile = e.target.closest('.image-tile');
+            if (tile) tile.classList.add('drag-over');
+        });
+
+        grid.addEventListener('dragleave', (e) => {
+            const tile = e.target.closest('.image-tile');
+            if (tile) tile.classList.remove('drag-over');
+        });
+
+        grid.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const tile = e.target.closest('.image-tile');
+            if (!tile) return;
+            tile.classList.remove('drag-over');
+            const targetIdx = parseInt(tile.dataset.idx);
+            if (dragSrcIndex === null || dragSrcIndex === targetIdx) return;
+
+            const [moved] = manifest.images.splice(dragSrcIndex, 1);
+            manifest.images.splice(targetIdx, 0, moved);
+            renderGrid();
+            updatePublishButton();
+            setStatus('Unsaved changes');
+        });
+
+        grid.addEventListener('dragend', () => {
+            document.querySelectorAll('.dragging, .drag-over').forEach(el => {
+                el.classList.remove('dragging', 'drag-over');
+            });
+            dragSrcIndex = null;
+        });
+    })();
+
+    // =========================================================================
+    // Upload
+    // =========================================================================
+
+    (function setupUpload() {
+        const zone = document.getElementById('upload-zone');
+        const fileInput = document.getElementById('file-input');
+
+        zone.addEventListener('click', () => fileInput.click());
+        zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('dragover'); });
+        zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+        zone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            zone.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+        fileInput.addEventListener('change', (e) => { handleFiles(e.target.files); e.target.value = ''; });
+    })();
+
+    async function handleFiles(fileList) {
+        const files = [...fileList].filter(f => f.type.startsWith('image/'));
+        if (!files.length) return;
+
+        let uploaded = 0;
+        let errors = 0;
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            setStatus(`Uploading ${i + 1}/${files.length}...`);
+
+            const key = slugify(file.name);
+            let finalKey = key;
+            if (manifest.images.some(img => img.key === finalKey)) {
+                finalKey = key.replace('.jpg', `-${Date.now().toString(36)}.jpg`);
+            }
+
+            try {
+                const resized = await resizeImage(file, 2000);
+                await putImage(currentAlbum, 'full', finalKey, resized.blob, 'image/jpeg');
+
+                try {
+                    const thumb = await resizeImage(file, 400);
+                    await putImage(currentAlbum, 'thumbs', finalKey, thumb.blob, 'image/jpeg');
+                } catch (e) {
+                    console.error('Thumb upload failed:', e);
+                }
+
+                manifest.images.push({
+                    key: finalKey,
+                    thumb: `${currentAlbum}/thumbs/${finalKey}`,
+                    full: `${currentAlbum}/full/${finalKey}`,
+                    title: '',
+                    width: resized.width,
+                    height: resized.height,
+                });
+                uploaded++;
+            } catch (err) {
+                errors++;
+                console.error('Upload error:', err);
+            }
+        }
+
+        if (uploaded > 0) {
+            setStatus('Updating manifest...');
+            try {
+                await putManifest(currentAlbum, manifest);
+                markClean();
+                renderGrid();
+                const msg = `Uploaded ${uploaded} photo(s): ${manifest.images.length} images in "${currentAlbum}"`;
+                setStatus(errors ? msg + ` (${errors} failed)` : msg);
+
+                // Refresh album list in case a new album was created
+                try {
+                    const res = await fetch('/api/albums');
+                    if (res.ok) {
+                        const discovered = await res.json();
+                        if (discovered.length) albums = discovered;
+                        if (!albums.includes(currentAlbum)) albums.push(currentAlbum);
+                        renderAlbumSwitch();
+                    }
+                } catch {}
+            } catch (e) {
+                renderGrid();
+                updatePublishButton();
+                setStatus('Upload done but manifest save failed: ' + e.message);
+            }
+        } else {
+            setStatus(`Upload failed for all ${files.length} file(s)`);
+        }
+    }
+
+    // =========================================================================
+    // Init
+    // =========================================================================
+
+    function setStatus(msg) {
+        document.getElementById('status-bar').textContent = msg;
+    }
+
+    (async function init() {
+        try {
+            const res = await fetch('/api/albums');
+            if (res.ok) {
+                const discovered = await res.json();
+                albums = discovered.length ? discovered : CONFIG.albums;
+            } else {
+                albums = CONFIG.albums;
+            }
+        } catch {
+            albums = CONFIG.albums;
+        }
+        if (!currentAlbum || !albums.includes(currentAlbum)) currentAlbum = albums[0] || 'photos';
+        renderAlbumSwitch();
+        await refreshAlbum();
+    })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+name: Build Gallery Admin
+
+on:
+  push:
+    branches: [master]
+    paths: [admin/**]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: admin
+          push: true
+          tags: |
+            ghcr.io/mnk400/gallery-admin:latest
+            ghcr.io/mnk400/gallery-admin:${{ github.sha }}

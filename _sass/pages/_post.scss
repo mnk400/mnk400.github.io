@@ -149,3 +149,147 @@
     margin-top: 0.2em;
     margin-bottom: -0.3em;
 }
+
+// =============================================================================
+// LAST.FM CHARTS
+// =============================================================================
+
+.lastfm-charts {
+    // Chart wrapper
+    .chart-container {
+        position: relative;
+        width: 100%;
+        margin: var(--spacing-xl) 0;
+    }
+
+    canvas {
+        width: 100% !important;
+        height: auto !important;
+        display: block;
+    }
+
+    // Legend
+    .chart-legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--spacing-xs) var(--spacing-md);
+        margin-top: var(--spacing-md);
+        font-size: 0.75em;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        cursor: pointer;
+        opacity: 0.7;
+        transition: opacity var(--transition-fast);
+
+        &:hover,
+        &.active {
+            opacity: 1;
+        }
+
+        &.dimmed {
+            opacity: 0.25;
+        }
+    }
+
+    .legend-swatch {
+        width: 10px;
+        height: 10px;
+        border-radius: 2px;
+        flex-shrink: 0;
+    }
+
+    // Resolution toggle
+    .chart-controls {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-sm);
+    }
+
+    // Day-in-music time blocks
+    .time-blocks {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-lg);
+        margin: var(--spacing-xl) 0;
+    }
+
+    .time-block {
+        padding: var(--spacing-lg);
+        background: var(--translucent-low);
+        border-radius: var(--radius-lg);
+
+        &__header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        &__name {
+            font-weight: 500;
+            font-size: 1em;
+        }
+
+        &__hours {
+            font-size: 0.75em;
+            color: var(--sec-text-color);
+        }
+
+        &__artists {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-xs) var(--spacing-md);
+            font-size: 0.85em;
+            color: var(--sec-text-color);
+        }
+
+        &__artist {
+            white-space: nowrap;
+        }
+
+        &__count {
+            font-size: 0.8em;
+            opacity: 0.6;
+            margin-left: 2px;
+        }
+    }
+
+    // Hourly bar chart
+    .hourly-bars {
+        display: flex;
+        align-items: flex-end;
+        gap: 2px;
+        height: 80px;
+        margin: var(--spacing-xl) 0 var(--spacing-xs);
+    }
+
+    .hourly-bar {
+        flex: 1;
+        background: var(--page-accent);
+        border-radius: 2px 2px 0 0;
+        min-height: 2px;
+        opacity: 0.7;
+        transition: opacity var(--transition-fast);
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    .hourly-labels {
+        display: flex;
+        gap: 2px;
+        font-size: 0.6em;
+        color: var(--sec-text-color);
+    }
+
+    .hourly-label {
+        flex: 1;
+        text-align: center;
+    }
+}

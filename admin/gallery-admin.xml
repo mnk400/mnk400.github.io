@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>gallery-admin</Name>
+  <Repository>ghcr.io/mnk400/gallery-admin:latest</Repository>
+  <Registry>https://ghcr.io/mnk400/gallery-admin</Registry>
+  <Branch>
+    <Tag>latest</Tag>
+    <TagDescription>Latest stable release</TagDescription>
+  </Branch>
+  <Network>bridge</Network>
+  <Shell>sh</Shell>
+  <Privileged>false</Privileged>
+  <Overview>Admin panel for managing R2-hosted data. Upload, reorder, title, and delete images across albums.</Overview>
+  <Category>Tools: Productivity:</Category>
+  <WebUI>http://[IP]:[PORT:3333]/</WebUI>
+  <Icon>https://raw.githubusercontent.com/mnk400/mnk400.github.io/master/assets/images/favicon.png</Icon>
+  <ExtraParams/>
+  <Description>Gallery Admin — manage R2-hosted photo albums with drag-and-drop upload, reordering, and manifest publishing.</Description>
+  <Config Name="Web UI Port" Target="3333" Default="3333" Mode="tcp" Description="Port for the admin web UI" Type="Port" Display="always" Required="true">3333</Config>
+  <Config Name="R2 Account ID" Target="R2_ACCOUNT_ID" Default="" Description="Cloudflare account ID" Type="Variable" Display="always" Required="true"/>
+  <Config Name="R2 Bucket Name" Target="R2_BUCKET_NAME" Default="" Description="R2 bucket name" Type="Variable" Display="always" Required="true"/>
+  <Config Name="R2 Access Key ID" Target="R2_ACCESS_KEY_ID" Default="" Description="R2 API token access key" Type="Variable" Display="always" Required="true"/>
+  <Config Name="R2 Secret Access Key" Target="R2_SECRET_ACCESS_KEY" Default="" Description="R2 API token secret key" Type="Variable" Display="always" Required="true"/>
+  <Config Name="R2 Public URL" Target="R2_PUBLIC_URL" Default="" Description="Public URL for the R2 bucket (e.g. https://cdn.example.com)" Type="Variable" Display="always" Required="true"/>
+</Container>

@@ -5,3 +5,7 @@ _site
 Gemfile.lock
 _posts/_site
  _posts/.jekyll-cache
+admin/.env
+admin/node_modules
+.wranger
+admin/.wranger

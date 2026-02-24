@@ -3,6 +3,11 @@ title: Manik Kumar
 description: My Portfolio and Blog.
 url: https://manik.cc
 baseurl: ""
+r2_base_url: "https://media.manik.cc"
+
+# Exclude admin UI from Jekyll build (hosted separately on home server)
+exclude:
+  - admin/
 
 # Build settings
 markdown: kramdown
