@@ -443,9 +443,12 @@ Path: /assets/js/components/image-zoom.js
 Self-contained image lightbox. Add data-zoomable to any <img> and it works.
 
     <img src="photo.jpg" alt="Description" data-zoomable>
+    <img src="thumb.jpg" alt="Description" data-zoomable data-full-src="full.jpg">
 
 Features:
     - Smooth zoom animation from original position to viewport center
+    - Optional data-full-src attribute: if set, the zoomed image loads from
+      this URL instead of the thumbnail src (useful for thumbnail grids)
     - Respects natural image dimensions (won't upscale beyond original)
     - Keyboard ESC to close
     - Click backdrop to close

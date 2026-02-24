@@ -22,16 +22,17 @@ async function loadImages() {
         });
     } catch (error) {
         console.error('Error loading images from RPi:', error);
+        loading.style.display = 'none';
         errorMessage.style.display = 'block';
 
-        const BACKUP_ALBUM_HASH = '7JwJMMz';
-
-        if (typeof loadAlbum === 'function') {
-            console.log('Attempting to load backup Imgur album...');
-            loading.style.display = 'block'; // Show loading again for the backup load
-            loadAlbum(BACKUP_ALBUM_HASH, 'gallery', 'loading');
-        } else {
-            loading.style.display = 'none';
+        // Fall back to R2 archived samples
+        if (window.R2Gallery) {
+            R2Gallery.loadAlbum(
+                document.getElementById('r2-base-url')?.value || 'https://media.manik.cc',
+                'rpi-sample-art',
+                'gallery',
+                null
+            );
         }
     }
 }

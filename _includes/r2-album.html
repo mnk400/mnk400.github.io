@@ -1,0 +1,34 @@
+{% comment %}
+  R2 Gallery Album Component
+
+  Usage:
+  {% include r2-album.html album="photos" description="Optional description text" %}
+
+  Parameters:
+  - album: Required. The album folder name in R2 (e.g., "photos", "art").
+  - description: Optional. Text description to display above the album.
+  - loading_text: Optional. Text to display while loading images. Default: "Loading images..."
+{% endcomment %}
+
+<div class="r2-album">
+  {% if include.description %}
+  <p class="album-description">{{ include.description }}</p>
+  <br>
+  {% endif %}
+
+  <div id="loading-{{ include.album }}" class="music-loading">
+    <p>{{ include.loading_text | default: "Loading images..." }}</p>
+  </div>
+
+  <div class="album-container masonry-gallery" id="album-container-{{ include.album }}"></div>
+
+  <script src="{{ '/assets/js/media/r2-gallery.js' | relative_url }}"></script>
+  <script>
+    R2Gallery.loadAlbum(
+      '{{ site.r2_base_url }}',
+      '{{ include.album }}',
+      'album-container-{{ include.album }}',
+      'loading-{{ include.album }}'
+    );
+  </script>
+</div>

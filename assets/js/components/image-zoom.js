@@ -74,9 +74,9 @@
     // Create close button
     createCloseButton();
 
-    // Clone the image
+    // Clone the image — use full-res source if available
     clonedImage = document.createElement("img");
-    clonedImage.src = img.src;
+    clonedImage.src = img.dataset.fullSrc || img.src;
     clonedImage.alt = img.alt;
     clonedImage.className = "image-zoom-clone";
 
@@ -92,16 +92,16 @@
 
     document.body.appendChild(clonedImage);
 
-    // Wait for image to be fully decoded before animating
+    // Wait for full-res image to be fully decoded before animating
     try {
       await clonedImage.decode();
     } catch (e) {
       // decode() may fail for some images, continue anyway
     }
 
-    // Calculate target dimensions based on natural size
-    const naturalWidth = img.naturalWidth || originalRect.width;
-    const naturalHeight = img.naturalHeight || originalRect.height;
+    // Calculate target dimensions based on the full-res image's natural size
+    const naturalWidth = clonedImage.naturalWidth || img.naturalWidth || originalRect.width;
+    const naturalHeight = clonedImage.naturalHeight || img.naturalHeight || originalRect.height;
     const target = calculateZoomedDimensions(naturalWidth, naturalHeight);
 
     // Force reflow to ensure initial position is applied
