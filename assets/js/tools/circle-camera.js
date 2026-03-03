@@ -25,6 +25,15 @@ document.addEventListener('DOMContentLoaded', () => {
     let stream = null;
     let animationFrameId = null;
 
+    const tempCanvas = document.createElement('canvas');
+    const tempCtx = tempCanvas.getContext('2d');
+    let cachedFillStyle = getCSSVariable('--contrast-overlay-hover');
+
+    // Refresh cached CSS variable on theme change
+    new MutationObserver(function () {
+        cachedFillStyle = getCSSVariable('--contrast-overlay-hover');
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
     // Set initial canvas size
     function updateCanvasSize() {
         const containerWidth = canvas.parentElement.clientWidth;
@@ -84,8 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const cellWidth = canvas.width / resolution;
             const cellHeight = canvas.height / resolution;
             
-            const tempCanvas = document.createElement('canvas');
-            const tempCtx = tempCanvas.getContext('2d');
             tempCanvas.width = resolution;
             tempCanvas.height = Math.floor(resolution * (canvas.height / canvas.width));
             
@@ -97,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
             const pixels = imageData.data;
             
-            ctx.fillStyle = getCSSVariable('--contrast-overlay-hover');
+            ctx.fillStyle = cachedFillStyle;
             
             for (let y = 0; y < tempCanvas.height; y++) {
                 for (let x = 0; x < tempCanvas.width; x++) {

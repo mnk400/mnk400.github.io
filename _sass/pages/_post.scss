@@ -7,7 +7,6 @@
     padding-bottom: var(--spacing-2xl);
 
     &__back {
-        display: inline;
         text-align: left;
         display: block;
         margin-bottom: 25px;
@@ -97,8 +96,6 @@
             a {
                 line-height: 25px;
                 text-decoration: underline;
-                text-decoration-color: currentcolor;
-                text-decoration-thickness: auto;
                 text-decoration-color: var(--color-link-underline);
                 text-decoration-thickness: 0.125em;
                 text-underline-offset: 2.5px;
@@ -116,8 +113,7 @@
             overflow-x: scroll;
             background: var(--code-bg);
             font-size: 11pt;
-            font-family: "IBM Plex Mono", monospace;
-            font-weight: 200;
+            @include mono-font;
             color: var(--text-color);
             margin-bottom: var(--spacing-lg);
         }
@@ -127,12 +123,7 @@
             padding-right: var(--spacing-sm);
             border-right: 1px solid var(--color-code-border);
             margin-right: var(--spacing-md);
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            -khtml-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
+            @include no-select;
         }
 
         .codebreak {
@@ -174,6 +165,7 @@
         flex-wrap: wrap;
         gap: var(--spacing-xs) var(--spacing-md);
         margin-top: var(--spacing-md);
+        margin-bottom: var(--spacing-md);
         font-size: 0.75em;
     }
 
@@ -243,6 +235,7 @@
         &__artists {
             font-size: 0.85em;
             color: var(--sec-text-color);
+            line-height: 1.6;
         }
 
         &__sep {
@@ -283,4 +276,62 @@
         flex: 1;
         text-align: center;
     }
+
+    // Data range toggle
+    &.data-range {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        margin-top: var(--spacing-lg);
+    }
+
+    .data-range__label {
+        font-size: 0.8em;
+        color: var(--sec-text-color);
+    }
+
+    // Artist lifecycle sparklines
+    .lifecycle-list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        margin: var(--spacing-xl) 0;
+    }
+
+    .lifecycle-row {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+    }
+
+    .lifecycle-label {
+        flex: 0 0 140px;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .lifecycle-name {
+        font-size: 0.8em;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .lifecycle-plays {
+        font-size: 0.65em;
+        color: var(--sec-text-color);
+    }
+
+    .lifecycle-spark-wrap {
+        flex: 1;
+        height: 30px;
+        min-width: 0;
+
+        canvas {
+            height: 30px !important;
+        }
+    }
+
 }

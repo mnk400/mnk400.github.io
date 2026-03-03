@@ -465,36 +465,6 @@ Optional: Phosphor Icons for the close button icon.
 Auto-initializes — no setup needed beyond loading the script.
 
 
---- canvas-helpers.js ---
-Path: /assets/js/utils/canvas-helpers.js
-
-Pure utility functions for HTML5 Canvas operations. No DOM dependencies.
-
-    CanvasUtils.setupCanvas(canvas, options)
-        Initialize canvas with width, height, imageSmoothingEnabled.
-        Returns the 2D context.
-
-    CanvasUtils.clearCanvas(canvas, ctx)
-        Clear entire canvas.
-
-    CanvasUtils.fillCanvas(ctx, color, width, height)
-        Fill with solid color.
-
-    CanvasUtils.drawPixel(ctx, x, y, color, size)
-        Draw a single pixel/square.
-
-    CanvasUtils.getPixelData(ctx, x, y, width, height)
-        Get ImageData from region.
-
-    CanvasUtils.putPixelData(ctx, imageData, x, y)
-        Put ImageData onto canvas.
-
-    CanvasUtils.resizeCanvas(canvas, maxWidth, maxHeight)
-        Resize maintaining aspect ratio (CSS sizing).
-
-Available as ES module export or window.CanvasUtils global.
-
-
 --- ascii-utils.js ---
 Path: /assets/js/utils/ascii-utils.js
 

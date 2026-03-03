@@ -45,10 +45,9 @@ document.addEventListener('DOMContentLoaded', function() {
     let highScore = localStorage.getItem('flappyHighScore') || 0;
     highScoreElement.textContent = `High Score: ${highScore}`;
 
-    // Fixed frame rate - force 60 FPS regardless of display refresh rate
-    const targetFPS = 60;
-    const frameInterval = 1000 / targetFPS; // ~16.67ms
-    let gameInterval = null;
+    const frameInterval = 1000 / 60; // ~16.67ms — fixed physics step
+    let gameInterval = null; // rAF handle
+    let lastTime = 0;
 
     // Bird properties
     const bird = {
@@ -80,33 +79,41 @@ document.addEventListener('DOMContentLoaded', function() {
         updateScore();
         gameOverScreen.style.display = 'none';
         startScreen.style.display = 'none';
-        
-        // Clear any existing interval
+
         if (gameInterval) {
-            clearInterval(gameInterval);
+            cancelAnimationFrame(gameInterval);
             gameInterval = null;
         }
+    }
+
+    function rafLoop(timestamp) {
+        if (!gameRunning) return;
+        if (timestamp - lastTime >= frameInterval) {
+            lastTime = timestamp;
+            gameLoop();
+        }
+        gameInterval = requestAnimationFrame(rafLoop);
     }
 
     function startGame() {
         resetGame();
         gameRunning = true;
         gameStarted = true;
+        lastTime = 0;
 
         disablePageScrolling();
-        
-        gameInterval = setInterval(gameLoop, frameInterval);
+
+        gameInterval = requestAnimationFrame(rafLoop);
     }
 
     function endGame() {
         gameRunning = false;
-        
-        // Stop the game loop
+
         if (gameInterval) {
-            clearInterval(gameInterval);
+            cancelAnimationFrame(gameInterval);
             gameInterval = null;
         }
-        
+
         enablePageScrolling();
         finalScoreElement.textContent = score;
         
@@ -276,21 +283,20 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('beforeunload', () => {
         enablePageScrolling();
         if (gameInterval) {
-            clearInterval(gameInterval);
+            cancelAnimationFrame(gameInterval);
         }
     });
-    
+
     document.addEventListener('visibilitychange', () => {
         if (document.hidden && gameRunning) {
             enablePageScrolling();
-            // Optionally pause the game when tab is not visible
             if (gameInterval) {
-                clearInterval(gameInterval);
+                cancelAnimationFrame(gameInterval);
                 gameInterval = null;
             }
         } else if (!document.hidden && gameRunning && !gameInterval) {
-            // Resume game when tab becomes visible again
-            gameInterval = setInterval(gameLoop, frameInterval);
+            lastTime = 0;
+            gameInterval = requestAnimationFrame(rafLoop);
         }
     });
     

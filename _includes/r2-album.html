@@ -12,15 +12,15 @@
 
 <div class="r2-album">
   {% if include.description %}
-  <p class="album-description">{{ include.description }}</p>
+  <p>{{ include.description }}</p>
   <br>
   {% endif %}
 
-  <div id="loading-{{ include.album }}" class="music-loading">
+  <div id="loading-{{ include.album }}">
     <p>{{ include.loading_text | default: "Loading images..." }}</p>
   </div>
 
-  <div class="album-container masonry-gallery" id="album-container-{{ include.album }}"></div>
+  <div class="album-container" id="album-container-{{ include.album }}"></div>
 
   <script src="{{ '/assets/js/media/r2-gallery.js' | relative_url }}"></script>
   <script>

@@ -1,10 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Prevent text selection on the entire iPod interface
-  document.querySelector(".ipod-container").style.userSelect = "none";
-  document.querySelector(".ipod-container").style.webkitUserSelect = "none";
-  document.querySelector(".ipod-container").style.mozUserSelect = "none";
-  document.querySelector(".ipod-container").style.msUserSelect = "none";
-
   const nextButton = document.querySelector(".ipod-skip.next");
   const prevButton = document.querySelector(".ipod-skip.prev");
   const centerButton = document.querySelector(".ipod-center-button");

@@ -22,8 +22,6 @@ class GradientWallpaperGenerator {
         this.previewCanvas = document.createElement('canvas');
         this.previewCtx = this.previewCanvas.getContext('2d');
         
-        this.generatedImageData = null;
-        
         this.currentOrientation = 'landscape';
         this.currentDirection = '0';
         this.currentType = 'linear';
@@ -162,19 +160,17 @@ class GradientWallpaperGenerator {
 
     renderPreviewImage(dimensions) {
         const { width, height } = dimensions;
-        
+
         this.previewCanvas.width = width;
         this.previewCanvas.height = height;
-        
+
         this.renderGradientToCanvas(dimensions, this.previewCanvas, this.previewCtx, () => {
             const imageUrl = this.previewCanvas.toDataURL('image/png');
-            
+
             this.gradientPreview.style.background = 'none';
             this.gradientPreview.innerHTML = `
                 <img src="${imageUrl}" class="img-curved-edges tool-preview-img" alt="Gradient Preview">
             `;
-            
-            this.generateHighResolution();
         });
     }
 
@@ -200,14 +196,6 @@ class GradientWallpaperGenerator {
 
     rgbToHex(r, g, b) {
         return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
-    }
-
-    generateHighResolution() {
-        const dimensions = this.getDimensions();
-        
-        this.renderGradientToCanvas(dimensions, this.canvas, this.ctx, (dimensions) => {
-            this.finishGeneration(dimensions);
-        });
     }
 
     getDimensions() {
@@ -319,28 +307,24 @@ class GradientWallpaperGenerator {
         if (callback) callback(dimensions);
     }
 
-    finishGeneration(dimensions) {
-        this.canvas.toBlob((blob) => {
-            this.generatedImageData = blob;
-            this.downloadBtn.style.display = 'inline-block';
-        }, 'image/png', 1.0);
-    }
-
     downloadImage() {
-        if (!this.generatedImageData) return;
-        
-        const orientation = this.currentOrientation;
-        const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
-        const filename = `gradient-wallpaper-${orientation}-${timestamp}.png`;
-        
-        const url = URL.createObjectURL(this.generatedImageData);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        const dimensions = this.getDimensions();
+        this.renderGradientToCanvas(dimensions, this.canvas, this.ctx, () => {
+            this.canvas.toBlob((blob) => {
+                const orientation = this.currentOrientation;
+                const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+                const filename = `gradient-wallpaper-${orientation}-${timestamp}.png`;
+
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 'image/png', 1.0);
+        });
     }
 }
 

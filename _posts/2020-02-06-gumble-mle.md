@@ -4,6 +4,7 @@ title: "Maximum Likelihood Estimation of Gumbel Distribution"
 description: "Mathematical derivation and implementation of Maximum Likelihood Estimation for Gumbel distribution parameters using Newton-Raphson"
 date: 2020-02-06
 edit: 2020-05-14
+use_math: true
 ---
 
 <span class="note">This write up assumes basic knowledge of the estimation theory.</span>
