@@ -126,11 +126,18 @@ class GradientWallpaperGenerator {
         });
         
         this.currentDirection = options[0].split(':')[0];
-        
-        // Re-initialize the switch
-        initSwitch('direction-toggle', (value) => {
-            this.currentDirection = value;
-            this.updatePreview();
+
+        // Re-bind click handlers on the rebuilt spans (don't re-call initSwitch)
+        const allOptions = container.querySelectorAll('.switch-option');
+        allOptions.forEach(option => {
+            option.onclick = () => {
+                allOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                const value = option.dataset.value || option.id;
+                container.dispatchEvent(new CustomEvent('change', {
+                    detail: { value, element: option }
+                }));
+            };
         });
     }
 

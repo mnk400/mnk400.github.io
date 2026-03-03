@@ -241,21 +241,12 @@
         }
 
         &__artists {
-            display: flex;
-            flex-wrap: wrap;
-            gap: var(--spacing-xs) var(--spacing-md);
             font-size: 0.85em;
             color: var(--sec-text-color);
         }
 
-        &__artist {
-            white-space: nowrap;
-        }
-
-        &__count {
-            font-size: 0.8em;
-            opacity: 0.6;
-            margin-left: 2px;
+        &__sep {
+            opacity: 0.4;
         }
     }
 

@@ -70,6 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Track if a song is currently playing
   let isPlaying = false;
   let player = null;
+  let currentSong = null;
 
   function updateSelection(newIndex) {
     menuOptions.forEach((option) => option.classList.remove("selected"));
@@ -204,6 +205,22 @@ document.addEventListener("DOMContentLoaded", function () {
     isPlaying = true;
     updatePlayPauseIcon(true); // Set to pause icon when playing
     updateProgress();
+  }
+
+  // Function to advance to the next song automatically
+  function playNextSong() {
+    const currentSongIndex = allSongs.indexOf(currentSong);
+    const nextIndex = (currentSongIndex + 1) % allSongs.length;
+    const nextSongName = allSongs[nextIndex];
+
+    if (player) {
+      player.destroy();
+      player = null;
+      const oldPlayerEl = document.getElementById("youtube-player");
+      if (oldPlayerEl) oldPlayerEl.remove();
+    }
+
+    createNowPlayingScreen(nextSongName);
   }
 
   // Function to handle player state changes
