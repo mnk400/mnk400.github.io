@@ -85,17 +85,6 @@ function initGame() {
     gameActive = true;
 }
 
-// Debounce function to limit resize events
-function debounce(func, wait) {
-    let timeout;
-    return function() {
-        const context = this;
-        const args = arguments;
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(context, args), wait);
-    };
-}
-
 // Place mines after first click to ensure first click is safe
 function placeMines(safeRow, safeCol) {
     let minesPlaced = 0;

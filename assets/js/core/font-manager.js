@@ -25,7 +25,7 @@ function setFont(font) {
 function updateFontSwitch() {
   const buttons = document.querySelectorAll("#fontSwitch .switch-option");
   buttons.forEach((btn) => {
-    if (btn.dataset.font === currentFont) {
+    if (btn.dataset.value === currentFont) {
       btn.classList.add("active");
     } else {
       btn.classList.remove("active");

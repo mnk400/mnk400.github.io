@@ -54,7 +54,7 @@ function updateThemeColorMeta(theme) {
 function updateThemeSwitch() {
   const buttons = document.querySelectorAll("#themeSwitch .switch-option");
   buttons.forEach((btn) => {
-    if (btn.dataset.theme === currentTheme) {
+    if (btn.dataset.value === currentTheme) {
       btn.classList.add("active");
     } else {
       btn.classList.remove("active");

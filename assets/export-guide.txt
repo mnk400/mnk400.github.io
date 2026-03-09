@@ -465,6 +465,42 @@ Optional: Phosphor Icons for the close button icon.
 Auto-initializes — no setup needed beyond loading the script.
 
 
+--- canvas-utils.js ---
+Path: /assets/js/utils/canvas-utils.js
+
+Shared helpers for canvas-based components. Exposes a global CanvasUtils
+namespace.
+
+Globals exposed (all on window.CanvasUtils):
+    CanvasUtils.css(prop)              Read a CSS custom property (cached)
+    CanvasUtils.invalidateCssCache()   Clear the CSS variable cache
+    CanvasUtils.dpr()                  Return window.devicePixelRatio (or 1)
+    CanvasUtils.setupCanvas(canvas, w, h)
+        DPR-aware canvas setup. Sets physical size, CSS size, and scales
+        the 2D context. Returns the CanvasRenderingContext2D.
+    CanvasUtils.debounce(fn, wait)     Standard debounce (preserves context/args)
+    CanvasUtils.onThemeChange(callback)
+        MutationObserver wrapper that fires callback whenever the data-theme
+        attribute on <html> changes. Also invalidates the CSS cache
+        automatically before calling the callback.
+
+Load before any script that uses it:
+    <script src="/assets/js/utils/canvas-utils.js"></script>
+
+Typical usage in a canvas component:
+    var css = CanvasUtils.css;
+    var setupCanvas = CanvasUtils.setupCanvas;
+
+    function render() {
+        var ctx = setupCanvas(canvas, W, H);
+        ctx.fillStyle = css('--page-accent');
+        // ...
+    }
+
+    CanvasUtils.onThemeChange(render);
+    window.addEventListener('resize', CanvasUtils.debounce(render, 150));
+
+
 --- ascii-utils.js ---
 Path: /assets/js/utils/ascii-utils.js
 

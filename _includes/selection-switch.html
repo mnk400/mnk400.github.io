@@ -8,11 +8,12 @@
   Parameters:
   - id: Required. Unique identifier for this switch group.
   - class: Optional. Additional CSS classes to apply to the switch container.
+  - size: Optional. Set to "small" for compact switches (e.g., in settings panels).
   - options: Required. Array of options in format "value:label".
   - default_active: Optional. The value of the option that should be active by default.
 {% endcomment %}
 
-<div class="selection-switch {{ include.class }}" id="{{ include.id }}">
+<div class="selection-switch{% if include.size == 'small' %} selection-switch--small{% endif %} {{ include.class }}" id="{{ include.id }}">
   {% for option_raw in include.options %}
     {% assign option_parts = option_raw | split: ":" %}
     {% assign option_value = option_parts[0] %}

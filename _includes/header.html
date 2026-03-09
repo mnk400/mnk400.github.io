@@ -8,23 +8,18 @@
     <div class="settings-panel" id="settingsPanel">
         <div class="settings-panel-inner">
             <div class="settings-row">
-                <div class="selection-switch" id="themeSwitch">
-                    <button class="switch-option" data-theme="light" onclick="setTheme('light'); return false;">Light</button>
-                    <button class="switch-option" data-theme="dark" onclick="setTheme('dark'); return false;">Dark</button>
-                    <button class="switch-option" data-theme="blue" onclick="setTheme('blue'); return false;">Blue</button>
-                    <button class="switch-option" data-theme="red" onclick="setTheme('red'); return false;">Red</button>
-                    <button class="switch-option" data-theme="matcha" onclick="setTheme('matcha'); return false;">Matcha</button>
-                </div>
+                {% assign theme_options = "light:Light,dark:Dark,blue:Blue,red:Red,matcha:Matcha" | split: "," %}
+                {% include selection-switch.html id="themeSwitch" size="small" options=theme_options default_active="light" %}
             </div>
             <div class="settings-row">
-                <div class="selection-switch" id="fontSwitch">
-                    <button class="switch-option" data-font="default" onclick="setFont('default'); return false;">Default</button>
-                    <button class="switch-option" data-font="playfair-display" onclick="setFont('playfair-display'); return false;">Playfair</button>
-                    <button class="switch-option" data-font="inconsolata" onclick="setFont('inconsolata'); return false;">Inconsolata</button>
-                    <button class="switch-option" data-font="caveat" onclick="setFont('caveat'); return false;">Caveat</button>
-                </div>
+                {% assign font_options = "default:Default,playfair-display:Playfair,inconsolata:Inconsolata,caveat:Caveat" | split: "," %}
+                {% include selection-switch.html id="fontSwitch" size="small" options=font_options default_active="default" %}
             </div>
         </div>
+        <script>
+        initSwitch('themeSwitch', function(val) { setTheme(val); });
+        initSwitch('fontSwitch', function(val) { setFont(val); });
+        </script>
     </div>
 
     <div class="header-row">

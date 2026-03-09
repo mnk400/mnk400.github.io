@@ -66,12 +66,6 @@ header {
     .selection-switch {
         margin: 0;
         align-self: flex-start;
-        gap: var(--spacing-sm);
-
-        .switch-option {
-            font-size: 0.85em;
-            padding: var(--spacing-xs) var(--spacing-md);
-        }
     }
 }
 

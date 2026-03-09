@@ -13,11 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
         fullscreenBtn.style.display = 'none';
     }
 
-    // Function to get CSS variable value
-    function getCSSVariable(variableName) {
-        return getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
-    }
-
     let isFullscreen = false;
 
 
@@ -27,12 +22,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const tempCanvas = document.createElement('canvas');
     const tempCtx = tempCanvas.getContext('2d');
-    let cachedFillStyle = getCSSVariable('--contrast-overlay-hover');
+    let cachedFillStyle = CanvasUtils.css('--contrast-overlay-hover');
 
     // Refresh cached CSS variable on theme change
-    new MutationObserver(function () {
-        cachedFillStyle = getCSSVariable('--contrast-overlay-hover');
-    }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    CanvasUtils.onThemeChange(function () {
+        cachedFillStyle = CanvasUtils.css('--contrast-overlay-hover');
+    });
 
     // Set initial canvas size
     function updateCanvasSize() {
@@ -78,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
         video.srcObject = null;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        canvas.style.backgroundColor = getCSSVariable(`--translucent-medium`);
+        canvas.style.backgroundColor = CanvasUtils.css(`--translucent-medium`);
         
         startBtn.textContent = 'Start Camera';
     }

@@ -154,4 +154,13 @@ input[type="file"]::file-selector-button {
             outline: none;
         }
     }
+
+    &--small {
+        gap: var(--spacing-sm);
+
+        .switch-option {
+            font-size: 0.85em;
+            padding: var(--spacing-xs) var(--spacing-md);
+        }
+    }
 }

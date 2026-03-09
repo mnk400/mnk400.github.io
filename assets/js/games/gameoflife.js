@@ -31,37 +31,24 @@ document.addEventListener('DOMContentLoaded', function() {
     const frameRate = 7; 
     const frameInterval = 1000 / frameRate;
     
-    // Function to get CSS variable value
-    function getCSSVariable(variableName) {
-        return getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
-    }
-
     // Colors based on theme
     const colors = {
-        cell: getCSSVariable('--page-accent'),
-        cellStroke: getCSSVariable('--page-accent')
+        cell: CanvasUtils.css('--page-accent'),
+        cellStroke: CanvasUtils.css('--page-accent')
     };
-    
+
     // Function to update colors based on current theme
     function updateThemeColors() {
-        // Update cell colors based on theme
-        colors.cell = getCSSVariable('--page-accent');
-        colors.cellStroke = getCSSVariable('--page-accent');
+        colors.cell = CanvasUtils.css('--page-accent');
+        colors.cellStroke = CanvasUtils.css('--page-accent');
         if (typeof render === 'function') {
             render();
         }
     }
-    
+
     // Listen for theme changes
-    const observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-            if (mutation.attributeName === 'data-theme') {
-                updateThemeColors();
-            }
-        });
-    });
-    observer.observe(document.documentElement, { attributes: true });
-    
+    CanvasUtils.onThemeChange(updateThemeColors);
+
     updateThemeColors();
 
     function createEmptyGrid() {
