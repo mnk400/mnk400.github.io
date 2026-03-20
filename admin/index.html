@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html data-theme="light">
+<html data-theme="linen">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -68,7 +68,7 @@
         }
 
         .image-tile.dragging { opacity: 0.4; }
-        .image-tile.drag-over { outline: 2px solid var(--page-accent); }
+        .image-tile.drag-over { outline: 2px solid var(--contrast-overlay); }
 
         .image-tile img {
             width: 100%;
@@ -133,7 +133,7 @@
 
         @media (any-hover: hover) {
             .image-tile:hover .tile-delete { opacity: 1; }
-            .image-tile .tile-delete:hover { background: var(--page-accent); }
+            .image-tile .tile-delete:hover { background: var(--contrast-overlay-hover); }
         }
 
         .image-tile .broken-placeholder {

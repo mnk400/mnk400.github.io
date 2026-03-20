@@ -1,14 +1,15 @@
 // URL Params - Central registry for all URL parameter overrides
-// Loaded synchronously in <head> before CSS to prevent flash
+// Loaded synchronously in <head> after theme-config.js, before CSS to prevent flash
 //
 // To add a new param: add an entry to the `schema` object with valid values,
 // then read it anywhere via window.__urlOverrides.yourParam
 
 (function () {
+  var tc = window.__themeConfig;
   var params = new URLSearchParams(window.location.search);
 
   var schema = {
-    theme: ["light", "dark", "blue", "red", "matcha"],
+    theme: tc.names,
   };
 
   var overrides = {};
@@ -21,10 +22,8 @@
   }
 
   // Flash-critical: apply theme before CSS loads
-  // All themes valid for display (includes secret themes)
-  var allValidThemes = schema.theme;
   var theme = overrides.theme || localStorage.getItem("theme");
-  if (!theme || allValidThemes.indexOf(theme) === -1) theme = "light";
+  if (!theme || tc.names.indexOf(theme) === -1) theme = tc.default;
   document.documentElement.setAttribute("data-theme", theme);
 
   window.__urlOverrides = overrides;

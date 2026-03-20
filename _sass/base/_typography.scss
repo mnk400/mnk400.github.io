@@ -84,12 +84,18 @@ a {
 
     @media (any-hover: hover) {
         &:hover {
-            color: var(--page-accent);
+            text-decoration: underline;
+            text-decoration-color: var(--translucent-high);
+            text-underline-offset: 2px;
+            font-style: italic;
         }
     }
 
     &.touch-hover {
-        color: var(--page-accent);
+        text-decoration: underline;
+        text-decoration-color: var(--translucent-high);
+        text-underline-offset: 2px;
+        font-style: italic;
     }
 }
 

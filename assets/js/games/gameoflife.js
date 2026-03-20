@@ -33,14 +33,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Colors based on theme
     const colors = {
-        cell: CanvasUtils.css('--page-accent'),
-        cellStroke: CanvasUtils.css('--page-accent')
+        cell: CanvasUtils.css('--text-color'),
+        cellStroke: CanvasUtils.css('--text-color')
     };
 
     // Function to update colors based on current theme
     function updateThemeColors() {
-        colors.cell = CanvasUtils.css('--page-accent');
-        colors.cellStroke = CanvasUtils.css('--page-accent');
+        colors.cell = CanvasUtils.css('--text-color');
+        colors.cellStroke = CanvasUtils.css('--text-color');
         if (typeof render === 'function') {
             render();
         }

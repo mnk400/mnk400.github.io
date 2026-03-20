@@ -76,6 +76,6 @@
     }
 
     @include hover-interactive {
-        background-color: var(--page-accent);
+        background-color: var(--contrast-overlay-hover);
     }
 }

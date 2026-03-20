@@ -90,8 +90,7 @@ Each theme defines these CSS custom properties:
     --background-darker        Secondary/deeper background
     --text-color               Primary text color
     --sec-text-color           Secondary/muted text
-    --page-accent              Accent color (links on hover, highlights)
-    --contrast-overlay         High-contrast overlay (button backgrounds)
+    --contrast-overlay         High-contrast overlay (button backgrounds, interactive hover)
     --contrast-overlay-hover   Overlay hover state
     --translucent-low          Subtle backdrop (0.03–0.05 opacity)
     --translucent-medium       Medium backdrop (0.07 opacity)
@@ -101,10 +100,10 @@ Each theme defines these CSS custom properties:
 
 Theme values:
 
-    LIGHT   background: #f2f0ef  text: #3b3b3b  accent: #c6866d
-    DARK    background: #1a1a1a  text: #d0d0d0  accent: #b47d68
-    BLUE    background: #2d3d5a  text: #e8edf5  accent: #99aac9
-    RED     background: #2a1a1d  text: #f5e8ea  accent: #a88088
+    LIGHT   background: #f2f0ef  text: #3b3b3b
+    DARK    background: #1a1a1a  text: #d0d0d0
+    BLUE    background: #2d3d5a  text: #e8edf5
+    RED     background: #2a1a1d  text: #f5e8ea
 
 To add a theme toggle button:
 
@@ -172,7 +171,7 @@ Fonts:
     H3:    12pt, weight 700
     Body:  12pt, weight 300, line-height 1.25em
 
-Links transition color to --page-accent on hover.
+Links show a subtle underline on hover (text-decoration with --translucent-high color).
 Code gets --code-bg background with IBM Plex Mono at 11pt.
 
 
@@ -493,7 +492,7 @@ Typical usage in a canvas component:
 
     function render() {
         var ctx = setupCanvas(canvas, W, H);
-        ctx.fillStyle = css('--page-accent');
+        ctx.fillStyle = css('--text-color');
         // ...
     }
 
@@ -546,8 +545,7 @@ COLORS
     - Never hardcode colors. Always use CSS custom properties.
     - Primary text: var(--text-color)
     - Muted text: var(--sec-text-color)
-    - Accent/highlight: var(--page-accent)
-    - Buttons: var(--contrast-overlay) background with var(--background-main) text
+    - Buttons/interactive: var(--contrast-overlay) background with var(--background-main) text
 
 TRANSITIONS
     - Always animate state changes

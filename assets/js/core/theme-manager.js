@@ -1,6 +1,6 @@
-// Theme Manager - Handles light, blue, and dark modes
+// Theme Manager
 
-let currentTheme = "light";
+let currentTheme = window.__themeConfig.default;
 let isInitialLoad = true;
 
 function setTheme(theme, skipTransition = false) {
@@ -38,17 +38,9 @@ function updateThemeColorMeta(theme) {
     document.head.appendChild(metaThemeColor);
   }
 
-  if (theme === "dark") {
-    metaThemeColor.content = "#1a1a1a";
-  } else if (theme === "blue") {
-    metaThemeColor.content = "#2D3D5A";
-  } else if (theme === "red") {
-    metaThemeColor.content = "#2a1a1d";
-  } else if (theme === "matcha") {
-    metaThemeColor.content = "#2a2f2a";
-  } else {
-    metaThemeColor.content = "#f2f0ef";
-  }
+  const tc = window.__themeConfig;
+  const entry = tc.themes[theme] || tc.themes[tc.default];
+  metaThemeColor.content = entry.meta;
 }
 
 function updateThemeSwitch() {
@@ -63,15 +55,15 @@ function updateThemeSwitch() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+  const tc = window.__themeConfig;
   const overrides = window.__urlOverrides || {};
-  const validThemes = ["light", "blue", "dark", "red", "matcha"];
 
   let theme;
   if (overrides.theme) {
     theme = overrides.theme;
   } else {
-    const savedTheme = localStorage.getItem("theme") || "light";
-    theme = validThemes.includes(savedTheme) ? savedTheme : "light";
+    const savedTheme = localStorage.getItem("theme") || tc.default;
+    theme = tc.names.includes(savedTheme) ? savedTheme : tc.default;
   }
 
   setTheme(theme, true);

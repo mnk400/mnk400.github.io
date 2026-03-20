@@ -103,8 +103,8 @@
 
     .historical-browser-go-btn:hover,
     .historical-browser-year-selector:hover {
-        background-color: var(--page-accent);
-        color: var(--text-color);
+        background-color: var(--contrast-overlay);
+        color: var(--background-main);
     }
 
     .browser-controls {
@@ -119,7 +119,7 @@
         }
 
         &:not(.disabled):hover {
-            color: var(--page-accent);
+            color: var(--text-color);
             transition: color var(--transition-medium);
         }
     }

@@ -58,7 +58,7 @@ button,
         background-color: var(--translucent-medium);
         color: var(--text-color);
 
-        @include hover-state-dark;
+        @include hover-interactive;
     }
 
     &--outline {

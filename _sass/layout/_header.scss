@@ -99,6 +99,8 @@ header {
 
     &:hover {
         color: var(--text-color);
+        text-decoration: none;
+        font-style: normal;
     }
 }
 
@@ -125,7 +127,9 @@ header {
 
         &:hover {
             opacity: 1;
-            color: var(--page-accent);
+            text-decoration: underline;
+            text-decoration-color: var(--translucent-high);
+            text-underline-offset: 2px;
         }
     }
 }
@@ -163,7 +167,8 @@ header {
         transition: color var(--transition-medium);
 
         &:hover {
-            color: var(--page-accent);
+            text-decoration: none;
+            font-style: normal;
         }
     }
 }

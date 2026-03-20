@@ -409,7 +409,7 @@
       if (!listDiv) return;
       listDiv.innerHTML = "";
 
-      var accentColor = css("--page-accent");
+      var accentColor = css("--sec-text-color");
       var secColor = css("--sec-text-color");
       var textColor = css("--text-color");
 
@@ -501,7 +501,7 @@
 
       var secColor = css("--sec-text-color");
       var gridColor = css("--translucent-low");
-      var accentColor = css("--page-accent");
+      var accentColor = css("--sec-text-color");
 
       // Y-axis max (new artists)
       var yMax = 0;

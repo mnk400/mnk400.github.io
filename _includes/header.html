@@ -8,8 +8,8 @@
     <div class="settings-panel" id="settingsPanel">
         <div class="settings-panel-inner">
             <div class="settings-row">
-                {% assign theme_options = "light:Light,dark:Dark,blue:Blue,red:Red,matcha:Matcha" | split: "," %}
-                {% include selection-switch.html id="themeSwitch" size="small" options=theme_options default_active="light" %}
+                {% assign theme_options = "linen:Linen,charcoal:Charcoal,denim:Denim,ruby:Ruby,matcha:Matcha,butter:Butter" | split: "," %}
+                {% include selection-switch.html id="themeSwitch" size="small" options=theme_options default_active="linen" %}
             </div>
             <div class="settings-row">
                 {% assign font_options = "default:Default,playfair-display:Playfair,inconsolata:Inconsolata,caveat:Caveat" | split: "," %}
