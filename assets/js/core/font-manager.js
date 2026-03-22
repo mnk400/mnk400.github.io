@@ -3,14 +3,12 @@
 let currentFont = "default";
 
 const fontStacks = {
-  "default": '-apple-system, "SF Pro Display", "inter", sans-serif',
-  "playfair-display": '"Playfair Display", serif',
+  "default": '-apple-system, "SF Pro Display", "Inter", sans-serif',
+  "source-serif": '"Source Serif 4", serif',
   "inconsolata": '"Inconsolata", monospace',
-  "caveat": '"Caveat", cursive',
 };
 
 const fontScale = {
-  "caveat": "1.2",
 };
 
 function setFont(font) {
