@@ -61,6 +61,7 @@ ZZZzz /,`.-'`'    -.  ;-;;,_
 
         <script src="/assets/js/core/theme-config.js"></script>
         <script src="/assets/js/core/url-params.js"></script>
+        <script src="/assets/js/core/view-transitions.js"></script>
 
         <!-- Custom CSS for the website -->
         <link rel="stylesheet" type="text/css" href="/assets/css/main.css" />
@@ -136,6 +137,9 @@ ZZZzz /,`.-'`'    -.  ;-;;,_
     </head>
 
     <body>
-        <div class="wrapper">{% include header.html %} {{ content }}</div>
+        <div class="wrapper">
+            {% include header.html %}
+            <main class="page-content">{{ content }}</main>
+        </div>
     </body>
 </html>

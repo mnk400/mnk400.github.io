@@ -109,13 +109,13 @@ header {
     align-items: baseline;
     gap: var(--spacing-sm);
     overflow: hidden;
-    max-height: 0;
-    opacity: 0;
+    max-height: 2em;
+    opacity: 1;
     transition:
         max-height 0.3s ease,
         opacity 0.2s ease,
         padding-top 0.3s ease;
-    padding-top: 0;
+    padding-top: var(--spacing-xs);
 
     > a {
         text-decoration: none;
@@ -146,13 +146,6 @@ header {
     padding-top: var(--spacing-xs);
 }
 
-@media screen and (max-width: $breakpoint-mobile) {
-    .site-name-menu {
-        max-height: 2em;
-        opacity: 1;
-        padding-top: var(--spacing-xs);
-    }
-}
 
 // Subpages: breadcrumb nav
 .header-breadcrumb {
