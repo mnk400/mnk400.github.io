@@ -32,6 +32,19 @@
 // Utilities
 @import "utilities/helpers";
 
+// Sunny mode overlay canvas
+#sunny-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 1;
+    mix-blend-mode: multiply;
+    display: none;
+}
+
 // Legacy imports (to be removed after migration)
 @import url(bw.css);
 

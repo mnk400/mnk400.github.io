@@ -78,11 +78,11 @@ The single stylesheet at /style/export.css bundles these modules:
 3. THEME SYSTEM
 ================================================================================
 
-Four themes: light, dark, blue, red.
+Six themes: linen, charcoal, denim, ruby, matcha, butter, sunny.
 
 Set via the data-theme attribute on <html>:
 
-    <html data-theme="dark">
+    <html data-theme="charcoal">
 
 Each theme defines these CSS custom properties:
 
@@ -100,10 +100,13 @@ Each theme defines these CSS custom properties:
 
 Theme values:
 
-    LIGHT   background: #f2f0ef  text: #3b3b3b
-    DARK    background: #1a1a1a  text: #d0d0d0
-    BLUE    background: #2d3d5a  text: #e8edf5
-    RED     background: #2a1a1d  text: #f5e8ea
+    LINEN    background: #f2f0ef  text: #3b3b3b
+    CHARCOAL background: #1a1a1a  text: #d0d0d0
+    DENIM    background: #2d3d5a  text: #e8edf5
+    RUBY     background: #2a1a1d  text: #f5e8ea
+    MATCHA   background: #2a2f2a  text: #f2faed
+    BUTTER   background: #F1D799  text: #4a4235
+    SUNNY    background: #F1D799  text: #4a4235  (+ animated dappled-light overlay)
 
 To add a theme toggle button:
 

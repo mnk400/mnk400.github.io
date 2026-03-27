@@ -21,6 +21,8 @@ body {
     max-width: $max-content-width;
     margin: auto;
     padding: var(--spacing-3xl) var(--spacing-2xl);
+    position: relative;
+    z-index: 2;
 
     @media screen and (max-width: $breakpoint-mobile) {
         padding: var(--spacing-2xl) var(--spacing-xl);
