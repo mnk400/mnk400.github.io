@@ -47,7 +47,8 @@ Minimal HTML boilerplate to get the full design system:
             <!-- Your content here -->
         </div>
 
-        <!-- Core JS (order matters) -->
+        <!-- Core JS (order matters — theme-config must load before theme-manager) -->
+        <script src="https://manik.cc/assets/js/core/theme-config.js"></script>
         <script src="https://manik.cc/assets/js/core/theme-manager.js"></script>
         <script src="https://manik.cc/assets/js/core/ui-components.js"></script>
         <script src="https://manik.cc/assets/js/components/image-zoom.js"></script>
@@ -78,11 +79,11 @@ The single stylesheet at /style/export.css bundles these modules:
 3. THEME SYSTEM
 ================================================================================
 
-Four themes: light, dark, blue, red.
+Six themes: linen, charcoal, denim, ruby, matcha, butter.
 
 Set via the data-theme attribute on <html>:
 
-    <html data-theme="dark">
+    <html data-theme="charcoal">
 
 Each theme defines these CSS custom properties:
 
@@ -100,10 +101,12 @@ Each theme defines these CSS custom properties:
 
 Theme values:
 
-    LIGHT   background: #f2f0ef  text: #3b3b3b
-    DARK    background: #1a1a1a  text: #d0d0d0
-    BLUE    background: #2d3d5a  text: #e8edf5
-    RED     background: #2a1a1d  text: #f5e8ea
+    LINEN     background: #f2f0ef  text: #3b3b3b
+    CHARCOAL  background: #1a1a1a  text: #d0d0d0
+    DENIM     background: #2d3d5a  text: #e8edf5
+    RUBY      background: #2a1a1d  text: #f5e8ea
+    MATCHA    background: #2a2f2a  text: #f2faed
+    BUTTER    background: #F1D799  text: #4a4235
 
 To add a theme toggle button:
 
@@ -381,24 +384,34 @@ All scripts are vanilla JS with no dependencies. Load via <script> tags.
 Base URL: https://manik.cc/assets/js/
 
 
+--- theme-config.js ---
+Path: /assets/js/core/theme-config.js
+
+Single source of truth for theme names and metadata. Must load before
+theme-manager.js and url-params.js.
+
+Exposes window.__themeConfig with:
+    .default          Default theme name ("linen")
+    .themes           Object mapping theme name -> { meta: "#hex" }
+    .names            Array of all valid theme names (computed getter)
+
+To add a new theme: add one entry to the themes object here, plus the
+CSS custom properties in _variables.scss and the switch option in header.html.
+
+
 --- theme-manager.js ---
 Path: /assets/js/core/theme-manager.js
 
-Manages the 4-theme system with localStorage persistence.
+Manages the theme system with localStorage persistence. Reads theme
+registry from window.__themeConfig (theme-config.js must load first).
 
 Globals exposed:
-    setTheme(theme, skipTransition)   Set theme ("light"|"dark"|"blue"|"red")
-    toggleTheme()                     Cycle to next theme
+    setTheme(theme, skipTransition)   Set theme by name
     updateThemeColorMeta(theme)       Update <meta name="theme-color">
-    updateThemeIcons()                Swap .theme-icon Phosphor class
 
 Auto-initializes on DOMContentLoaded, reads localStorage("theme").
 
-Required HTML: <html data-theme="light">
-Optional HTML: <i class="ph-bold ph-moon theme-icon"></i> (for icon cycling)
-
-The theme toggle button cycles: light -> dark -> blue -> red -> light.
-Icon mapping: light=ph-moon, dark=ph-drop, blue=ph-heart, red=ph-sun.
+Required HTML: <html data-theme="linen">
 
 Theme transition: Temporarily adds .theme-transition class to <html> and <body>
 for 500ms to animate the background-color change.
