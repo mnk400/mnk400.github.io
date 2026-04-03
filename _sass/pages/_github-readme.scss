@@ -1,0 +1,55 @@
+// =============================================================================
+// GITHUB README PAGE STYLES
+// =============================================================================
+
+.github-readme {
+    &__header {
+        margin-bottom: var(--spacing-xl);
+        padding-bottom: var(--spacing-xl);
+        border-bottom: 1px solid var(--translucent-medium);
+    }
+
+    &__description {
+        color: var(--sec-text-color);
+        font-size: 0.95em;
+        margin-bottom: var(--spacing-lg);
+    }
+
+    &__github-link {
+        width: 100%;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+        padding: var(--spacing-md) var(--spacing-lg);
+        border: none;
+        text-align: left;
+        color: var(--text-color);
+        text-decoration: none;
+        @include translucent-surface;
+        transition:
+            background-color var(--transition-medium),
+            color var(--transition-medium);
+
+        @include hover-state-dark;
+
+        &:hover, &.touch-hover {
+            text-decoration: none;
+            font-style: normal;
+        }
+    }
+
+    &__loading {
+        color: var(--sec-text-color);
+        font-style: italic;
+    }
+
+    // Only styles not already covered by .post__content
+    &__content {
+        // Hide the repo's own H1 title since we show it in the header
+        > h1:first-child,
+        > h2:first-child {
+            display: none;
+        }
+    }
+}
