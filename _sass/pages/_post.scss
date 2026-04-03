@@ -102,20 +102,24 @@
             }
         }
 
-        // Syntax-highlighted code blocks
-        .highlight {
-            max-width: 650px;
-            margin-left: -20%;
-            transform: translateX(10%);
-            padding: 40px;
+        // Code blocks (syntax-highlighted and plain)
+        .highlight pre {
+            padding: 0;
+            margin-bottom: 0;
+        }
+
+        .highlight,
+        pre {
+            background: var(--code-bg);
+            padding: var(--spacing-lg);
             line-height: 16pt;
             font-weight: 200;
-            overflow-x: scroll;
-            background: var(--code-bg);
+            overflow-x: auto;
+            border-radius: var(--radius-md);
+            margin-bottom: var(--spacing-lg);
             font-size: 11pt;
             @include mono-font;
             color: var(--text-color);
-            margin-bottom: var(--spacing-lg);
         }
 
         .lineno {
