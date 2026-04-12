@@ -18,19 +18,12 @@
         padding: 1px 0;
         list-style: none;
         line-height: 1.3em;
-        display: flex;
-        align-items: baseline;
-    }
-
-    li a {
-        min-width: 0;
     }
 
     .date {
         color: var(--sec-text-color);
         font-size: 0.7em;
         white-space: nowrap;
-        flex-shrink: 0;
         opacity: 80%;
         margin-left: var(--spacing-xs);
     }

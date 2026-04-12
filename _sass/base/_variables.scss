@@ -87,6 +87,20 @@
     --note-bg: #dce5c8;
 }
 
+:root[data-theme="espresso"] {
+    --background-main: #352315;
+    --background-darker: #2a1b10;
+    --text-color: #f0e0d0;
+    --sec-text-color: #d4c0ac;
+    --contrast-overlay: rgba(255, 255, 255, 0.7);
+    --contrast-overlay-hover: rgba(255, 255, 255, 0.5);
+    --translucent-low: rgb(255, 255, 255, 0.03);
+    --translucent-medium: rgb(255, 255, 255, 0.07);
+    --translucent-high: rgb(255, 255, 255, 0.2);
+    --code-bg: #2a1b10;
+    --note-bg: #4a3525;
+}
+
 // Spacing Scale
 :root {
     --spacing-xs: 5px;

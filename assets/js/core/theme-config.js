@@ -10,6 +10,7 @@ window.__themeConfig = {
     ruby:     { meta: "#2a1a1d" },
     matcha:   { meta: "#2a2f2a" },
     butter:   { meta: "#F1D799" },
+    espresso: { meta: "#352315" },
   },
   get names() { return Object.keys(this.themes); },
 };
