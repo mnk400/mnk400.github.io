@@ -85,12 +85,14 @@
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             display: flex;
-            align-items: center;
-            gap: var(--spacing-xs);
+            flex-direction: column;
+            align-items: stretch;
+            gap: 2px;
         }
 
-        .image-tile .tile-title {
-            flex: 1;
+        .image-tile .tile-title,
+        .image-tile .tile-field {
+            width: 100%;
             min-width: 0;
             background: none;
             border: none;
@@ -102,8 +104,13 @@
             outline: none;
         }
 
-        .image-tile .tile-title:focus {
+        .image-tile .tile-title:focus,
+        .image-tile .tile-field:focus {
             border-bottom: 1px solid var(--sec-text-color);
+        }
+
+        .image-tile .tile-field option {
+            color: #000;
         }
 
         .image-tile .tile-delete {
@@ -201,6 +208,9 @@
             <button class="btn" onclick="promptNewAlbum()">
                 <i class="ph-bold ph-plus"></i> New Album
             </button>
+            <button class="btn" onclick="promptManageFields()">
+                <i class="ph-bold ph-sliders"></i> Manage Fields
+            </button>
         </div>
 
         <!-- Upload zone -->
@@ -229,7 +239,7 @@
 
     let albums = [];
     let currentAlbum = localStorage.getItem('r2-admin-album') || '';
-    let manifest = { title: '', images: [] };
+    let manifest = { title: '', fields: [], images: [] };
     let savedManifestJson = '';
     let dragSrcIndex = null;
     let pendingDeletes = [];
@@ -248,10 +258,12 @@
     async function getManifest(album) {
         const res = await r2Request('GET', `${album}/manifest.json`);
         if (!res.ok) {
-            if (res.status === 404) return { title: album.charAt(0).toUpperCase() + album.slice(1), images: [] };
+            if (res.status === 404) return { title: album.charAt(0).toUpperCase() + album.slice(1), fields: [], images: [] };
             throw new Error(`Failed to fetch manifest: ${res.status}`);
         }
-        return res.json();
+        const data = await res.json();
+        if (!Array.isArray(data.fields)) data.fields = [];
+        return data;
     }
 
     async function putManifest(album, data) {
@@ -359,6 +371,41 @@
         switchAlbum(slug);
     }
 
+    function promptManageFields() {
+        // Format: "Camera: Canon AE-1, Pentax; Film: Portra, HP5; Location"
+        const current = manifest.fields.map(f =>
+            f.values && f.values.length ? `${f.name}: ${f.values.join(', ')}` : f.name
+        ).join('; ');
+        const input = prompt(
+            'Fields for this album (semicolon-separated).\n' +
+            'Add preset values after colon: "Camera: Canon, Pentax"\n' +
+            'Omit colon for free-text: "Location"\n' +
+            'Example: Camera: Canon AE-1, Pentax; Film: Portra, HP5; Location',
+            current
+        );
+        if (input === null) return;
+        manifest.fields = input.split(';').map(seg => {
+            seg = seg.trim();
+            if (!seg) return null;
+            const colonIdx = seg.indexOf(':');
+            if (colonIdx === -1) return { name: seg, values: [] };
+            const name = seg.substring(0, colonIdx).trim();
+            const values = seg.substring(colonIdx + 1).split(',').map(s => s.trim()).filter(Boolean);
+            return name ? { name, values } : null;
+        }).filter(Boolean);
+        // Clear per-image meta values for removed fields
+        const fieldNames = new Set(manifest.fields.map(f => f.name));
+        manifest.images.forEach(img => {
+            if (!img.meta) return;
+            Object.keys(img.meta).forEach(key => {
+                if (!fieldNames.has(key)) delete img.meta[key];
+            });
+        });
+        renderGrid();
+        updatePublishButton();
+        setStatus('Fields updated — publish to save');
+    }
+
     // =========================================================================
     // Publish
     // =========================================================================
@@ -402,6 +449,22 @@
         const grid = document.getElementById('image-grid');
         grid.innerHTML = '';
 
+        const escape = (s) => s.replace(/"/g, '&quot;');
+        const fields = manifest.fields || [];
+
+        // Build select/input HTML for each field definition
+        const fieldHtml = (image, idx) => fields.map(f => {
+            const val = (image.meta && image.meta[f.name]) || '';
+            if (f.values && f.values.length) {
+                const blank = `<option value=""${val ? '' : ' selected'}>— ${escape(f.name)} —</option>`;
+                const opts = f.values.map(v =>
+                    `<option value="${escape(v)}"${v === val ? ' selected' : ''}>${escape(v)}</option>`
+                ).join('');
+                return `<select class="tile-field" data-idx="${idx}" data-field="${escape(f.name)}">${blank}${opts}</select>`;
+            }
+            return `<input class="tile-field" type="text" value="${escape(val)}" placeholder="${escape(f.name)}" data-idx="${idx}" data-field="${escape(f.name)}">`;
+        }).join('');
+
         manifest.images.forEach((image, idx) => {
             const tile = document.createElement('div');
             tile.className = 'image-tile';
@@ -417,6 +480,7 @@
                 <div class="tile-overlay">
                     <input class="tile-title" type="text" value="${(image.title || '').replace(/"/g, '&quot;')}"
                         placeholder="Title" data-idx="${idx}">
+                    ${fieldHtml(image, idx)}
                 </div>
             `;
             grid.appendChild(tile);
@@ -428,9 +492,15 @@
         const grid = document.getElementById('image-grid');
 
         grid.addEventListener('change', (e) => {
-            if (!e.target.classList.contains('tile-title')) return;
             const i = parseInt(e.target.dataset.idx);
-            manifest.images[i].title = e.target.value;
+            if (e.target.classList.contains('tile-title')) {
+                manifest.images[i].title = e.target.value;
+            } else if (e.target.classList.contains('tile-field')) {
+                if (!manifest.images[i].meta) manifest.images[i].meta = {};
+                manifest.images[i].meta[e.target.dataset.field] = e.target.value;
+            } else {
+                return;
+            }
             updatePublishButton();
             setStatus('Unsaved changes');
         });
@@ -545,6 +615,7 @@
                     thumb: `${currentAlbum}/thumbs/${finalKey}`,
                     full: `${currentAlbum}/full/${finalKey}`,
                     title: '',
+                    meta: {},
                     width: resized.width,
                     height: resized.height,
                 });

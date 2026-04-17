@@ -70,7 +70,7 @@ The single stylesheet at /style/export.css bundles these modules:
     components/cards     Cards, image cards, color info cards
     components/grids     Grid system (2–5 col, auto-fit, masonry, gap variants)
     components/forms     Text inputs, range sliders, color pickers, controls
-    components/image-zoom  Zoom overlay, backdrop, close button
+    components/image-zoom  Zoom overlay, backdrop, close, prev/next, meta
     layout/wrapper       Page wrapper, fullscreen, expandable content
     utilities/helpers    Flex, text, spacing, visibility, cursor, radius, transition
 
@@ -224,12 +224,15 @@ Variants:
     .card--interactive     Adds pointer cursor
     .card--no-padding      Removes padding
 
-Image card (for photo layouts):
+Image card (for photo layouts). Wrap the img in .image-ratio-box with an
+inline padding-bottom set to (height / width * 100)% so the layout reserves
+space before the image decodes — prevents masonry reflow on load:
     <div class="image-card">
-        <div class="image-wrapper">
+        <div class="image-ratio-box" style="padding-bottom: 66.67%;">
             <img src="photo.jpg" alt="Description">
         </div>
     </div>
+Add the .loaded class to .image-card once the image decodes to fade it in.
 
 Color info card:
     <div class="color-info">
@@ -457,14 +460,33 @@ Self-contained image lightbox. Add data-zoomable to any <img> and it works.
     <img src="photo.jpg" alt="Description" data-zoomable>
     <img src="thumb.jpg" alt="Description" data-zoomable data-full-src="full.jpg">
 
+To enable prev/next navigation across a set, wrap the images in a container
+with a data-gallery attribute. Optional per-image data-title and data-meta
+attributes render a caption + detail line below the zoomed image.
+
+    <div data-gallery="my-album">
+        <img src="1.jpg" data-zoomable data-full-src="1-full.jpg"
+             data-title="On the pier" data-meta="Canon AE-1 · Portra 400">
+        <img src="2.jpg" data-zoomable data-full-src="2-full.jpg">
+    </div>
+
 Features:
     - Smooth zoom animation from original position to viewport center
-    - Optional data-full-src attribute: if set, the zoomed image loads from
-      this URL instead of the thumbnail src (useful for thumbnail grids)
+    - Optional data-full-src: zoomed image loads from this URL instead of the
+      thumbnail src (useful for thumbnail grids)
+    - Prev/next chevrons + ArrowLeft/ArrowRight keys when inside a
+      [data-gallery] container with multiple [data-zoomable] siblings.
+      On touch devices (@media (hover: none)) chevrons are hidden and
+      horizontal swipe gestures replace them.
+    - Sibling order follows DOM order by default. If each image has a
+      data-gallery-index attribute (numeric), navigation uses that order
+      instead — useful for masonry layouts where the DOM order is
+      column-by-column but the intended order is the manifest/author order.
+    - Optional data-title / data-meta render a caption + monospace detail
+      line below the image; both are hidden when empty
     - Respects natural image dimensions (won't upscale beyond original)
-    - Keyboard ESC to close
-    - Click backdrop to close
-    - Close button (uses Phosphor ph-x icon)
+    - Keyboard ESC to close, click backdrop to close
+    - Minimal close button (Phosphor ph-x) — no background, matches site text
     - GPU-accelerated transitions
 
 API (exposed on window.ImageZoom):
@@ -473,7 +495,7 @@ API (exposed on window.ImageZoom):
     ImageZoom.close()      Close the current zoom
 
 Requires: image-zoom styles from export.css (included automatically).
-Optional: Phosphor Icons for the close button icon.
+Optional: Phosphor Icons for the close/chevron icons.
 Auto-initializes — no setup needed beyond loading the script.
 
 
@@ -698,12 +720,12 @@ These are ready-to-use HTML patterns that work with the exported CSS and JS.
 
     <div class="grid grid--masonry">
         <div class="image-card">
-            <div class="image-wrapper">
+            <div class="image-ratio-box" style="padding-bottom: 66.67%;">
                 <img src="photo1.jpg" alt="" data-zoomable>
             </div>
         </div>
         <div class="image-card">
-            <div class="image-wrapper">
+            <div class="image-ratio-box" style="padding-bottom: 125%;">
                 <img src="photo2.jpg" alt="" data-zoomable>
             </div>
         </div>

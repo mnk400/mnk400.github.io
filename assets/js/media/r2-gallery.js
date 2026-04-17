@@ -21,6 +21,9 @@
 
       if (loading) loading.style.display = "none";
       container.innerHTML = "";
+      // Marks this container as a gallery so image-zoom can discover siblings
+      // for prev/next navigation.
+      container.setAttribute("data-gallery", album);
 
       const leftCol = document.createElement("div");
       const rightCol = document.createElement("div");
@@ -32,9 +35,15 @@
       let leftHeight = 0;
       let rightHeight = 0;
 
-      manifest.images.forEach((image) => {
+      manifest.images.forEach((image, idx) => {
         const card = document.createElement("div");
         card.className = "image-card";
+
+        const ratioBox = document.createElement("div");
+        ratioBox.className = "image-ratio-box";
+        const aspectRatio =
+          image.width && image.height ? image.width / image.height : 1;
+        ratioBox.style.paddingBottom = (1 / aspectRatio) * 100 + "%";
 
         const img = document.createElement("img");
         img.src = `${baseUrl}/${image.thumb}`;
@@ -42,11 +51,29 @@
         img.loading = "lazy";
         img.setAttribute("data-zoomable", "");
         img.setAttribute("data-full-src", `${baseUrl}/${image.full}`);
+        // Preserve manifest order so lightbox prev/next navigates in the
+        // order the user authored, not the column-by-column DOM order
+        // created by the masonry balancer.
+        img.setAttribute("data-gallery-index", idx);
+        if (image.title) img.setAttribute("data-title", image.title);
+        if (image.meta) {
+          const metaStr = Object.values(image.meta).filter(Boolean).join(" · ");
+          if (metaStr) img.setAttribute("data-meta", metaStr);
+        }
 
-        card.appendChild(img);
+        // Fade card in once the thumbnail has decoded. Handle cached images
+        // that may already be complete before the listener attaches.
+        const markLoaded = () => card.classList.add("loaded");
+        if (img.complete && img.naturalWidth > 0) {
+          markLoaded();
+        } else {
+          img.addEventListener("load", markLoaded, { once: true });
+          img.addEventListener("error", markLoaded, { once: true });
+        }
 
-        const aspectRatio =
-          image.width && image.height ? image.width / image.height : 1;
+        ratioBox.appendChild(img);
+        card.appendChild(ratioBox);
+
         const estimatedHeight = 300 / aspectRatio;
 
         if (leftHeight <= rightHeight) {
