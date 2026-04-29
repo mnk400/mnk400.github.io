@@ -80,6 +80,64 @@ header {
     margin-bottom: 1em;
 }
 
+// =============================================================================
+// STICKY BREADCRUMB HEADER (subpages only)
+// =============================================================================
+
+header:has(.header-breadcrumb) {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+
+    margin-top: calc(var(--spacing-3xl) * -1);
+    margin-left: calc(var(--spacing-2xl) * -1);
+    margin-right: calc(var(--spacing-2xl) * -1);
+    padding: var(--spacing-2xl) var(--spacing-2xl) var(--spacing-md);
+
+    @media screen and (max-width: $breakpoint-mobile) {
+        margin-top: calc(var(--spacing-2xl) * -1);
+        margin-left: calc(var(--spacing-xl) * -1);
+        margin-right: calc(var(--spacing-xl) * -1);
+        padding: var(--spacing-xl) var(--spacing-xl) var(--spacing-md);
+    }
+
+    // Full-viewport-width fade backdrop — solid at top, gradual transparent below.
+    // Hidden at scroll=0 so the title isn't dimmed; fades in via .is-scrolled.
+    &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100vw;
+        height: calc(100% + 120px);
+        background: linear-gradient(
+            to bottom,
+            var(--background-main) 0%,
+            color-mix(in srgb, var(--background-main) 92%, transparent) 12.5%,
+            color-mix(in srgb, var(--background-main) 80%, transparent) 25%,
+            color-mix(in srgb, var(--background-main) 66%, transparent) 37.5%,
+            color-mix(in srgb, var(--background-main) 50%, transparent) 50%,
+            color-mix(in srgb, var(--background-main) 34%, transparent) 62.5%,
+            color-mix(in srgb, var(--background-main) 20%, transparent) 75%,
+            color-mix(in srgb, var(--background-main) 8%, transparent) 87.5%,
+            transparent 100%
+        );
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity var(--transition-slowest);
+    }
+
+    .header-row {
+        position: relative;
+        margin-bottom: 0;
+    }
+}
+
+:root.is-scrolled header:has(.header-breadcrumb)::before {
+    opacity: 1;
+}
+
 .header-left {
     display: flex;
     align-items: baseline;

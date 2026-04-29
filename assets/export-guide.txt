@@ -143,6 +143,7 @@ TRANSITIONS (all use cubic-bezier(0.4, 0, 0.2, 1))
     --transition-medium    0.2s    (default for most interactions)
     --transition-slow      0.3s
     --transition-backdrop  0.4s
+    --transition-slowest   0.6s
 
 SHADOWS
     --shadow-sm    0 2px 4px rgba(0,0,0,0.1)
@@ -587,6 +588,7 @@ TRANSITIONS
     - Use --transition-medium (0.2s) as default
     - Use --transition-fast (0.1s) for tiny elements (thumbs, small toggles)
     - Use --transition-slow (0.3s) for larger reveals
+    - Use --transition-slowest (0.6s) for ambient/atmospheric fades (e.g. sticky-header backdrop)
     - Easing: cubic-bezier(0.4, 0, 0.2, 1) — already baked into the variables
 
 HOVER STATES

@@ -35,3 +35,20 @@ function handleBackNavigation() {
   
   window.history.back();
 }
+
+// Toggles `is-scrolled` on <html> so CSS can react to non-zero scroll positions.
+(function () {
+  const root = document.documentElement;
+  let ticking = false;
+  function update() {
+    root.classList.toggle('is-scrolled', window.scrollY > 30);
+    ticking = false;
+  }
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(update);
+      ticking = true;
+    }
+  }, { passive: true });
+  update();
+})();
