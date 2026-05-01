@@ -208,12 +208,15 @@ Expandable toggle:
     The JS in ui-components.js auto-initializes these on DOMContentLoaded.
 
 Selection switch (radio-like toggle group):
-    <div class="selection-switch">
+    <div id="my-switch" class="selection-switch">
         <button class="switch-option active" data-value="opt1">Option 1</button>
         <button class="switch-option" data-value="opt2">Option 2</button>
     </div>
 
-    Toggle .active class on click. Uses pill shape (border-radius: 20px).
+    Auto-initialized by ui-components.js on DOMContentLoaded — clicks toggle
+    .active and fire a 'change' CustomEvent with { detail: { value, element } }.
+    The container id is required to register with window.switchManager (see §8).
+    Uses pill shape (border-radius: 20px).
 
 
 --- CARDS ---
@@ -264,6 +267,14 @@ Range slider with fill tracking:
 
     The --value-percent CSS variable drives the gradient fill. Update it on
     input events.
+
+    Auto-init alternative — wrap in [data-range-slider] and ui-components.js
+    will manage --value-percent and update the value label automatically:
+        <div data-range-slider>
+            <span id="size-value">50</span>
+            <input id="size-input" type="range" min="0" max="100" value="50">
+        </div>
+    The label element id must be `<input-id-without-"-input">-value`.
 
 Color picker:
     <input type="color" value="#c6866d">
@@ -424,7 +435,7 @@ for 500ms to animate the background-color change.
 --- ui-components.js ---
 Path: /assets/js/core/ui-components.js
 
-Provides three reusable features (auto-initializes on DOMContentLoaded):
+Provides five reusable features (auto-initializes on DOMContentLoaded):
 
 1. Touch hover simulation
    On touch devices, adds .touch-hover class on touchstart to interactive
@@ -447,6 +458,20 @@ Provides three reusable features (auto-initializes on DOMContentLoaded):
        <button data-copy="text to copy" data-copy-feedback="Copied!">
            <i class="ph-bold ph-copy"></i> Copy
        </button>
+
+4. Selection switches
+   Auto-initializes all .selection-switch containers (see §6 for HTML).
+   Each switch with an id registers under window.switchManager:
+       window.switchManager['my-switch'].setActive('opt2')
+       window.switchManager['my-switch'].getActive()        // -> 'opt2'
+   Convenience helper for change handling:
+       window.initSwitch('my-switch', (value, element) => { ... })
+   Or listen to the 'change' CustomEvent directly on the container.
+
+5. Range sliders
+   Auto-initializes all [data-range-slider] containers (see §6 for HTML).
+   Updates the --value-percent CSS variable on input and syncs the value
+   label. Idempotent — safe to wrap a slider that's also driven manually.
 
 Note: This file also contains site-specific functions (triggerPhotoReveal,
 toggleHeaderVisibility) that are only used on manik.cc. They are harmless
