@@ -10,13 +10,13 @@ layout: default
 
 	{% if page.date%}
 	<p class="post__date">{{ page.date | date: '%B %-d, %Y' }}.
-		{% endif %}
-
 		{% if page.edit %}
-		Edited on {{ page.edit | date: '%B %-d, %Y' }}</p>
+		Edited on {{ page.edit | date: '%B %-d, %Y' }}.
+		{% endif %}
+	</p>
 	{% endif %}
 
-	<div class="post__content" ?>
+	<div class="post__content">
 		{{ content }}
 	</div>
 

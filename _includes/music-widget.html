@@ -1,34 +1,32 @@
+{% assign music_widget_external = false %}
+{% assign music_widget_href = "/more/music" %}
 {% if page.url contains '/more/music' %}
+    {% assign music_widget_external = true %}
+    {% assign music_widget_href = "https://www.last.fm/user/mnk_400" %}
+{% endif %}
+
 <a
-    href="https://www.last.fm/user/mnk_400"
+    href="{{ music_widget_href }}"
     class="music-widget"
     id="music-widget"
-    target="_blank"
+    {% if music_widget_external %}target="_blank" rel="noopener noreferrer"{% endif %}
 >
-    {% else %}
-    <a href="/more/music" class="music-widget" id="music-widget">
-        {% endif %}
-        <div class="music-widget-content">
-            <div class="music-widget-art-wrapper">
-                <div class="music-widget-art-placeholder"></div>
-                <img
-                    id="music-widget-art"
-                    class="music-widget-art img-curved-edges"
-                    src="/assets/album-placeholder.png"
-                    alt="Album art"
-                />
-            </div>
-            <div class="music-widget-info">
-                <span class="music-widget-info-placeholder">Loading track…</span>
-                <span id="music-widget-track" class="music-widget-track"></span>
-                <span class="music-widget-separator"> - </span>
-                <span
-                    id="music-widget-artist"
-                    class="music-widget-artist"
-                ></span>
-            </div>
-            <i class="ph-bold ph-link music-widget-arrow"></i>
+    <div class="music-widget-content">
+        <div class="music-widget-art-wrapper">
+            <div class="music-widget-art-placeholder"></div>
+            <img
+                id="music-widget-art"
+                class="music-widget-art img-curved-edges"
+                src="/assets/album-placeholder.png"
+                alt="Album art"
+            />
         </div>
-    </a>
-    <script src="/assets/js/media/lastfm.js"></script>
+        <div class="music-widget-info">
+            <span class="music-widget-info-placeholder">Loading track…</span>
+            <span id="music-widget-track" class="music-widget-track"></span>
+            <span class="music-widget-separator"> - </span>
+            <span id="music-widget-artist" class="music-widget-artist"></span>
+        </div>
+        <i class="ph-bold ph-link music-widget-arrow"></i>
+    </div>
 </a>

@@ -1,30 +1,23 @@
 ---
-layout: post
+layout: tool
 title: Live ASCII Camera
 description: Convert your camera feed into real-time ASCII art
 permalink: /more/live-ascii
 category: Fun Tools
+intro: See yourself live in ASCII art.
+note: You'll need to grant camera permissions to the webpage for this to work.
+scripts: [/assets/js/utils/ascii-utils.js, /assets/js/tools/camera-to-ascii.js]
 ---
 
-<body>
-    <p>
-        See yourself live in ASCII art.
+<div class="ascii-container">
+    <video id="video" style="display: none;"></video>
+
+    <div class="controls">
+        {% include range-slider.html id='width' value='80' min='15' max='150' unit='Characters' %}
         <br/>
-        <span class="post__description">You'll need to grant camera permissions to the webpage for this to work.</span>
-    </p>
-    <div class="ascii-container">
-        <video id="video" style="display: none;"></video>
-        
-        <div class="controls">
-            {% include range-slider.html id='width' value='80' min='15' max='150' unit='Characters' %}
-            <br/>
-            <button id="start-btn" class="normal-btn">Start Camera</button>
-            <button id="fullscreen-btn" class="normal-btn">Fullscreen</button>
-        </div>
-        
-        <pre id="ascii-output"></pre>
+        <button id="start-btn" class="normal-btn">Start Camera</button>
+        <button id="fullscreen-btn" class="normal-btn">Fullscreen</button>
     </div>
 
-    <script src="/assets/js/utils/ascii-utils.js"></script>
-    <script src="/assets/js/tools/camera-to-ascii.js"></script>
-</body>
+    <pre id="ascii-output"></pre>
+</div>

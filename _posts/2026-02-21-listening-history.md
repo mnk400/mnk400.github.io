@@ -3,6 +3,7 @@ layout: post
 title: "A Decade of Listening"
 description: "Analyzing a decade of Last.fm scrobbles"
 date: 2026-02-21
+scripts: [/assets/js/utils/canvas-utils.js, /assets/js/media/lastfm-blog.js]
 ---
 
 Sometime around 2016 I set up a [last.fm](https://www.last.fm/user/mnk_400) account, which I initially forgot about but have been tracking more closely in recent years. What I've never done is sit down and analyze how my taste has evolved. A decade later, I have around <span id="scrobble-count">xx,xxx</span> tracked plays and it felt like the right time to actually look at what all that data says.
@@ -124,6 +125,3 @@ Wilco almost exclusively shows up in the early morning slot. I can't fully expla
 Ten years of data and the main takeaway is that I slowly turned into an indiehead who really needs to listen to more genre's again. Could be worse. If anything, going through all of this has me wanting to fix that last part.
 
 <sup>See my recent scrobbles on the [music page](/more/music) or listen to some music on the [iPod](/more/ipod).</sup>
-
-<script src="/assets/js/utils/canvas-utils.js"></script>
-<script src="/assets/js/media/lastfm-blog.js"></script>

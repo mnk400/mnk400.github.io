@@ -1,30 +1,24 @@
 ---
-layout: post
+layout: tool
 title: ASCII Art Converter
 description: Convert an image into a simple ASCII art
 permalink: /more/ascii
 category: Image Tools
+intro: Convert an image to ASCII art.
+scripts: [/assets/js/utils/ascii-utils.js, /assets/js/tools/photo-to-ascii.js]
 ---
 
-<body>
-    <p>
-        Convert an image to ASCII art.
-    </p>
-    <div class="ascii-container">
-        <img id="image-preview" class="img-curved-edges">
-        <div class="controls">
-            {% include image-upload.html %}
-            {% include range-slider.html id='width' value='80' min='15' max='150' unit='Characters' %}
+<div class="ascii-container">
+    <img id="image-preview" class="img-curved-edges">
+    <div class="controls">
+        {% include image-upload.html %}
+        {% include range-slider.html id='width' value='80' min='15' max='150' unit='Characters' %}
 
-            <div class="button-container">
-                <button id="convert-btn" class="normal-btn">Convert to ASCII</button>
-                <button id="download-btn" class="normal-btn" style="display: none;">Download as Image</button>
-            </div>
+        <div class="button-container">
+            <button id="convert-btn" class="normal-btn">Convert to ASCII</button>
+            <button id="download-btn" class="normal-btn" style="display: none;">Download as Image</button>
         </div>
-
-        <pre id="ascii-output"></pre>
     </div>
 
-    <script src="/assets/js/utils/ascii-utils.js"></script>
-    <script src="/assets/js/tools/photo-to-ascii.js"></script>
-</body>
+    <pre id="ascii-output"></pre>
+</div>

@@ -10,7 +10,7 @@
   - loading_text: Optional. Text to display while loading images. Default: "Loading images..."
 {% endcomment %}
 
-<div class="r2-album">
+<div class="r2-album" data-r2-album="{{ include.album }}" data-r2-base-url="{{ site.r2_base_url }}">
   {% if include.description %}
   <p>{{ include.description }}</p>
   <br>
@@ -21,14 +21,4 @@
   </div>
 
   <div class="album-container" id="album-container-{{ include.album }}"></div>
-
-  <script src="{{ '/assets/js/media/r2-gallery.js' | relative_url }}"></script>
-  <script>
-    R2Gallery.loadAlbum(
-      '{{ site.r2_base_url }}',
-      '{{ include.album }}',
-      'album-container-{{ include.album }}',
-      'loading-{{ include.album }}'
-    );
-  </script>
 </div>

@@ -1,31 +1,24 @@
 ---
-layout: post
+layout: tool
 title: Circle Camera
 description: Convert your camera feed into real-time circle art
 permalink: /more/circles
 category: Fun Tools
+intro: See yourself in real-time as circles.
+note: You'll need to grant camera permissions to the webpage for this to work.
+scripts: [/assets/js/utils/canvas-utils.js, /assets/js/tools/circle-camera.js]
 ---
 
-<body>
-    <p>
-        See yourself in real-time as circles.
-        <br/>
-        <span class="post__description">You'll need to grant camera permissions to the webpage for this to work.</span>
-    </p>
-    <div class="ascii-container">
-        <div class="canvas-container">
-            <video id="video" style="display: none;"></video>
-            <canvas id="canvas-output"></canvas>
-        </div>
-        
-        <div class="controls">
-            {% include range-slider.html id='resolution' value='40' min='10' max='100' unit='Resolution' %}
-            <br/>
-            <button id="start-btn" class="normal-btn">Start Camera</button>
-            <button id="fullscreen-btn" class="normal-btn">Fullscreen</button>
-        </div>
+<div class="ascii-container">
+    <div class="canvas-container">
+        <video id="video" style="display: none;"></video>
+        <canvas id="canvas-output"></canvas>
     </div>
 
-    <script src="/assets/js/utils/canvas-utils.js"></script>
-    <script src="/assets/js/tools/circle-camera.js"></script>
-</body>
+    <div class="controls">
+        {% include range-slider.html id='resolution' value='40' min='10' max='100' unit='Resolution' %}
+        <br/>
+        <button id="start-btn" class="normal-btn">Start Camera</button>
+        <button id="fullscreen-btn" class="normal-btn">Fullscreen</button>
+    </div>
+</div>

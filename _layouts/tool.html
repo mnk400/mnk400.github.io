@@ -1,0 +1,12 @@
+---
+layout: post
+---
+
+{% if page.intro %}
+<p>{{ page.intro }}</p>
+{% endif %}
+{% if page.note %}
+<p><span class="post__description">{{ page.note }}</span></p>
+{% endif %}
+
+{{ content }}

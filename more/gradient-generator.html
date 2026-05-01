@@ -1,18 +1,15 @@
 ---
-layout: post
+layout: tool
 title: Gradient Generator
 description: Create gradient images
 permalink: /more/gradient-images
 category: Image Tools
+intro: Create beautiful gradient images with custom colors and orientations.
+scripts: [/assets/js/tools/gradient-generator.js]
 ---
 
-<body>
-    <p>
-        Create beautiful gradient images with custom colors and orientations.
-    </p>
-    
-    <div class="gradient-container">
-        <div class="controls">
+<div class="gradient-container">
+    <div class="controls">
             <div class="color-inputs-container">
                 <div class="color-input-group">
                     <label for="color1"><b>Start Color:</b></label>
@@ -67,7 +64,4 @@ category: Image Tools
         <div id="generation-status" class="status-message" style="display: none;">
             <p>Generating...</p>
         </div>
-    </div>
-
-    <script src="/assets/js/tools/gradient-generator.js"></script>
-</body>
+</div>

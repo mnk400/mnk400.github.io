@@ -92,5 +92,21 @@
     }
   }
 
-  window.R2Gallery = { loadAlbum: loadAlbum };
+  function initAlbums() {
+    document.querySelectorAll("[data-r2-album]").forEach((albumEl) => {
+      const album = albumEl.dataset.r2Album;
+      const baseUrl = albumEl.dataset.r2BaseUrl;
+      if (!album || !baseUrl) return;
+
+      loadAlbum(
+        baseUrl,
+        album,
+        `album-container-${album}`,
+        `loading-${album}`,
+      );
+    });
+  }
+
+  window.R2Gallery = { loadAlbum: loadAlbum, initAlbums: initAlbums };
+  document.addEventListener("DOMContentLoaded", initAlbums);
 })();
