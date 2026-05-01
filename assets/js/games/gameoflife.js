@@ -6,9 +6,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const stepBtn = document.getElementById('step-btn');
     const resetBtn = document.getElementById('reset-btn');
 
-    // Mobile detection
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-        (navigator.maxTouchPoints && navigator.maxTouchPoints > 2);
+    const isMobile = DeviceDetect.isMobileDevice();
 
     const maxCanvasHeight = 500;
     

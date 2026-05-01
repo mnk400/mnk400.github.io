@@ -350,27 +350,16 @@ class Colordle {
         shareTextDiv.textContent = shareText;
         shareTextDiv.style.display = 'block';
 
-        // Try to copy to clipboard
-        if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(shareText).then(() => {
+        Clipboard.copy(shareText).then((ok) => {
+            if (ok) {
                 shareButton.textContent = 'Copied!';
-                setTimeout(() => {
-                    shareButton.textContent = 'Share Results';
-                }, 2000);
-            }).catch(() => {
+                setTimeout(() => { shareButton.textContent = 'Share Results'; }, 2000);
+            } else {
+                shareTextDiv.select();
                 shareButton.textContent = 'Select text above to copy';
-                setTimeout(() => {
-                    shareButton.textContent = 'Share Results';
-                }, 3000);
-            });
-        } else {
-            // Fallback for older browsers
-            shareTextDiv.select();
-            shareButton.textContent = 'Select text above to copy';
-            setTimeout(() => {
-                shareButton.textContent = 'Share Results';
-            }, 3000);
-        }
+                setTimeout(() => { shareButton.textContent = 'Share Results'; }, 3000);
+            }
+        });
     }
 
     generateShareText() {

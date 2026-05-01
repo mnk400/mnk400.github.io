@@ -334,7 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Create color swatches
         colors.forEach((color, index) => {
             const { r, g, b } = color;
-            const hexColor = rgbToHex(r, g, b);
+            const hexColor = ColorUtils.rgbToHex(r, g, b);
             
             // Clone the template
             if (swatchTemplate) {
@@ -368,7 +368,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Show details for the first color by default
         if (colors.length > 0) {
             const firstColor = colors[0];
-            showColorDetails(firstColor.r, firstColor.g, firstColor.b, rgbToHex(firstColor.r, firstColor.g, firstColor.b), 0);
+            showColorDetails(firstColor.r, firstColor.g, firstColor.b, ColorUtils.rgbToHex(firstColor.r, firstColor.g, firstColor.b), 0);
         }
     }
 
@@ -395,7 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const hexValue = document.getElementById('hex-value');
         const rgbValue = document.getElementById('rgb-value');
         const hslValue = document.getElementById('hsl-value');
-        const hslString = rgbToHsl(r, g, b);
+        const hslString = ColorUtils.rgbToHsl(r, g, b);
         
         if (hexValue) hexValue.textContent = hex;
         if (rgbValue) rgbValue.textContent = `rgb(${r}, ${g}, ${b})`;
@@ -420,53 +420,15 @@ document.addEventListener('DOMContentLoaded', () => {
             // Add click event for copying
             newBtn.addEventListener('click', function() {
                 const textToCopy = this.dataset.value;
-                navigator.clipboard.writeText(textToCopy)
-                    .then(() => {
-                        const originalText = this.textContent;
-                        this.textContent = 'Copied!';
-                        setTimeout(() => {
-                            this.textContent = originalText;
-                        }, 1500);
-                    })
-                    .catch(err => {
-                        console.error('Failed to copy: ', err);
-                    });
+                const originalText = this.textContent;
+                Clipboard.copy(textToCopy).then(() => {
+                    this.textContent = 'Copied!';
+                    setTimeout(() => {
+                        this.textContent = originalText;
+                    }, 1500);
+                });
             });
         });
     }
 
-    function rgbToHex(r, g, b) {
-        return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
-    }
-
-    function rgbToHsl(r, g, b) {
-        r /= 255;
-        g /= 255;
-        b /= 255;
-        
-        const max = Math.max(r, g, b);
-        const min = Math.min(r, g, b);
-        let h, s, l = (max + min) / 2;
-        
-        if (max === min) {
-            h = s = 0; // achromatic
-        } else {
-            const d = max - min;
-            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-            
-            switch (max) {
-                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-                case g: h = (b - r) / d + 2; break;
-                case b: h = (r - g) / d + 4; break;
-            }
-            
-            h /= 6;
-        }
-        
-        h = Math.round(h * 360);
-        s = Math.round(s * 100);
-        l = Math.round(l * 100);
-        
-        return `hsl(${h}, ${s}%, ${l}%)`;
-    }
 });

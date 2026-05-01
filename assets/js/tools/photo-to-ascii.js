@@ -7,14 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const asciiOutput = document.getElementById('ascii-output');
     const downloadBtn = document.getElementById('download-btn');
 
-    // Calculate the optimal font size to fit the container width
-    function calculateOptimalFontSize(containerWidth, charWidth) {
-        const availableWidth = containerWidth
-        return Math.floor(availableWidth / charWidth * 1.8);
-    }
-
-
-
     imageInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {

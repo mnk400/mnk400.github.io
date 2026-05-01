@@ -47,9 +47,11 @@ Minimal HTML boilerplate to get the full design system:
             <!-- Your content here -->
         </div>
 
-        <!-- Core JS (order matters — theme-config must load before theme-manager) -->
+        <!-- Core JS (order matters — theme-config must load before theme-manager,
+             and clipboard must load before ui-components if you use [data-copy]) -->
         <script src="https://manik.cc/assets/js/core/theme-config.js"></script>
         <script src="https://manik.cc/assets/js/core/theme-manager.js"></script>
+        <script src="https://manik.cc/assets/js/utils/clipboard.js"></script>
         <script src="https://manik.cc/assets/js/core/ui-components.js"></script>
         <script src="https://manik.cc/assets/js/components/image-zoom.js"></script>
     </body>
@@ -574,7 +576,59 @@ Converts images to ASCII art.
         Calculate character height maintaining aspect ratio.
         Accounts for characters being ~2x taller than wide.
 
+    calculateOptimalFontSize(containerWidth, charCount)
+        px font size that fits `charCount` monospace chars across `containerWidth`.
+
 Available as globals (no module export).
+
+
+--- clipboard.js ---
+Path: /assets/js/utils/clipboard.js
+
+Promise-based clipboard wrapper with a non-secure-context fallback that uses
+a hidden <textarea> + document.execCommand('copy'). Required by the [data-copy]
+auto-handler in ui-components.js — load it before ui-components.js.
+
+    Clipboard.copy(text)
+        Returns Promise<boolean> — true on success, false if both the modern
+        and legacy paths failed.
+
+
+--- color-utils.js ---
+Path: /assets/js/utils/color-utils.js
+
+Color-space helpers for image / palette / gradient tooling.
+
+    ColorUtils.rgbToHex(r, g, b)        -> "#RRGGBB" (uppercase)
+    ColorUtils.hexToRgb(hex)            -> { r, g, b } | null
+    ColorUtils.rgbToHsl(r, g, b)        -> "hsl(h, s%, l%)" string
+
+
+--- device-detect.js ---
+Path: /assets/js/utils/device-detect.js
+
+Single mobile heuristic combining UA regex, viewport width (≤768px), and
+multi-touch capability.
+
+    DeviceDetect.isMobileDevice()       -> boolean
+
+
+--- camera-manager.js ---
+Path: /assets/js/components/camera-manager.js
+
+Encapsulates the getUserMedia + rAF + fullscreen lifecycle for camera tools.
+Caller supplies a render(video) callback plus optional hooks.
+
+    const cam = CameraManager.create({
+        video, startBtn, fullscreenBtn, fullscreenTarget,
+        render(video) { /* draw a frame */ },
+        onStart()           { /* after stream acquired */ },
+        onStop()            { /* clear output / restore styles */ },
+        onEnterFullscreen() { /* style the fullscreen target */ },
+        onExitFullscreen()  { /* restore styles, reset inputs */ },
+    });
+    cam.isRunning();        // boolean
+    cam.isFullscreen();     // boolean — useful inside render()
 
 
 ================================================================================

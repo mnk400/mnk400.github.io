@@ -36,3 +36,12 @@ function calculateHeight(width, sourceWidth, sourceHeight) {
     const aspectRatio = sourceWidth / sourceHeight;
     return Math.floor(width / aspectRatio / 2); // Divide by 2 because characters are taller than wide
 }
+
+/**
+ * Calculate the font size in px that lets `charCount` monospace characters
+ * fit across `containerWidth` px. The 1.8 factor approximates the typical
+ * width-to-font-size ratio of monospace glyphs in this site's stack.
+ */
+function calculateOptimalFontSize(containerWidth, charCount) {
+    return Math.floor(containerWidth / charCount * 1.8);
+}

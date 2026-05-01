@@ -257,7 +257,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const feedbackText = this.dataset.copyFeedback || "Copied!";
       const originalContent = this.innerHTML;
 
-      navigator.clipboard.writeText(textToCopy).then(() => {
+      Clipboard.copy(textToCopy).then(() => {
         this.innerHTML = `<i class="ph-bold ph-check"></i> ${feedbackText}`;
         setTimeout(() => {
           this.innerHTML = originalContent;

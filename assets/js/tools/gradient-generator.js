@@ -175,27 +175,14 @@ class GradientWallpaperGenerator {
     }
 
     interpolateColor(color1, color2, ratio) {
-        const rgb1 = this.hexToRgb(color1);
-        const rgb2 = this.hexToRgb(color2);
-        
+        const rgb1 = ColorUtils.hexToRgb(color1);
+        const rgb2 = ColorUtils.hexToRgb(color2);
+
         const r = Math.round(rgb1.r + (rgb2.r - rgb1.r) * ratio);
         const g = Math.round(rgb1.g + (rgb2.g - rgb1.g) * ratio);
         const b = Math.round(rgb1.b + (rgb2.b - rgb1.b) * ratio);
-        
-        return this.rgbToHex(r, g, b);
-    }
 
-    hexToRgb(hex) {
-        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? {
-            r: parseInt(result[1], 16),
-            g: parseInt(result[2], 16),
-            b: parseInt(result[3], 16)
-        } : null;
-    }
-
-    rgbToHex(r, g, b) {
-        return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+        return ColorUtils.rgbToHex(r, g, b);
     }
 
     getDimensions() {
