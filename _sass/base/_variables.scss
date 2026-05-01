@@ -3,102 +3,89 @@
 // =============================================================================
 
 // Color Schemes
-:root[data-theme="linen"] {
-    --background-main: #f2f0ef;
-    --background-darker: #f8f5f3;
-    --text-color: #3b3b3b;
-    --sec-text-color: #656565;
-    --contrast-overlay: rgba(0, 0, 0, 0.7);
-    --contrast-overlay-hover: rgba(0, 0, 0, 0.5);
-    --translucent-low: rgb(0, 0, 0, 0.05);
-    --translucent-medium: rgb(0, 0, 0, 0.07);
-    --translucent-high: rgb(0, 0, 0, 0.2);
-    --code-bg: #ebe9e8;
-    --note-bg: #d8f2fd;
-}
+$themes: (
+    linen: (
+        background-main: #f2f0ef,
+        background-darker: #f8f5f3,
+        text-color: #3b3b3b,
+        sec-text-color: #656565,
+        contrast-overlay: rgba(0, 0, 0, 0.7),
+        contrast-overlay-hover: rgba(0, 0, 0, 0.5),
+        translucent-low: rgba(0, 0, 0, 0.05),
+        translucent-medium: rgba(0, 0, 0, 0.07),
+        translucent-high: rgba(0, 0, 0, 0.2),
+        code-bg: #ebe9e8,
+        note-bg: #d8f2fd,
+    ),
+    denim: (
+        background-main: #2d3d5a,
+        background-darker: #1f2a3f,
+        text-color: #e8edf5,
+        sec-text-color: #c6cfdc,
+        code-bg: #1f2a3f,
+        note-bg: #3a4f6b,
+    ),
+    charcoal: (
+        background-main: #1a1a1a,
+        background-darker: #2a2a2a,
+        text-color: #d0d0d0,
+        sec-text-color: #c2c2c2,
+        code-bg: #212121,
+        note-bg: #4a606a,
+    ),
+    ruby: (
+        background-main: #2a1a1d,
+        background-darker: #3d1f24,
+        text-color: #f5e8ea,
+        sec-text-color: #e0d3d8,
+        code-bg: #3d1f24,
+        note-bg: #4a2d33,
+    ),
+    matcha: (
+        background-main: #2a2f2a,
+        background-darker: #1e231e,
+        text-color: #f2faed,
+        sec-text-color: #e0e6da,
+        code-bg: #1e231e,
+        note-bg: #3a4a36,
+    ),
+    butter: (
+        background-main: #F1D799,
+        background-darker: #f5e2ae,
+        text-color: #4a4235,
+        sec-text-color: #7a7060,
+        contrast-overlay: rgba(0, 0, 0, 0.7),
+        contrast-overlay-hover: rgba(0, 0, 0, 0.5),
+        translucent-low: rgba(0, 0, 0, 0.05),
+        translucent-medium: rgba(0, 0, 0, 0.07),
+        translucent-high: rgba(0, 0, 0, 0.2),
+        code-bg: #e6ca85,
+        note-bg: #dce5c8,
+    ),
+    espresso: (
+        background-main: #352315,
+        background-darker: #2a1b10,
+        text-color: #f0e0d0,
+        sec-text-color: #d4c0ac,
+        code-bg: #2a1b10,
+        note-bg: #4a3525,
+    ),
+);
 
-:root[data-theme="denim"] {
-    --background-main: #2d3d5a;
-    --background-darker: #1f2a3f;
-    --text-color: #e8edf5;
-    --sec-text-color: #c6cfdc;
-    --contrast-overlay: rgba(255, 255, 255, 0.7);
-    --contrast-overlay-hover: rgba(255, 255, 255, 0.5);
-    --translucent-low: rgb(255, 255, 255, 0.03);
-    --translucent-medium: rgb(255, 255, 255, 0.07);
-    --translucent-high: rgb(255, 255, 255, 0.2);
-    --code-bg: #1f2a3f;
-    --note-bg: #3a4f6b;
-}
+@each $theme, $tokens in $themes {
+    :root[data-theme="#{$theme}"] {
+        @each $name, $value in $tokens {
+            --#{$name}: #{$value};
+        }
 
-:root[data-theme="charcoal"] {
-    --background-main: #1a1a1a;
-    --background-darker: #2a2a2a;
-    --text-color: #d0d0d0;
-    --sec-text-color: #c2c2c2;
-    --contrast-overlay: rgba(255, 255, 255, 0.7);
-    --contrast-overlay-hover: rgba(255, 255, 255, 0.5);
-    --translucent-low: rgba(255, 255, 255, 0.03);
-    --translucent-medium: rgba(255, 255, 255, 0.07);
-    --translucent-high: rgba(255, 255, 255, 0.2);
-    --code-bg: #212121;
-    --note-bg: #4a606a;
-}
-
-:root[data-theme="ruby"] {
-    --background-main: #2a1a1d;
-    --background-darker: #3d1f24;
-    --text-color: #f5e8ea;
-    --sec-text-color: #e0d3d8;
-    --contrast-overlay: rgba(255, 255, 255, 0.7);
-    --contrast-overlay-hover: rgba(255, 255, 255, 0.5);
-    --translucent-low: rgb(255, 255, 255, 0.03);
-    --translucent-medium: rgb(255, 255, 255, 0.07);
-    --translucent-high: rgb(255, 255, 255, 0.2);
-    --code-bg: #3d1f24;
-    --note-bg: #4a2d33;
-}
-
-:root[data-theme="matcha"] {
-    --background-main: #2a2f2a;
-    --background-darker: #1e231e;
-    --text-color: #f2faed;
-    --sec-text-color: #e0e6da;
-    --contrast-overlay: rgba(255, 255, 255, 0.7);
-    --contrast-overlay-hover: rgba(255, 255, 255, 0.5);
-    --translucent-low: rgb(255, 255, 255, 0.03);
-    --translucent-medium: rgb(255, 255, 255, 0.07);
-    --translucent-high: rgb(255, 255, 255, 0.2);
-    --code-bg: #1e231e;
-    --note-bg: #3a4a36;
-}
-
-:root[data-theme="butter"] {
-    --background-main: #F1D799;
-    --background-darker: #f5e2ae;
-    --text-color: #4a4235;
-    --sec-text-color: #7a7060;
-    --contrast-overlay: rgba(0, 0, 0, 0.7);
-    --contrast-overlay-hover: rgba(0, 0, 0, 0.5);
-    --translucent-low: rgb(0, 0, 0, 0.05);
-    --translucent-medium: rgb(0, 0, 0, 0.07);
-    --translucent-high: rgb(0, 0, 0, 0.2);
-    --code-bg: #e6ca85;
-    --note-bg: #dce5c8;
-}
-
-:root[data-theme="espresso"] {
-    --background-main: #352315;
-    --background-darker: #2a1b10;
-    --text-color: #f0e0d0;
-    --sec-text-color: #d4c0ac;
-    --contrast-overlay: rgba(255, 255, 255, 0.7);
-    --contrast-overlay-hover: rgba(255, 255, 255, 0.5);
-    --translucent-low: rgb(255, 255, 255, 0.03);
-    --translucent-medium: rgb(255, 255, 255, 0.07);
-    --translucent-high: rgb(255, 255, 255, 0.2);
-    --code-bg: #2a1b10;
-    --note-bg: #4a3525;
+        @if not map-has-key($tokens, contrast-overlay) {
+            --contrast-overlay: rgba(255, 255, 255, 0.7);
+            --contrast-overlay-hover: rgba(255, 255, 255, 0.5);
+            --translucent-low: rgba(255, 255, 255, 0.03);
+            --translucent-medium: rgba(255, 255, 255, 0.07);
+            --translucent-high: rgba(255, 255, 255, 0.2);
+        }
+    }
 }
 
 // Spacing Scale

@@ -18,9 +18,6 @@
     @media screen and (max-width: 768px) {
         width: 100%;
         max-width: 100vw;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
 
         #flappyCanvas {
             max-width: 95vw;
@@ -221,67 +218,23 @@
         border-style: dashed;
     }
 
-    &.flagged::before {
-        content: "🚩";
-        font-size: var(--spacing-lg);
+    @each $state, $icon in (flagged: "🚩", mine: "💣", flagged-correct: "🚩", flagged-wrong: "❌") {
+        &.#{$state}::before {
+            content: $icon;
+            font-size: var(--spacing-lg);
+        }
     }
 
-    &.mine::before {
-        content: "💣";
-        font-size: var(--spacing-lg);
-    }
-
-    &.flagged-correct::before {
-        content: "🚩";
-        font-size: var(--spacing-lg);
-    }
-
-    &.flagged-wrong::before {
-        content: "❌";
-        font-size: var(--spacing-lg);
-    }
-
-    // Adjacent mine count colors
-    &.adjacent-1 {
-        color: var(--game-ms-1);
-    }
-
-    &.adjacent-2 {
-        color: var(--game-ms-2);
-    }
-
-    &.adjacent-3 {
-        color: var(--game-ms-3);
-    }
-
-    &.adjacent-4 {
-        color: var(--game-ms-4);
-    }
-
-    &.adjacent-5 {
-        color: var(--game-ms-5);
-    }
-
-    &.adjacent-6 {
-        color: var(--game-ms-6);
-    }
-
-    &.adjacent-7 {
-        color: var(--game-ms-7);
-    }
-
-    &.adjacent-8 {
-        color: var(--game-ms-8);
+    @for $i from 1 through 8 {
+        &.adjacent-#{$i} {
+            color: var(--game-ms-#{$i});
+        }
     }
 }
 
-#game-status {
-    &.win {
-        color: var(--game-status-win);
-    }
-
-    &.lose {
-        color: var(--game-status-lose);
+@each $state in (win, lose) {
+    #game-status.#{$state} {
+        color: var(--game-status-#{$state});
     }
 }
 
@@ -350,22 +303,12 @@
                     color: var(--sec-text-color);
                 }
 
-                &.correct {
-                    background-color: var(--game-colordle-correct);
-                    border-color: var(--game-colordle-correct);
-                    color: white;
-                }
-
-                &.close {
-                    background-color: var(--game-colordle-close);
-                    border-color: var(--game-colordle-close);
-                    color: white;
-                }
-
-                &.wrong {
-                    background-color: var(--game-colordle-wrong);
-                    border-color: var(--game-colordle-wrong);
-                    color: white;
+                @each $state in (correct, close, wrong) {
+                    &.#{$state} {
+                        background-color: var(--game-colordle-#{$state});
+                        border-color: var(--game-colordle-#{$state});
+                        color: white;
+                    }
                 }
             }
         }
@@ -387,12 +330,10 @@
         padding: var(--spacing-md);
         margin-bottom: var(--spacing-md);
 
-        &.success {
-            color: var(--game-status-success);
-        }
-
-        &.error {
-            color: var(--game-status-error);
+        @each $state in (success, error) {
+            &.#{$state} {
+                color: var(--game-status-#{$state});
+            }
         }
     }
 
@@ -461,15 +402,9 @@
     border-radius: var(--radius-sm);
     margin-right: var(--spacing-xs);
 
-    &.correct {
-        background-color: var(--game-colordle-correct);
-    }
-
-    &.close {
-        background-color: var(--game-colordle-close);
-    }
-
-    &.wrong {
-        background-color: var(--game-colordle-wrong);
+    @each $state in (correct, close, wrong) {
+        &.#{$state} {
+            background-color: var(--game-colordle-#{$state});
+        }
     }
 }

@@ -46,9 +46,7 @@ button,
         font-size: 0.9em;
         color: var(--sec-text-color);
         padding: 3px var(--spacing-sm) 3px var(--spacing-sm);
-        outline: solid;
-        outline-width: 1px;
-        outline-color: var(--translucent-medium);
+        @include soft-outline;
         margin-bottom: var(--spacing-lg);
     }
 
@@ -64,7 +62,7 @@ button,
     &--outline {
         background-color: var(--translucent-low);
         color: var(--text-color);
-        outline: solid 1px var(--translucent-high);
+        @include soft-outline(var(--translucent-high));
     }
 
     &--outline:hover {
@@ -108,9 +106,7 @@ input[type="file"]::file-selector-button {
     transition:
         background-color var(--transition-medium),
         color var(--transition-medium);
-    outline: solid;
-    outline-width: 1px;
-    outline-color: var(--translucent-medium);
+    @include soft-outline;
 
     @include hover-state-dark;
 
@@ -142,9 +138,7 @@ input[type="file"]::file-selector-button {
         transition: all var(--transition-medium);
 
         display: inline-block;
-        outline: solid;
-        outline-width: 1px;
-        outline-color: var(--translucent-medium);
+        @include soft-outline;
 
         @include hover-state-dark;
 

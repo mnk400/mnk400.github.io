@@ -75,9 +75,7 @@
         -moz-appearance: none;
         appearance: none;
         padding-right: var(--spacing-2xl);
-        outline: solid;
-        outline-width: 1px;
-        outline-color: var(--translucent-medium);
+        @include soft-outline;
     }
 
     .year-selector-container {

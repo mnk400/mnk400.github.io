@@ -10,6 +10,10 @@
     outline: 1px solid var(--translucent-medium);
 }
 
+@mixin soft-outline($color: var(--translucent-medium)) {
+    outline: solid 1px $color;
+}
+
 // Hover with touch fallback
 @mixin hover-interactive {
     @media (any-hover: hover) {
