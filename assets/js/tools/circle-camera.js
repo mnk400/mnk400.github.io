@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('canvas-output');
     const ctx = canvas.getContext('2d');
     const resolutionInput = document.getElementById('resolution-input');
+    const resolutionValue = document.getElementById('resolution-value');
     const startBtn = document.getElementById('start-btn');
     const fullscreenBtn = document.getElementById('fullscreen-btn');
     
@@ -159,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
             isFullscreen = false;
             updateCanvasSize();
             resolutionInput.value = '40';
-            resolutionValue.textContent = '40';
+            if (resolutionValue) resolutionValue.textContent = '40';
         }
     });
 });

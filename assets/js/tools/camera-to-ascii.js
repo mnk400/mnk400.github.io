@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const video = document.getElementById('video');
     const widthInput = document.getElementById('width-input');
+    const widthValue = document.getElementById('width-value');
     const startBtn = document.getElementById('start-btn');
     const fullscreenBtn = document.getElementById('fullscreen-btn');
     const asciiOutput = document.getElementById('ascii-output');
@@ -145,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
             asciiOutput.style.margin = '';
             asciiOutput.style.padding = '';
             widthInput.value = '125';
-            widthValue.textContent = '125';
+            if (widthValue) widthValue.textContent = '125';
         }
     });
 });

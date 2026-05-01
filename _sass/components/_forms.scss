@@ -14,9 +14,7 @@ select {
     color: var(--text-color);
     @include system-font;
     transition: background-color var(--transition-medium);
-    outline: solid;
-    outline-width: 1px;
-    outline-color: var(--translucent-medium);
+    @include soft-outline;
 
     &:focus {
         outline: none;
@@ -46,21 +44,9 @@ input[type="range"] {
     border-radius: var(--radius-sm);
     outline: none;
     transition: all var(--transition-fast) ease-in-out;
-    outline: solid;
-    outline-width: 1px;
-    outline-color: var(--translucent-medium);
+    @include soft-outline;
 
-    &::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        appearance: none;
-        width: 4px;
-        height: 34px;
-        background: var(--sec-text-color);
-        border-radius: var(--spacing-md);
-        cursor: pointer;
-        transition: all var(--transition-fast) ease-in-out;
-    }
-
+    &::-webkit-slider-thumb,
     &::-moz-range-thumb {
         width: 4px;
         height: 34px;
@@ -70,11 +56,12 @@ input[type="range"] {
         transition: all var(--transition-fast) ease-in-out;
     }
 
-    &:active::-webkit-slider-thumb {
-        transform: scale(1.1);
-        width: 5px;
+    &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
     }
 
+    &:active::-webkit-slider-thumb,
     &:active::-moz-range-thumb {
         transform: scale(1.1);
         width: 5px;
@@ -86,16 +73,11 @@ input[type="color"] {
     width: 50px;
     height: 40px;
     border: none;
-    border-radius: var(--radius-md);
-    background-color: var(--translucent-low);
-    backdrop-filter: blur(10px);
     cursor: pointer;
     transition: all var(--transition-medium);
     padding: 0;
     overflow: hidden;
-    outline: solid;
-    outline-width: 1px;
-    outline-color: var(--translucent-medium);
+    @include translucent-surface(var(--translucent-low), 10px);
 
     &::-webkit-color-swatch-wrapper {
         padding: 0;
@@ -103,11 +85,7 @@ input[type="color"] {
         border-radius: var(--radius-md);
     }
 
-    &::-webkit-color-swatch {
-        border: none;
-        border-radius: var(--radius-md);
-    }
-
+    &::-webkit-color-swatch,
     &::-moz-color-swatch {
         border: none;
         border-radius: var(--radius-md);
@@ -142,12 +120,17 @@ input[type="color"] {
         display: flex;
         position: relative;
 
-        #range-value {
+        .range-value {
             position: absolute;
             top: 14px;
             left: var(--spacing-sm);
             font-size: 0.7em;
             z-index: 1;
+        }
+
+        input[type="range"] {
+            position: relative;
+            z-index: 0;
         }
     }
 }
@@ -182,8 +165,6 @@ input[type="color"] {
 .image-selector {
     width: 100%;
     height: 200px;
-    background-color: var(--translucent-low);
-    border-radius: var(--radius-md);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -191,11 +172,8 @@ input[type="color"] {
     cursor: pointer;
     font-size: 0.9em;
     font-weight: 400;
-    backdrop-filter: blur(10px);
     transition: all var(--transition-medium);
-    outline: solid;
-    outline-width: 1px;
-    outline-color: var(--translucent-medium);
+    @include translucent-surface(var(--translucent-low), 10px);
 
     @include hover-interactive {
         background-color: var(--translucent-high);

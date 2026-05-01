@@ -3,6 +3,77 @@
  * Consolidates expandable sections, image selectors, and header visibility
  */
 
+window.switchManager = window.switchManager || {};
+
+function initSelectionSwitch(containerOrId) {
+  const container =
+    typeof containerOrId === "string"
+      ? document.getElementById(containerOrId)
+      : containerOrId;
+  if (!container || container.dataset.switchInitialized === "true") return;
+
+  const options = container.querySelectorAll(".switch-option");
+  window.switchManager[container.id] = {
+    setActive: (value) => {
+      options.forEach((opt) => {
+        opt.classList.toggle("active", (opt.dataset.value || opt.id) === value);
+      });
+    },
+    getActive: () => {
+      const active = container.querySelector(".switch-option.active");
+      return active ? active.dataset.value || active.id : null;
+    },
+  };
+
+  options.forEach((option) => {
+    option.addEventListener("click", () => {
+      options.forEach((opt) => opt.classList.remove("active"));
+      option.classList.add("active");
+
+      const value = option.dataset.value || option.id;
+      container.dispatchEvent(
+        new CustomEvent("change", {
+          detail: { value, element: option },
+        }),
+      );
+    });
+  });
+
+  container.dataset.switchInitialized = "true";
+}
+
+function initRangeSlider(container) {
+  if (!container || container.dataset.rangeInitialized === "true") return;
+
+  const input = container.querySelector('input[type="range"]');
+  if (!input) return;
+
+  const value = container.querySelector(`#${input.id.replace(/-input$/, "-value")}`);
+
+  function updateRangeFill() {
+    const percent = ((input.value - input.min) / (input.max - input.min)) * 100;
+    input.style.setProperty("--value-percent", `${percent}%`);
+  }
+
+  updateRangeFill();
+  input.addEventListener("input", () => {
+    if (value) value.textContent = input.value;
+    updateRangeFill();
+  });
+
+  container.dataset.rangeInitialized = "true";
+}
+
+window.initSwitch = window.initSwitch || function (id, callback) {
+  const container = document.getElementById(id);
+  if (!container) return;
+
+  initSelectionSwitch(container);
+  container.addEventListener("change", (e) =>
+    callback(e.detail.value, e.detail.element),
+  );
+};
+
 // Title photo reveal animation (homepage only)
 let photoRevealTimeout = null;
 let isTransitioning = false;
@@ -125,6 +196,9 @@ if ("ontouchstart" in window) {
 
 // Initialize UI components when DOM is ready
 document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll(".selection-switch").forEach(initSelectionSwitch);
+  document.querySelectorAll("[data-range-slider]").forEach(initRangeSlider);
+
   // Initialize image selector functionality
   const imageInput = document.getElementById("image-input");
   const imageSelector = document.getElementById("image-selector");
