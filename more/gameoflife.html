@@ -4,8 +4,8 @@ title: Game of Life
 description: Conway's Game of Life
 permalink: /more/gameoflife
 category: Games
-intro: This is a minimal implementation of Conway's Game of Life that lets cells cross the edges of the canvas and wrap around to the opposite side.
-scripts: [/assets/js/utils/device-detect.js, /assets/js/utils/canvas-utils.js, /assets/js/games/gameoflife.js]
+intro: This is a minimal implementation of Conway's Game of Life that lets cells cross the edges of the grid and wrap around to the opposite side.
+scripts: [/assets/js/games/gameoflife.js]
 ---
 
 <div class="game-wrapper">
@@ -13,7 +13,7 @@ scripts: [/assets/js/utils/device-detect.js, /assets/js/utils/canvas-utils.js, /
         To quickly get started, click the Random button to create a random matrix pattern.
     </p>
     <div id="game-of-life-container">
-        <canvas id="game-of-life-canvas" width="500" height="500"></canvas>
+        <div id="game-of-life-grid"></div>
         <div class="controls">
             <button id="start-btn" class="normal-btn">Start</button>
             <button id="random-btn" class="normal-btn">Random</button>

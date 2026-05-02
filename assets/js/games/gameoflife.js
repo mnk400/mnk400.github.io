@@ -1,84 +1,78 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const canvas = document.getElementById('game-of-life-canvas');
-    const ctx = canvas.getContext('2d');
+    const gridElement = document.getElementById('game-of-life-grid');
     const startBtn = document.getElementById('start-btn');
     const randomBtn = document.getElementById('random-btn');
     const stepBtn = document.getElementById('step-btn');
     const resetBtn = document.getElementById('reset-btn');
 
-    const isMobile = DeviceDetect.isMobileDevice();
+    const isMobile = window.innerWidth <= 768;
+    const cols = isMobile ? 16 : 24;
+    const rows = cols;
 
-    const maxCanvasHeight = 500;
-    
-    // Get the parent container's width to determine canvas width
-    const gameContainer = document.getElementById('game-of-life-container');
-    const canvasWidth = gameContainer ? gameContainer.offsetWidth : window.innerWidth;
-    const canvasHeight = Math.min(maxCanvasHeight, window.innerHeight - 280);
-
-    canvas.width = canvasWidth;
-    canvas.height = canvasHeight;
-
-    const cellSize = isMobile ? Math.floor(canvasWidth / 16) : 21;
-    const rows = Math.floor(canvas.height / cellSize);
-    const cols = Math.floor(canvas.width / cellSize);
-    let grid = createEmptyGrid();
-    let nextGrid = createEmptyGrid();
-    
+    let state = createEmptyState();
+    let cellElements = [];
     let gameRunning = false;
     let gameInterval = null;
-    const frameRate = 7; 
+    const frameRate = 6;
     const frameInterval = 1000 / frameRate;
-    
-    // Colors based on theme
-    const colors = {
-        cell: CanvasUtils.css('--text-color'),
-        cellStroke: CanvasUtils.css('--text-color')
-    };
 
-    // Function to update colors based on current theme
-    function updateThemeColors() {
-        colors.cell = CanvasUtils.css('--text-color');
-        colors.cellStroke = CanvasUtils.css('--text-color');
-        if (typeof render === 'function') {
-            render();
-        }
-    }
-
-    // Listen for theme changes
-    CanvasUtils.onThemeChange(updateThemeColors);
-
-    updateThemeColors();
-
-    function createEmptyGrid() {
+    function createEmptyState() {
         return Array(rows).fill().map(() => Array(cols).fill(0));
     }
 
-    function randomizeGrid() {
-        resetGame();
+    function buildGrid() {
+        gridElement.innerHTML = '';
+        gridElement.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+        cellElements = [];
         for (let i = 0; i < rows; i++) {
+            cellElements[i] = [];
             for (let j = 0; j < cols; j++) {
-                grid[i][j] = Math.random() > 0.7 ? 1 : 0;
+                const cell = document.createElement('div');
+                cell.classList.add('gol-cell');
+                cell.addEventListener('click', () => toggleCell(i, j));
+                gridElement.appendChild(cell);
+                cellElements[i][j] = cell;
             }
         }
-        
+    }
+
+    function toggleCell(i, j) {
+        state[i][j] = state[i][j] ? 0 : 1;
+        cellElements[i][j].classList.toggle('alive', state[i][j] === 1);
+    }
+
+    function render() {
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < cols; j++) {
+                cellElements[i][j].classList.toggle('alive', state[i][j] === 1);
+            }
+        }
+    }
+
+    function randomize() {
+        stopGame();
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < cols; j++) {
+                state[i][j] = Math.random() > 0.7 ? 1 : 0;
+            }
+        }
         render();
     }
 
-    function resetGame() {
-        grid = createEmptyGrid();
-        
+    function reset() {
         stopGame();
+        state = createEmptyState();
         render();
     }
 
     function startGame() {
-        if (!gameRunning) {
-            gameRunning = true;
-            startBtn.textContent = 'Pause';
-            gameInterval = setInterval(step, frameInterval);
-        } else {
+        if (gameRunning) {
             stopGame();
+            return;
         }
+        gameRunning = true;
+        startBtn.textContent = 'Pause';
+        gameInterval = setInterval(step, frameInterval);
     }
 
     function stopGame() {
@@ -91,120 +85,39 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function step() {
-        computeNextGeneration();
-        grid = JSON.parse(JSON.stringify(nextGrid)); // Deep copy
-        
-        render();
-    }
-
-    function computeNextGeneration() {
+        const next = createEmptyState();
         for (let i = 0; i < rows; i++) {
             for (let j = 0; j < cols; j++) {
-                const neighbors = countNeighbors(i, j);
-                
-                // Conway's Game of Life rules
-                if (grid[i][j] === 1) {
-                    // Any live cell with fewer than two live neighbors dies (underpopulation)
-                    // Any live cell with more than three live neighbors dies (overpopulation)
-                    if (neighbors < 2 || neighbors > 3) {
-                        nextGrid[i][j] = 0;
-                    } else {
-                        // Any live cell with two or three live neighbors lives on
-                        nextGrid[i][j] = 1;
-                    }
+                const n = countNeighbors(i, j);
+                if (state[i][j] === 1) {
+                    next[i][j] = (n === 2 || n === 3) ? 1 : 0;
                 } else {
-                    // Any dead cell with exactly three live neighbors becomes a live cell (reproduction)
-                    if (neighbors === 3) {
-                        nextGrid[i][j] = 1;
-                    } else {
-                        nextGrid[i][j] = 0;
-                    }
+                    next[i][j] = (n === 3) ? 1 : 0;
                 }
             }
         }
+        state = next;
+        render();
     }
 
     function countNeighbors(row, col) {
         let count = 0;
-        for (let i = -1; i <= 1; i++) {
-            for (let j = -1; j <= 1; j++) {
-                if (i === 0 && j === 0) continue;
-                
-                const r = (row + i + rows) % rows;
-                const c = (col + j + cols) % cols;
-                
-                count += grid[r][c];
+        for (let di = -1; di <= 1; di++) {
+            for (let dj = -1; dj <= 1; dj++) {
+                if (di === 0 && dj === 0) continue;
+                const r = (row + di + rows) % rows;
+                const c = (col + dj + cols) % cols;
+                count += state[r][c];
             }
         }
         return count;
     }
 
-    function render() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        for (let i = 0; i < rows; i++) {
-            for (let j = 0; j < cols; j++) {
-                const gap = 2;
-                const radius = 4; 
-                
-                const x = j * cellSize + gap;
-                const y = i * cellSize + gap;
-                const width = cellSize - (gap * 2);
-                const height = cellSize - (gap * 2);
-                
-                // rounded rectangle for all cells
-                ctx.beginPath();
-                ctx.moveTo(x + radius, y);
-                ctx.lineTo(x + width - radius, y);
-                ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-                ctx.lineTo(x + width, y + height - radius);
-                ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-                ctx.lineTo(x + radius, y + height);
-                ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-                ctx.lineTo(x, y + radius);
-                ctx.quadraticCurveTo(x, y, x + radius, y);
-                ctx.closePath();
-                
-                if (grid[i][j] === 1) {
-                    ctx.fillStyle = colors.cell;
-                    ctx.fill();
-                    ctx.strokeStyle = colors.cellStroke;
-                    ctx.lineWidth = 0.5;
-                    ctx.stroke();
-                } else {
-                    // Dead cell border
-                    ctx.strokeStyle = '#a0a0a0';
-                    ctx.lineWidth = 0.4;
-                    ctx.stroke();
-                }
-            }
-        }
-    }
-
-    // Handle canvas click to toggle cell state
-    function handleCanvasClick(event) {
-        const rect = canvas.getBoundingClientRect();
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
-        const x = (event.clientX - rect.left) * scaleX;
-        const y = (event.clientY - rect.top) * scaleY;
-
-        const col = Math.floor(x / cellSize);
-        const row = Math.floor(y / cellSize);
-
-        if (row >= 0 && row < rows && col >= 0 && col < cols) {
-            grid[row][col] = grid[row][col] === 0 ? 1 : 0;
-            render();
-        }
-    }
-
-    // Event Listeners
-    canvas.addEventListener('click', handleCanvasClick);
     startBtn.addEventListener('click', startGame);
-    randomBtn.addEventListener('click', randomizeGrid);
+    randomBtn.addEventListener('click', randomize);
     stepBtn.addEventListener('click', step);
-    resetBtn.addEventListener('click', resetGame);
+    resetBtn.addEventListener('click', reset);
 
-    // Initial render
-    resetGame();
+    buildGrid();
+    render();
 });

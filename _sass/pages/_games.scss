@@ -150,22 +150,38 @@
 #game-of-life-container {
     display: flex;
     flex-direction: column;
-    position: relative;
+    align-items: stretch;
+    margin: var(--spacing-lg) 0 0;
 }
 
-#game-of-life-canvas {
-    justify-content: center;
-    align-items: center;
+#game-of-life-grid {
+    display: grid;
+    grid-gap: var(--spacing-xs);
+    max-width: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+
+    @media screen and (max-width: 768px) {
+        grid-gap: 3px;
+    }
 }
 
 .gol-cell {
-    width: 15px;
-    height: 15px;
-    border: 1px solid var(--game-gol-cell-border);
-    transition: background-color var(--transition-medium);
+    border: 1px solid var(--translucent-medium);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    user-select: none;
+    aspect-ratio: 1;
+    min-width: 0;
+    box-sizing: border-box;
+
+    @include hover-interactive {
+        background-color: var(--translucent-medium);
+    }
 
     &.alive {
-        background-color: var(--game-gol-cell-alive);
+        background-color: var(--text-color);
+        border-color: var(--text-color);
     }
 }
 
@@ -173,26 +189,20 @@
 #minesweeper-container {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    margin: var(--spacing-md) auto;
+    align-items: stretch;
+    margin: 0;
 }
 
 #minesweeper-header {
     display: flex;
     justify-content: space-between;
+    align-items: baseline;
     width: 100%;
-    margin-bottom: var(--spacing-md);
-}
-
-#mine-counter,
-#game-timer {
-    font-weight: 500;
-    font-size: 18px;
-    color: var(--text-color);
-    background: var(--translucent-medium);
-    padding: var(--spacing-sm) var(--spacing-lg);
-    border-radius: var(--spacing-xl);
-    backdrop-filter: blur(4px);
+    font-size: 0.85em;
+    font-weight: 300;
+    color: var(--sec-text-color);
+    letter-spacing: 0.3px;
+    margin: var(--spacing-xl) 0 var(--spacing-sm);
 }
 
 #minesweeper-grid {
@@ -201,30 +211,36 @@
     max-width: 100%;
     overflow: hidden;
     box-sizing: border-box;
+
+    @media screen and (max-width: 768px) {
+        grid-gap: 3px;
+    }
 }
 
 .ms-cell {
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 2px solid var(--translucent-medium);
-    border-radius: var(--radius-md);
+    border: 1px solid var(--translucent-medium);
+    border-radius: var(--radius-sm);
     cursor: pointer;
-    font-weight: 500;
-    font-family: 'Inter', sans-serif;
-    transition: all var(--transition-medium);
+    font-weight: 400;
+    @include mono-font;
+    transition: background-color var(--transition-medium), border-color var(--transition-medium);
     user-select: none;
     position: relative;
     font-size: calc(100% - 2px);
     box-sizing: border-box;
-    max-width: 100%;
+    aspect-ratio: 1;
+    min-width: 0;
 
     @include hover-interactive {
         background-color: var(--translucent-medium);
     }
 
     &.revealed {
-        border-style: dashed;
+        border-color: var(--translucent-low);
+        background-color: var(--translucent-low);
     }
 
     @each $state, $icon in (flagged: "🚩", mine: "💣", flagged-correct: "🚩", flagged-wrong: "❌") {
@@ -239,6 +255,23 @@
             color: var(--game-ms-#{$i});
         }
     }
+}
+
+#minesweeper-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-lg);
+}
+
+#game-status {
+    flex-basis: 100%;
+    margin-top: var(--spacing-xs);
+    font-size: 0.85em;
+    font-weight: 300;
+    color: var(--sec-text-color);
+    letter-spacing: 0.3px;
 }
 
 @each $state in (win, lose) {

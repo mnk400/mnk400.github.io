@@ -30,27 +30,21 @@ function initGame() {
     firstClick = true;
     
     // Update UI
-    timerElement.textContent = `Time: ${gameTime}`;
+    timerElement.textContent = `time · ${gameTime}`;
     minesLeft = gameConfig.mines;
-    mineCounterElement.textContent = `Mines: ${minesLeft}`;
+    mineCounterElement.textContent = `mines · ${minesLeft}`;
     gameStatusElement.textContent = '';
     
-    // Create grid
-    gridElement.style.gridTemplateColumns = `repeat(${gameConfig.cols}, 1fr)`;
     grid = [];
-    
-    // Calculate cell size based on available width
+
+    gridElement.style.gridTemplateColumns = `repeat(${gameConfig.cols}, 1fr)`;
+
+    // Estimate cell size for font sizing (cells themselves are sized by the grid via aspect-ratio)
     const gameWrapper = document.querySelector('.game-wrapper');
     const availableWidth = Math.min(gameWrapper.clientWidth, window.innerWidth);
-    
-    // Calculate cell size based on grid dimensions and available width
-    // Account for grid gap (2px), cell borders (2px on each side), and grid padding (4px on each side)
-    const totalHorizontalSpacing = (gameConfig.cols - 1) * 2 + gameConfig.cols * 4 + 8;
-    const cellSize = Math.floor((availableWidth - totalHorizontalSpacing) / gameConfig.cols);
-    
-    // Make sure grid doesn't overflow container
-    const finalGridWidth = availableWidth;
-    gridElement.style.width = `${finalGridWidth}px`;
+    const gap = window.innerWidth <= 768 ? 3 : 5;
+    const totalHorizontalSpacing = (gameConfig.cols - 1) * gap + gameConfig.cols * 2;
+    const cellSize = (availableWidth - totalHorizontalSpacing) / gameConfig.cols;
 
     // Initialize empty grid
     for (let row = 0; row < gameConfig.rows; row++) {
@@ -68,10 +62,6 @@ function initGame() {
             cell.classList.add('ms-cell');
             cell.setAttribute('data-row', row);
             cell.setAttribute('data-col', col);
-            cell.style.width = `${cellSize}px`;
-            cell.style.height = `${cellSize}px`;
-            
-            // Adjust font size based on cell size
             cell.style.fontSize = `${Math.max(cellSize * 0.5, 12)}px`;
             
             // Add event listeners
@@ -171,7 +161,7 @@ function handleRightClick(event) {
         minesLeft--;
     }
     
-    mineCounterElement.textContent = `Mines: ${minesLeft}`;
+    mineCounterElement.textContent = `mines · ${minesLeft}`;
 }
 
 // Reveal a cell
@@ -234,7 +224,7 @@ function endGame(isWin) {
     clearInterval(timerInterval);
     
     if (isWin) {
-        gameStatusElement.textContent = 'You Win! 🎉';
+        gameStatusElement.textContent = 'you win 🎉';
         gameStatusElement.classList.add('win');
         
         // Flag all mines
@@ -247,7 +237,7 @@ function endGame(isWin) {
             }
         }
     } else {
-        gameStatusElement.textContent = 'Game Over! 💣';
+        gameStatusElement.textContent = 'boom 💣';
         gameStatusElement.classList.add('lose');
         
         // Reveal all mines
@@ -276,7 +266,7 @@ function endGame(isWin) {
 function startTimer() {
     timerInterval = setInterval(() => {
         gameTime++;
-        timerElement.textContent = `Time: ${gameTime}`;
+        timerElement.textContent = `time · ${gameTime}`;
     }, 1000);
 }
 
