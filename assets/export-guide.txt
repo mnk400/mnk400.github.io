@@ -502,10 +502,9 @@ Features:
     - Smooth zoom animation from original position to viewport center
     - Optional data-full-src: zoomed image loads from this URL instead of the
       thumbnail src (useful for thumbnail grids)
-    - Prev/next chevrons + ArrowLeft/ArrowRight keys when inside a
+    - Prev/next controls + ArrowLeft/ArrowRight keys when inside a
       [data-gallery] container with multiple [data-zoomable] siblings.
-      On touch devices (@media (hover: none)) chevrons are hidden and
-      horizontal swipe gestures replace them.
+      Horizontal swipe gestures also work on touch devices.
     - Sibling order follows DOM order by default. If each image has a
       data-gallery-index attribute (numeric), navigation uses that order
       instead — useful for masonry layouts where the DOM order is
@@ -514,7 +513,9 @@ Features:
       line below the image; both are hidden when empty
     - Respects natural image dimensions (won't upscale beyond original)
     - Keyboard ESC to close, click backdrop to close
-    - Minimal close button (Phosphor ph-x) — no background, matches site text
+    - Caption/detail metadata sits above the zoomed image; a compact control
+      cluster is fixed near the viewport bottom with optional image count,
+      prev/next controls, and close button (Phosphor icons)
     - GPU-accelerated transitions
 
 API (exposed on window.ImageZoom):

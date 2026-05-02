@@ -10,9 +10,11 @@
 (function () {
   let backdrop = null;
   let clonedImage = null;
+  let controlsEl = null;
   let closeButton = null;
   let prevButton = null;
   let nextButton = null;
+  let counterEl = null;
   let metaEl = null;
 
   let originalImage = null;
@@ -66,17 +68,17 @@
   function calculateZoomedDimensions(naturalWidth, naturalHeight, hasMeta) {
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
-    // On touch devices the chevrons are hidden, so we don't need to reserve
-    // space for them — give the image more room instead.
+    // On touch devices the controls sit on top of the image, so we don't need
+    // to reserve side space for navigation controls.
     const horizontalPadding = isTouchDevice() ? 20 : 60;
     const verticalPadding = 40;
-    // Reserve only what the meta actually needs (gap + single-line text +
-    // small margin below). Image itself is centered in the full viewport;
-    // this just keeps the meta from clipping off the bottom edge.
-    const metaReserve = hasMeta ? 50 : 0;
+    const controlsReserve = 40;
+    const metaReserve = hasMeta ? 36 : 0;
 
+    const topReserve = verticalPadding + metaReserve;
+    const bottomReserve = verticalPadding + controlsReserve;
     const maxWidth = viewportWidth - horizontalPadding * 2;
-    const maxHeight = viewportHeight - verticalPadding * 2 - metaReserve;
+    const maxHeight = viewportHeight - topReserve - bottomReserve;
 
     const imageAspect = naturalWidth / naturalHeight;
     const viewportAspect = maxWidth / maxHeight;
@@ -94,7 +96,7 @@
       width: finalWidth,
       height: finalHeight,
       left: (viewportWidth - finalWidth) / 2,
-      top: (viewportHeight - finalHeight) / 2,
+      top: topReserve + (maxHeight - finalHeight) / 2,
     };
   }
 
@@ -129,7 +131,7 @@
     );
   }
 
-  function makeButton(className, icon, ariaLabel, onClick) {
+  function makeButton(className, icon, ariaLabel, onClick, parent = document.body) {
     const btn = document.createElement("button");
     btn.className = className;
     btn.innerHTML = `<i class="ph-bold ${icon}"></i>`;
@@ -138,7 +140,7 @@
       e.stopPropagation();
       onClick();
     });
-    document.body.appendChild(btn);
+    parent.appendChild(btn);
     return btn;
   }
 
@@ -148,27 +150,38 @@
     backdrop.addEventListener("click", closeZoom);
     document.body.appendChild(backdrop);
 
-    closeButton = makeButton(
-      "image-zoom-close",
-      "ph-x",
-      "Close zoomed image",
-      closeZoom,
-    );
+    controlsEl = document.createElement("div");
+    controlsEl.className = "image-zoom-controls";
+    document.body.appendChild(controlsEl);
 
     if (multi) {
+      counterEl = document.createElement("span");
+      counterEl.className = "image-zoom-counter";
+      controlsEl.appendChild(counterEl);
+
       prevButton = makeButton(
-        "image-zoom-nav image-zoom-nav--prev",
+        "image-zoom-control-button image-zoom-nav image-zoom-nav--prev",
         "ph-caret-left",
         "Previous image",
         () => navigate(-1),
+        controlsEl,
       );
       nextButton = makeButton(
-        "image-zoom-nav image-zoom-nav--next",
+        "image-zoom-control-button image-zoom-nav image-zoom-nav--next",
         "ph-caret-right",
         "Next image",
         () => navigate(1),
+        controlsEl,
       );
     }
+
+    closeButton = makeButton(
+      "image-zoom-control-button image-zoom-close",
+      "ph-x",
+      "Close zoomed image",
+      closeZoom,
+      controlsEl,
+    );
 
     metaEl = document.createElement("div");
     metaEl.className = "image-zoom-meta";
@@ -187,16 +200,32 @@
 
   function positionMeta(target) {
     if (!metaEl) return;
-    const gap = 12;
+    const gap = 8;
     metaEl.style.left = target.left + "px";
-    metaEl.style.top = target.top + target.height + gap + "px";
+    metaEl.style.top =
+      Math.max(gap, target.top - metaEl.offsetHeight - gap) + "px";
     metaEl.style.width = target.width + "px";
+    metaEl.style.maxWidth = "";
+  }
+
+  function positionControls(target) {
+    if (!controlsEl) return;
+    controlsEl.style.left = "";
+    controlsEl.style.top = "";
   }
 
   function updateNavState() {
-    if (!prevButton || !nextButton) return;
-    prevButton.disabled = currentIndex <= 0;
-    nextButton.disabled = currentIndex >= siblings.length - 1;
+    if (counterEl) {
+      counterEl.textContent = `${currentIndex + 1} / ${siblings.length}`;
+    }
+
+    if (prevButton) {
+      prevButton.disabled = currentIndex <= 0;
+    }
+
+    if (nextButton) {
+      nextButton.disabled = currentIndex >= siblings.length - 1;
+    }
   }
 
   async function openZoom(img) {
@@ -224,12 +253,14 @@
 
     requestAnimationFrame(() => {
       backdrop.classList.add("active");
+      if (controlsEl) controlsEl.classList.add("active");
       closeButton.classList.add("active");
       if (prevButton) prevButton.classList.add("active");
       if (nextButton) nextButton.classList.add("active");
       updateNavState();
       updateMeta();
       positionMeta(target);
+      positionControls(target);
 
       setRect(clonedImage, target);
       clonedImage.classList.add("zoomed");
@@ -288,6 +319,7 @@
       oldClone.remove();
       updateMeta();
       positionMeta(target);
+      positionControls(target);
       isAnimating = false;
     }, 300);
   }
@@ -304,6 +336,7 @@
     setRect(clonedImage, currentRect);
     clonedImage.classList.remove("zoomed");
     backdrop.classList.remove("active");
+    if (controlsEl) controlsEl.classList.remove("active");
     closeButton.classList.remove("active");
     if (prevButton) prevButton.classList.remove("active");
     if (nextButton) nextButton.classList.remove("active");
@@ -312,11 +345,20 @@
     setTimeout(() => {
       originalImage.style.visibility = "";
 
-      [clonedImage, backdrop, closeButton, prevButton, nextButton, metaEl]
+      [
+        clonedImage,
+        backdrop,
+        controlsEl,
+        closeButton,
+        prevButton,
+        nextButton,
+        counterEl,
+        metaEl,
+      ]
         .filter(Boolean)
         .forEach((el) => el.remove());
-      clonedImage = backdrop = closeButton = null;
-      prevButton = nextButton = metaEl = null;
+      clonedImage = backdrop = controlsEl = closeButton = null;
+      prevButton = nextButton = counterEl = metaEl = null;
 
       originalImage = null;
       siblings = [];

@@ -10,26 +10,67 @@ scripts: [/assets/js/tools/historical-browser.js]
 ---
 
 <div class="historical-browser">
-    <div class="historical-browser-url-bar">
-        <span id="browser-home" class="browser-controls"
-            ><i class="ph-bold ph-house"></i
-        ></span>
-        <span id="browser-back" class="browser-controls"
-            ><i class="ph-bold ph-arrow-left"></i
-        ></span>
-        <span id="browser-forward" class="browser-controls"
-            ><i class="ph-bold ph-arrow-right"></i
-        ></span>
-        <input type="text" id="url-input" placeholder="Enter URL" />
-        <div class="year-selector-container">
-            <select id="year-selector" class="historical-browser-year-selector">
-                <!-- Years will be populated by JavaScript -->
-            </select>
-            <i class="ph-bold ph-caret-down year-selector-icon"></i>
+    <form id="historical-browser-form" class="historical-browser-search">
+        <label class="historical-browser-search__field" for="url-input">
+            <i class="ph-bold ph-globe"></i>
+            <input
+                type="text"
+                id="url-input"
+                inputmode="url"
+                autocomplete="url"
+                placeholder="apple.com"
+            />
+        </label>
+        <button
+            id="go-button"
+            class="historical-browser-go-btn"
+            type="submit"
+            aria-label="Open archived page"
+        >
+            <i class="ph-bold ph-arrow-right"></i>
+        </button>
+    </form>
+
+    <div class="historical-browser-toolbar" aria-label="Historical browser controls">
+        <div class="historical-browser-nav" aria-label="Page navigation">
+            <button id="browser-home" class="browser-control-button" type="button" aria-label="Home">
+                <i class="ph-bold ph-house"></i>
+            </button>
+            <button id="browser-back" class="browser-control-button" type="button" aria-label="Back">
+                <i class="ph-bold ph-arrow-left"></i>
+            </button>
+            <button id="browser-forward" class="browser-control-button" type="button" aria-label="Forward">
+                <i class="ph-bold ph-arrow-right"></i>
+            </button>
         </div>
-        <button id="go-button" class="historical-browser-go-btn">Go</button>
+
+        <div class="historical-browser-timeline" aria-label="Snapshot year">
+            <div id="year-timeline" class="historical-browser-timeline__track">
+                <!-- Years will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <p id="browser-status" class="historical-browser-status">2007 snapshot</p>
     </div>
+
     <div class="historical-browser-content">
+        <div id="browser-empty-state" class="historical-browser-empty">
+            <i class="ph-bold ph-clock-counter-clockwise"></i>
+            <div class="historical-browser-starters" aria-label="Starter sites">
+                <button type="button" class="historical-browser-starter" data-url="apple.com">
+                    apple.com
+                </button>
+                <button type="button" class="historical-browser-starter" data-url="google.com">
+                    google.com
+                </button>
+                <button type="button" class="historical-browser-starter" data-url="nytimes.com">
+                    nytimes.com
+                </button>
+            </div>
+        </div>
+        <div id="browser-loading-state" class="historical-browser-loading" hidden>
+            Fetching snapshot...
+        </div>
         <iframe id="historical-content-viewer" src="about:blank"></iframe>
     </div>
 </div>

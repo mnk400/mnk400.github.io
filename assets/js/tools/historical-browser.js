@@ -1,177 +1,257 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const urlInput = document.getElementById('url-input');
-    const iframeContainer = document.getElementById('historical-content-viewer');
-    const goButton = document.getElementById('go-button');
-    const yearSelector = document.getElementById('year-selector');
+document.addEventListener("DOMContentLoaded", () => {
+    const browserForm = document.getElementById("historical-browser-form");
+    const urlInput = document.getElementById("url-input");
+    const iframeContainer = document.getElementById("historical-content-viewer");
+    const goButton = document.getElementById("go-button");
+    const yearTimeline = document.getElementById("year-timeline");
+    const browserStatus = document.getElementById("browser-status");
+    const emptyState = document.getElementById("browser-empty-state");
+    const loadingState = document.getElementById("browser-loading-state");
     const homeButton = document.getElementById("browser-home");
     const backButton = document.getElementById("browser-back");
     const forwardButton = document.getElementById("browser-forward");
+    const starterButtons = document.querySelectorAll(".historical-browser-starter");
 
-    // Roughly working navigation history variables (doesn't work with iframe internal linking yet)
+    if (!browserForm || !urlInput || !iframeContainer || !goButton || !yearTimeline) {
+        console.error("Historical browser controls not found");
+        return;
+    }
+
+    const defaultYear = 2007;
+    let selectedYear = defaultYear;
     let navigationHistory = [];
     let currentHistoryIndex = -1;
+    let isLoadingSnapshot = false;
 
-    function populateYearSelector() {
+    function populateYearTimeline() {
         const currentYear = new Date().getFullYear();
+        const years = [];
+
         for (let year = currentYear; year >= 1998; year--) {
-            const option = document.createElement('option');
-            option.value = year;
-            option.textContent = year;
-            if (year === 2007) {
-                option.selected = true;
-            }
-            if (yearSelector) yearSelector.appendChild(option);
+            years.push(year);
+        }
+
+        yearTimeline.replaceChildren(
+            ...years.map((year) => {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "historical-browser-year";
+                button.dataset.year = year;
+                button.textContent = year;
+                button.setAttribute("aria-label", `${year} snapshot`);
+                button.setAttribute("aria-pressed", String(year === selectedYear));
+                return button;
+            })
+        );
+
+        updateSelectedYearButton();
+    }
+
+    function normalizeUrl(url) {
+        const trimmedUrl = url.trim();
+
+        if (!trimmedUrl.startsWith("http://") && !trimmedUrl.startsWith("https://")) {
+            return `http://${trimmedUrl}`;
+        }
+
+        return trimmedUrl;
+    }
+
+    function getReadableUrl(url) {
+        return url.replace(/^https?:\/\//, "");
+    }
+
+    function getWaybackUrl(url, year) {
+        const timestamp = `${year}0101000000`;
+        return `https://web.archive.org/web/${timestamp}/${url}`;
+    }
+
+    function setStatus(text) {
+        if (browserStatus) {
+            browserStatus.textContent = text;
         }
     }
 
-    function loadUrlInWaybackMachine(url, year) {
-        if (!url.startsWith('http://') && !url.startsWith('https://')) {
-            url = 'http://' + url;
-        }
-        const timestamp = year + '0101000000'; // Default to Jan 1st of the year
-        const waybackUrl = `https://web.archive.org/web/${timestamp}/${url}`;
-        if (iframeContainer) {
-            // Add to navigation history
-            if (currentHistoryIndex < navigationHistory.length - 1) {
-                // If we're not at the end of the history, remove all entries after current position
-                navigationHistory = navigationHistory.slice(0, currentHistoryIndex + 1);
-            }
-            navigationHistory.push({
-                url: url,
-                year: year,
-                waybackUrl: waybackUrl
-            });
-            currentHistoryIndex = navigationHistory.length - 1;
+    function setLoadingState(isLoading) {
+        isLoadingSnapshot = isLoading;
 
-            updateNavigationButtonStates();
-            iframeContainer.src = waybackUrl;
-        } else {
-            console.error('Iframe container not found');
+        if (loadingState) {
+            loadingState.hidden = !isLoading;
+        }
+
+        if (emptyState) {
+            emptyState.hidden = isLoading || currentHistoryIndex >= 0;
         }
     }
 
-    // This barely works, iframe src is not updated when iframe content changes ugh
-    function updateUrlBarFromIframe() {
-        try {
-            const currentIframeUrl = iframeContainer.src;
-            // The URL from Wayback Machine will be in the format: https://web.archive.org/web/YYYYMMDDhhmmss/original_url
-            // we want to extract the original_url part
-            const waybackPrefix = 'https://web.archive.org/web/';
-            if (currentIframeUrl.startsWith(waybackPrefix)) {
-                const parts = currentIframeUrl.substring(waybackPrefix.length).split('/');
-                if (parts.length > 1) {
-                    // The timestamp is parts[0], original URL starts from parts[1]
-                    const originalUrl = parts.slice(1).join('/');
-                    if (urlInput) urlInput.value = originalUrl;
-                }
-            } else {
-                if (urlInput) urlInput.value = currentIframeUrl;
-            }
-        } catch (e) {
-            // This catch block handles cross-origin errors when trying to access iframe.contentDocument
-            console.warn('Could not access iframe content due to cross-origin restrictions:', e);
+    function centerSelectedYearButton(selectedButton) {
+        if (!selectedButton) {
+            return;
         }
+
+        requestAnimationFrame(() => {
+            yearTimeline.scrollLeft =
+                selectedButton.offsetLeft -
+                (yearTimeline.clientWidth - selectedButton.offsetWidth) / 2;
+        });
     }
 
+    function updateSelectedYearButton() {
+        const buttons = yearTimeline.querySelectorAll(".historical-browser-year");
+        let selectedButton = null;
 
-    if (urlInput && goButton) {
-        goButton.addEventListener('click', () => {
-            const url = urlInput.value;
-            const year = yearSelector.value;
-            if (url) {
-                loadUrlInWaybackMachine(url, year);
+        buttons.forEach((button) => {
+            const isSelected = Number(button.dataset.year) === selectedYear;
+            button.classList.toggle("active", isSelected);
+            button.setAttribute("aria-pressed", String(isSelected));
+
+            if (isSelected) {
+                selectedButton = button;
             }
         });
 
-        urlInput.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') {
-                event.preventDefault();
-                goButton.click();
-            }
-        });
-    } else {
-        console.error('URL input, Go button, or Year selector not found');
+        centerSelectedYearButton(selectedButton);
+        setStatus(`${selectedYear} snapshot`);
     }
 
-    if (yearSelector) {
-        populateYearSelector();
-    } else {
-        console.error('URL input or Go button not found');
+    function setSelectedYear(year) {
+        selectedYear = Number(year);
+        updateSelectedYearButton();
     }
-
-    updateNavigationButtonStates();
-
-    iframeContainer.addEventListener('load', updateUrlBarFromIframe);
 
     function updateNavigationButtonStates() {
-        const backButton = document.getElementById("browser-back");
-        const forwardButton = document.getElementById("browser-forward");
-
         if (backButton) {
-            // Enable back button if we have history to go back to
-            backButton.classList.toggle('disabled', currentHistoryIndex <= 0);
+            backButton.disabled = currentHistoryIndex <= 0;
         }
 
         if (forwardButton) {
-            // Enable forward button if we have history to go forward to
-            forwardButton.classList.toggle('disabled', currentHistoryIndex >= navigationHistory.length - 1);
+            forwardButton.disabled = currentHistoryIndex >= navigationHistory.length - 1;
         }
     }
 
-    homeButton.addEventListener('click', () => {
-        if (iframeContainer) iframeContainer.src = 'about:blank';
-        if (urlInput) urlInput.value = '';
+    function showHistoryItem(historyItem) {
+        if (urlInput) {
+            urlInput.value = getReadableUrl(historyItem.url);
+        }
 
-        // Reset navigation history
-        navigationHistory = [];
-        currentHistoryIndex = -1;
+        setSelectedYear(Number(historyItem.year));
+        setLoadingState(true);
         updateNavigationButtonStates();
-    });
+        setStatus(`Fetching ${historyItem.year} snapshot...`);
+        iframeContainer.src = historyItem.waybackUrl;
+    }
 
-    backButton.addEventListener('click', () => {
-        if (currentHistoryIndex > 0) {
-            currentHistoryIndex--;
-            const historyItem = navigationHistory[currentHistoryIndex];
-
-            if (urlInput) urlInput.value = historyItem.url;
-
-            if (yearSelector) {
-                for (let i = 0; i < yearSelector.options.length; i++) {
-                    if (yearSelector.options[i].value === historyItem.year) {
-                        yearSelector.selectedIndex = i;
-                        break;
-                    }
-                }
-            }
-
-            // Load the URL without adding to history
-            if (iframeContainer) iframeContainer.src = historyItem.waybackUrl;
-
-            updateNavigationButtonStates();
+    function loadUrlInWaybackMachine(rawUrl, year) {
+        if (!rawUrl.trim()) {
+            return;
         }
-    });
 
-    forwardButton.addEventListener('click', () => {
+        const url = normalizeUrl(rawUrl);
+        const waybackUrl = getWaybackUrl(url, year);
+
         if (currentHistoryIndex < navigationHistory.length - 1) {
-            currentHistoryIndex++;
-            const historyItem = navigationHistory[currentHistoryIndex];
+            navigationHistory = navigationHistory.slice(0, currentHistoryIndex + 1);
+        }
 
-            if (urlInput) urlInput.value = historyItem.url;
+        navigationHistory.push({
+            url,
+            year: Number(year),
+            waybackUrl,
+        });
+        currentHistoryIndex = navigationHistory.length - 1;
 
-            if (yearSelector) {
-                for (let i = 0; i < yearSelector.options.length; i++) {
-                    if (yearSelector.options[i].value === historyItem.year) {
-                        yearSelector.selectedIndex = i;
-                        break;
-                    }
-                }
+        showHistoryItem(navigationHistory[currentHistoryIndex]);
+    }
+
+    function updateUrlBarFromIframe() {
+        if (isLoadingSnapshot) {
+            setLoadingState(false);
+            setStatus(`${selectedYear} snapshot`);
+        }
+
+        try {
+            const currentIframeUrl = iframeContainer.src;
+            const waybackPrefix = "https://web.archive.org/web/";
+
+            if (currentIframeUrl === "about:blank") {
+                return;
             }
 
-            // Load the URL without adding to history
-            if (iframeContainer) iframeContainer.src = historyItem.waybackUrl;
+            if (currentIframeUrl.startsWith(waybackPrefix)) {
+                const parts = currentIframeUrl.substring(waybackPrefix.length).split("/");
 
-            updateNavigationButtonStates();
+                if (parts.length > 1) {
+                    const originalUrl = parts.slice(1).join("/");
+                    urlInput.value = getReadableUrl(originalUrl);
+                }
+            } else {
+                urlInput.value = getReadableUrl(currentIframeUrl);
+            }
+        } catch (e) {
+            console.warn("Could not read iframe URL due to cross-origin restrictions:", e);
+        }
+    }
+
+    browserForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        loadUrlInWaybackMachine(urlInput.value, selectedYear);
+    });
+
+    yearTimeline.addEventListener("click", (event) => {
+        const yearButton = event.target.closest(".historical-browser-year");
+
+        if (!yearButton) {
+            return;
+        }
+
+        setSelectedYear(Number(yearButton.dataset.year));
+
+        if (currentHistoryIndex >= 0 && urlInput.value.trim()) {
+            loadUrlInWaybackMachine(urlInput.value, selectedYear);
         }
     });
 
+    starterButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+            urlInput.value = button.dataset.url || "";
+            loadUrlInWaybackMachine(urlInput.value, selectedYear);
+        });
+    });
+
+    if (homeButton) {
+        homeButton.addEventListener("click", () => {
+            iframeContainer.src = "about:blank";
+            urlInput.value = "";
+            navigationHistory = [];
+            currentHistoryIndex = -1;
+            setSelectedYear(defaultYear);
+            setLoadingState(false);
+            updateNavigationButtonStates();
+        });
+    }
+
+    if (backButton) {
+        backButton.addEventListener("click", () => {
+            if (currentHistoryIndex > 0) {
+                currentHistoryIndex--;
+                showHistoryItem(navigationHistory[currentHistoryIndex]);
+            }
+        });
+    }
+
+    if (forwardButton) {
+        forwardButton.addEventListener("click", () => {
+            if (currentHistoryIndex < navigationHistory.length - 1) {
+                currentHistoryIndex++;
+                showHistoryItem(navigationHistory[currentHistoryIndex]);
+            }
+        });
+    }
+
+    iframeContainer.addEventListener("load", updateUrlBarFromIframe);
+    window.addEventListener("resize", updateSelectedYearButton);
+
+    populateYearTimeline();
+    updateNavigationButtonStates();
+    setLoadingState(false);
 });
