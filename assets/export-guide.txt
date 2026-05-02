@@ -99,7 +99,6 @@ Each theme defines these CSS custom properties:
     --translucent-medium       Medium backdrop (0.07 opacity)
     --translucent-high         Strong backdrop (0.2 opacity)
     --code-bg                  Code block background
-    --note-bg                  Note/callout background
 
 Theme values:
 
@@ -197,6 +196,7 @@ Variants (add as modifier class):
     .btn--link-variant    Outlined link-style button
     .btn--copy            Small copy-action button
     .btn--outline         Translucent with outline border
+    .btn--text            Plain text button (no background/border) — for quiet utility actions
 
 Expandable toggle:
     <button class="expandable-toggle" aria-expanded="false">

@@ -28,11 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const width = parseInt(widthInput.value);
 
-        // Get the container width for responsive sizing
-        const containerWidth = asciiOutput.parentElement.clientWidth;
-
-        // Calculate font size based on container width and character count
-        const fontSize = calculateOptimalFontSize(containerWidth, width);
+        const containerWidth = asciiOutput.clientWidth - parseFloat(getComputedStyle(asciiOutput).paddingLeft) * 2;
+        const fontSize = calculateOptimalFontSize(containerWidth, width, asciiOutput);
 
         // Create a canvas to process the image
         const canvas = document.createElement('canvas');

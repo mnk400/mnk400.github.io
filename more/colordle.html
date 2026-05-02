@@ -30,10 +30,12 @@ scripts: [/assets/js/games/colordle.js]
         expanded=false
         %}
 
-        <div class="target-color" id="target-color">
-            <div class="color-header">Target Color</div>
-            <div class="color-display" id="color-display"></div>
+        <div id="colordle-meta">
+            <span>target color</span>
+            <span><span id="guess-count">0</span>/6</span>
         </div>
+
+        <div class="color-display" id="color-display"></div>
 
         <div class="game-board" id="game-board">
             <!-- Guess rows will be added here -->
@@ -41,7 +43,7 @@ scripts: [/assets/js/games/colordle.js]
 
         <div class="input-section" id="input-section">
             <input type="text" id="guess-input" placeholder="#000000" maxlength="7" pattern="^#[0-9A-Fa-f]{6}$">
-            <button id="submit-guess">Guess</button>
+            <button id="submit-guess" class="normal-btn">Guess</button>
         </div>
 
         <div class="game-message" id="game-message"></div>
@@ -70,7 +72,7 @@ scripts: [/assets/js/games/colordle.js]
             </div>
 
             <div class="share-section">
-                <button id="share-results">Share Results</button>
+                <button id="share-results" class="normal-btn">Share Results</button>
                 <div id="share-text" class="share-text" style="display: none;"></div>
             </div>
         </div>

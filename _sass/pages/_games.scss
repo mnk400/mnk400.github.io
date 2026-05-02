@@ -97,11 +97,23 @@
 }
 
 // Tic Tac Toe
+#ttt-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 0.85em;
+    font-weight: 300;
+    color: var(--sec-text-color);
+    letter-spacing: 0.3px;
+    margin: var(--spacing-xl) 0 var(--spacing-sm);
+}
+
 #ttt-game-container {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(3, 1fr);
     gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
 }
 
 .ttt-cell {
@@ -281,29 +293,33 @@
 }
 
 // Colordle
+#colordle-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 0.85em;
+    font-weight: 300;
+    color: var(--sec-text-color);
+    letter-spacing: 0.3px;
+    margin: var(--spacing-xl) 0 var(--spacing-sm);
+}
+
 .colordle-container {
-    .target-color {
+    #color-display {
+        height: 70px;
+        border: 1px solid var(--translucent-medium);
         border-radius: var(--radius-lg);
-        margin-top: var(--spacing-sm);
-        margin-bottom: var(--spacing-xl);
-        border: 3px solid var(--translucent-medium);
-        backdrop-filter: blur(10px);
-        overflow: hidden;
+        margin-bottom: var(--spacing-lg);
+    }
 
-        .color-header {
-            background: var(--translucent-medium);
-            padding: var(--spacing-md);
-            font-weight: 500;
-        }
-
-        .color-display {
-            height: 100px;
-        }
+    #game-board {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-xs);
+        margin-bottom: var(--spacing-lg);
     }
 
     .guess-row {
-        margin-bottom: var(--spacing-md);
-
         .hex-cells {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -312,36 +328,28 @@
 
             .hex-cell {
                 aspect-ratio: 1;
-                min-height: 45px;
-                border: 2px solid var(--translucent-medium);
+                min-width: 0;
+                border: 1px solid var(--translucent-medium);
                 border-radius: var(--radius-sm);
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 @include mono-font;
-                font-size: 1.2rem;
-                font-weight: 500;
+                font-size: 1.1rem;
+                font-weight: 400;
                 color: var(--text-color);
-                background: var(--background-main);
-                backdrop-filter: blur(10px);
-                transition: all var(--transition-slow);
+                transition: background-color var(--transition-medium), border-color var(--transition-medium);
                 box-sizing: border-box;
 
                 &.hash-cell {
-                    background: var(--translucent-medium);
-                    border-color: var(--translucent-medium);
                     color: var(--sec-text-color);
 
-                    // When cell has a background color, hide text and keep same border size
                     &[style*="background-color"] {
                         color: transparent;
-                        border: 2px solid var(--translucent-medium);
                     }
                 }
 
                 &.empty-cell {
-                    background: var(--translucent-medium);
-                    border-color: var(--translucent-medium);
                     color: var(--sec-text-color);
                 }
 
@@ -358,13 +366,13 @@
 
     .input-section {
         display: flex;
-        gap: var(--spacing-md);
+        gap: var(--spacing-sm);
         margin-bottom: var(--spacing-lg);
 
         #guess-input {
             flex: 1;
             @include mono-font;
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
     }
 

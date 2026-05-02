@@ -17,8 +17,8 @@ scripts: [/assets/js/utils/color-utils.js, /assets/js/tools/color-palette.js]
         {% include image-upload.html %}
         {% include range-slider.html id='colors' value='5' min='2' max='10' unit='Colors' %}
 
-        <div>
-            <button id="extract-btn">Extract Palette</button>
+        <div class="button-container">
+            <button id="extract-btn" class="normal-btn">Extract Palette</button>
         </div>
     </div>
 
@@ -26,31 +26,17 @@ scripts: [/assets/js/utils/color-utils.js, /assets/js/tools/color-palette.js]
         <!-- Color swatches will be added here -->
     </div>
 
+    <div id="palette-actions" class="palette-actions" style="display: none;">
+        <button id="copy-all-btn" type="button" class="btn--text">copy all hex</button>
+    </div>
+
     <!-- Templates -->
     <template id="color-swatch-template">
-        <div class="color-swatch" data-color="" data-index=""></div>
+        <button class="color-swatch" type="button" data-color="" data-index="">
+            <span class="color-swatch__hex"></span>
+            <span class="color-swatch__feedback">Copied</span>
+        </button>
     </template>
-
-    <div id="color-info" class="color-info" style="display: none;">
-        <!-- Color details will be populated here -->
-        <div class="color-detail">
-            <div id="color-preview" class="color-preview"></div>
-            <div class="color-values">
-                <div class="color-value">
-                    <b>HEX: </b><span id="hex-value" class="color-code"></span>
-                    <button class="copy-btn btn--small" data-value="" data-type="hex">Copy</button>
-                </div>
-                <div class="color-value">
-                    <b>RGB: </b><span id="rgb-value" class="color-code"></span>
-                    <button class="copy-btn btn--small" data-value="" data-type="rgb">Copy</button>
-                </div>
-                <div class="color-value">
-                    <b>HSL: </b><span id="hsl-value" class="color-code"></span>
-                    <button class="copy-btn btn--small" data-value="" data-type="hsl">Copy</button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Error message template -->
     <template id="error-template">

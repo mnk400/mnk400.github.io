@@ -185,9 +185,8 @@ input[type="color"] {
 #image-preview {
     max-width: 100%;
     display: none;
-    margin: 0;
+    margin: var(--spacing-md) 0;
     transition: opacity 0.5s ease-out;
-    margin-bottom: var(--spacing-md);
 
     &.fade-out {
         opacity: 0;

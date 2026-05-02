@@ -1,5 +1,5 @@
 const gameContainer = document.getElementById('ttt-game-container');
-const statusDisplay = document.getElementById('status');
+const statusDisplay = document.getElementById('ttt-status');
 const resetButton = document.getElementById('reset-btn');
 
 let gameState = ['', '', '', '', '', '', '', '', ''];
@@ -122,16 +122,16 @@ function endGame(winner) {
             });
         }
 
-        statusDisplay.textContent = winner === humanPlayer ? 'You Win 😄' : 'You Lose 😞';
+        statusDisplay.textContent = winner === humanPlayer ? 'you win 🎉' : 'you lose 💀';
     } else {
-        statusDisplay.textContent = "It's a Draw 😐";
+        statusDisplay.textContent = "draw 🤝";
     }
 }
 
 function updateStatus() {
     statusDisplay.textContent = currentPlayer === humanPlayer
-        ? "Your Turn"
-        : "Thinking...";
+        ? "your turn"
+        : "thinking...";
 }
 
 resetButton.addEventListener('click', () => {

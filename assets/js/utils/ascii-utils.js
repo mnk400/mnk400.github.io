@@ -37,11 +37,29 @@ function calculateHeight(width, sourceWidth, sourceHeight) {
     return Math.floor(width / aspectRatio / 2); // Divide by 2 because characters are taller than wide
 }
 
+const _monoRatioCache = new Map();
+
+function _measureMonoCharRatio(fontFamily) {
+    if (_monoRatioCache.has(fontFamily)) return _monoRatioCache.get(fontFamily);
+    const probe = document.createElement('span');
+    probe.style.cssText = 'position:absolute;visibility:hidden;white-space:pre;font-size:200px';
+    probe.style.fontFamily = fontFamily;
+    probe.textContent = 'M'.repeat(100);
+    document.body.appendChild(probe);
+    const charWidth = probe.getBoundingClientRect().width / 100;
+    document.body.removeChild(probe);
+    const ratio = 200 / charWidth;
+    _monoRatioCache.set(fontFamily, ratio);
+    return ratio;
+}
+
 /**
  * Calculate the font size in px that lets `charCount` monospace characters
- * fit across `containerWidth` px. The 1.8 factor approximates the typical
- * width-to-font-size ratio of monospace glyphs in this site's stack.
+ * fit exactly across `containerWidth` px, measured against `target`'s actual
+ * font stack rather than a fixed heuristic.
  */
-function calculateOptimalFontSize(containerWidth, charCount) {
-    return Math.floor(containerWidth / charCount * 1.8);
+function calculateOptimalFontSize(containerWidth, charCount, target) {
+    const fontFamily = target ? getComputedStyle(target).fontFamily : 'monospace';
+    const ratio = _measureMonoCharRatio(fontFamily);
+    return containerWidth / charCount * ratio;
 }

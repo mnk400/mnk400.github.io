@@ -132,36 +132,8 @@
     }
 }
 
-// Color info card (color palette page)
-.color-info {
-    @include translucent-surface;
-
-    .color-detail {
-        padding: var(--spacing-lg);
-        display: flex;
-        align-items: center;
-        gap: var(--spacing-xl);
-        flex-wrap: wrap;
-    }
-
-    .color-preview {
-        width: 80px;
-        height: 80px;
-        border-radius: var(--radius-md);
-    }
-
-    .color-values {
-        line-height: 1.5em;
-    }
-
-    .color-value {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: var(--spacing-md);
-    }
-
-    .color-code {
-        @include mono-font;
-    }
+// Palette actions row (color palette page)
+.palette-actions {
+    display: flex;
+    margin-bottom: var(--spacing-xl);
 }

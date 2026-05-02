@@ -56,6 +56,7 @@ class Colordle {
             this.saveTodaysGame();
         }
 
+        this.updateGuessCount();
         this.updateStats();
     }
 
@@ -79,6 +80,11 @@ class Colordle {
     renderTargetColor() {
         const colorDisplay = document.getElementById('color-display');
         colorDisplay.style.backgroundColor = this.targetColor;
+    }
+
+    updateGuessCount() {
+        const counter = document.getElementById('guess-count');
+        if (counter) counter.textContent = this.currentGuess;
     }
 
     renderGameBoard() {
@@ -169,6 +175,7 @@ class Colordle {
         });
 
         this.currentGuess++;
+        this.updateGuessCount();
         this.saveTodaysGame();
     }
 

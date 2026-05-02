@@ -41,9 +41,18 @@
         white-space: pre;
         @include mono-font;
         line-height: 1;
-        overflow: hidden;
+        overflow: auto;
         width: 100%;
         display: block;
+        box-sizing: border-box;
+        padding: var(--spacing-md);
+        border: 1px solid var(--translucent-medium);
+        border-radius: var(--radius-lg);
+        text-align: center;
+
+        &:empty {
+            aspect-ratio: 4 / 3;
+        }
     }
 }
 

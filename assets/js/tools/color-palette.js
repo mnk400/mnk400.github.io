@@ -5,12 +5,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const colorsInput = document.getElementById('colors-input');
     const extractBtn = document.getElementById('extract-btn');
     const paletteOutput = document.getElementById('palette-output');
-    const colorInfo = document.getElementById('color-info');
-    
+    const paletteActions = document.getElementById('palette-actions');
+    const copyAllBtn = document.getElementById('copy-all-btn');
+
     if (imagePreview) {
         imagePreview.style.display = 'none';
     }
-    
+
+    let currentPalette = [];
 
 
     imageInput.addEventListener('change', function(e) {
@@ -22,11 +24,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 imagePreview.style.display = 'block';
                 imageSelector.style.display = 'none';
                 paletteOutput.innerHTML = '';
-                // Don't clear the HTML structure, just hide it
-                colorInfo.style.display = 'none';
+                paletteActions.style.display = 'none';
+                currentPalette = [];
             };
             reader.readAsDataURL(file);
         }
+    });
+
+    copyAllBtn.addEventListener('click', () => {
+        if (!currentPalette.length) return;
+        const text = currentPalette.map(c => ColorUtils.rgbToHex(c.r, c.g, c.b)).join('\n');
+        const original = copyAllBtn.textContent;
+        Clipboard.copy(text).then(() => {
+            copyAllBtn.textContent = 'Copied';
+            setTimeout(() => { copyAllBtn.textContent = original; }, 1500);
+        });
     });
 
     extractBtn.addEventListener('click', () => {
@@ -314,12 +326,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Function to display the extracted palette
+    function isLight(r, g, b) {
+        // Perceived luminance (Rec. 709)
+        return (0.2126 * r + 0.7152 * g + 0.0722 * b) > 160;
+    }
+
     function displayPalette(colors) {
         paletteOutput.innerHTML = '';
-        colorInfo.style.display = 'none';
-        
+        currentPalette = colors;
+
         if (colors.length === 0) {
+            paletteActions.style.display = 'none';
             const errorTemplate = document.getElementById('error-template');
             if (errorTemplate) {
                 paletteOutput.appendChild(errorTemplate.content.cloneNode(true));
@@ -328,106 +345,32 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             return;
         }
-        
+
+        paletteActions.style.display = 'flex';
+
         const swatchTemplate = document.getElementById('color-swatch-template');
-        
-        // Create color swatches
+
         colors.forEach((color, index) => {
             const { r, g, b } = color;
             const hexColor = ColorUtils.rgbToHex(r, g, b);
-            
-            // Clone the template
-            if (swatchTemplate) {
-                const swatch = swatchTemplate.content.cloneNode(true).querySelector('.color-swatch');
-                swatch.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
-                swatch.dataset.color = hexColor;
-                swatch.dataset.index = index;
-                
-                // Add click event to show color details
-                swatch.addEventListener('click', () => {
-                    showColorDetails(r, g, b, hexColor, index);
-                });
-                
-                paletteOutput.appendChild(swatch);
-            } else {
-                // Fallback if template is not available
-                const swatch = document.createElement('div');
-                swatch.className = 'color-swatch';
-                swatch.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
-                swatch.dataset.color = hexColor;
-                swatch.dataset.index = index;
-                
-                swatch.addEventListener('click', () => {
-                    showColorDetails(r, g, b, hexColor, index);
-                });
-                
-                paletteOutput.appendChild(swatch);
-            }
+            const swatch = swatchTemplate.content.cloneNode(true).querySelector('.color-swatch');
+
+            swatch.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+            swatch.dataset.color = hexColor;
+            swatch.dataset.index = index;
+            swatch.querySelector('.color-swatch__hex').textContent = hexColor;
+            if (isLight(r, g, b)) swatch.classList.add('color-swatch--light');
+
+            swatch.addEventListener('click', () => copySwatch(swatch, hexColor));
+            paletteOutput.appendChild(swatch);
         });
-        
-        // Show details for the first color by default
-        if (colors.length > 0) {
-            const firstColor = colors[0];
-            showColorDetails(firstColor.r, firstColor.g, firstColor.b, ColorUtils.rgbToHex(firstColor.r, firstColor.g, firstColor.b), 0);
-        }
     }
 
-    function showColorDetails(r, g, b, hex, index) {
-        // Show the color info section
-        colorInfo.style.display = 'block';
-        
-        // Highlight the selected swatch
-        const swatches = document.querySelectorAll('.color-swatch');
-        swatches.forEach(swatch => {
-            swatch.classList.remove('selected');
-            if (parseInt(swatch.dataset.index) === index) {
-                swatch.classList.add('selected');
-            }
-        });
-        
-        // Update color preview
-        const colorPreview = document.getElementById('color-preview');
-        if (colorPreview) {
-            colorPreview.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
-        }
-        
-        // Update color values
-        const hexValue = document.getElementById('hex-value');
-        const rgbValue = document.getElementById('rgb-value');
-        const hslValue = document.getElementById('hsl-value');
-        const hslString = ColorUtils.rgbToHsl(r, g, b);
-        
-        if (hexValue) hexValue.textContent = hex;
-        if (rgbValue) rgbValue.textContent = `rgb(${r}, ${g}, ${b})`;
-        if (hslValue) hslValue.textContent = hslString;
-        
-        // Update copy buttons
-        const copyButtons = document.querySelectorAll('.copy-btn');
-        copyButtons.forEach(btn => {
-            const type = btn.dataset.type;
-            if (type === 'hex') {
-                btn.dataset.value = hex;
-            } else if (type === 'rgb') {
-                btn.dataset.value = `rgb(${r}, ${g}, ${b})`;
-            } else if (type === 'hsl') {
-                btn.dataset.value = hslString;
-            }
-            
-            // Remove existing event listeners to prevent duplicates
-            const newBtn = btn.cloneNode(true);
-            btn.parentNode.replaceChild(newBtn, btn);
-            
-            // Add click event for copying
-            newBtn.addEventListener('click', function() {
-                const textToCopy = this.dataset.value;
-                const originalText = this.textContent;
-                Clipboard.copy(textToCopy).then(() => {
-                    this.textContent = 'Copied!';
-                    setTimeout(() => {
-                        this.textContent = originalText;
-                    }, 1500);
-                });
-            });
+    function copySwatch(swatch, hex) {
+        Clipboard.copy(hex).then(() => {
+            swatch.classList.add('copied');
+            clearTimeout(swatch._copyTimer);
+            swatch._copyTimer = setTimeout(() => swatch.classList.remove('copied'), 900);
         });
     }
 

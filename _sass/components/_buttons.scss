@@ -70,6 +70,21 @@ button,
         color: var(--text-color);
     }
 
+    &--text {
+        padding: 0;
+        background-color: transparent;
+        backdrop-filter: none;
+        color: var(--sec-text-color);
+        font-size: 0.85em;
+        letter-spacing: 0.3px;
+        border-radius: 0;
+
+        @include hover-interactive {
+            background-color: transparent;
+            color: var(--text-color);
+        }
+    }
+
     code {
         background-color: transparent;
     }

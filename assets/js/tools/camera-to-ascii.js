@@ -43,8 +43,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderFrame(video) {
         let width = parseInt(widthInput.value);
-        const containerWidth = asciiOutput.parentElement.clientWidth;
-        let fontSize = calculateOptimalFontSize(containerWidth, width);
+        const containerWidth = asciiOutput.clientWidth - parseFloat(getComputedStyle(asciiOutput).paddingLeft) * 2;
+        let fontSize = calculateOptimalFontSize(containerWidth, width, asciiOutput);
 
         if (camera.isFullscreen()) {
             // Fill the screen: pick a width estimate then derive font size,
