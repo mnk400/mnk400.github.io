@@ -5,7 +5,68 @@ document.addEventListener('DOMContentLoaded', () => {
     const widthInput = document.getElementById('width-input');
     const convertBtn = document.getElementById('convert-btn');
     const asciiOutput = document.getElementById('ascii-output');
+    const copyBtn = document.getElementById('copy-btn');
     const downloadBtn = document.getElementById('download-btn');
+    const paletteToggle = document.getElementById('ascii-palette-toggle');
+    const ditherToggle = document.getElementById('ascii-dither-toggle');
+
+    function getActiveSwitchValue(id, fallback) {
+        if (window.switchManager && window.switchManager[id]) {
+            return window.switchManager[id].getActive() || fallback;
+        }
+
+        const active = document.querySelector(`#${id} .switch-option.active`);
+        return active ? active.dataset.value || active.id : fallback;
+    }
+
+    function getAsciiOptions() {
+        const palette = getActiveSwitchValue('ascii-palette-toggle', 'classic');
+        const dither = getActiveSwitchValue('ascii-dither-toggle', 'none');
+
+        return {
+            characters: ASCII_PALETTES[palette] || ASCII_PALETTES.classic,
+            dither
+        };
+    }
+
+    function setActionVisibility(isVisible) {
+        const display = isVisible ? 'inline-block' : 'none';
+        copyBtn.style.display = display;
+        downloadBtn.style.display = display;
+    }
+
+    function renderAscii(showMissingImageAlert) {
+        if (!imagePreview.src) {
+            if (showMissingImageAlert) {
+                alert('Please select an image first!');
+            }
+            return;
+        }
+
+        const width = parseInt(widthInput.value);
+
+        const containerWidth = asciiOutput.clientWidth - parseFloat(getComputedStyle(asciiOutput).paddingLeft) * 2;
+        const fontSize = calculateOptimalFontSize(containerWidth, width, asciiOutput);
+
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        const height = calculateHeight(width, imagePreview.naturalWidth, imagePreview.naturalHeight);
+
+        canvas.width = width;
+        canvas.height = height;
+
+        ctx.drawImage(imagePreview, 0, 0, width, height);
+        const imageData = ctx.getImageData(0, 0, width, height);
+        const ascii = convertToAscii(imageData, width, height, getAsciiOptions());
+
+        asciiOutput.style.fontSize = `${fontSize}px`;
+        asciiOutput.style.width = '100%';
+        asciiOutput.style.maxWidth = '525px';
+        asciiOutput.textContent = ascii;
+        copyBtn.dataset.copy = ascii;
+        setActionVisibility(true);
+    }
 
     imageInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
@@ -15,44 +76,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 imagePreview.src = e.target.result;
                 imagePreview.style.display = 'block';
                 imageSelector.style.display = 'none';
+                asciiOutput.textContent = '';
+                setActionVisibility(false);
             };
             reader.readAsDataURL(file);
         }
     });
 
     convertBtn.addEventListener('click', () => {
-        if (!imagePreview.src) {
-            alert('Please select an image first!');
-            return;
-        }
+        renderAscii(true);
+    });
 
-        const width = parseInt(widthInput.value);
+    [paletteToggle, ditherToggle].forEach((toggle) => {
+        if (!toggle) return;
 
-        const containerWidth = asciiOutput.clientWidth - parseFloat(getComputedStyle(asciiOutput).paddingLeft) * 2;
-        const fontSize = calculateOptimalFontSize(containerWidth, width, asciiOutput);
-
-        // Create a canvas to process the image
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-
-        const height = calculateHeight(width, imagePreview.naturalWidth, imagePreview.naturalHeight);
-
-        canvas.width = width;
-        canvas.height = height;
-
-        // Draw and process the image
-        ctx.drawImage(imagePreview, 0, 0, width, height);
-        const imageData = ctx.getImageData(0, 0, width, height);
-        const ascii = convertToAscii(imageData, width, height);
-
-        // Update the output with responsive font size
-        asciiOutput.style.fontSize = `${fontSize}px`;
-        asciiOutput.style.width = '100%';
-        asciiOutput.style.maxWidth = '525px';
-        asciiOutput.textContent = ascii;
-
-        // Show the download button
-        downloadBtn.style.display = 'inline-block';
+        toggle.addEventListener('change', () => {
+            if (asciiOutput.textContent) {
+                renderAscii(false);
+            }
+        });
     });
 
     downloadBtn.addEventListener('click', () => {

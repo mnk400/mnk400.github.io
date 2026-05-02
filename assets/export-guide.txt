@@ -569,9 +569,11 @@ Path: /assets/js/utils/ascii-utils.js
 
 Converts images to ASCII art.
 
-    convertToAscii(imageData, width, height)
+    convertToAscii(imageData, width, height, options)
         Takes ImageData, returns ASCII string.
-        Character set: @%#*+=-:. (dark to light)
+        Options may be omitted, a character string, or an object:
+            { characters: "@%#*+=-:.", dither: "ordered" }
+        Supported dither modes: none, ordered, floyd.
 
     calculateHeight(width, sourceWidth, sourceHeight)
         Calculate character height maintaining aspect ratio.
@@ -579,6 +581,11 @@ Converts images to ASCII art.
 
     calculateOptimalFontSize(containerWidth, charCount)
         px font size that fits `charCount` monospace chars across `containerWidth`.
+
+Preset character ramps are available as ASCII_PALETTES:
+    classic   @%#*+=-:.
+    blocks    █▓▒░
+    minimal   #-.
 
 Available as globals (no module export).
 
