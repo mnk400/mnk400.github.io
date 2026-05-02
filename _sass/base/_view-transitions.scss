@@ -109,7 +109,10 @@ html[data-vt-direction="back"] {
 }
 
 // -----------------------------------------------------------------------------
-// Nav breadcrumb shared elements: stay put on sub→sub
+// Nav breadcrumb shared elements: let the UA crossfade run.
+// Using `animation: none` here leaves both old+new snapshots at opacity 1 for
+// the full duration, which doubles-up any subpixel/font-loading mismatch into
+// visible ghosting. A short fade hides those mismatches on identical elements.
 // -----------------------------------------------------------------------------
 
 ::view-transition-old(nav-back),
@@ -118,7 +121,8 @@ html[data-vt-direction="back"] {
 ::view-transition-new(nav-home),
 ::view-transition-old(nav-sep),
 ::view-transition-new(nav-sep) {
-    animation: none;
+    animation-duration: 0.2s;
+    animation-timing-function: $vt-easing;
 }
 
 // -----------------------------------------------------------------------------
