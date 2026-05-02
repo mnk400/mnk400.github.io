@@ -2,6 +2,7 @@
 layout: post
 title: Collection of Random Stuff
 permalink: /more
+scripts: [/assets/js/tools/more-index.js]
 ---
 
 {%- comment -%} Collect all pages in /more/ except this index {%- endcomment -%}
@@ -26,24 +27,38 @@ permalink: /more
 This page is an ongoing list of random things and projects I've built:
 </p>
 
+<input
+    id="more-search"
+    class="more-search"
+    type="text"
+    placeholder="search"
+    autocomplete="off"
+    aria-label="Search projects"
+>
+
 <div class="more-page">
 {%- for cat in unique_categories -%}
     {%- assign cat_pages = category_pages | where: "category", cat | sort: "title" -%}
 
-    <p class="more-section">
+    <div class="more-section" data-more-category="{{ cat | downcase }}">
         {%- comment -%} Category intro phrases {%- endcomment -%}
-        <span class="more-section__intro"><i>
-            {%- if cat == "Apps" -%}macOS apps I built
-            {%- elsif cat == "CLI Tools" -%}CLI tools I've built
-            {%- elsif cat == "Fun Tools" -%}Some things I made for fun
-            {%- elsif cat == "Games" -%}Some mini games
-            {%- elsif cat == "Image Tools" -%}Image maniulation stuff
-            {%- elsif cat == "Music" -%}Music things
+        <span class="more-section__label">
+            {%- if cat == "Apps" -%}apps
+            {%- elsif cat == "CLI Tools" -%}cli tools
+            {%- elsif cat == "Fun Tools" -%}fun
+            {%- elsif cat == "Games" -%}games
+            {%- elsif cat == "Image Tools" -%}image tools
+            {%- elsif cat == "Music" -%}music
             {%- else -%}{{ cat }}
             {%- endif -%}
-        </i></span> &#8212;
+        </span>
+        <span class="more-section__links">
         {%- comment -%} Links for this category {%- endcomment %}
         {% for page in cat_pages -%}
+            <span
+                class="more-section__item"
+                data-more-search="{{ page.title | append: ' ' | append: page.description | append: ' ' | append: cat | strip | downcase | escape }}"
+            >
             {%- if page.external_url -%}
                 <a href="{{ page.external_url }}" target="_blank" rel="noopener noreferrer">
                     {{- page.title }} <i class="ph-bold ph-arrow-up-right va-mid"></i>
@@ -57,7 +72,9 @@ This page is an ongoing list of random things and projects I've built:
             {%- unless forloop.last -%}
                 <span class="more-section__sep">,</span>
             {% endunless -%}
+            </span>
         {%- endfor -%}
-    </p>
+        </span>
+    </div>
 {%- endfor -%}
 </div>
