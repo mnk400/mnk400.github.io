@@ -31,41 +31,47 @@ select {
 input[type="range"] {
     display: block;
     width: 100%;
-    margin: var(--spacing-md) 0;
+    margin: 0;
     -webkit-appearance: none;
     appearance: none;
-    height: 30px;
-    background: linear-gradient(
-        to right,
-        var(--translucent-high) var(--value-percent, 0%),
-        var(--translucent-low) var(--value-percent, 0%)
-    );
-    backdrop-filter: blur(10px);
-    border-radius: var(--radius-sm);
+    height: 18px;
+    background:
+        linear-gradient(
+            to right,
+            var(--text-color) var(--value-percent, 0%),
+            var(--translucent-medium) var(--value-percent, 0%)
+        ) center/100% 2px no-repeat;
+    background-color: transparent;
+    border: none;
     outline: none;
-    transition: all var(--transition-fast) ease-in-out;
-    @include soft-outline;
-
-    &::-webkit-slider-thumb,
-    &::-moz-range-thumb {
-        width: 4px;
-        height: 34px;
-        background: var(--sec-text-color);
-        border-radius: var(--spacing-md);
-        cursor: pointer;
-        transition: all var(--transition-fast) ease-in-out;
-    }
+    cursor: pointer;
 
     &::-webkit-slider-thumb {
         -webkit-appearance: none;
         appearance: none;
+        width: 12px;
+        height: 12px;
+        background: var(--text-color);
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: transform var(--transition-fast);
     }
 
-    &:active::-webkit-slider-thumb,
-    &:active::-moz-range-thumb {
-        transform: scale(1.1);
-        width: 5px;
+    &::-moz-range-thumb {
+        width: 12px;
+        height: 12px;
+        background: var(--text-color);
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: transform var(--transition-fast);
     }
+
+    &:hover::-webkit-slider-thumb { transform: scale(1.2); }
+    &:hover::-moz-range-thumb { transform: scale(1.2); }
+    &:active::-webkit-slider-thumb { transform: scale(1.4); }
+    &:active::-moz-range-thumb { transform: scale(1.4); }
 }
 
 // Color inputs
@@ -117,21 +123,17 @@ input[type="color"] {
     }
 
     .range-width-container {
-        display: flex;
-        position: relative;
-
+        display: block;
         .range-value {
-            position: absolute;
-            top: 14px;
-            left: var(--spacing-sm);
-            font-size: 0.7em;
-            z-index: 1;
+            font-size: 0.85em;
+            font-weight: 300;
+            color: var(--sec-text-color);
+            letter-spacing: 0.3px;
+            text-transform: lowercase;
+            line-height: 1;
+            margin: var(--spacing-xl) 0 0 0;
         }
-
-        input[type="range"] {
-            position: relative;
-            z-index: 0;
-        }
+        margin: 0 0 var(--spacing-lg) 0;
     }
 }
 

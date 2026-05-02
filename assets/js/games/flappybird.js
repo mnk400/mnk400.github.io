@@ -11,12 +11,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const isMobile = DeviceDetect.isMobileDevice();
 
-    // Prevent page scrolling on mobile when touching the game area
     function preventScrolling(e) {
         e.preventDefault();
     }
 
-    // Disable scrolling when game is active on mobile
     function disablePageScrolling() {
         if (isMobile) {
             document.body.style.overflow = 'hidden';
@@ -26,7 +24,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Re-enable scrolling when game is not active
     function enablePageScrolling() {
         if (isMobile) {
             document.body.style.overflow = '';
@@ -36,30 +33,42 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Game state
+    // Read theme color tokens from CSS custom properties; re-read on theme change.
+    let themeText = '#3b3b3b';
+    function refreshThemeColors() {
+        const styles = getComputedStyle(document.documentElement);
+        const t = styles.getPropertyValue('--text-color').trim();
+        if (t) themeText = t;
+    }
+    refreshThemeColors();
+    new MutationObserver(refreshThemeColors).observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['data-theme'],
+    });
+
     let gameRunning = false;
     let gameStarted = false;
+    let dying = false;
     let score = 0;
     let highScore = localStorage.getItem('flappyHighScore') || 0;
-    highScoreElement.textContent = `High Score: ${highScore}`;
+    highScoreElement.textContent = `Best · ${highScore}`;
 
-    const frameInterval = 1000 / 60; // ~16.67ms — fixed physics step
-    let gameInterval = null; // rAF handle
+    const frameInterval = 1000 / 60;
+    let gameInterval = null;
     let lastTime = 0;
+    let accumulator = 0;
 
-    // Bird properties
     const bird = {
         x: 50,
         y: canvas.height / 2,
-        width: 20,
-        height: 20,
+        width: 22,
+        height: 22,
         velocity: 0,
         gravity: 0.5,
         jumpStrength: -8,
-        color: '#FFD700'
+        alpha: 1,
     };
 
-    // Pipe properties (back to original values)
     const pipes = [];
     const pipeWidth = 50;
     const pipeGap = 150;
@@ -67,16 +76,20 @@ document.addEventListener('DOMContentLoaded', function() {
     let pipeTimer = 0;
     const pipeInterval = 90;
 
-    // Game functions
     function resetGame() {
         bird.y = canvas.height / 2;
         bird.velocity = 0;
+        bird.alpha = 1;
         pipes.length = 0;
         score = 0;
         pipeTimer = 0;
+        dying = false;
         updateScore();
+        gameOverScreen.classList.remove('visible');
+        startScreen.classList.remove('visible');
         gameOverScreen.style.display = 'none';
         startScreen.style.display = 'none';
+        canvas.classList.remove('dimmed');
 
         if (gameInterval) {
             cancelAnimationFrame(gameInterval);
@@ -86,10 +99,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function rafLoop(timestamp) {
         if (!gameRunning) return;
-        if (timestamp - lastTime >= frameInterval) {
-            lastTime = timestamp;
-            gameLoop();
+        if (lastTime === 0) lastTime = timestamp;
+        const delta = timestamp - lastTime;
+        lastTime = timestamp;
+        accumulator = Math.min(accumulator + delta, 250);
+        while (accumulator >= frameInterval) {
+            updateBird();
+            updatePipes();
+            accumulator -= frameInterval;
         }
+        render();
         gameInterval = requestAnimationFrame(rafLoop);
     }
 
@@ -98,6 +117,7 @@ document.addEventListener('DOMContentLoaded', function() {
         gameRunning = true;
         gameStarted = true;
         lastTime = 0;
+        accumulator = 0;
 
         disablePageScrolling();
 
@@ -105,7 +125,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function endGame() {
+        if (dying) return;
         gameRunning = false;
+        dying = true;
 
         if (gameInterval) {
             cancelAnimationFrame(gameInterval);
@@ -114,18 +136,36 @@ document.addEventListener('DOMContentLoaded', function() {
 
         enablePageScrolling();
         finalScoreElement.textContent = score;
-        
+
         if (score > highScore) {
             highScore = score;
             localStorage.setItem('flappyHighScore', highScore);
-            highScoreElement.textContent = `High Score: ${highScore}`;
+            highScoreElement.textContent = `Best · ${highScore}`;
         }
-        
-        gameOverScreen.style.display = 'block';
+
+        // Death animation: bird keeps falling, alpha decays, then card fades in.
+        const start = performance.now();
+        const fallDuration = 500;
+        function deathFrame(now) {
+            const t = Math.min(1, (now - start) / fallDuration);
+            bird.velocity += bird.gravity * 0.6;
+            bird.y += bird.velocity;
+            if (bird.y > canvas.height + 40) bird.y = canvas.height + 40;
+            bird.alpha = 1 - t * 0.7;
+            render();
+            if (t < 1) {
+                requestAnimationFrame(deathFrame);
+            } else {
+                canvas.classList.add('dimmed');
+                gameOverScreen.style.display = 'block';
+                requestAnimationFrame(() => gameOverScreen.classList.add('visible'));
+            }
+        }
+        requestAnimationFrame(deathFrame);
     }
 
     function updateScore() {
-        scoreElement.textContent = `Score: ${score}`;
+        scoreElement.textContent = `Score · ${score}`;
     }
 
     function jump() {
@@ -138,7 +178,6 @@ document.addEventListener('DOMContentLoaded', function() {
         bird.velocity += bird.gravity;
         bird.y += bird.velocity;
 
-        // Check boundaries
         if (bird.y < 0 || bird.y + bird.height > canvas.height) {
             endGame();
         }
@@ -148,44 +187,39 @@ document.addEventListener('DOMContentLoaded', function() {
         const minHeight = 50;
         const maxHeight = canvas.height - pipeGap - minHeight;
         const topHeight = Math.random() * (maxHeight - minHeight) + minHeight;
-        
+
         pipes.push({
             x: canvas.width,
             topHeight: topHeight,
             bottomY: topHeight + pipeGap,
             bottomHeight: canvas.height - (topHeight + pipeGap),
-            passed: false
+            passed: false,
         });
     }
 
     function updatePipes() {
-        // Create new pipes
         pipeTimer++;
         if (pipeTimer >= pipeInterval) {
             createPipe();
             pipeTimer = 0;
         }
 
-        // Update existing pipes
         for (let i = pipes.length - 1; i >= 0; i--) {
             const pipe = pipes[i];
             pipe.x -= pipeSpeed;
 
-            // Check for scoring
             if (!pipe.passed && pipe.x + pipeWidth < bird.x) {
                 pipe.passed = true;
                 score++;
                 updateScore();
             }
 
-            // Check collision
             if (bird.x < pipe.x + pipeWidth &&
                 bird.x + bird.width > pipe.x &&
                 (bird.y < pipe.topHeight || bird.y + bird.height > pipe.bottomY)) {
                 endGame();
             }
 
-            // Remove off-screen pipes
             if (pipe.x + pipeWidth < 0) {
                 pipes.splice(i, 1);
             }
@@ -193,87 +227,82 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function drawBird() {
-        ctx.fillStyle = bird.color;
-        ctx.fillRect(bird.x, bird.y, bird.width, bird.height);
-        
-        // simple eye
-        ctx.fillStyle = '#000';
-        ctx.fillRect(bird.x + 12, bird.y + 5, 3, 3);
+        ctx.save();
+        ctx.translate(bird.x + bird.width / 2, bird.y + bird.height / 2);
+        const tilt = Math.max(-0.4, Math.min(1.0, bird.velocity / 12));
+        ctx.rotate(tilt);
+        ctx.globalAlpha = bird.alpha;
+        ctx.fillStyle = themeText;
+        ctx.font = '500 28px Inter, -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('•', 0, 0);
+        ctx.restore();
     }
 
     function drawPipes() {
-        ctx.fillStyle = '#228B22';
-        
+        ctx.save();
+        ctx.fillStyle = themeText;
         pipes.forEach(pipe => {
+            // Soft column fill
+            ctx.globalAlpha = 0.10;
             ctx.fillRect(pipe.x, 0, pipeWidth, pipe.topHeight);
             ctx.fillRect(pipe.x, pipe.bottomY, pipeWidth, pipe.bottomHeight);
-            
-            // caps
-            ctx.fillStyle = '#32CD32';
-            ctx.fillRect(pipe.x - 5, pipe.topHeight - 20, pipeWidth + 10, 20);
-            ctx.fillRect(pipe.x - 5, pipe.bottomY, pipeWidth + 10, 20);
-            ctx.fillStyle = '#228B22';
+            // Hairline inner edges, echoing the rest of the site.
+            ctx.globalAlpha = 0.22;
+            ctx.fillRect(pipe.x, 0, 1, pipe.topHeight);
+            ctx.fillRect(pipe.x + pipeWidth - 1, 0, 1, pipe.topHeight);
+            ctx.fillRect(pipe.x, pipe.bottomY, 1, pipe.bottomHeight);
+            ctx.fillRect(pipe.x + pipeWidth - 1, pipe.bottomY, 1, pipe.bottomHeight);
+            // Cap line where the gap begins
+            ctx.fillRect(pipe.x, pipe.topHeight - 1, pipeWidth, 1);
+            ctx.fillRect(pipe.x, pipe.bottomY, pipeWidth, 1);
         });
-    }
-
-    function drawBackground() {
-        ctx.fillStyle = 'rgba(127, 195, 250, 0.7)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.restore();
     }
 
     function render() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        drawBackground();
         drawPipes();
         drawBird();
     }
 
-    function gameLoop() {
-        if (!gameRunning) return;
-        
-        updateBird();
-        updatePipes();
-        render();
-    }
-
     startBtn.addEventListener('click', startGame);
     restartBtn.addEventListener('click', startGame);
-    
-    // Touch event listeners for mobile
+
     startBtn.addEventListener('touchstart', (e) => {
         e.preventDefault();
         startGame();
     });
-    
+
     restartBtn.addEventListener('touchstart', (e) => {
         e.preventDefault();
         startGame();
     });
-    
+
     document.addEventListener('keydown', (e) => {
         if (e.code === 'Space') {
             e.preventDefault();
-            if (!gameStarted) {
+            if (!gameStarted || dying) {
                 startGame();
             } else {
                 jump();
             }
         }
     });
-    
+
     function handleGameInteraction(e) {
         e.preventDefault();
-        if (!gameStarted) {
+        if (!gameStarted || dying) {
             startGame();
         } else {
             jump();
         }
     }
-    
+
     canvas.addEventListener('click', handleGameInteraction);
     canvas.addEventListener('touchstart', handleGameInteraction, { passive: false });
-    
+
     canvas.addEventListener('contextmenu', (e) => {
         e.preventDefault();
     });
@@ -297,13 +326,16 @@ document.addEventListener('DOMContentLoaded', function() {
             gameInterval = requestAnimationFrame(rafLoop);
         }
     });
-    
-    // Add visual feedback for mobile users
+
     if (isMobile) {
         canvas.style.cursor = 'pointer';
         document.body.style.userSelect = 'none';
         document.body.style.webkitUserSelect = 'none';
     }
 
+    // Show start screen with the same fade as game-over.
+    startScreen.style.display = 'block';
+    canvas.classList.add('dimmed');
+    requestAnimationFrame(() => startScreen.classList.add('visible'));
     render();
 });

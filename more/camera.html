@@ -14,9 +14,11 @@ scripts: [/assets/js/utils/device-detect.js, /assets/js/utils/ascii-utils.js, /a
 
     <div class="controls">
         {% include range-slider.html id='width' value='80' min='15' max='150' unit='Characters' %}
-        <br/>
-        <button id="start-btn" class="normal-btn">Start Camera</button>
-        <button id="fullscreen-btn" class="normal-btn">Fullscreen</button>
+
+        <div class="button-container">
+            <button id="start-btn" class="normal-btn">Start Camera</button>
+            <button id="fullscreen-btn" class="normal-btn">Fullscreen</button>
+        </div>
     </div>
 
     <pre id="ascii-output"></pre>

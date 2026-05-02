@@ -3,16 +3,37 @@
 // =============================================================================
 
 // Flappy Bird
+#flappy-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 0.85em;
+    font-weight: 300;
+    color: var(--sec-text-color);
+    letter-spacing: 0.3px;
+    margin: var(--spacing-xl) 0 var(--spacing-sm);
+}
+
 #flappy-game-container {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     position: relative;
-    margin: var(--spacing-xl) 0;
+    margin: 0 0 var(--spacing-xl);
 
     #flappyCanvas {
+        background: transparent;
+        border: 1px solid var(--translucent-medium);
         border-radius: var(--radius-lg);
-        backdrop-filter: blur(10px);
+        width: 100%;
+        height: auto;
+        display: block;
+        box-sizing: border-box;
+        transition: filter var(--transition-backdrop);
+
+        &.dimmed {
+            filter: blur(3px) opacity(0.35);
+        }
     }
 
     @media screen and (max-width: 768px) {
@@ -22,9 +43,6 @@
         #flappyCanvas {
             max-width: 95vw;
             max-height: 70vh;
-            width: 100%;
-            height: auto;
-            border-radius: var(--radius-lg);
             touch-action: none;
             @include no-select;
         }
@@ -39,8 +57,10 @@
     height: 100%;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
+    padding: 0 var(--spacing-2xl);
+    box-sizing: border-box;
     pointer-events: none;
 
     &>* {
@@ -48,42 +68,31 @@
     }
 }
 
-#score,
-#high-score {
-    position: absolute;
-    top: var(--spacing-xl);
-    font-weight: 500;
-    font-size: 18px;
-    color: var(--game-flappy-text);
-    background: var(--game-flappy-overlay);
-    padding: var(--spacing-sm) var(--spacing-lg);
-    border-radius: var(--spacing-xl);
-    box-shadow: var(--shadow-sm);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-}
-
-#score {
-    left: var(--spacing-xl);
-}
-
-#high-score {
-    right: var(--spacing-xl);
-}
-
 #game-over,
 #start-screen {
-    background: var(--game-flappy-overlay-strong);
-    padding: var(--spacing-2xl);
-    border-radius: var(--radius-xl);
-    text-align: center;
-    box-shadow: var(--shadow-lg);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    text-align: left;
+    opacity: 0;
+    transition: opacity var(--transition-backdrop);
 
-    p,
+    &.visible {
+        opacity: 1;
+    }
+
     h2 {
-        color: var(--game-flappy-text) !important;
+        font-weight: 400;
+        font-size: 1.4em;
+        letter-spacing: 0.3px;
+        margin: 0 0 var(--spacing-xs);
+    }
+
+    p {
+        color: var(--sec-text-color);
+        font-size: 0.9em;
+        margin: 0 0 var(--spacing-lg);
+    }
+
+    button {
+        font-size: 0.9em;
     }
 }
 

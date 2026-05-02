@@ -17,8 +17,10 @@ scripts: [/assets/js/utils/device-detect.js, /assets/js/utils/canvas-utils.js, /
 
     <div class="controls">
         {% include range-slider.html id='resolution' value='40' min='10' max='100' unit='Resolution' %}
-        <br/>
-        <button id="start-btn" class="normal-btn">Start Camera</button>
-        <button id="fullscreen-btn" class="normal-btn">Fullscreen</button>
+
+        <div class="button-container">
+            <button id="start-btn" class="normal-btn">Start Camera</button>
+            <button id="fullscreen-btn" class="normal-btn">Fullscreen</button>
+        </div>
     </div>
 </div>
