@@ -11,11 +11,15 @@
   let backdrop = null;
   let clonedImage = null;
   let controlsEl = null;
+  let metaLineEl = null;
+  let navLineEl = null;
   let closeButton = null;
   let prevButton = null;
   let nextButton = null;
   let counterEl = null;
-  let metaEl = null;
+  let captionEl = null;
+  let detailEl = null;
+  let metaSepEl = null;
 
   let originalImage = null;
   let siblings = [];
@@ -31,12 +35,6 @@
     el.style.left = rect.left + "px";
     el.style.width = rect.width + "px";
     el.style.height = rect.height + "px";
-  }
-
-  function escapeHtml(str) {
-    const div = document.createElement("div");
-    div.textContent = str;
-    return div.innerHTML;
   }
 
   function metaFor(img) {
@@ -71,14 +69,24 @@
     // On touch devices the controls sit on top of the image, so we don't need
     // to reserve side space for navigation controls.
     const horizontalPadding = isTouchDevice() ? 20 : 60;
-    const verticalPadding = 40;
-    const controlsReserve = 40;
-    const metaReserve = hasMeta ? 36 : 0;
+    const minVerticalPadding = 30;
 
-    const topReserve = verticalPadding + metaReserve;
-    const bottomReserve = verticalPadding + controlsReserve;
+    // Match the SCSS:
+    // .image-zoom-controls { bottom: --spacing-xl (20px); gap: --spacing-xs (5px) }
+    // nav row buttons are 24px; meta caption line-height ≈ 20px.
+    // Strip height changes based on whether the meta row is visible — we
+    // want the image vertically centered between the viewport top and
+    // whichever element is the topmost of the strip (meta line if shown,
+    // otherwise the nav row).
+    const stripBottomMargin = 20;
+    const navHeight = 24;
+    const metaHeight = hasMeta ? 20 : 0;
+    const stripGap = hasMeta ? 5 : 0;
+    const stripHeight = navHeight + stripGap + metaHeight;
+    const stripTop = viewportHeight - stripBottomMargin - stripHeight;
+
     const maxWidth = viewportWidth - horizontalPadding * 2;
-    const maxHeight = viewportHeight - topReserve - bottomReserve;
+    const maxHeight = stripTop - minVerticalPadding * 2;
 
     const imageAspect = naturalWidth / naturalHeight;
     const viewportAspect = maxWidth / maxHeight;
@@ -96,7 +104,8 @@
       width: finalWidth,
       height: finalHeight,
       left: (viewportWidth - finalWidth) / 2,
-      top: topReserve + (maxHeight - finalHeight) / 2,
+      // Center vertically between top of viewport and top of the strip.
+      top: (stripTop - finalHeight) / 2,
     };
   }
 
@@ -144,35 +153,69 @@
     return btn;
   }
 
+  function makeSeparator(extraClass) {
+    const sep = document.createElement("span");
+    sep.className = "image-zoom-sep" + (extraClass ? " " + extraClass : "");
+    sep.textContent = "·";
+    sep.setAttribute("aria-hidden", "true");
+    return sep;
+  }
+
   function createOverlay(multi) {
     backdrop = document.createElement("div");
     backdrop.className = "image-zoom-backdrop";
     backdrop.addEventListener("click", closeZoom);
     document.body.appendChild(backdrop);
 
+    // Two-line cluster.
+    //   metaLineEl: caption · camera detail   (varies per image)
+    //   navLineEl:  ← → · 1/23 · ✕            (constant per gallery)
     controlsEl = document.createElement("div");
     controlsEl.className = "image-zoom-controls";
     document.body.appendChild(controlsEl);
 
-    if (multi) {
-      counterEl = document.createElement("span");
-      counterEl.className = "image-zoom-counter";
-      controlsEl.appendChild(counterEl);
+    metaLineEl = document.createElement("div");
+    metaLineEl.className = "image-zoom-meta";
+    controlsEl.appendChild(metaLineEl);
 
+    captionEl = document.createElement("span");
+    captionEl.className = "image-zoom-caption";
+    metaLineEl.appendChild(captionEl);
+
+    metaSepEl = makeSeparator("image-zoom-sep--meta");
+    metaLineEl.appendChild(metaSepEl);
+
+    detailEl = document.createElement("span");
+    detailEl.className = "image-zoom-detail";
+    metaLineEl.appendChild(detailEl);
+
+    navLineEl = document.createElement("div");
+    navLineEl.className = "image-zoom-nav";
+    controlsEl.appendChild(navLineEl);
+
+    if (multi) {
       prevButton = makeButton(
-        "image-zoom-control-button image-zoom-nav image-zoom-nav--prev",
+        "image-zoom-control-button image-zoom-nav-button image-zoom-nav-button--prev",
         "ph-caret-left",
         "Previous image",
         () => navigate(-1),
-        controlsEl,
+        navLineEl,
       );
       nextButton = makeButton(
-        "image-zoom-control-button image-zoom-nav image-zoom-nav--next",
+        "image-zoom-control-button image-zoom-nav-button image-zoom-nav-button--next",
         "ph-caret-right",
         "Next image",
         () => navigate(1),
-        controlsEl,
+        navLineEl,
       );
+
+      navLineEl.appendChild(makeSeparator("image-zoom-sep--counter"));
+
+      counterEl = document.createElement("span");
+      counterEl.className = "image-zoom-counter";
+      navLineEl.appendChild(counterEl);
+
+      navLineEl.appendChild(makeSeparator("image-zoom-sep--close"));
     }
 
     closeButton = makeButton(
@@ -180,43 +223,41 @@
       "ph-x",
       "Close zoomed image",
       closeZoom,
-      controlsEl,
+      navLineEl,
     );
-
-    metaEl = document.createElement("div");
-    metaEl.className = "image-zoom-meta";
-    document.body.appendChild(metaEl);
   }
 
   function updateMeta() {
-    if (!metaEl || !originalImage) return;
+    if (!originalImage) return;
     const { title, detail } = metaFor(originalImage);
-    metaEl.innerHTML =
-      `<div class="image-zoom-meta-caption">${escapeHtml(title)}</div>` +
-      `<div class="image-zoom-meta-detail">${escapeHtml(detail)}</div>`;
-    if (title || detail) metaEl.classList.add("active");
-    else metaEl.classList.remove("active");
-  }
 
-  function positionMeta(target) {
-    if (!metaEl) return;
-    const gap = 8;
-    metaEl.style.left = target.left + "px";
-    metaEl.style.top =
-      Math.max(gap, target.top - metaEl.offsetHeight - gap) + "px";
-    metaEl.style.width = target.width + "px";
-    metaEl.style.maxWidth = "";
-  }
-
-  function positionControls(target) {
-    if (!controlsEl) return;
-    controlsEl.style.left = "";
-    controlsEl.style.top = "";
+    if (captionEl) {
+      captionEl.textContent = title || "";
+      captionEl.style.display = title ? "" : "none";
+    }
+    if (detailEl) {
+      detailEl.textContent = detail || "";
+      detailEl.style.display = detail ? "" : "none";
+    }
+    // Separator only when both halves are present.
+    if (metaSepEl) {
+      metaSepEl.style.display = title && detail ? "" : "none";
+    }
+    // Hide the whole row when there is nothing to show — keeps the
+    // controls visually balanced with no empty gap above them.
+    if (metaLineEl) {
+      metaLineEl.classList.toggle("is-empty", !title && !detail);
+    }
   }
 
   function updateNavState() {
     if (counterEl) {
       counterEl.textContent = `${currentIndex + 1} / ${siblings.length}`;
+      // Pin width to the widest state ("N / N" with the largest index) so
+      // the surrounding arrows / close button don't shift as the index
+      // grows from a 1-digit to a 2-digit number.
+      const digits = String(siblings.length).length;
+      counterEl.style.minWidth = `${digits * 2 + 3}ch`;
     }
 
     if (prevButton) {
@@ -259,8 +300,6 @@
       if (nextButton) nextButton.classList.add("active");
       updateNavState();
       updateMeta();
-      positionMeta(target);
-      positionControls(target);
 
       setRect(clonedImage, target);
       clonedImage.classList.add("zoomed");
@@ -282,7 +321,12 @@
 
     isAnimating = true;
 
-    if (metaEl) metaEl.classList.remove("active");
+    // Fade out the changing text (caption / detail / counter) immediately,
+    // swap content while it's invisible, fade back in. The fade timing is
+    // shorter than the image slide so the text settles slightly before
+    // the image finishes its transition.
+    if (metaLineEl) metaLineEl.classList.add("is-fading");
+
     if (originalImage) originalImage.style.visibility = "";
     const newImg = siblings[newIndex];
     currentIndex = newIndex;
@@ -308,18 +352,20 @@
     const oldClone = clonedImage;
     clonedImage = newClone;
 
-    updateNavState();
-
     requestAnimationFrame(() => {
       newClone.style.transform = "translateX(0)";
       oldClone.style.transform = `translateX(${-enterFrom}px)`;
     });
 
+    // Swap text content at the midpoint of the fade, then fade back in.
+    setTimeout(() => {
+      updateNavState();
+      updateMeta();
+      if (metaLineEl) metaLineEl.classList.remove("is-fading");
+    }, 150);
+
     setTimeout(() => {
       oldClone.remove();
-      updateMeta();
-      positionMeta(target);
-      positionControls(target);
       isAnimating = false;
     }, 300);
   }
@@ -340,25 +386,19 @@
     closeButton.classList.remove("active");
     if (prevButton) prevButton.classList.remove("active");
     if (nextButton) nextButton.classList.remove("active");
-    if (metaEl) metaEl.classList.remove("active");
 
     setTimeout(() => {
       originalImage.style.visibility = "";
 
-      [
-        clonedImage,
-        backdrop,
-        controlsEl,
-        closeButton,
-        prevButton,
-        nextButton,
-        counterEl,
-        metaEl,
-      ]
-        .filter(Boolean)
-        .forEach((el) => el.remove());
+      // Removing controlsEl removes all the inline children (caption,
+      // separators, counter, detail) along with it; just null the refs.
+      [clonedImage, backdrop, controlsEl].filter(Boolean).forEach((el) =>
+        el.remove(),
+      );
       clonedImage = backdrop = controlsEl = closeButton = null;
-      prevButton = nextButton = counterEl = metaEl = null;
+      metaLineEl = navLineEl = null;
+      prevButton = nextButton = counterEl = null;
+      captionEl = detailEl = metaSepEl = null;
 
       originalImage = null;
       siblings = [];
