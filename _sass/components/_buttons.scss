@@ -172,4 +172,8 @@ input[type="file"]::file-selector-button {
             padding: var(--spacing-xs) var(--spacing-md);
         }
     }
+    
+    &:last-child {
+        margin-bottom: var(--spacing-sm);
+    }
 }

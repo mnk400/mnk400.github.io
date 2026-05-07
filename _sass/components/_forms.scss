@@ -100,17 +100,13 @@ input[type="color"] {
 
 // Form controls container
 .controls {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
     margin-top: var(--spacing-md);
-    padding-bottom: var(--spacing-md);
-    flex-wrap: wrap;
-    gap: var(--spacing-sm);
 
-    & > * {
+    &:not(:last-child) {
         margin-bottom: var(--spacing-md);
-    }
-
-    &:last-child {
-        margin-bottom: 0;
     }
 
     label {
@@ -124,6 +120,7 @@ input[type="color"] {
 
     .range-width-container {
         display: block;
+        margin: var(--spacing-sm) 0;
         .range-value {
             font-size: 0.85em;
             font-weight: 300;
@@ -131,9 +128,7 @@ input[type="color"] {
             letter-spacing: 0.3px;
             text-transform: lowercase;
             line-height: 1;
-            margin: var(--spacing-xl) 0 0 0;
         }
-        margin: 0 0 var(--spacing-lg) 0;
     }
 }
 
@@ -141,7 +136,7 @@ input[type="color"] {
 .color-inputs-container {
     display: flex;
     gap: var(--spacing-xl);
-    margin: var(--spacing-lg) 0;
+    padding-bottom: var(--spacing-md);
     flex-wrap: wrap;
 }
 

@@ -26,5 +26,12 @@
   if (!theme || tc.names.indexOf(theme) === -1) theme = tc.default;
   document.documentElement.setAttribute("data-theme", theme);
 
+  // Embed mode — page is loaded inside a desktop-mode window iframe.
+  // Flash-critical: apply before CSS so chrome never paints.
+  if (params.get("embed") === "1") {
+    document.documentElement.classList.add("is-embedded");
+    overrides.embed = true;
+  }
+
   window.__urlOverrides = overrides;
 })();

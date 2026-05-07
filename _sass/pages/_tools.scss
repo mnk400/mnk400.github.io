@@ -7,10 +7,6 @@
     margin: -10px 0;
 }
 
-.tool-control-group {
-    padding-top: var(--spacing-xs);
-}
-
 .tool-preview-img {
     object-fit: contain;
     width: 100%;
@@ -18,8 +14,6 @@
 
 // ASCII Art styles
 .ascii-container {
-    margin: var(--spacing-xl) 0;
-
     .canvas-container {
         position: relative;
         width: 100%;
@@ -28,6 +22,7 @@
 
     #canvas-output {
         position: absolute;
+        margin-top: var(--spacing-xs);
         top: 0;
         left: 0;
         width: 100%;

@@ -46,6 +46,13 @@
 
     &.small {
         transform: scale(0.67, 0.67);
+
+        // In desktop embed mode (iframe with no page title above), pull the
+        // device up further to absorb the empty space the scale transform
+        // leaves in the layout box.
+        :root.is-embedded & {
+            margin-top: -110px;
+        }
     }
 }
 
