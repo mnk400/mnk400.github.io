@@ -1,0 +1,247 @@
+// =============================================================================
+// PRODUCT PAGE
+// =============================================================================
+
+.product {
+    --product-divider: 1px solid var(--translucent-medium);
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+    }
+
+    &__hero {
+        padding-bottom: var(--spacing-lg);
+        border-bottom: var(--product-divider);
+        margin-bottom: var(--spacing-lg);
+    }
+
+    &__icon {
+        width: 72px;
+        height: 72px;
+        border-radius: 16px;
+        display: block;
+        margin-bottom: var(--spacing-lg);
+    }
+
+    &__title {
+        font-size: 2.4em;
+        line-height: 1.1;
+        margin: 0 0 var(--spacing-xs);
+    }
+
+    &__tagline {
+        color: var(--sec-text-color);
+        font-size: 1.05em;
+        margin: 0 0 var(--spacing-xl);
+    }
+
+    &__lede {
+        margin-bottom: var(--spacing-xl);
+
+        p {
+            margin: 0 0 var(--spacing-sm);
+            &:last-child { margin-bottom: 0; }
+        }
+    }
+
+    &__cta-row {
+        display: flex;
+        gap: var(--spacing-md);
+        flex-wrap: wrap;
+        margin-bottom: var(--spacing-lg);
+    }
+
+    // Unified copy-command button (used in CTA row + install tabs)
+    &__copy-cmd {
+        code {
+            font-size: 0.9em;
+            background: transparent;
+            padding: 0;
+        }
+
+        &--block {
+            display: flex;
+            width: 100%;
+            gap: var(--spacing-md);
+
+            code {
+                flex: 1;
+                white-space: nowrap;
+                overflow-x: auto;
+            }
+        }
+    }
+
+    &__copy-label {
+        color: var(--sec-text-color);
+        font-size: 0.85em;
+        text-transform: lowercase;
+        letter-spacing: 0.5px;
+    }
+
+    // CLI install block
+    &__install {
+        margin-bottom: var(--spacing-lg);
+    }
+
+    &__install-tabs {
+        margin: 0 0 var(--spacing-sm);
+    }
+
+    &__install-panel {
+        padding-top: var(--spacing-xs);
+        display: none;
+
+        &.active {
+            display: block;
+        }
+    }
+
+    &__meta {
+        color: var(--sec-text-color);
+        font-size: 0.85em;
+        margin: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--spacing-sm) var(--spacing-md);
+        align-items: center;
+    }
+
+    &__meta-item--sep::after,
+    &__meta-item--before-release::after,
+    &__release-version::after {
+        content: "·";
+        margin-left: var(--spacing-md);
+        opacity: 0.5;
+    }
+
+    &__meta-sep {
+        opacity: 0.5;
+    }
+
+    &__release {
+        display: contents;
+    }
+
+    &__release-version {
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__hero-image,
+    &__demo,
+    &__features,
+    &__screenshots,
+    &__readme {
+        margin-bottom: var(--spacing-xl);
+    }
+
+    &__features,
+    &__screenshots {
+        h2 {
+            margin: 0 0 var(--spacing-lg);
+        }
+    }
+
+    // Hero / demo image
+    &__hero-image,
+    &__demo,
+    &__screenshot {
+        img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: var(--radius-md);
+            @include soft-outline;
+        }
+    }
+
+    &__hero-image,
+    &__demo {
+        img {
+            border-radius: var(--radius-lg);
+        }
+    }
+
+    // Features grid
+    &__features-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-lg);
+
+        @media screen and (max-width: $breakpoint-mobile) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    &__feature {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    &__feature-icon {
+        font-size: 1.4em;
+        color: var(--sec-text-color);
+    }
+
+    &__feature-title {
+        margin: 0;
+        font-size: 1.05em;
+        font-weight: 500;
+    }
+
+    &__feature-body {
+        margin: 0;
+        color: var(--sec-text-color);
+        font-size: 0.95em;
+        line-height: 1.5;
+    }
+
+    &__screenshots-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: var(--spacing-md);
+    }
+
+    &__screenshot-caption {
+        margin: var(--spacing-sm) 0 0;
+        color: var(--sec-text-color);
+        font-size: 0.85em;
+    }
+
+    &__readme {
+        .github-readme__loading {
+            color: var(--sec-text-color);
+            font-style: italic;
+        }
+
+        // Hide the repo's own title since the product hero already shows it.
+        > h1:first-child,
+        > h2:first-child {
+            display: none;
+        }
+    }
+
+    // Footer
+    &__footer {
+        margin-top: var(--spacing-lg);
+        padding-top: var(--spacing-lg);
+        border-top: var(--product-divider);
+        color: var(--sec-text-color);
+        font-size: 0.9em;
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--spacing-sm);
+        align-items: center;
+
+        a {
+            color: var(--sec-text-color);
+
+            &:hover {
+                color: var(--text-color);
+            }
+        }
+    }
+}

@@ -158,9 +158,12 @@ ZZZzz /,`.-'`'    -.  ;-;;,_
             {% include header.html %}
             <main class="page-content">{{ content }}</main>
         </div>
-        {% if page.layout == "github-readme" %}
+        {% if page.kind == "readme" %}
         <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js"></script>
         <script src="{{ '/assets/js/components/readme-renderer.js' | relative_url }}"></script>
+        {% endif %}
+        {% if page.layout == "product" and page.repo %}
+        <script src="{{ '/assets/js/components/release-meta.js' | relative_url }}"></script>
         {% endif %}
         {% if page.scripts %}
         {% for script in page.scripts %}

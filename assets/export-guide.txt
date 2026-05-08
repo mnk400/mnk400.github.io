@@ -54,6 +54,9 @@ Minimal HTML boilerplate to get the full design system:
         <script src="https://manik.cc/assets/js/utils/clipboard.js"></script>
         <script src="https://manik.cc/assets/js/core/ui-components.js"></script>
         <script src="https://manik.cc/assets/js/components/image-zoom.js"></script>
+
+        <!-- Optional: GitHub latest-release metadata for [data-release-repo] -->
+        <script src="https://manik.cc/assets/js/components/release-meta.js"></script>
     </body>
     </html>
 
@@ -190,6 +193,9 @@ Base button (applies to <button> and .btn):
     <button>Default Button</button>
     <a href="#" class="btn">Link Button</a>
 
+Buttons suppress underline/italic hover styling so links styled as .btn keep
+button-like text treatment.
+
 Variants (add as modifier class):
     .btn--dark-forced     Always dark background regardless of theme
     .btn--small           Compact size (0.8em)
@@ -229,6 +235,7 @@ Base card:
 Variants:
     .card--interactive     Adds pointer cursor
     .card--no-padding      Removes padding
+    .card--static          Keeps the base background on hover for non-links
 
 Image card (for photo layouts). Wrap the img in .image-ratio-box with an
 inline padding-bottom set to (height / width * 100)% so the layout reserves
@@ -526,6 +533,26 @@ API (exposed on window.ImageZoom):
 Requires: image-zoom styles from export.css (included automatically).
 Optional: Phosphor Icons for the close/chevron icons.
 Auto-initializes — no setup needed beyond loading the script.
+
+
+--- release-meta.js ---
+Path: /assets/js/components/release-meta.js
+
+Fetches the latest GitHub release for each element with data-release-repo,
+caches the slim response in localStorage for six hours, and fills child
+elements for the version and relative update date.
+
+    <span data-release-repo="owner/repo" hidden>
+        <span class="product__release-version"></span>
+        <span class="product__release-date"></span>
+    </span>
+
+Expected child classes:
+    .product__release-version   Receives tag_name, e.g. v1.2.3
+    .product__release-date      Receives text like "updated 3 days ago"
+
+The container is unhidden after release data is rendered. Fetch failures are
+silent, so the metadata can be treated as progressive enhancement.
 
 
 --- canvas-utils.js ---

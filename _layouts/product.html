@@ -1,0 +1,192 @@
+---
+layout: default
+---
+
+{% assign kind = page.kind | default: 'native' %}
+{% assign has_install_tabs = false %}
+{% if kind == 'readme' and page.install and page.install.size > 1 %}
+    {% assign has_install_tabs = true %}
+{% endif %}
+
+<div class="product product--{{ kind }}">
+
+    <header class="product__hero">
+
+        {% if page.icon %}
+        <img class="product__icon" src="{{ page.icon }}" alt="{{ page.title }} icon">
+        {% endif %}
+
+        <h1 class="product__title">{{ page.title }}</h1>
+
+        {% if page.tagline %}
+        <p class="product__tagline">{{ page.tagline }}</p>
+        {% endif %}
+
+        {% if page.lede %}
+        <div class="product__lede">
+            {{ page.lede | markdownify }}
+        </div>
+        {% endif %}
+
+        {% if page.download or kind == 'native' and page.install %}
+        <div class="product__cta-row">
+            {% if page.download %}
+            <a class="btn" href="{{ page.download.url }}" target="_blank" rel="noopener noreferrer">
+                <i class="ph-fill {{ page.download.icon | default: 'ph-download-simple' }}"></i>
+                {{ page.download.label | default: 'Download' }}
+            </a>
+            {% endif %}
+
+            {% if kind == 'native' and page.install %}
+                {% for entry in page.install %}
+                <button type="button" class="btn btn--outline product__copy-cmd"
+                        data-copy="{{ entry.command }}" data-copy-feedback="Copied!">
+                    <i class="ph ph-bold ph-terminal"></i>
+                    <code>{{ entry.display_command | default: entry.command }}</code>
+                </button>
+                {% endfor %}
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% if kind == 'readme' and page.install %}
+        <div class="product__install">
+            {% if has_install_tabs %}
+            {% assign switch_options = '' %}
+            {% for entry in page.install %}
+                {% assign value = entry.label | slugify %}
+                {% capture pair %}{{ value }}:{{ entry.label }}{% endcapture %}
+                {% if forloop.first %}
+                    {% assign switch_options = pair %}
+                {% else %}
+                    {% assign switch_options = switch_options | append: ',' | append: pair %}
+                {% endif %}
+            {% endfor %}
+            {% assign options_arr = switch_options | split: ',' %}
+            {% assign default_value = page.install[0].label | slugify %}
+
+            {% include selection-switch.html id="install-switch" size="small" options=options_arr default_active=default_value class="product__install-tabs" %}
+
+            <div class="product__install-panels">
+                {% for entry in page.install %}
+                {% assign value = entry.label | slugify %}
+                <div class="product__install-panel{% if forloop.first %} active{% endif %}" data-install-panel="{{ value }}">
+                    <button type="button" class="btn btn--outline product__copy-cmd product__copy-cmd--block"
+                            data-copy="{{ entry.command }}" data-copy-feedback="Copied!">
+                        <i class="ph ph-bold ph-terminal"></i>
+                        <code>{{ entry.display_command | default: entry.command }}</code>
+                        <span class="product__copy-label">copy</span>
+                    </button>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+                {% assign entry = page.install[0] %}
+                <button type="button" class="btn btn--outline product__copy-cmd product__copy-cmd--block"
+                        data-copy="{{ entry.command }}" data-copy-feedback="Copied!">
+                    <i class="ph ph-bold ph-terminal"></i>
+                    <code>{{ entry.display_command | default: entry.command }}</code>
+                    <span class="product__copy-label">copy</span>
+                </button>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% if page.meta or page.repo %}
+        <p class="product__meta">
+            {% for item in page.meta %}
+            <span class="product__meta-item{% unless forloop.last %} product__meta-item--sep{% endunless %}">{{ item }}</span>
+            {% endfor %}
+            {% if page.repo %}
+            <span class="product__release" data-release-repo="{{ page.repo }}" hidden>
+                <span class="product__release-version"></span>
+                <span class="product__release-date"></span>
+            </span>
+            {% endif %}
+        </p>
+        {% endif %}
+    </header>
+
+    {% if page.hero_image %}
+    <section class="product__hero-image">
+        {% include zoomable-image.html src=page.hero_image alt=page.title %}
+    </section>
+    {% endif %}
+
+    {% if page.demo_image %}
+    <section class="product__demo">
+        {% include zoomable-image.html src=page.demo_image alt=page.title %}
+    </section>
+    {% endif %}
+
+    {% if page.features %}
+    <section class="product__features">
+        {% if page.features_title %}<h2>{{ page.features_title }}</h2>{% else %}<h2>Features</h2>{% endif %}
+        <div class="product__features-grid">
+            {% for feature in page.features %}
+            <div class="card card--static product__feature">
+                {% if feature.icon %}<i class="ph-bold {{ feature.icon }} product__feature-icon"></i>{% endif %}
+                <h3 class="product__feature-title">{{ feature.title }}</h3>
+                <p class="product__feature-body">{{ feature.body }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    {% if page.screenshots %}
+    <section class="product__screenshots">
+        {% if page.screenshots_title %}<h2>{{ page.screenshots_title }}</h2>{% else %}<h2>More screenshots</h2>{% endif %}
+        <div class="product__screenshots-grid">
+            {% for shot in page.screenshots %}
+            <div class="product__screenshot">
+                {% include zoomable-image.html src=shot.src alt=shot.alt %}
+                {% if shot.caption %}<p class="product__screenshot-caption">{{ shot.caption }}</p>{% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    {% if kind == 'readme' %}
+    <section class="post__content product__readme github-readme__content"
+             data-repo="{{ page.repo }}"
+             data-branch="{{ page.branch | default: 'main' }}">
+        <div class="github-readme__loading">Loading README…</div>
+    </section>
+    {% endif %}
+
+    {% if content and content != '' %}
+    <section class="post__content product__body">
+        {{ content }}
+    </section>
+    {% endif %}
+
+    <footer class="product__footer">
+        {% if page.repo %}
+        <a href="https://github.com/{{ page.repo }}" target="_blank" rel="noopener noreferrer">
+            <i class="ph-fill ph-github-logo"></i> View on GitHub
+        </a>
+        {% if page.license %}<span class="product__meta-sep">·</span> <span>{{ page.license }}</span>{% endif %}
+        {% if page.repo %}<span class="product__meta-sep">·</span> <a href="https://github.com/{{ page.repo }}/issues/new" target="_blank" rel="noopener noreferrer">Report an issue</a>{% endif %}
+        {% endif %}
+    </footer>
+
+</div>
+
+{% if has_install_tabs %}
+<script>
+(function () {
+    var sw = document.getElementById('install-switch');
+    if (!sw) return;
+    sw.addEventListener('change', function (e) {
+        var value = e.detail && e.detail.value;
+        if (!value) return;
+        var panels = document.querySelectorAll('[data-install-panel]');
+        panels.forEach(function (p) {
+            p.classList.toggle('active', p.getAttribute('data-install-panel') === value);
+        });
+    });
+})();
+</script>
+{% endif %}

@@ -1,9 +1,23 @@
 ---
-layout: github-readme
+layout: product
 title: bend
 permalink: /more/bend
 category: CLI Tools
-description: CLI to read the MacBook lid angle, written in zig
+kind: readme
+description: CLI to read the MacBook lid angle, written in Zig
 image: /assets/images/metadata/bend.jpg
+
+tagline: Read the MacBook lid angle from the command line. Written in Zig.
+
 repo: mnk400/bend
+branch: main
+
+install:
+  - label: Homebrew
+    command: brew install mnk400/tap/bend
+  - label: Shell
+    command: curl -fsSL https://raw.githubusercontent.com/mnk400/bend/main/install.sh | bash
+
+meta:
+  - macOS
 ---

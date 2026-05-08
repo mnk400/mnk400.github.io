@@ -1,46 +1,50 @@
 ---
-layout: post
+layout: product
 title: Gulp
 permalink: /more/gulp
 category: Apps
+kind: native
 description: Native macOS app for gallery-dl with history and log management
+
+icon: https://raw.githubusercontent.com/mnk400/Gulp/main/Assets/gulp.png
+tagline: A native macOS front-end for gallery-dl, built with SwiftUI.
+
+repo: mnk400/Gulp
+
+download:
+  url: https://github.com/mnk400/Gulp/releases/latest
+  label: Download for macOS 26+
+  icon: ph-apple-logo
+
+install:
+  - label: Homebrew
+    command: brew tap mnk400/tap && brew install --cask gulp --no-quarantine
+    display_command: brew install --cask gulp
+
+meta:
+  - macOS 26+
+  - Free & open source
+
+hero_image: https://raw.githubusercontent.com/mnk400/Gulp/main/Assets/ui.png
+
+features:
+  - icon: ph-clock-counter-clockwise
+    title: Download history
+    body: Revisit past downloads and rerun them whenever you want.
+  - icon: ph-list-bullets
+    title: Per-download logs
+    body: Inspect what gallery-dl saw, even after the run completes.
+  - icon: ph-globe
+    title: Wide support
+    body: Anywhere gallery-dl goes, Gulp goes out of the box.
+  - icon: ph-app-window
+    title: Native SwiftUI
+    body: Lightweight; small native macOS binary.
 ---
 
-<div style="display: flex; gap: 1rem; align-items: center;">
-    <img src="https://raw.githubusercontent.com/mnk400/Gulp/main/Assets/gulp.png" alt="Gulp icon"
-        style="width: 70px; border-radius: 16px;">
-    <p style="padding-bottom: 0px;">
-        A native macOS front-end for 
-        <a href="https://github.com/mikf/gallery-dl" target="_blank" rel="noopener noreferrer">gallery-dl</a> with history & log management, built with SwiftUI.
-    </p>
-</div>
-
-<!--more-->
-
 <p>
-    Gulp is a simple tool that helps you download images and videos from various websites by providing an easy to use UI around the gallery-dl command line tool. 
+    Gulp is a simple tool that helps you download images and videos from various
+    websites by providing an easy-to-use UI around the
+    <a href="https://github.com/mikf/gallery-dl" target="_blank" rel="noopener noreferrer">gallery-dl</a>
+    command-line tool.
 </p>
-<p>
-    The app also keeps track of your download history so you can revisit past downloads and past logs.
-    Out of the box, gulp supports all platforms that gallery-dl does.
-</p>
-
-<div class="controls" style="display: flex;">
-    <a class="btn" href="https://github.com/mnk400/Gulp/releases/latest" target="_blank">
-        Download for MacOS 26+
-    </a>
-    <a class="btn btn--outline" href="#install-brew" data-copy="brew tap mnk400/tap && brew install --cask gulp --no-quarantine">
-        <i class="ph ph-bold ph-terminal"></i> <code>brew install --cask gulp</code>
-    </a>
-</div>
-<br>
-<div class="gulp-screenshots">
-    <h2>Screenshots</h2>
-    <img src="https://raw.githubusercontent.com/mnk400/Gulp/main/Assets/ui.png" alt="Gulp main interface">
-</div>
-
-<center>
-    <a href="https://github.com/mnk400/Gulp" target="_blank">
-        <i class="ph-fill ph-github-logo"></i> View on GitHub
-    </a>
-</center>

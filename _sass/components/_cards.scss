@@ -21,6 +21,13 @@
     &--no-padding {
         padding: 0;
     }
+
+    // Opt out of the hover background change for non-interactive cards
+    &--static {
+        @include hover-interactive {
+            background-color: var(--translucent-medium);
+        }
+    }
 }
 
 // Image card (photo albums)

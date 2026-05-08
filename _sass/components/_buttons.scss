@@ -21,6 +21,8 @@ button,
     @include hover-interactive {
         background-color: var(--contrast-overlay-hover);
         color: var(--background-main);
+        font-style: normal;
+        text-decoration: none !important;
     }
 
     // Button variants
