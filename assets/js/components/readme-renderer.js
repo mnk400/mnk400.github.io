@@ -18,6 +18,17 @@
             return res.text();
         })
         .then(function (md) {
+            // Strip sections marked as site-only-hidden. Lets a README keep
+            // content GitHub readers need (tagline, install) without it
+            // duplicating the product hero on the site.
+            //   <!-- site:strip-start -->
+            //   …content removed when rendered on the site…
+            //   <!-- site:strip-end -->
+            md = md.replace(
+                /<!--\s*site:strip-start\s*-->[\s\S]*?<!--\s*site:strip-end\s*-->/g,
+                ""
+            );
+
             // Rewrite relative image paths to raw.githubusercontent.com
             md = md.replace(
                 /!\[([^\]]*)\]\((?!https?:\/\/)([^)]+)\)/g,
@@ -38,11 +49,23 @@
 
             container.innerHTML = marked.parse(md);
 
-            // Make all links open in new tab
+            // Resolve relative links to the GitHub blob view, and make all
+            // links open in a new tab.
+            const blobBase = "https://github.com/" + repo + "/blob/" + branch + "/";
             const links = container.querySelectorAll("a");
             for (let i = 0; i < links.length; i++) {
+                const href = links[i].getAttribute("href");
+                if (href && !/^([a-z][a-z0-9+\-.]*:|\/\/|#)/i.test(href)) {
+                    links[i].setAttribute("href", blobBase + href.replace(/^\.\//, ""));
+                }
                 links[i].setAttribute("target", "_blank");
                 links[i].setAttribute("rel", "noopener noreferrer");
+            }
+
+            // Make rendered images zoomable (image-zoom.js delegates on [data-zoomable])
+            const imgs = container.querySelectorAll("img");
+            for (let i = 0; i < imgs.length; i++) {
+                imgs[i].setAttribute("data-zoomable", "");
             }
         })
         .catch(function () {

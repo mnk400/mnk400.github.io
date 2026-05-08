@@ -64,7 +64,7 @@ button,
     &--outline {
         background-color: var(--translucent-low);
         color: var(--text-color);
-        @include soft-outline(var(--translucent-high));
+        @include soft-outline(var(--translucent-medium));
     }
 
     &--outline:hover {
