@@ -3,6 +3,7 @@ layout: post
 title: 13 Feet Ladder (so eepy)
 description: Self-hosted paywall detection
 permalink: /more/13ft
+tags: [web, paywall, archive, shortcut, self-hosted]
 ---
 
 This is my personal fork of [13ft](https://github.com/wasi-master/13ft){:target="_blank"} by wasi-master, which is itself a similar project to the famous paywall-bypassing service 12ft.

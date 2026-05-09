@@ -180,9 +180,19 @@
     display: none;
 }
 
-@media screen and (max-width: $breakpoint-mobile) {
+@media screen and (max-width: 360px) {
     .more-section {
         grid-template-columns: 1fr;
         gap: 0;
     }
+}
+
+.more-chips {
+    margin: 0 0 var(--spacing-md);
+}
+
+.more-empty {
+    color: var(--sec-text-color);
+    font-size: 0.9em;
+    margin-top: var(--spacing-md);
 }

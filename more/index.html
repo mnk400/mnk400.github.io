@@ -5,10 +5,11 @@ permalink: /more
 scripts: [/assets/js/tools/more-index.js]
 ---
 
-{%- comment -%} Collect all pages in /more/ except this index {%- endcomment -%}
+{%- comment -%} Collect category pages in /more/ {%- endcomment -%}
 {%- assign pages_in_more_dir = site.pages
     | where_exp: "page", "page.path contains 'more/'"
     | where_exp: "page", "page.name != 'index.html'"
+    | where_exp: "page", "page.name != 'v2.html'"
     | where_exp: "page", "page.disabled != true" -%}
 
 {%- assign category_pages = pages_in_more_dir
@@ -17,14 +18,12 @@ scripts: [/assets/js/tools/more-index.js]
 {%- comment -%} Build unique sorted categories list {%- endcomment -%}
 {%- assign unique_categories = "" | split: "," -%}
 {%- for page in category_pages -%}
-    {%- if page.category -%}
-        {%- assign unique_categories = unique_categories | push: page.category -%}
-    {%- endif -%}
+    {%- assign unique_categories = unique_categories | push: page.category -%}
 {%- endfor -%}
 {%- assign unique_categories = unique_categories | uniq | sort -%}
 
 <p>
-This page is an ongoing list of random things and projects I've built:
+This page is an ongoing list of random things and projects I've built.
 </p>
 
 <input
@@ -36,12 +35,28 @@ This page is an ongoing list of random things and projects I've built:
     aria-label="Search projects"
 >
 
+<div class="selection-switch selection-switch--small more-chips" id="more-chips">
+    <span class="switch-option active" data-value="all">all</span>
+    {%- for cat in unique_categories -%}
+        <span class="switch-option" data-value="{{ cat | downcase }}">
+            {%- if cat == "Apps" -%}apps
+            {%- elsif cat == "CLI Tools" -%}cli tools
+            {%- elsif cat == "Galleries" -%}galleries
+            {%- elsif cat == "Fun Tools" -%}fun
+            {%- elsif cat == "Games" -%}games
+            {%- elsif cat == "Image Tools" -%}image tools
+            {%- elsif cat == "Music" -%}music
+            {%- else -%}{{ cat | downcase }}
+            {%- endif -%}
+        </span>
+    {%- endfor -%}
+</div>
+
 <div class="more-page">
 {%- for cat in unique_categories -%}
     {%- assign cat_pages = category_pages | where: "category", cat | sort: "title" -%}
 
     <div class="more-section" data-more-category="{{ cat | downcase }}">
-        {%- comment -%} Category intro phrases {%- endcomment -%}
         <span class="more-section__label">
             {%- if cat == "Apps" -%}apps
             {%- elsif cat == "CLI Tools" -%}cli tools
@@ -54,11 +69,11 @@ This page is an ongoing list of random things and projects I've built:
             {%- endif -%}
         </span>
         <span class="more-section__links">
-        {%- comment -%} Links for this category {%- endcomment %}
-        {% for page in cat_pages -%}
+        {%- for page in cat_pages -%}
+            {%- assign tag_blob = page.tags | join: " " -%}
             <span
                 class="more-section__item"
-                data-more-search="{{ page.title | append: ' ' | append: page.description | append: ' ' | append: cat | strip | downcase | escape }}"
+                data-more-search="{{ page.title | append: ' ' | append: page.description | append: ' ' | append: cat | append: ' ' | append: tag_blob | strip | downcase | escape }}"
             >
             {%- if page.external_url -%}
                 <a href="{{ page.external_url }}" target="_blank" rel="noopener noreferrer">
@@ -79,3 +94,5 @@ This page is an ongoing list of random things and projects I've built:
     </div>
 {%- endfor -%}
 </div>
+
+<p class="more-empty" hidden>No matches.</p>

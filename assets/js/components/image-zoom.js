@@ -93,10 +93,10 @@
 
     let finalWidth, finalHeight;
     if (imageAspect > viewportAspect) {
-      finalWidth = Math.min(maxWidth, naturalWidth);
+      finalWidth = maxWidth;
       finalHeight = finalWidth / imageAspect;
     } else {
-      finalHeight = Math.min(maxHeight, naturalHeight);
+      finalHeight = maxHeight;
       finalWidth = finalHeight * imageAspect;
     }
 
@@ -111,7 +111,10 @@
 
   async function createClone(img, initialRect) {
     const clone = document.createElement("img");
-    clone.src = img.dataset.fullSrc || img.src;
+    // Start with the thumb that's already painted on the page — the open
+    // animation can run instantly instead of waiting on a full-res download.
+    // upgradeCloneToFull() swaps in the high-res source once it's ready.
+    clone.src = img.src;
     clone.alt = img.alt;
     clone.className = "image-zoom-clone";
     clone.style.position = "fixed";
@@ -120,24 +123,35 @@
     document.body.appendChild(clone);
     try {
       await clone.decode();
-    } catch (e) {
-      // decode() may fail for some images; dimensions fall back to the
-      // fallback rect passed into computeTargetForImg.
-    }
+    } catch (e) {}
     return clone;
   }
 
+  function upgradeCloneToFull(clone, img) {
+    const fullSrc = img.dataset.fullSrc;
+    if (!fullSrc || fullSrc === clone.src) return;
+    const loader = new Image();
+    loader.src = fullSrc;
+    loader
+      .decode()
+      .then(() => {
+        if (clone.isConnected) clone.src = fullSrc;
+      })
+      .catch(() => {});
+  }
+
   function computeTargetForImg(img, clone, fallbackRect) {
-    const naturalWidth =
+    // Aspect ratio comes from the thumb (clone) — it matches the full image
+    // since both are renderings of the same source. We deliberately do not
+    // cap by naturalWidth/Height: the thumb is lower-res than the eventual
+    // full image, so capping here would zoom too small. The thumb gets
+    // stretched briefly until the full-res swap lands.
+    const aspectW =
       clone.naturalWidth || img.naturalWidth || fallbackRect.width;
-    const naturalHeight =
+    const aspectH =
       clone.naturalHeight || img.naturalHeight || fallbackRect.height;
     const { title, detail } = metaFor(img);
-    return calculateZoomedDimensions(
-      naturalWidth,
-      naturalHeight,
-      !!(title || detail),
-    );
+    return calculateZoomedDimensions(aspectW, aspectH, !!(title || detail));
   }
 
   function makeButton(className, icon, ariaLabel, onClick, parent = document.body) {
@@ -283,6 +297,7 @@
 
     clonedImage = await createClone(img, originalRect);
     const target = computeTargetForImg(img, clonedImage, originalRect);
+    upgradeCloneToFull(clonedImage, img);
 
     clonedImage.offsetHeight;
     clonedImage.style.transition = "";
@@ -335,6 +350,7 @@
     const originalRect = newImg.getBoundingClientRect();
     const newClone = await createClone(newImg);
     const target = computeTargetForImg(newImg, newClone, originalRect);
+    upgradeCloneToFull(newClone, newImg);
 
     const slide = window.innerWidth;
     const enterFrom = direction > 0 ? slide : -slide;
