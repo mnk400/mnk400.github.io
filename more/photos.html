@@ -3,7 +3,7 @@ layout: post
 title: Photos
 permalink: /photos
 image: /assets/images/metadata/photo.jpg
-scripts: [/assets/js/media/r2-gallery.js]
+scripts: [/assets/js/media/image-gallery.js]
 ---
 <p>
     I occasionally update this webpage with new pictures.
@@ -11,4 +11,10 @@ scripts: [/assets/js/media/r2-gallery.js]
         id="insta-link" href="https://www.instagram.com/m.xnik" class>Instagram!</a>
 </p>
 
-{% include r2-album.html album="photos" %}
+{% include image-gallery.html
+    source="https://media.manik.cc/photos/manifest.json"
+    base_url="https://media.manik.cc"
+    items_key="images"
+    gallery_name="photos"
+    show_captions=false
+%}

@@ -74,16 +74,35 @@
     }
 }
 
+// Shared image gallery shell
+.image-gallery {
+    display: grid;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+}
+
+.image-gallery__status,
+.image-gallery__summary {
+    color: var(--sec-text-color);
+    font-size: 0.9em;
+}
+
+.image-gallery__summary {
+    @include mono-font;
+}
+
 // Photo album container - Pinterest-style masonry
 .album-container {
     display: flex;
     flex-wrap: wrap;
     gap: var(--spacing-md);
+    width: 100%;
     max-width: 100%;
     margin: 0 auto;
 
     .masonry-column {
-        flex: 1;
+        flex: 1 1 0;
+        min-width: 0;
         display: flex;
         flex-direction: column;
         gap: var(--spacing-md);

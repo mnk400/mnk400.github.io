@@ -2,11 +2,17 @@
 layout: post
 title: Art
 permalink: /art
-scripts: [/assets/js/media/r2-gallery.js]
+scripts: [/assets/js/media/image-gallery.js]
 ---
 
 <p>
     Sometimes I make art too.
 </p>
 
-{% include r2-album.html album="art" %}
+{% include image-gallery.html
+    source="https://media.manik.cc/art/manifest.json"
+    base_url="https://media.manik.cc"
+    items_key="images"
+    gallery_name="art"
+    show_captions=false
+%}

@@ -1,0 +1,21 @@
+---
+layout: post
+title: Monet
+permalink: /more/monet
+category: Art
+description: Browse Claude Monet paintings from the pipelines manifest.
+scripts: [/assets/js/media/image-gallery.js]
+---
+
+<p>
+    A small browser for Claude Monet paintings, powered by the manifest from my
+    pipelines repo.
+</p>
+
+{% include image-gallery.html
+    source="https://manik.cc/pipelines/monet/manifest.json"
+    items_key="paintings"
+    gallery_name="monet"
+    loading_text="Loading paintings..."
+    summary=true
+%}

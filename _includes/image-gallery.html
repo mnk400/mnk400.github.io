@@ -1,0 +1,61 @@
+{% comment %}
+  Image Gallery Shell
+
+  Shared gallery markup for image-backed masonry galleries. Data loading is
+  handled by page-specific JavaScript.
+
+  Usage:
+  {% include image-gallery.html
+      source="https://example.com/manifest.json"
+      base_url="https://example.com"
+      items_key="paintings"
+      gallery_name="monet"
+      loading_text="Loading paintings..."
+      summary=true
+  %}
+
+  For R2-backed albums, pass source, base_url, items_key="images", and
+  show_captions=false.
+{% endcomment %}
+
+{%- assign gallery_name = include.gallery_name | default: "gallery" -%}
+{%- assign gallery_class = "image-gallery image-gallery--" | append: gallery_name -%}
+{%- assign status_id = "image-gallery-status-" | append: gallery_name -%}
+{%- assign grid_id = "image-gallery-grid-" | append: gallery_name -%}
+
+<div
+  class="{{ gallery_class }}"
+  id="image-gallery-{{ gallery_name }}"
+  {% if include.source %}data-image-gallery data-gallery-source="{{ include.source }}"{% endif %}
+  {% if include.base_url %}data-gallery-base-url="{{ include.base_url }}"{% endif %}
+  {% if include.items_key %}data-gallery-items-key="{{ include.items_key }}"{% endif %}
+  data-gallery-name="{{ gallery_name }}"
+  {% if include.show_captions != nil %}data-gallery-show-captions="{{ include.show_captions }}"{% endif %}
+>
+  {% if include.description %}
+  <p>{{ include.description }}</p>
+  <br>
+  {% endif %}
+
+  <div
+    class="image-gallery__status"
+    id="{{ status_id }}"
+    {% if include.source %}data-gallery-status{% endif %}
+  >
+    <p>{{ include.loading_text | default: "Loading images..." }}</p>
+  </div>
+
+  {% if include.summary %}
+  <div
+    class="image-gallery__summary"
+    data-gallery-summary
+    hidden
+  ></div>
+  {% endif %}
+
+  <div
+    class="album-container image-gallery__grid"
+    id="{{ grid_id }}"
+    {% if include.source %}data-gallery-grid{% endif %}
+  ></div>
+</div>

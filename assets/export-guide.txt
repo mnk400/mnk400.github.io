@@ -248,6 +248,23 @@ space before the image decodes — prevents masonry reflow on load:
         </div>
     </div>
 Add the .loaded class to .image-card once the image decodes to fade it in.
+.image-ratio-box uses a small radius and clips the image to match the site's
+gallery treatment. .image-card is width: 100% so cards fill masonry columns,
+including image-only cards with no caption text.
+
+Optional image gallery card captions:
+    <div class="image-card image-gallery-card loaded">
+        <div class="image-ratio-box" style="padding-bottom: 66.67%;">
+            <img src="photo.jpg" alt="Description" data-zoomable>
+        </div>
+        <div class="image-gallery-card__caption">
+            <div class="image-gallery-card__title">Artwork title</div>
+            <div class="image-gallery-card__meta">1889 · Museum name</div>
+        </div>
+    </div>
+
+Caption text is hidden on narrow mobile screens to keep dense galleries
+focused on the images.
 
 Color info card:
     <div class="color-info">
@@ -865,6 +882,38 @@ These are ready-to-use HTML patterns that work with the exported CSS and JS.
 
 --- Photo masonry ---
 
+Shared gallery shell:
+    <div class="image-gallery">
+        <div class="image-gallery__status">Loading images...</div>
+        <div class="image-gallery__summary">24 works</div>
+        <div class="album-container" data-gallery="my-album">
+            <!-- masonry columns / image cards -->
+        </div>
+    </div>
+
+Pinterest-style masonry album container:
+    <div class="album-container" data-gallery="my-album">
+        <div class="masonry-column">
+            <div class="image-card">
+                <div class="image-ratio-box" style="padding-bottom: 66.67%;">
+                    <img src="photo1.jpg" alt="" data-zoomable>
+                </div>
+            </div>
+        </div>
+        <div class="masonry-column">
+            <div class="image-card">
+                <div class="image-ratio-box" style="padding-bottom: 125%;">
+                    <img src="photo2.jpg" alt="" data-zoomable>
+                </div>
+            </div>
+        </div>
+    </div>
+
+The masonry columns use flex: 1 1 0 and min-width: 0, while .album-container
+is width: 100%; this prevents image-only cards from collapsing when the
+gallery sits inside another grid/flex shell.
+
+Legacy CSS column masonry variant:
     <div class="grid grid--masonry">
         <div class="image-card">
             <div class="image-ratio-box" style="padding-bottom: 66.67%;">
