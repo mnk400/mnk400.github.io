@@ -8,6 +8,10 @@
  */
 (function () {
     var breadcrumbSelectors = ['.breadcrumb-back', '.breadcrumb-home', '.breadcrumb-sep'];
+    // Safari's VT implementation chokes when snapshotting subtrees with thousands
+    // of nodes (e.g. the Monet gallery), causing a 1–2s freeze on nav-away.
+    // Chrome handles the same case without noticeable lag, so scope the skip.
+    var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
     function setBreadcrumbNames(value) {
         breadcrumbSelectors.forEach(function (sel) {
@@ -25,6 +29,12 @@
     // elements into the site-header group
     window.addEventListener('pageswap', function (event) {
         if (!event.viewTransition) return;
+
+        if (isSafari && document.body.classList.contains('skip-view-transition')) {
+            event.viewTransition.skipTransition();
+            return;
+        }
+
         var entry = event.activation && event.activation.entry;
         if (entry && isHomePage(entry.url)) {
             setBreadcrumbNames('none');
