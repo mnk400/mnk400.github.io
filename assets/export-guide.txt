@@ -288,6 +288,38 @@ Text inputs (styled automatically):
     <input type="email" placeholder="Email...">
     <select><option>Choose...</option></select>
 
+Selection dropdown:
+    <div id="my-dropdown" class="selection-dropdown" data-selection-dropdown>
+        <button class="selection-dropdown__trigger" type="button"
+            aria-haspopup="listbox" aria-expanded="false">
+            <span class="selection-dropdown__trigger-text">All</span>
+            <i class="ph-bold ph-caret-down selection-dropdown__chevron"
+                aria-hidden="true"></i>
+        </button>
+        <div class="selection-dropdown__menu collapsed" role="listbox">
+            <button class="selection-dropdown__option active" type="button"
+                role="option" aria-selected="true" data-value="all">
+                <span class="selection-dropdown__option-label">All</span>
+                <i class="ph-bold ph-check selection-dropdown__option-check"
+                    aria-hidden="true"></i>
+            </button>
+            <button class="selection-dropdown__option" type="button"
+                role="option" aria-selected="false" data-value="one">
+                <span class="selection-dropdown__option-label">One</span>
+                <i class="ph-bold ph-check selection-dropdown__option-check"
+                    aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+
+    Auto-initialized by ui-components.js on DOMContentLoaded. Open/close
+    state lives on the trigger as aria-expanded; the menu uses the shared
+    .collapsed animation (same max-height + opacity slide as expandable
+    sections). Clicks update .active, update the trigger label, close the
+    menu, and fire a 'change' CustomEvent with { detail: { value, element } }.
+    The container id registers with window.dropdownManager. Closes on outside
+    click and Escape.
+
 Range slider with fill tracking:
     <input type="range" min="0" max="100" value="50"
         style="--value-percent: 50%"
@@ -352,13 +384,11 @@ Shared image gallery shell:
     .image-gallery__controls        Optional controls region
     .image-gallery__control-group   Label + control stack
     .image-gallery__control-label   Small muted label
-    .image-gallery__select          Full-width select inside gallery controls
     .image-gallery__grid            Masonry grid container, usually paired with
                                     .album-container
 
-Gallery controls are designed to compose existing primitives: use
-.selection-switch for compact finite choices and .image-gallery__select for
-larger option sets.
+Gallery controls compose the shared selection primitives: use .selection-switch
+for compact finite choices and .selection-dropdown for larger option sets.
 
 
 --- INFO GRIDS ---
@@ -508,12 +538,13 @@ for 500ms to animate the background-color change.
 --- ui-components.js ---
 Path: /assets/js/core/ui-components.js
 
-Provides five reusable features (auto-initializes on DOMContentLoaded):
+Provides six reusable features (auto-initializes on DOMContentLoaded):
 
 1. Touch hover simulation
    On touch devices, adds .touch-hover class on touchstart to interactive
-   elements (a, button, .btn, .switch-option, .expandable-toggle). Removes
-   after 150ms. No setup needed — works automatically.
+   elements (a, button, .btn, .switch-option, .selection-dropdown__trigger,
+   .selection-dropdown__option, .expandable-toggle). Removes after 150ms.
+   No setup needed — works automatically.
 
 2. Expandable sections
    Auto-initializes all .expandable-toggle buttons. Toggles aria-expanded
@@ -541,7 +572,16 @@ Provides five reusable features (auto-initializes on DOMContentLoaded):
        window.initSwitch('my-switch', (value, element) => { ... })
    Or listen to the 'change' CustomEvent directly on the container.
 
-5. Range sliders
+5. Selection dropdowns
+   Auto-initializes all [data-selection-dropdown] containers (see §6 for HTML).
+   Each dropdown with an id registers under window.dropdownManager:
+       window.dropdownManager['my-dropdown'].setActive('one')
+       window.dropdownManager['my-dropdown'].getActive()    // -> 'one'
+   Convenience helper for change handling:
+       window.initDropdown('my-dropdown', (value, element) => { ... })
+   Or listen to the 'change' CustomEvent directly on the container.
+
+6. Range sliders
    Auto-initializes all [data-range-slider] containers (see §6 for HTML).
    Updates the --value-percent CSS variable on input and syncs the value
    label. Idempotent — safe to wrap a slider that's also driven manually.

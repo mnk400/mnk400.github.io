@@ -45,30 +45,13 @@ body {
 }
 
 // Expandable content
+.expandable-section {
+    margin-bottom: var(--spacing-md);
+}
+
 .expandable-content {
     padding: var(--spacing-md) var(--spacing-lg) 0px var(--spacing-lg);
     margin-top: var(--spacing-md);
-    margin-bottom: var(--spacing-md);
     @include translucent-surface;
-    overflow: hidden;
-    opacity: 1;
-
-    transition:
-        max-height var(--transition-slow),
-        opacity var(--transition-slow),
-        margin-top var(--transition-slow),
-        margin-bottom var(--transition-slow),
-        padding-top var(--transition-slow),
-        padding-bottom var(--transition-slow);
-    will-change:
-        max-height, opacity, margin-top, margin-bottom, padding-top,
-        padding-bottom;
-
-    &.collapsed {
-        max-height: 0px !important;
-        opacity: 0;
-        margin-bottom: 0px !important;
-        padding-top: 0px !important;
-        padding-bottom: 0px !important;
-    }
+    @include expanding-collapsible;
 }

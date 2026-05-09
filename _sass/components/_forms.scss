@@ -27,6 +27,117 @@ select {
     }
 }
 
+// Selection dropdown
+.selection-dropdown {
+    width: 100%;
+    font-weight: 300;
+    margin-top: var(--spacing-xs);
+    margin-bottom: var(--spacing-sm);
+}
+
+.selection-dropdown__trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    width: 100%;
+    min-height: 36px;
+    background-color: var(--translucent-low);
+    color: var(--text-color);
+    border: none;
+    border-radius: var(--radius-lg);
+    backdrop-filter: none;
+    transition: background-color var(--transition-medium);
+    @include soft-outline;
+
+    @include hover-interactive {
+        background-color: var(--translucent-medium);
+        color: var(--text-color);
+    }
+
+    .selection-dropdown__chevron {
+        transition: transform var(--transition-slow);
+    }
+
+    &[aria-expanded="true"] {
+        background-color: var(--translucent-medium);
+
+        .selection-dropdown__chevron {
+            transform: rotate(180deg);
+        }
+    }
+}
+
+.selection-dropdown__trigger-text {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.selection-dropdown__chevron {
+    flex: 0 0 auto;
+    color: var(--sec-text-color);
+    line-height: 1;
+}
+
+.selection-dropdown__menu {
+    display: grid;
+    gap: var(--spacing-2xs);
+    max-height: 240px;
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-xs);
+    @include translucent-surface(var(--translucent-low), 10px);
+    @include expanding-collapsible;
+    overflow-y: auto;
+
+    &.collapsed {
+        overflow-y: hidden;
+    }
+}
+
+.selection-dropdown__option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background-color: transparent;
+    color: var(--text-color);
+    border: none;
+    border-radius: var(--radius-md);
+    text-align: left;
+    backdrop-filter: none;
+
+    @include hover-interactive {
+        background-color: var(--translucent-low);
+        color: var(--text-color);
+    }
+
+    .selection-dropdown__option-check {
+        flex: 0 0 auto;
+        opacity: 0;
+        transition: opacity var(--transition-fast);
+    }
+
+    &.active {
+        background-color: var(--contrast-overlay);
+        color: var(--background-main);
+
+        .selection-dropdown__option-check {
+            opacity: 1;
+        }
+    }
+}
+
+.selection-dropdown__option-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 // Range inputs
 input[type="range"] {
     display: block;

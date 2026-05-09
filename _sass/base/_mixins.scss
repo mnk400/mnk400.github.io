@@ -61,6 +61,33 @@
     font-family: "IBM Plex Mono", ui-monospace, monospace;
 }
 
+// Slide-and-fade collapse animation. Apply to a content element; toggle the
+// `.collapsed` class to close. Element should have an open-state max-height
+// (either an explicit cap, or set inline via JS to scrollHeight for auto).
+@mixin expanding-collapsible($duration: var(--transition-slow)) {
+    overflow: hidden;
+    opacity: 1;
+    transition:
+        max-height $duration,
+        opacity $duration,
+        margin-top $duration,
+        margin-bottom $duration,
+        padding-top $duration,
+        padding-bottom $duration;
+    will-change:
+        max-height, opacity, margin-top, margin-bottom, padding-top,
+        padding-bottom;
+
+    &.collapsed {
+        max-height: 0 !important;
+        opacity: 0;
+        margin-top: 0;
+        margin-bottom: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+}
+
 // Visually hidden but accessible
 @mixin visually-hidden {
     position: absolute;

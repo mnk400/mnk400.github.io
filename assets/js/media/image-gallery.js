@@ -105,6 +105,21 @@
     return `${Math.floor(year / 10) * 10}s`;
   }
 
+  const HUMANIZE_SMALL_WORDS = new Set(["and", "of", "on", "the"]);
+
+  function humanizeValue(value) {
+    return String(value)
+      .replace(/[-_]+/g, " ")
+      .split(" ")
+      .map((word, index) => {
+        if (index > 0 && HUMANIZE_SMALL_WORDS.has(word.toLowerCase())) {
+          return word.toLowerCase();
+        }
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      })
+      .join(" ");
+  }
+
   function uniqueValues(items, getValue) {
     return Array.from(
       new Set(items.map(getValue).filter((value) => value !== "")),
@@ -128,30 +143,6 @@
     }
 
     return sorted;
-  }
-
-  function createSwitch(id, label, options, activeValue) {
-    const switchEl = document.createElement("div");
-    switchEl.className = "selection-switch selection-switch--small";
-    switchEl.id = id;
-    switchEl.setAttribute("aria-label", label);
-
-    options.forEach((option) => {
-      const optionEl = document.createElement("span");
-      optionEl.className = "switch-option";
-      optionEl.dataset.value = option.value;
-      optionEl.textContent = option.label;
-      if (option.value === activeValue) {
-        optionEl.classList.add("active");
-      }
-      switchEl.appendChild(optionEl);
-    });
-
-    if (typeof initSelectionSwitch === "function") {
-      initSelectionSwitch(switchEl);
-    }
-
-    return switchEl;
   }
 
   function createControlGroup(label, control) {
@@ -196,12 +187,13 @@
         value,
         label: SORT_LABELS[value] || value,
       }));
-      const sortSwitch = createSwitch(
-        `image-gallery-sort-${galleryName}`,
-        "Sort paintings",
-        sortOptions,
-        state.sort,
-      );
+      const sortSwitch = buildSwitch({
+        id: `image-gallery-sort-${galleryName}`,
+        ariaLabel: "Sort paintings",
+        options: sortOptions,
+        active: state.sort,
+        size: "small",
+      });
       sortSwitch.addEventListener("change", (event) => {
         state.sort = event.detail.value;
         applyState();
@@ -213,15 +205,16 @@
       const decades = uniqueValues(items, getDecadeValue).sort((a, b) => {
         return Number.parseInt(b, 10) - Number.parseInt(a, 10);
       });
-      const decadeSwitch = createSwitch(
-        `image-gallery-decade-${galleryName}`,
-        "Filter by decade",
-        [
+      const decadeSwitch = buildSwitch({
+        id: `image-gallery-decade-${galleryName}`,
+        ariaLabel: "Filter by decade",
+        options: [
           { value: "all", label: "All" },
           ...decades.map((decade) => ({ value: decade, label: decade })),
         ],
-        state.decade,
-      );
+        active: state.decade,
+        size: "small",
+      });
       decadeSwitch.addEventListener("change", (event) => {
         state.decade = event.detail.value;
         applyState();
@@ -230,31 +223,21 @@
     }
 
     if (state.filterOptions.includes("series")) {
-      const select = document.createElement("select");
-      select.className = "image-gallery__select";
-      select.id = `image-gallery-series-${galleryName}`;
-      select.setAttribute("aria-label", "Filter by series");
+      const seriesOptions = uniqueValues(items, (item) => item.series)
+        .map((series) => ({ value: series, label: humanizeValue(series) }))
+        .sort((a, b) => a.label.localeCompare(b.label));
 
-      const allOption = document.createElement("option");
-      allOption.value = "all";
-      allOption.textContent = "All series";
-      select.appendChild(allOption);
-
-      uniqueValues(items, (item) => item.series)
-        .sort((a, b) => a.localeCompare(b))
-        .forEach((series) => {
-          const option = document.createElement("option");
-          option.value = series;
-          option.textContent = series;
-          select.appendChild(option);
-        });
-
-      select.value = state.series;
-      select.addEventListener("change", () => {
-        state.series = select.value;
+      const dropdown = buildDropdown({
+        id: `image-gallery-series-${galleryName}`,
+        ariaLabel: "Filter by series",
+        options: [{ value: "all", label: "All series" }, ...seriesOptions],
+        active: state.series,
+      });
+      dropdown.addEventListener("change", (event) => {
+        state.series = event.detail.value;
         applyState();
       });
-      controlsRoot.appendChild(createControlGroup("Series", select));
+      controlsRoot.appendChild(createControlGroup("Series", dropdown));
     }
   }
 

@@ -4,6 +4,7 @@
  */
 
 window.switchManager = window.switchManager || {};
+window.dropdownManager = window.dropdownManager || {};
 
 function initSelectionSwitch(containerOrId) {
   const container =
@@ -42,6 +43,88 @@ function initSelectionSwitch(containerOrId) {
   container.dataset.switchInitialized = "true";
 }
 
+function initSelectionDropdown(containerOrId) {
+  const container =
+    typeof containerOrId === "string"
+      ? document.getElementById(containerOrId)
+      : containerOrId;
+  if (!container || container.dataset.dropdownInitialized === "true") return;
+
+  const trigger = container.querySelector(".selection-dropdown__trigger");
+  const triggerText = container.querySelector(".selection-dropdown__trigger-text");
+  const menu = container.querySelector(".selection-dropdown__menu");
+  const options = Array.from(
+    container.querySelectorAll(".selection-dropdown__option"),
+  );
+  if (!trigger || !triggerText || !menu || options.length === 0) return;
+
+  function setActive(value, shouldDispatch) {
+    const activeOption = options.find((opt) => opt.dataset.value === value);
+    if (!activeOption) return;
+    options.forEach((opt) => {
+      const isActive = opt === activeOption;
+      opt.classList.toggle("active", isActive);
+      opt.setAttribute("aria-selected", String(isActive));
+    });
+    const label = activeOption.querySelector(".selection-dropdown__option-label");
+    triggerText.textContent = (label || activeOption).textContent;
+    if (shouldDispatch) {
+      container.dispatchEvent(
+        new CustomEvent("change", {
+          detail: { value, element: activeOption },
+        }),
+      );
+    }
+  }
+
+  function setOpen(open) {
+    menu.classList.toggle("collapsed", !open);
+    trigger.setAttribute("aria-expanded", String(open));
+  }
+
+  function getActive() {
+    const active = container.querySelector(".selection-dropdown__option.active");
+    return active ? active.dataset.value : null;
+  }
+
+  const initial = options.find((opt) => opt.classList.contains("active")) || options[0];
+  setActive(initial.dataset.value, false);
+  setOpen(false);
+
+  window.dropdownManager[container.id] = {
+    setActive: (value) => setActive(value, false),
+    getActive,
+    close: () => setOpen(false),
+  };
+
+  trigger.addEventListener("click", () => {
+    setOpen(trigger.getAttribute("aria-expanded") !== "true");
+  });
+
+  options.forEach((option) => {
+    option.addEventListener("click", () => {
+      setActive(option.dataset.value, true);
+      setOpen(false);
+    });
+  });
+
+  container.dataset.dropdownInitialized = "true";
+}
+
+document.addEventListener("click", (event) => {
+  document.querySelectorAll(".selection-dropdown").forEach((container) => {
+    if (!container.contains(event.target)) {
+      const manager = window.dropdownManager[container.id];
+      if (manager) manager.close();
+    }
+  });
+});
+
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Escape") return;
+  Object.values(window.dropdownManager).forEach((m) => m.close && m.close());
+});
+
 function initRangeSlider(container) {
   if (!container || container.dataset.rangeInitialized === "true") return;
 
@@ -64,11 +147,98 @@ function initRangeSlider(container) {
   container.dataset.rangeInitialized = "true";
 }
 
+window.buildSwitch = window.buildSwitch || function ({ id, options, active, size, ariaLabel, className }) {
+  const el = document.createElement("div");
+  el.className = [
+    "selection-switch",
+    size === "small" && "selection-switch--small",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
+  if (id) el.id = id;
+  if (ariaLabel) el.setAttribute("aria-label", ariaLabel);
+
+  options.forEach((opt) => {
+    const span = document.createElement("span");
+    span.className = "switch-option" + (opt.value === active ? " active" : "");
+    span.dataset.value = opt.value;
+    span.textContent = opt.label;
+    el.appendChild(span);
+  });
+
+  initSelectionSwitch(el);
+  return el;
+};
+
+window.buildDropdown = window.buildDropdown || function ({ id, options, active, ariaLabel, className }) {
+  const el = document.createElement("div");
+  el.className = ["selection-dropdown", className].filter(Boolean).join(" ");
+  if (id) el.id = id;
+  el.dataset.selectionDropdown = "";
+  if (ariaLabel) el.setAttribute("aria-label", ariaLabel);
+
+  const trigger = document.createElement("button");
+  trigger.className = "selection-dropdown__trigger";
+  trigger.type = "button";
+  trigger.setAttribute("aria-haspopup", "listbox");
+  trigger.setAttribute("aria-expanded", "false");
+
+  const triggerText = document.createElement("span");
+  triggerText.className = "selection-dropdown__trigger-text";
+
+  const chevron = document.createElement("i");
+  chevron.className = "ph-bold ph-caret-down selection-dropdown__chevron";
+  chevron.setAttribute("aria-hidden", "true");
+
+  trigger.append(triggerText, chevron);
+
+  const menu = document.createElement("div");
+  menu.className = "selection-dropdown__menu collapsed";
+  menu.setAttribute("role", "listbox");
+
+  options.forEach((opt) => {
+    const optEl = document.createElement("button");
+    optEl.type = "button";
+    const isActive = opt.value === active;
+    optEl.className =
+      "selection-dropdown__option" + (isActive ? " active" : "");
+    optEl.dataset.value = opt.value;
+    optEl.setAttribute("role", "option");
+    optEl.setAttribute("aria-selected", String(isActive));
+
+    const label = document.createElement("span");
+    label.className = "selection-dropdown__option-label";
+    label.textContent = opt.label;
+
+    const check = document.createElement("i");
+    check.className = "ph-bold ph-check selection-dropdown__option-check";
+    check.setAttribute("aria-hidden", "true");
+
+    optEl.append(label, check);
+    menu.appendChild(optEl);
+  });
+
+  el.append(trigger, menu);
+  initSelectionDropdown(el);
+  return el;
+};
+
 window.initSwitch = window.initSwitch || function (id, callback) {
   const container = document.getElementById(id);
   if (!container) return;
 
   initSelectionSwitch(container);
+  container.addEventListener("change", (e) =>
+    callback(e.detail.value, e.detail.element),
+  );
+};
+
+window.initDropdown = window.initDropdown || function (id, callback) {
+  const container = document.getElementById(id);
+  if (!container) return;
+
+  initSelectionDropdown(container);
   container.addEventListener("change", (e) =>
     callback(e.detail.value, e.detail.element),
   );
@@ -163,7 +333,7 @@ function handleSiteNameClick(event) {
 // Touch hover handler for mobile devices
 if ("ontouchstart" in window) {
   const SELECTORS =
-    "a, button, .btn, .switch-option, .expandable-toggle";
+    "a, button, .btn, .switch-option, .selection-dropdown__trigger, .selection-dropdown__option, .expandable-toggle";
   let touchStart = 0;
   let activeTarget = null;
 
@@ -197,6 +367,9 @@ if ("ontouchstart" in window) {
 // Initialize UI components when DOM is ready
 document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll(".selection-switch").forEach(initSelectionSwitch);
+  document
+    .querySelectorAll("[data-selection-dropdown]")
+    .forEach(initSelectionDropdown);
   document.querySelectorAll("[data-range-slider]").forEach(initRangeSlider);
 
   // Initialize image selector functionality

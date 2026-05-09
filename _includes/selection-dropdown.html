@@ -1,0 +1,56 @@
+{% comment %}
+  Selection Dropdown Component
+
+  Usage:
+  {% assign my_options = "all:All series,haystacks:Haystacks,nympheas:Nympheas" | split: "," %}
+  {% include selection-dropdown.html id="my-dropdown" options=my_options default_active="all" %}
+
+  Parameters:
+  - id: Required. Unique identifier for this dropdown.
+  - class: Optional. Additional CSS classes to apply to the dropdown container.
+  - options: Required. Array of options in format "value:label".
+  - default_active: Optional. The value of the option that should be active by default.
+  - aria_label: Optional. Accessible label for the trigger.
+{% endcomment %}
+
+<div
+  class="selection-dropdown {{ include.class }}"
+  id="{{ include.id }}"
+  data-selection-dropdown
+  {% if include.aria_label %}aria-label="{{ include.aria_label }}"{% endif %}
+>
+  <button
+    class="selection-dropdown__trigger"
+    type="button"
+    aria-haspopup="listbox"
+    aria-expanded="false"
+  >
+    <span class="selection-dropdown__trigger-text"></span>
+    <i class="ph-bold ph-caret-down selection-dropdown__chevron" aria-hidden="true"></i>
+  </button>
+  <div class="selection-dropdown__menu collapsed" role="listbox">
+    {% for option_raw in include.options %}
+      {% assign option_parts = option_raw | split: ":" %}
+      {% assign option_value = option_parts[0] %}
+      {% assign option_label = option_parts[1] | default: option_parts[0] %}
+
+      {% assign is_active = false %}
+      {% if include.default_active == option_value %}
+        {% assign is_active = true %}
+      {% elsif include.default_active == null and forloop.first %}
+        {% assign is_active = true %}
+      {% endif %}
+
+      <button
+        type="button"
+        class="selection-dropdown__option{% if is_active %} active{% endif %}"
+        role="option"
+        aria-selected="{% if is_active %}true{% else %}false{% endif %}"
+        data-value="{{ option_value }}"
+      >
+        <span class="selection-dropdown__option-label">{{ option_label }}</span>
+        <i class="ph-bold ph-check selection-dropdown__option-check" aria-hidden="true"></i>
+      </button>
+    {% endfor %}
+  </div>
+</div>
