@@ -91,6 +91,36 @@
     @include mono-font;
 }
 
+.image-gallery__controls {
+    display: grid;
+    gap: var(--spacing-sm);
+    margin-top: 0;
+}
+
+.image-gallery__control-group {
+    display: grid;
+    gap: var(--spacing-xs);
+    min-width: 0;
+
+    .selection-switch {
+        width: 100%;
+        margin: 0;
+        align-self: stretch;
+    }
+}
+
+.image-gallery__control-label {
+    @include visually-hidden;
+    color: var(--sec-text-color);
+    font-size: 0.85em;
+    line-height: 1;
+}
+
+.image-gallery__select {
+    width: 100%;
+    min-width: 0;
+}
+
 // Photo album container - Pinterest-style masonry
 .album-container {
     display: flex;

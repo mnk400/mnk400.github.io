@@ -12,6 +12,10 @@
       gallery_name="monet"
       loading_text="Loading paintings..."
       summary=true
+      controls=true
+      sort_options="year-desc,year-asc"
+      default_sort="year-desc"
+      filter_options="decade,series"
   %}
 
   For R2-backed albums, pass source, base_url, items_key="images", and
@@ -31,6 +35,10 @@
   {% if include.items_key %}data-gallery-items-key="{{ include.items_key }}"{% endif %}
   data-gallery-name="{{ gallery_name }}"
   {% if include.show_captions != nil %}data-gallery-show-captions="{{ include.show_captions }}"{% endif %}
+  {% if include.controls %}data-gallery-controls="{{ include.controls }}"{% endif %}
+  {% if include.sort_options %}data-gallery-sort-options="{{ include.sort_options }}"{% endif %}
+  {% if include.default_sort %}data-gallery-default-sort="{{ include.default_sort }}"{% endif %}
+  {% if include.filter_options %}data-gallery-filter-options="{{ include.filter_options }}"{% endif %}
 >
   {% if include.description %}
   <p>{{ include.description }}</p>
@@ -51,6 +59,10 @@
     data-gallery-summary
     hidden
   ></div>
+  {% endif %}
+
+  {% if include.controls %}
+  <div class="image-gallery__controls" data-gallery-controls-root hidden></div>
   {% endif %}
 
   <div

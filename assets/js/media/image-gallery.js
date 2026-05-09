@@ -4,6 +4,11 @@
  */
 
 (function () {
+  const SORT_LABELS = {
+    "year-desc": "Latest first",
+    "year-asc": "Earliest first",
+  };
+
   function getNestedValue(item, path) {
     if (!path) return undefined;
     return path.split(".").reduce((value, key) => {
@@ -80,6 +85,179 @@
     return [];
   }
 
+  function parseList(value) {
+    if (!value) return [];
+    if (Array.isArray(value)) return value;
+    return String(value)
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+
+  function getYearValue(item) {
+    const match = String(item.year || "").match(/\d{4}/);
+    return match ? Number(match[0]) : null;
+  }
+
+  function getDecadeValue(item) {
+    const year = getYearValue(item);
+    if (!year) return "";
+    return `${Math.floor(year / 10) * 10}s`;
+  }
+
+  function uniqueValues(items, getValue) {
+    return Array.from(
+      new Set(items.map(getValue).filter((value) => value !== "")),
+    );
+  }
+
+  function sortItems(items, sortValue) {
+    const sorted = [...items];
+
+    if (sortValue === "year-asc" || sortValue === "year-desc") {
+      sorted.sort((a, b) => {
+        const yearA = getYearValue(a);
+        const yearB = getYearValue(b);
+
+        if (yearA === yearB) return a.index - b.index;
+        if (yearA === null) return 1;
+        if (yearB === null) return -1;
+
+        return sortValue === "year-asc" ? yearA - yearB : yearB - yearA;
+      });
+    }
+
+    return sorted;
+  }
+
+  function createSwitch(id, label, options, activeValue) {
+    const switchEl = document.createElement("div");
+    switchEl.className = "selection-switch selection-switch--small";
+    switchEl.id = id;
+    switchEl.setAttribute("aria-label", label);
+
+    options.forEach((option) => {
+      const optionEl = document.createElement("span");
+      optionEl.className = "switch-option";
+      optionEl.dataset.value = option.value;
+      optionEl.textContent = option.label;
+      if (option.value === activeValue) {
+        optionEl.classList.add("active");
+      }
+      switchEl.appendChild(optionEl);
+    });
+
+    if (typeof initSelectionSwitch === "function") {
+      initSelectionSwitch(switchEl);
+    }
+
+    return switchEl;
+  }
+
+  function createControlGroup(label, control) {
+    const group = document.createElement("div");
+    group.className = "image-gallery__control-group";
+    group.setAttribute("aria-label", label);
+
+    group.appendChild(control);
+    return group;
+  }
+
+  function formatSummary(visibleCount, totalCount) {
+    if (visibleCount === totalCount) {
+      return `${totalCount.toLocaleString()} works`;
+    }
+    return `${visibleCount.toLocaleString()} of ${totalCount.toLocaleString()} works`;
+  }
+
+  function getVisibleItems(items, state) {
+    const filtered = items.filter((item) => {
+      if (state.decade !== "all" && getDecadeValue(item) !== state.decade) {
+        return false;
+      }
+      if (state.series !== "all" && item.series !== state.series) {
+        return false;
+      }
+      return true;
+    });
+
+    return sortItems(filtered, state.sort);
+  }
+
+  function setupControls(root, items, galleryName, state, applyState) {
+    const controlsRoot = root.querySelector("[data-gallery-controls-root]");
+    if (!controlsRoot) return;
+
+    controlsRoot.innerHTML = "";
+    controlsRoot.hidden = false;
+
+    if (state.sortOptions.length > 0) {
+      const sortOptions = state.sortOptions.map((value) => ({
+        value,
+        label: SORT_LABELS[value] || value,
+      }));
+      const sortSwitch = createSwitch(
+        `image-gallery-sort-${galleryName}`,
+        "Sort paintings",
+        sortOptions,
+        state.sort,
+      );
+      sortSwitch.addEventListener("change", (event) => {
+        state.sort = event.detail.value;
+        applyState();
+      });
+      controlsRoot.appendChild(createControlGroup("Sort", sortSwitch));
+    }
+
+    if (state.filterOptions.includes("decade")) {
+      const decades = uniqueValues(items, getDecadeValue).sort((a, b) => {
+        return Number.parseInt(b, 10) - Number.parseInt(a, 10);
+      });
+      const decadeSwitch = createSwitch(
+        `image-gallery-decade-${galleryName}`,
+        "Filter by decade",
+        [
+          { value: "all", label: "All" },
+          ...decades.map((decade) => ({ value: decade, label: decade })),
+        ],
+        state.decade,
+      );
+      decadeSwitch.addEventListener("change", (event) => {
+        state.decade = event.detail.value;
+        applyState();
+      });
+      controlsRoot.appendChild(createControlGroup("Decade", decadeSwitch));
+    }
+
+    if (state.filterOptions.includes("series")) {
+      const select = document.createElement("select");
+      select.className = "image-gallery__select";
+      select.id = `image-gallery-series-${galleryName}`;
+      select.setAttribute("aria-label", "Filter by series");
+
+      const allOption = document.createElement("option");
+      allOption.value = "all";
+      allOption.textContent = "All series";
+      select.appendChild(allOption);
+
+      uniqueValues(items, (item) => item.series)
+        .sort((a, b) => a.localeCompare(b))
+        .forEach((series) => {
+          const option = document.createElement("option");
+          option.value = series;
+          option.textContent = series;
+          select.appendChild(option);
+        });
+
+      select.value = state.series;
+      select.addEventListener("change", () => {
+        state.series = select.value;
+        applyState();
+      });
+      controlsRoot.appendChild(createControlGroup("Series", select));
+    }
+  }
+
   function setLoaded(card, img) {
     const markLoaded = () => card.classList.add("loaded");
     if (img.complete && img.naturalWidth > 0) {
@@ -88,6 +266,36 @@
     }
     img.addEventListener("load", markLoaded, { once: true });
     img.addEventListener("error", markLoaded, { once: true });
+  }
+
+  function loadImage(img) {
+    if (!img.dataset.src || img.getAttribute("src")) return;
+    img.src = img.dataset.src;
+  }
+
+  function observeImage(img, observer) {
+    if (observer) {
+      observer.observe(img);
+      return;
+    }
+
+    loadImage(img);
+  }
+
+  function createImageObserver() {
+    if (!("IntersectionObserver" in window)) return null;
+
+    return new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+
+          observer.unobserve(entry.target);
+          loadImage(entry.target);
+        });
+      },
+      { rootMargin: "800px 0px" },
+    );
   }
 
   function createCard(item, options) {
@@ -101,12 +309,13 @@
     ratioBox.style.paddingBottom = (1 / aspectRatio) * 100 + "%";
 
     const img = document.createElement("img");
-    img.src = item.thumb;
+    img.dataset.src = item.thumb;
     img.alt = item.alt;
     img.loading = "lazy";
+    img.decoding = "async";
     img.setAttribute("data-zoomable", "");
     img.setAttribute("data-full-src", item.full);
-    img.setAttribute("data-gallery-index", item.index);
+    img.setAttribute("data-gallery-index", options.galleryIndex ?? item.index);
     if (item.title) img.setAttribute("data-title", item.title);
     if (item.detail) img.setAttribute("data-meta", item.detail);
 
@@ -138,9 +347,16 @@
     return card;
   }
 
-  function renderMasonry(grid, items, galleryName, options) {
+  function renderMasonry(root, grid, items, galleryName, options) {
+    if (root.imageGalleryImageObserver) {
+      root.imageGalleryImageObserver.disconnect();
+    }
+
     grid.innerHTML = "";
     grid.setAttribute("data-gallery", galleryName || "image-gallery");
+
+    const imageObserver = createImageObserver();
+    root.imageGalleryImageObserver = imageObserver;
 
     const leftCol = document.createElement("div");
     const rightCol = document.createElement("div");
@@ -150,11 +366,16 @@
 
     let leftHeight = 0;
     let rightHeight = 0;
+    let imageCount = 0;
 
-    items.forEach((item) => {
+    items.forEach((item, displayIndex) => {
       if (!item.thumb) return;
 
-      const card = createCard(item, options);
+      const card = createCard(item, {
+        ...options,
+        imageObserver,
+        galleryIndex: displayIndex,
+      });
       const aspectRatio = item.width && item.height ? item.width / item.height : 1;
       const estimatedHeight = 300 / aspectRatio;
 
@@ -165,6 +386,14 @@
         rightCol.appendChild(card);
         rightHeight += estimatedHeight;
       }
+
+      const img = card.querySelector("img");
+      if (imageCount < 12) {
+        loadImage(img);
+      } else {
+        observeImage(img, imageObserver);
+      }
+      imageCount += 1;
     });
   }
 
@@ -180,6 +409,10 @@
     const grid = root.querySelector("[data-gallery-grid]");
     const status = root.querySelector("[data-gallery-status]");
     const summary = root.querySelector("[data-gallery-summary]");
+    const controlsEnabled =
+      config.controls !== undefined
+        ? config.controls
+        : root.dataset.galleryControls === "true";
 
     if (!source || !grid) return;
 
@@ -204,17 +437,40 @@
         baseUrl,
       };
       const items = rawItems.map((item, index) => normalizeItem(item, index, options));
+      const state = {
+        sortOptions: parseList(config.sortOptions || root.dataset.gallerySortOptions),
+        filterOptions: parseList(
+          config.filterOptions || root.dataset.galleryFilterOptions,
+        ),
+        sort:
+          config.defaultSort ||
+          root.dataset.galleryDefaultSort ||
+          parseList(config.sortOptions || root.dataset.gallerySortOptions)[0] ||
+          "manifest",
+        decade: "all",
+        series: "all",
+      };
+
+      const applyState = () => {
+        const visibleItems = getVisibleItems(items, state);
+        if (summary) {
+          summary.hidden = false;
+          summary.textContent = formatSummary(visibleItems.length, items.length);
+        }
+        renderMasonry(root, grid, visibleItems, galleryName, { showCaptions });
+        return visibleItems;
+      };
 
       if (status) status.hidden = true;
-      if (summary) {
-        summary.hidden = false;
-        summary.textContent = `${items.length.toLocaleString()} works`;
+
+      if (controlsEnabled) {
+        setupControls(root, items, galleryName, state, applyState);
       }
 
-      renderMasonry(grid, items, galleryName, { showCaptions });
+      const visibleItems = applyState();
       root.dispatchEvent(
         new CustomEvent("image-gallery:loaded", {
-          detail: { manifest, items },
+          detail: { manifest, items, visibleItems },
         }),
       );
     } catch (error) {

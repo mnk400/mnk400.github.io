@@ -141,11 +141,22 @@ input[type="file"]::file-selector-button {
     display: flex;
     margin: var(--spacing-md) 0;
     gap: var(--spacing-md);
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    max-width: 100%;
+    padding: 1px;
+    scroll-padding-inline: var(--spacing-sm);
+    scrollbar-width: none;
     font-weight: 300;
     align-self: center;
 
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
     .switch-option {
+        flex: 0 0 auto;
         padding: var(--spacing-sm) var(--spacing-lg);
         border: none;
         border-radius: 20px;

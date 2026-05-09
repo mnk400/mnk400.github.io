@@ -226,7 +226,8 @@ Selection switch (radio-like toggle group):
     Auto-initialized by ui-components.js on DOMContentLoaded — clicks toggle
     .active and fire a 'change' CustomEvent with { detail: { value, element } }.
     The container id is required to register with window.switchManager (see §8).
-    Uses pill shape (border-radius: 20px).
+    Uses pill shape (border-radius: 20px). Long option sets scroll horizontally
+    instead of wrapping; each .switch-option is flex: 0 0 auto.
 
 
 --- CARDS ---
@@ -343,6 +344,21 @@ Gap variants:
     .grid--gap-sm         Tight gap (5px)
     .grid--gap-lg         Wide gap (20px)
     .grid--no-gap         No gap
+
+Shared image gallery shell:
+    .image-gallery                  Outer gallery wrapper
+    .image-gallery__status          Loading/error text
+    .image-gallery__summary         Muted mono result count
+    .image-gallery__controls        Optional controls region
+    .image-gallery__control-group   Label + control stack
+    .image-gallery__control-label   Small muted label
+    .image-gallery__select          Full-width select inside gallery controls
+    .image-gallery__grid            Masonry grid container, usually paired with
+                                    .album-container
+
+Gallery controls are designed to compose existing primitives: use
+.selection-switch for compact finite choices and .image-gallery__select for
+larger option sets.
 
 
 --- INFO GRIDS ---
