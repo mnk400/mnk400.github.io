@@ -164,41 +164,6 @@
         }
     }
 
-    // Features grid
-    &__features-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: var(--spacing-lg);
-
-        @media screen and (max-width: $breakpoint-mobile) {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    &__feature {
-        display: flex;
-        flex-direction: column;
-        gap: var(--spacing-sm);
-    }
-
-    &__feature-icon {
-        font-size: 1.4em;
-        color: var(--sec-text-color);
-    }
-
-    &__feature-title {
-        margin: 0;
-        font-size: 1.05em;
-        font-weight: 500;
-    }
-
-    &__feature-body {
-        margin: 0;
-        color: var(--sec-text-color);
-        font-size: 0.95em;
-        line-height: 1.5;
-    }
-
     &__screenshots-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));

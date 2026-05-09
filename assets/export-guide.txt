@@ -74,6 +74,7 @@ The single stylesheet at /style/export.css bundles these modules:
     components/buttons   Buttons, expandable toggles, selection switches
     components/cards     Cards, image cards, color info cards
     components/grids     Grid system (2–5 col, auto-fit, masonry, gap variants)
+    components/info-grid Reusable compact titled info card grids
     components/forms     Text inputs, range sliders, color pickers, controls
     components/image-zoom  Zoom overlay, backdrop, close, prev/next, meta
     layout/wrapper       Page wrapper, fullscreen, expandable content
@@ -127,6 +128,7 @@ updates, and icon cycling automatically.
 ================================================================================
 
 SPACING
+    --spacing-2xs    2px
     --spacing-xs     5px
     --spacing-sm     8px
     --spacing-md     10px
@@ -324,6 +326,35 @@ Gap variants:
     .grid--gap-sm         Tight gap (5px)
     .grid--gap-lg         Wide gap (20px)
     .grid--no-gap         No gap
+
+
+--- INFO GRIDS ---
+
+Compact titled info cards for product features, blog facts, metadata, or notes:
+    <div class="info-grid info-grid--cards">
+        <article class="info-card">
+            <span class="info-card__icon" aria-hidden="true">
+                <i class="ph-bold ph-clock-counter-clockwise"></i>
+            </span>
+            <h3 class="info-card__title">Download history</h3>
+            <p class="info-card__body">
+                Revisit past downloads and rerun them whenever you want.
+            </p>
+        </article>
+    </div>
+
+Classes:
+    .info-grid          Base grid wrapper
+    .info-grid--cards   Two-column card grid; stacks to one column on mobile
+    .info-card          Quiet translucent card with subtle outline
+    .info-card--no-icon Removes the icon column for iconless items
+    .info-card__icon    Muted leading icon aligned with the title
+    .info-card__title   Compact item heading
+    .info-card__body    Muted supporting copy
+
+This pattern is best for product pages, blog callouts, tool summaries, and
+compact information lists. It intentionally uses lighter surfaces than .card so
+repeated items do not become visually heavy on narrow pages.
 
 
 --- LAYOUT ---

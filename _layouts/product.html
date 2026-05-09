@@ -122,15 +122,7 @@ layout: default
     {% if page.features %}
     <section class="product__features">
         {% if page.features_title %}<h2>{{ page.features_title }}</h2>{% else %}<h2>Features</h2>{% endif %}
-        <div class="product__features-grid">
-            {% for feature in page.features %}
-            <div class="card card--static product__feature">
-                {% if feature.icon %}<i class="ph-bold {{ feature.icon }} product__feature-icon"></i>{% endif %}
-                <h3 class="product__feature-title">{{ feature.title }}</h3>
-                <p class="product__feature-body">{{ feature.body }}</p>
-            </div>
-            {% endfor %}
-        </div>
+        {% include info-grid.html items=page.features %}
     </section>
     {% endif %}
 

@@ -1,0 +1,18 @@
+{% assign items = include.items | default: include.features %}
+{% assign variant = include.variant | default: 'cards' %}
+
+<div class="info-grid info-grid--{{ variant }}{% if include.class %} {{ include.class }}{% endif %}">
+    {% for item in items %}
+    <article class="info-card{% unless item.icon %} info-card--no-icon{% endunless %}">
+        {% if item.icon %}
+        <span class="info-card__icon" aria-hidden="true">
+            <i class="ph-bold {{ item.icon }}"></i>
+        </span>
+        {% endif %}
+        <h3 class="info-card__title">{{ item.title }}</h3>
+        {% if item.body %}
+        <p class="info-card__body">{{ item.body }}</p>
+        {% endif %}
+    </article>
+    {% endfor %}
+</div>

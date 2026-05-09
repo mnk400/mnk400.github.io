@@ -1,0 +1,74 @@
+// =============================================================================
+// INFO GRID
+// =============================================================================
+
+.info-grid {
+    display: grid;
+    gap: var(--spacing-md);
+
+    &--cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+.info-card {
+    min-width: 0;
+    display: grid;
+    grid-template-columns: 1em minmax(0, 1fr);
+    grid-template-areas:
+        "icon title"
+        ". body";
+    column-gap: var(--spacing-md);
+    row-gap: var(--spacing-2xs);
+    padding: var(--spacing-md);
+    background-color: var(--translucent-low);
+    border-radius: var(--radius-md);
+    @include soft-outline(var(--translucent-medium));
+}
+
+.info-card__icon {
+    width: 1em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+    grid-area: icon;
+    align-self: center;
+    color: var(--sec-text-color);
+
+    i {
+        font-size: 1em;
+        line-height: 1;
+    }
+}
+
+.info-card__title {
+    min-width: 0;
+    grid-area: title;
+    margin: 0;
+    font-size: 1em;
+    font-weight: 500;
+    line-height: 1.25;
+}
+
+.info-card__body {
+    min-width: 0;
+    grid-area: body;
+    margin: 0;
+    color: var(--sec-text-color);
+    font-size: 0.85em;
+    line-height: 1.4;
+}
+
+.info-card--no-icon {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+        "title"
+        "body";
+}
+
+@media screen and (max-width: $breakpoint-mobile) {
+    .info-grid--cards {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-sm);
+    }
+}
