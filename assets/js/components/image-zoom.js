@@ -336,6 +336,11 @@
     document.addEventListener("keydown", handleKeyDown);
     document.addEventListener("touchstart", handleTouchStart, { passive: true });
     document.addEventListener("touchend", handleTouchEnd, { passive: true });
+    // Block page-level scrolling while zoom is open. On mobile Safari any
+    // vertical drag on the body toggles the address bar, which makes the
+    // intended horizontal swipe-nav feel jumpy. Swipe nav reads only
+    // touchstart/touchend coords, so suppressing touchmove default is safe.
+    document.addEventListener("touchmove", preventTouchMove, { passive: false });
   }
 
   async function navigate(direction) {
@@ -433,6 +438,7 @@
       document.removeEventListener("keydown", handleKeyDown);
       document.removeEventListener("touchstart", handleTouchStart);
       document.removeEventListener("touchend", handleTouchEnd);
+      document.removeEventListener("touchmove", preventTouchMove);
     }, 300);
   }
 
@@ -448,6 +454,10 @@
   let touchStartX = 0;
   let touchStartY = 0;
   const SWIPE_THRESHOLD = 50;
+
+  function preventTouchMove(e) {
+    e.preventDefault();
+  }
 
   function handleTouchStart(e) {
     if (e.touches.length !== 1) return;
