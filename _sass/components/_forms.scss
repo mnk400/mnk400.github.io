@@ -41,7 +41,7 @@ select {
     justify-content: space-between;
     gap: var(--spacing-md);
     width: 100%;
-    min-height: 36px;
+    min-height: var(--control-height-md);
     background-color: var(--translucent-low);
     color: var(--text-color);
     border: none;

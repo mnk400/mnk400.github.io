@@ -41,8 +41,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (search) {
-        search.addEventListener("input", () => {
-            query = search.value.trim().toLowerCase();
+        search.addEventListener("search:change", (e) => {
+            query = e.detail && e.detail.query ? e.detail.query : "";
             applyFilter();
         });
     }

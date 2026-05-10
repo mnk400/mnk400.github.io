@@ -26,14 +26,12 @@ scripts: [/assets/js/tools/more-index.js]
 This page is an ongoing list of random things and projects I've built.
 </p>
 
-<input
+{% include search-pill.html
     id="more-search"
-    class="more-search"
-    type="text"
-    placeholder="search"
-    autocomplete="off"
-    aria-label="Search projects"
->
+    label="Search"
+    placeholder="search projects"
+    class="site-search--small more-search"
+%}
 
 <div class="selection-switch selection-switch--small more-chips" id="more-chips">
     <span class="switch-option active" data-value="all">all</span>

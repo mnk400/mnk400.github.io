@@ -5,6 +5,7 @@
 
 window.switchManager = window.switchManager || {};
 window.dropdownManager = window.dropdownManager || {};
+window.searchManager = window.searchManager || {};
 
 function initSelectionSwitch(containerOrId) {
   const container =
@@ -145,6 +146,93 @@ function initRangeSlider(container) {
   });
 
   container.dataset.rangeInitialized = "true";
+}
+
+function initSearchComponent(containerOrId) {
+  const container =
+    typeof containerOrId === "string"
+      ? document.getElementById(containerOrId)
+      : containerOrId;
+  if (!container || container.dataset.searchInitialized === "true") return;
+
+  const trigger = container.querySelector(".site-search__trigger");
+  const input = container.querySelector(".site-search__field input");
+  const clear = container.querySelector(".site-search__clear");
+  if (!trigger || !input) return;
+
+  function getQuery() {
+    return input.value.trim().toLowerCase();
+  }
+
+  function emitChange() {
+    const query = getQuery();
+    const detail = { query, value: query, input };
+    container.classList.toggle("has-query", query.length > 0);
+    if (clear) clear.hidden = query.length === 0;
+
+    container.dispatchEvent(new CustomEvent("change", { detail }));
+    container.dispatchEvent(new CustomEvent("search:change", { detail }));
+
+    if (container.dataset.searchTarget) {
+      const target = document.querySelector(container.dataset.searchTarget);
+      if (target) {
+        target.dataset.searchQuery = query;
+        target.dispatchEvent(
+          new CustomEvent("site-search:change", {
+            detail: { ...detail, source: container },
+          }),
+        );
+      }
+    }
+  }
+
+  function setOpen(open, focusInput) {
+    container.classList.toggle("is-open", open);
+    trigger.setAttribute("aria-expanded", String(open));
+    if (open && focusInput) input.focus();
+  }
+
+  function setValue(value, shouldEmit) {
+    input.value = value || "";
+    container.classList.toggle("has-query", getQuery().length > 0);
+    if (clear) clear.hidden = getQuery().length === 0;
+    if (shouldEmit) emitChange();
+  }
+
+  if (container.id) {
+    window.searchManager[container.id] = {
+      open: () => setOpen(true, true),
+      close: () => setOpen(false, false),
+      clear: () => setValue("", true),
+      setValue: (value) => setValue(value, true),
+      getValue: getQuery,
+    };
+  }
+
+  trigger.addEventListener("click", () => setOpen(true, true));
+  input.addEventListener("input", emitChange);
+  input.addEventListener("focus", () => setOpen(true, false));
+  input.addEventListener("blur", () => {
+    if (!getQuery()) setOpen(false, false);
+  });
+  input.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    if (getQuery()) {
+      setValue("", true);
+    }
+    setOpen(false, false);
+    trigger.focus();
+  });
+
+  if (clear) {
+    clear.addEventListener("click", () => {
+      setValue("", true);
+      setOpen(true, true);
+    });
+  }
+
+  setValue(input.value, false);
+  container.dataset.searchInitialized = "true";
 }
 
 window.buildSwitch = window.buildSwitch || function ({ id, options, active, size, ariaLabel, className }) {
@@ -333,7 +421,7 @@ function handleSiteNameClick(event) {
 // Touch hover handler for mobile devices
 if ("ontouchstart" in window) {
   const SELECTORS =
-    "a, button, .btn, .switch-option, .selection-dropdown__trigger, .selection-dropdown__option, .expandable-toggle";
+    "a, button, .btn, .switch-option, .selection-dropdown__trigger, .selection-dropdown__option, .expandable-toggle, .site-search__trigger";
   let touchStart = 0;
   let activeTarget = null;
 
@@ -370,6 +458,9 @@ document.addEventListener("DOMContentLoaded", function () {
   document
     .querySelectorAll("[data-selection-dropdown]")
     .forEach(initSelectionDropdown);
+  document
+    .querySelectorAll("[data-search-component]")
+    .forEach(initSearchComponent);
   document.querySelectorAll("[data-range-slider]").forEach(initRangeSlider);
 
   // Initialize image selector functionality

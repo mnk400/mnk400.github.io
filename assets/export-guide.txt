@@ -71,7 +71,7 @@ The single stylesheet at /style/export.css bundles these modules:
     base/mixins          Reusable SCSS patterns (compiled into component styles)
     base/reset           Meyer reset + HTML5 elements
     base/typography      Font imports, heading scale, body text, links, code
-    components/buttons   Buttons, expandable toggles, selection switches
+    components/buttons   Buttons, expandable toggles, selection switches, search pill
     components/cards     Cards, image cards, color info cards
     components/grids     Grid system (2–5 col, auto-fit, masonry, gap variants)
     components/info-grid Reusable compact titled info card grids
@@ -142,7 +142,12 @@ BORDER RADIUS
     --radius-md      6px      (default for most components)
     --radius-lg      8px
     --radius-xl      12px
+    --radius-pill    20px     (selection/search pills)
     --radius-round   50%      (circles)
+
+CONTROL SIZES
+    --control-height-sm   30px
+    --control-height-md   36px
 
 TRANSITIONS (all use cubic-bezier(0.4, 0, 0.2, 1))
     --transition-fast      0.1s
@@ -226,8 +231,37 @@ Selection switch (radio-like toggle group):
     Auto-initialized by ui-components.js on DOMContentLoaded — clicks toggle
     .active and fire a 'change' CustomEvent with { detail: { value, element } }.
     The container id is required to register with window.switchManager (see §8).
-    Uses pill shape (border-radius: 20px). Long option sets scroll horizontally
-    instead of wrapping; each .switch-option is flex: 0 0 auto.
+    Uses pill shape (border-radius: var(--radius-pill)). Long option sets
+    scroll horizontally instead of wrapping; each .switch-option is
+    flex: 0 0 auto.
+
+Search pill:
+    <div id="project-search" class="site-search" data-search-component
+        data-search-target="#results">
+        <button class="site-search__trigger" type="button"
+            aria-expanded="false" aria-controls="project-search-field">
+            <i class="ph-bold ph-magnifying-glass" aria-hidden="true"></i>
+            <span>Search</span>
+        </button>
+        <label class="site-search__field" for="project-search-field">
+            <i class="ph-bold ph-magnifying-glass" aria-hidden="true"></i>
+            <input id="project-search-field" type="search"
+                placeholder="search" autocomplete="off" aria-label="Search">
+            <button class="site-search__clear" type="button"
+                aria-label="Clear search" hidden>
+                <i class="ph-bold ph-x" aria-hidden="true"></i>
+            </button>
+        </label>
+    </div>
+
+    The closed state is a selection-switch-style pill. Clicking opens an
+    URL-bar-like field with an animated width/scale transition and expands to
+    the full width of its parent. Add .site-search--small when placing it near
+    .selection-switch--small controls. The component fires 'search:change' and
+    'change' CustomEvents on itself with
+    { detail: { query, value, input } }. If data-search-target is present,
+    it also dispatches 'site-search:change' on that target with the same
+    detail plus source.
 
 
 --- CARDS ---
@@ -384,11 +418,14 @@ Shared image gallery shell:
     .image-gallery__controls        Optional controls region
     .image-gallery__control-group   Label + control stack
     .image-gallery__control-label   Small muted label
+    .image-gallery__search          Optional shared search pill inside controls
     .image-gallery__grid            Masonry grid container, usually paired with
                                     .album-container
 
 Gallery controls compose the shared selection primitives: use .selection-switch
-for compact finite choices and .selection-dropdown for larger option sets.
+for compact finite choices, .selection-dropdown for larger option sets, and
+.site-search.site-search--small for a compact search trigger that opens to the
+full gallery width.
 
 
 --- INFO GRIDS ---
@@ -552,7 +589,7 @@ shared elements such as headers named.
 --- ui-components.js ---
 Path: /assets/js/core/ui-components.js
 
-Provides six reusable features (auto-initializes on DOMContentLoaded):
+Provides seven reusable features (auto-initializes on DOMContentLoaded):
 
 1. Touch hover simulation
    On touch devices, adds .touch-hover class on touchstart to interactive
@@ -599,6 +636,15 @@ Provides six reusable features (auto-initializes on DOMContentLoaded):
    Auto-initializes all [data-range-slider] containers (see §6 for HTML).
    Updates the --value-percent CSS variable on input and syncs the value
    label. Idempotent — safe to wrap a slider that's also driven manually.
+
+7. Search pills
+   Auto-initializes all [data-search-component] containers (see §6 for HTML).
+   Each search component with an id registers under window.searchManager:
+       window.searchManager['project-search'].open()
+       window.searchManager['project-search'].setValue('monet')
+       window.searchManager['project-search'].getValue()    // -> 'monet'
+   Listen for 'search:change' on the component, or provide data-search-target
+   and listen for 'site-search:change' on the target.
 
 Note: This file also contains site-specific functions (triggerPhotoReveal,
 toggleHeaderVisibility) that are only used on manik.cc. They are harmless
@@ -833,7 +879,7 @@ HOVER STATES
 BORDER RADIUS
     - Default: var(--radius-md) = 6px
     - Slightly rounded, never sharp corners, never overly rounded
-    - Exception: selection switch pills use 20px radius
+    - Selection/search pills use var(--radius-pill)
     - Circles: var(--radius-round) = 50%
 
 LAYOUT

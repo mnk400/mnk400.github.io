@@ -97,7 +97,12 @@ $themes: (
     --radius-md: 6px;
     --radius-lg: 8px;
     --radius-xl: 12px;
+    --radius-pill: 20px;
     --radius-round: 50%;
+
+    // Control Sizes
+    --control-height-sm: 30px;
+    --control-height-md: 36px;
 
     // Transitions
     --transition-fast: 0.1s cubic-bezier(0.4, 0, 0.2, 1);

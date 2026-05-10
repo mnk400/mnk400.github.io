@@ -65,6 +65,16 @@
   <div class="image-gallery__controls" data-gallery-controls-root hidden></div>
   {% endif %}
 
+  {% if include.search %}
+    {% include search-pill.html
+      id=include.search_id
+      label=include.search_label
+      placeholder=include.search_placeholder
+      target=include.search_target
+      class=include.search_class
+    %}
+  {% endif %}
+
   <div
     class="album-container image-gallery__grid"
     id="{{ grid_id }}"

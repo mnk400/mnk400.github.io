@@ -159,7 +159,7 @@ input[type="file"]::file-selector-button {
         flex: 0 0 auto;
         padding: var(--spacing-sm) var(--spacing-lg);
         border: none;
-        border-radius: 20px;
+        border-radius: var(--radius-pill);
         background-color: var(--translucent-low);
         color: var(--text-color);
         cursor: pointer;
@@ -188,5 +188,155 @@ input[type="file"]::file-selector-button {
     
     &:last-child {
         margin-bottom: var(--spacing-sm);
+    }
+}
+
+// Search pill component
+.site-search {
+    --site-search-closed-width: 118px;
+    --site-search-resting-scale: 0.86;
+    --site-search-trigger-exit-scale: 0.94;
+
+    display: inline-grid;
+    width: var(--site-search-closed-width);
+    max-width: 100%;
+    min-height: var(--control-height-md);
+    margin: var(--spacing-md) 0;
+    border-radius: var(--radius-pill);
+    transition: width var(--transition-slow), min-height var(--transition-slow), border-radius var(--transition-slow);
+
+    &.is-open,
+    &.has-query {
+        width: 100%;
+        border-radius: var(--radius-lg);
+
+        .site-search__trigger {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(var(--site-search-trigger-exit-scale));
+        }
+
+        .site-search__field {
+            opacity: 1;
+            pointer-events: auto;
+            transform: none;
+        }
+    }
+
+    &--small {
+        --site-search-closed-width: 92px;
+
+        min-height: var(--control-height-sm);
+
+        .site-search__trigger,
+        .site-search__field {
+            min-height: var(--control-height-sm);
+        }
+
+        .site-search__trigger {
+            font-size: 0.85em;
+        }
+
+        &.is-open,
+        &.has-query {
+            min-height: var(--control-height-md);
+        }
+    }
+}
+
+.site-search__trigger,
+.site-search__field {
+    box-sizing: border-box;
+    grid-area: 1 / 1;
+    min-width: 0;
+    min-height: var(--control-height-md);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: 0 var(--spacing-md);
+    border-radius: inherit;
+    @include soft-outline;
+}
+
+.site-search__trigger {
+    justify-content: center;
+    background-color: var(--translucent-low);
+    color: var(--text-color);
+    backdrop-filter: none;
+    transition:
+        opacity var(--transition-slow),
+        transform var(--transition-slow),
+        background-color var(--transition-medium),
+        color var(--transition-medium);
+
+    @include hover-state-dark;
+}
+
+.site-search i {
+    flex-shrink: 0;
+    font-size: 0.95em;
+}
+
+.site-search__field {
+    width: 100%;
+    background-color: var(--translucent-low);
+    color: var(--text-color);
+    opacity: 0;
+    pointer-events: none;
+    transform: scaleX(var(--site-search-resting-scale));
+    transform-origin: left center;
+    transition:
+        opacity var(--transition-slow),
+        transform var(--transition-slow),
+        min-height var(--transition-slow);
+
+    > i {
+        color: var(--sec-text-color);
+    }
+
+    input[type="search"] {
+        width: 100%;
+        min-width: 0;
+        height: 100%;
+        padding: 0;
+        background: transparent;
+        border: 0;
+        outline: none;
+        color: var(--text-color);
+        font-size: 0.9em;
+        @include system-font;
+
+        &::-webkit-search-decoration,
+        &::-webkit-search-cancel-button {
+            appearance: none;
+        }
+
+        &:focus {
+            background: transparent;
+        }
+    }
+}
+
+.site-search__clear {
+    flex: 0 0 calc(var(--control-height-md) - var(--spacing-md));
+    height: calc(var(--control-height-md) - var(--spacing-md));
+    padding: 0;
+    border-radius: var(--radius-round);
+    background-color: transparent;
+    color: var(--sec-text-color);
+    backdrop-filter: none;
+    font-size: 0.8em;
+
+    @include hover-interactive {
+        background-color: var(--translucent-medium);
+        color: var(--text-color);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .site-search,
+    .site-search__trigger,
+    .site-search__field {
+        transition: none;
     }
 }

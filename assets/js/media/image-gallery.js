@@ -61,7 +61,7 @@
     const height = Number(firstValue(item, options.heightPaths));
     const popularity = Number(firstValue(item, options.popularityPaths));
 
-    return {
+    const normalized = {
       raw: item,
       index,
       title: title || "",
@@ -77,6 +77,19 @@
       height: Number.isFinite(height) && height > 0 ? height : null,
       popularity: Number.isFinite(popularity) ? popularity : 0,
     };
+    normalized.searchText = [
+      normalized.title,
+      normalized.year,
+      normalized.collection,
+      normalized.series,
+      normalized.detail,
+      stringifyMeta(item.tags),
+      stringifyMeta(item.keywords),
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+    return normalized;
   }
 
   function getItemsFromManifest(manifest, itemsKey) {
@@ -170,11 +183,15 @@
   }
 
   function getVisibleItems(items, state) {
+    const query = state.query.trim().toLowerCase();
     const filtered = items.filter((item) => {
       if (state.decade !== "all" && getDecadeValue(item) !== state.decade) {
         return false;
       }
       if (state.series !== "all" && item.series !== state.series) {
+        return false;
+      }
+      if (query && !item.searchText.includes(query)) {
         return false;
       }
       return true;
@@ -450,6 +467,7 @@
           "manifest",
         decade: "all",
         series: "all",
+        query: root.dataset.searchQuery || "",
       };
 
       const applyState = () => {
@@ -467,6 +485,16 @@
       if (controlsEnabled) {
         setupControls(root, items, galleryName, state, applyState);
       }
+
+      root.addEventListener("site-search:change", (event) => {
+        state.query = event.detail && event.detail.query ? event.detail.query : "";
+        const visibleItems = applyState();
+        root.dispatchEvent(
+          new CustomEvent("image-gallery:filtered", {
+            detail: { items, visibleItems, query: state.query },
+          }),
+        );
+      });
 
       const visibleItems = applyState();
       root.dispatchEvent(

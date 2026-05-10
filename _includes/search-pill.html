@@ -1,0 +1,33 @@
+{%- assign search_id = include.id | default: "site-search" -%}
+{%- assign search_label = include.label | default: "Search" -%}
+{%- assign search_placeholder = include.placeholder | default: "search" -%}
+{%- assign search_target = include.target -%}
+<div
+  class="site-search{% if include.class %} {{ include.class }}{% endif %}"
+  id="{{ search_id }}"
+  data-search-component
+  {% if search_target %}data-search-target="{{ search_target }}"{% endif %}
+>
+  <button
+    class="site-search__trigger"
+    type="button"
+    aria-expanded="false"
+    aria-controls="{{ search_id }}-field"
+  >
+    <i class="ph-bold ph-magnifying-glass" aria-hidden="true"></i>
+    <span>{{ search_label }}</span>
+  </button>
+  <label class="site-search__field" for="{{ search_id }}-field">
+    <i class="ph-bold ph-magnifying-glass" aria-hidden="true"></i>
+    <input
+      id="{{ search_id }}-field"
+      type="search"
+      placeholder="{{ search_placeholder }}"
+      autocomplete="off"
+      aria-label="{{ search_label }}"
+    >
+    <button class="site-search__clear" type="button" aria-label="Clear search" hidden>
+      <i class="ph-bold ph-x" aria-hidden="true"></i>
+    </button>
+  </label>
+</div>

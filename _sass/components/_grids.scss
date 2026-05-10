@@ -97,6 +97,10 @@
     margin-top: 0;
 }
 
+.image-gallery__search {
+    margin: 0;
+}
+
 .image-gallery__control-group {
     display: grid;
     gap: var(--spacing-xs);
@@ -106,6 +110,10 @@
         width: 100%;
         margin: 0;
         align-self: stretch;
+    }
+
+    .selection-dropdown {
+        margin: 0;
     }
 }
 
