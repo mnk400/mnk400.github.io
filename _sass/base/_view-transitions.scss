@@ -13,6 +13,12 @@ $vt-easing: cubic-bezier(0.4, 0, 0.2, 1);
     view-transition-name: page-content;
 }
 
+body.header-only-view-transition {
+    .page-content {
+        view-transition-name: none;
+    }
+}
+
 html {
     view-transition-name: none;
 }

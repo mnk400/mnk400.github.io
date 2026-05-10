@@ -175,10 +175,19 @@
     return sep;
   }
 
+  function handleBackdropClick(e) {
+    if (e.target !== backdrop) return;
+    e.preventDefault();
+    e.stopPropagation();
+    requestAnimationFrame(closeZoom);
+  }
+
   function createOverlay(multi) {
-    backdrop = document.createElement("div");
+    backdrop = document.createElement("button");
+    backdrop.type = "button";
     backdrop.className = "image-zoom-backdrop";
-    backdrop.addEventListener("click", closeZoom);
+    backdrop.setAttribute("aria-label", "Close zoomed image");
+    backdrop.addEventListener("click", handleBackdropClick);
     document.body.appendChild(backdrop);
 
     // Two-line cluster.

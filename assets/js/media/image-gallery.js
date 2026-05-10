@@ -242,7 +242,16 @@
   }
 
   function setLoaded(card, img) {
-    const markLoaded = () => card.classList.add("loaded");
+    const markLoaded = () => {
+      if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+        const ratioBox = img.closest(".image-ratio-box");
+        if (ratioBox) {
+          ratioBox.style.paddingBottom =
+            (img.naturalHeight / img.naturalWidth) * 100 + "%";
+        }
+      }
+      card.classList.add("loaded");
+    };
     if (img.complete && img.naturalWidth > 0) {
       markLoaded();
       return;

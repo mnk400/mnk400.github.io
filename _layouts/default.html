@@ -153,7 +153,7 @@ ZZZzz /,`.-'`'    -.  ;-;;,_
         {% endif %}
     </head>
 
-    <body{% if page.skip_view_transition %} class="skip-view-transition"{% endif %}>
+    <body{% if page.header_only_view_transition %} class="header-only-view-transition"{% endif %}>
         <div class="wrapper">
             {% include header.html %}
             <main class="page-content">{{ content }}</main>

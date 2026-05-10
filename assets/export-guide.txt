@@ -535,6 +535,20 @@ Theme transition: Temporarily adds .theme-transition class to <html> and <body>
 for 500ms to animate the background-color change.
 
 
+--- view-transitions.js ---
+Path: /assets/js/core/view-transitions.js
+
+Coordinates cross-document View Transition state for this site's header and
+breadcrumb elements. Uses pageswap/pagereveal to detect home/subpage navigation,
+fold breadcrumb child snapshots into the header snapshot when needed, and set
+html[data-vt-direction="back"] for reverse animations.
+
+No page-level skip logic is included. For pages with very large DOM subtrees,
+prefer opting expensive named regions out in CSS (for example setting
+view-transition-name: none on the heavy page content) while keeping lightweight
+shared elements such as headers named.
+
+
 --- ui-components.js ---
 Path: /assets/js/core/ui-components.js
 
@@ -623,7 +637,7 @@ Features:
     - Optional data-title / data-meta render a caption + monospace detail
       line below the image; both are hidden when empty
     - Respects natural image dimensions (won't upscale beyond original)
-    - Keyboard ESC to close, click backdrop to close
+    - Keyboard ESC to close, click backdrop button to close
     - Caption/detail metadata sits above the zoomed image; a compact control
       cluster is fixed near the viewport bottom with optional image count,
       prev/next controls, and close button (Phosphor icons)
