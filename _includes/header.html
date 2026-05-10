@@ -26,12 +26,20 @@
         <div class="header-left">
             {% if page.url == "/" %}
             <div class="site-name-group">
-                <a
-                    href="#"
-                    class="site-name"
-                    id="title-photo-trigger"
-                    onclick="handleSiteNameClick(event); return false;"
-                >Manik</a>
+                <div class="site-name-lockup">
+                    <a
+                        href="#"
+                        class="site-name"
+                        id="title-photo-trigger"
+                        onclick="handleSiteNameClick(event); return false;"
+                    >Manik</a>
+                    <img
+                        src="/assets/favicon.ico"
+                        alt=""
+                        class="site-name-flower"
+                        aria-hidden="true"
+                    />
+                </div>
                 <div class="site-name-menu" id="siteNameMenu">
                     <a href="/more">more</a>
                     <a href="/photos">photos</a>
