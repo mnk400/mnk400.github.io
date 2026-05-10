@@ -7,6 +7,7 @@
   const SORT_LABELS = {
     "year-desc": "Latest first",
     "year-asc": "Earliest first",
+    "popularity-desc": "Popular first",
   };
 
   function getNestedValue(item, path) {
@@ -58,6 +59,7 @@
     const explicitMeta = stringifyMeta(firstValue(item, options.metaPaths));
     const width = Number(firstValue(item, options.widthPaths));
     const height = Number(firstValue(item, options.heightPaths));
+    const popularity = Number(firstValue(item, options.popularityPaths));
 
     return {
       raw: item,
@@ -73,6 +75,7 @@
       full,
       width: Number.isFinite(width) && width > 0 ? width : null,
       height: Number.isFinite(height) && height > 0 ? height : null,
+      popularity: Number.isFinite(popularity) ? popularity : 0,
     };
   }
 
@@ -129,7 +132,12 @@
   function sortItems(items, sortValue) {
     const sorted = [...items];
 
-    if (sortValue === "year-asc" || sortValue === "year-desc") {
+    if (sortValue === "popularity-desc") {
+      sorted.sort((a, b) => {
+        if (a.popularity === b.popularity) return a.index - b.index;
+        return b.popularity - a.popularity;
+      });
+    } else if (sortValue === "year-asc" || sortValue === "year-desc") {
       sorted.sort((a, b) => {
         const yearA = getYearValue(a);
         const yearB = getYearValue(b);
@@ -426,6 +434,7 @@
         metaPaths: config.metaPaths || ["meta"],
         widthPaths: config.widthPaths || ["image.width", "width", "dimensions.width_cm"],
         heightPaths: config.heightPaths || ["image.height", "height", "dimensions.height_cm"],
+        popularityPaths: config.popularityPaths || ["popularity.sitelinks", "sitelinks"],
         baseUrl,
       };
       const items = rawItems.map((item, index) => normalizeItem(item, index, options));
