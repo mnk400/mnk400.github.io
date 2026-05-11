@@ -1,4 +1,25 @@
-<div id="image-selector" class="image-selector">
-    <span>Select Image</span>
+{% comment %}
+  Image Upload Component
+
+  Parameters:
+  - id: Optional. Wrapper id. Defaults to "image-upload".
+  - class: Optional. Additional wrapper classes.
+  - label: Optional. Selector label. Defaults to "Select Image".
+  - accept: Optional. File accept attribute. Defaults to "image/*".
+{% endcomment %}
+
+{%- assign upload_id = include.id | default: "image-upload" -%}
+{%- assign upload_label = include.label | default: "Select Image" -%}
+{%- assign upload_accept = include.accept | default: "image/*" -%}
+
+<div
+    id="{{ upload_id }}"
+    class="image-upload{% if include.class %} {{ include.class }}{% endif %}"
+    data-image-upload
+>
+    <button class="image-upload__selector" type="button">
+        <span>{{ upload_label }}</span>
+    </button>
+    <input class="image-upload__input" type="file" accept="{{ upload_accept }}">
+    <img class="image-upload__preview" alt="">
 </div>
-<input type="file" id="image-input" accept="image/*" style="display: none;">

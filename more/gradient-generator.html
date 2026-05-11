@@ -8,49 +8,49 @@ intro: Create beautiful gradient images with custom colors and orientations.
 scripts: [/assets/js/utils/color-utils.js, /assets/js/tools/gradient-generator.js]
 ---
 
-<div class="gradient-container">
-    <div class="controls">
-            <div class="color-inputs-container">
-                <div class="color-input-group">
-                    <span for="color1">start color</span>
-                    <div class="color-input-wrapper">
+<div class="gradient-container stack">
+    <div class="stack">
+            <div class="cluster cluster--lg">
+                <div class="field">
+                    <span class="field__label">start color</span>
+                    <div class="field__control">
                         <input type="color" id="color1" value="#C6A58F">
                         <input type="text" id="color1-text" value="#C6A58F" placeholder="#C6A58F">
                     </div>
                 </div>
-                
-                <div class="color-input-group">
-                    <span for="color2">end color</span>
-                    <div class="color-input-wrapper">
+
+                <div class="field">
+                    <span class="field__label">end color</span>
+                    <div class="field__control">
                         <input type="color" id="color2" value="#7C95AF">
                         <input type="text" id="color2-text" value="#7C95AF" placeholder="#7C95AF">
                     </div>
                 </div>
             </div>
-            
-            <div >
-                <span>orientation</span>
+
+            <div class="field">
+                <span class="field__label">orientation</span>
                 {% assign orientation_options = "landscape:Landscape (3840×2160),portrait:Portrait (2160×3840),square:Square (2160×2160)" | split: "," %}
                 {% include selection-switch.html id="orientation-toggle" class="orientation-toggle" size="small" options=orientation_options default_active="landscape" %}
             </div>
-            
-            <div >
-                <span>gradient direction</span>
+
+            <div class="field">
+                <span class="field__label">gradient direction</span>
                 {% assign direction_options = "0:Top to Bottom,90:Left to Right,45:Diagonal (↘),135:Diagonal (↗),180:Bottom to Top,270:Right to Left,225:Diagonal (↖),315:Diagonal (↙)" | split: "," %}
                 {% include selection-switch.html id="direction-toggle" class="direction-toggle" size="small" options=direction_options default_active="0" %}
             </div>
-            
-            <div >
-                <span>gradient type</span>
+
+            <div class="field">
+                <span class="field__label">gradient type</span>
                 {% assign type_options = "linear:Linear,radial:Radial" | split: "," %}
                 {% include selection-switch.html id="type-toggle" class="type-toggle" size="small" options=type_options default_active="linear" %}
             </div>
-            
-            <div class="controls" id="smoothness-control" style="display: none;">
+
+            <div class="field" id="smoothness-control" style="display: none;">
                 {% include range-slider.html id='smoothness' value='50' min='0' max='100' unit='' %}
             </div>
-            
-            <div class="button-container">
+
+            <div class="toolbar">
                 <button id="download-btn" class="normal-btn">Download</button>
             </div>
         </div>

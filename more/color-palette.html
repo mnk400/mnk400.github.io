@@ -12,13 +12,12 @@ scripts: [/assets/js/utils/color-utils.js, /assets/js/tools/color-palette.js]
 <p>
     This tool uses K-means clustering to identify the dominant colors in your image. All processing occurs locally in your browser - no images are uploaded to external servers.
 </p>
-<div class="palette-container">
-    <img id="image-preview" class="img-curved-edges">
-    <div class="controls">
+<div class="palette-container stack">
+    <div class="stack">
         {% include image-upload.html %}
         {% include range-slider.html id='colors' value='5' min='2' max='10' unit='Colors' %}
 
-        <div class="button-container">
+        <div class="toolbar">
             <button id="extract-btn" class="normal-btn">Extract Palette</button>
         </div>
     </div>

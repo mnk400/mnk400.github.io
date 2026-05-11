@@ -8,26 +8,31 @@ tags: [music, lastfm, albums, stats]
 scripts: [/assets/js/media/lastfm.js]
 ---
 
-<div class="music-container">
+<div class="music-container stack">
     <p>
         What music am I listening to, or what music have I listened to the most in the past?
     </p>
-    <div class="music-widget-header">
-        <span class="pr" id="music-widget-label">Last listened to …</span>
-        <span class="music-widget-time-wrapper music-widget-time-wrapper--page">
-            <span class="music-widget-time-placeholder">…</span>
-            <span class="music-widget-time" id="music-widget-time"></span>
-        </span>
+    <div class="music-widget-section stack stack--sm">
+        <div class="music-widget-header">
+            <span class="pr" id="music-widget-label">Last listened to …</span>
+            <span class="music-widget-time-wrapper music-widget-time-wrapper--page">
+                <span class="music-widget-time-placeholder">…</span>
+                <span class="music-widget-time" id="music-widget-time"></span>
+            </span>
+        </div>
+        {% include music-widget.html %}
     </div>
-    {% include music-widget.html %}
-    <p></p>
-    <div class="view-controls">
+    <div class="view-controls stack stack--sm">
         <h2>Top music from the past</h2>
         {% assign view_options = "albums:Albums,artists:Artists" | split: "," %}
-        {% include selection-switch.html id="view-toggle" class="view-toggle" options=view_options default_active="albums" %}
+        <div class="field">
+            {% include selection-switch.html id="view-toggle" class="view-toggle" options=view_options default_active="albums" %}
+        </div>
 
         {% assign period_options = "7day:Week,1month:Month,12month:Year,overall:All Time" | split: "," %}
-        {% include selection-switch.html id="period-toggle" class="period-toggle" options=period_options default_active="7day" %}
+        <div class="field">
+            {% include selection-switch.html id="period-toggle" class="period-toggle" options=period_options default_active="7day" %}
+        </div>
     </div>
     <div id="album-grid" class="album-grid"></div>
 </div>

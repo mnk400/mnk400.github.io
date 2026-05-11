@@ -75,10 +75,10 @@ The single stylesheet at /style/export.css bundles these modules:
     components/cards     Cards, image cards, color info cards
     components/grids     Grid system (2–5 col, auto-fit, masonry, gap variants)
     components/info-grid Reusable compact titled info card grids
-    components/forms     Text inputs, range sliders, color pickers, controls
+    components/forms     Text inputs, range sliders, color pickers, image upload
     components/image-zoom  Zoom overlay, backdrop, close, prev/next, meta
     layout/wrapper       Page wrapper, fullscreen, expandable content
-    utilities/helpers    Flex, text, spacing, visibility, cursor, radius, transition
+    utilities/helpers    Composition, flex, text, spacing, visibility, cursor, radius, transition
 
 
 ================================================================================
@@ -233,7 +233,8 @@ Selection switch (radio-like toggle group):
     The container id is required to register with window.switchManager (see §8).
     Uses pill shape (border-radius: var(--radius-pill)). Long option sets
     scroll horizontally instead of wrapping; each .switch-option is
-    flex: 0 0 auto.
+    flex: 0 0 auto. The component is spacing-neutral: wrap it in .stack,
+    .field, .toolbar, or another layout primitive to create outer spacing.
 
 Search pill:
     <div id="project-search" class="site-search" data-search-component
@@ -261,7 +262,49 @@ Search pill:
     'change' CustomEvents on itself with
     { detail: { query, value, input } }. If data-search-target is present,
     it also dispatches 'site-search:change' on that target with the same
-    detail plus source.
+    detail plus source. The component is spacing-neutral.
+
+
+--- COMPOSITION ---
+
+Use composition primitives for layout rhythm instead of adding margins to
+components. Shared components are spacing-neutral by default.
+
+Vertical stack:
+    <div class="stack">
+        <div>First item</div>
+        <div>Second item</div>
+    </div>
+
+    Variants: .stack--sm, .stack--lg. Direct h1, h2, h3, and p children
+    have their default margins/post-content padding neutralized so the stack
+    gap owns the vertical rhythm.
+
+Wrapping row / toolbar:
+    <div class="cluster">
+        <button class="btn">One</button>
+        <button class="btn">Two</button>
+    </div>
+
+    Variants: .cluster--sm, .cluster--lg.
+
+Field:
+    <div class="field">
+        <span class="field__label">Mode</span>
+        <div class="selection-switch">...</div>
+    </div>
+
+    Use .field__control for paired inputs that should share a row:
+        <div class="field__control">
+            <input type="color" value="#c6866d">
+            <input type="text" value="#c6866d">
+        </div>
+
+Compact action row:
+    <div class="toolbar">
+        <button class="btn">Apply</button>
+        <button class="btn--text">Reset</button>
+    </div>
 
 
 --- CARDS ---
@@ -352,7 +395,7 @@ Selection dropdown:
     sections). Clicks update .active, update the trigger label, close the
     menu, and fire a 'change' CustomEvent with { detail: { value, element } }.
     The container id registers with window.dropdownManager. Closes on outside
-    click and Escape.
+    click and Escape. The component is spacing-neutral.
 
 Range slider with fill tracking:
     <input type="range" min="0" max="100" value="50"
@@ -365,8 +408,8 @@ Range slider with fill tracking:
 
     Auto-init alternative — wrap in [data-range-slider] and ui-components.js
     will manage --value-percent and update the value label automatically:
-        <div data-range-slider>
-            <span id="size-value">50</span>
+        <div class="range-slider" data-range-slider>
+            <p class="range-value"><span id="size-value">50</span></p>
             <input id="size-input" type="range" min="0" max="100" value="50">
         </div>
     The label element id must be `<input-id-without-"-input">-value`.
@@ -374,15 +417,20 @@ Range slider with fill tracking:
 Color picker:
     <input type="color" value="#c6866d">
 
-Controls container:
-    <div class="controls">
-        <label>Label</label>
-        <input type="text">
-        <button class="btn">Submit</button>
+Image upload:
+    <div id="image-upload" class="image-upload" data-image-upload>
+        <button class="image-upload__selector" type="button">
+            <span>Select Image</span>
+        </button>
+        <input class="image-upload__input" type="file" accept="image/*">
+        <img class="image-upload__preview" alt="">
     </div>
 
-Image upload area:
-    <div class="image-selector">Click or drag to upload</div>
+    Auto-initialized by ui-components.js. Clicking the selector opens the file
+    picker. After a successful read, the wrapper gets .image-upload--has-preview,
+    the selector is hidden, the preview is shown, and the component fires
+    'image-upload:change' and 'change' CustomEvents with
+    { detail: { file, dataUrl, image } }.
 
 
 --- GRIDS ---
@@ -637,7 +685,15 @@ Provides seven reusable features (auto-initializes on DOMContentLoaded):
    Updates the --value-percent CSS variable on input and syncs the value
    label. Idempotent — safe to wrap a slider that's also driven manually.
 
-7. Search pills
+7. Image uploads
+   Auto-initializes all [data-image-upload] containers (see §6 for HTML).
+   Each upload with an id registers under window.imageUploadManager:
+       window.imageUploadManager['image-upload'].hasImage()
+       window.imageUploadManager['image-upload'].getImage()
+       window.imageUploadManager['image-upload'].getFile()
+   Listen for 'image-upload:change' to receive { file, dataUrl, image }.
+
+8. Search pills
    Auto-initializes all [data-search-component] containers (see §6 for HTML).
    Each search component with an id registers under window.searchManager:
        window.searchManager['project-search'].open()
@@ -954,15 +1010,25 @@ These are ready-to-use HTML patterns that work with the exported CSS and JS.
 
 --- Form with range slider ---
 
-    <div class="controls">
-        <label>Intensity</label>
-        <input type="range" min="0" max="100" value="50"
-            style="--value-percent: 50%"
-            oninput="this.style.setProperty('--value-percent',
-                (this.value-this.min)/(this.max-this.min)*100+'%')">
-        <label>Color</label>
-        <input type="color" value="#c6866d">
-        <button class="btn">Apply</button>
+    <div class="stack">
+        <div class="field">
+            <span class="field__label">Intensity</span>
+            <div class="range-slider" data-range-slider>
+                <p class="range-value"><span id="intensity-value">50</span></p>
+                <input id="intensity-input" type="range" min="0" max="100"
+                    value="50">
+            </div>
+        </div>
+        <div class="field">
+            <span class="field__label">Color</span>
+            <div class="field__control">
+                <input type="color" value="#c6866d">
+                <input type="text" value="#c6866d">
+            </div>
+        </div>
+        <div class="toolbar">
+            <button class="btn">Apply</button>
+        </div>
     </div>
 
 

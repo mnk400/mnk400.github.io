@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const imageInput = document.getElementById('image-input');
-    const imagePreview = document.getElementById('image-preview');
-    const imageSelector = document.getElementById('image-selector');
+    const imageUpload = document.querySelector('[data-image-upload]');
+    const imagePreview = imageUpload ? imageUpload.querySelector('.image-upload__preview') : null;
     const widthInput = document.getElementById('width-input');
     const convertBtn = document.getElementById('convert-btn');
     const asciiOutput = document.getElementById('ascii-output');
@@ -68,19 +67,9 @@ document.addEventListener('DOMContentLoaded', () => {
         setActionVisibility(true);
     }
 
-    imageInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                imagePreview.src = e.target.result;
-                imagePreview.style.display = 'block';
-                imageSelector.style.display = 'none';
-                asciiOutput.textContent = '';
-                setActionVisibility(false);
-            };
-            reader.readAsDataURL(file);
-        }
+    imageUpload.addEventListener('image-upload:change', () => {
+        asciiOutput.textContent = '';
+        setActionVisibility(false);
     });
 
     convertBtn.addEventListener('click', () => {

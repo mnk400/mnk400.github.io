@@ -12,7 +12,7 @@
   - unit: Required. The unit to display next to the value.
 {% endcomment %}
 
-<div class="range-width-container" data-range-slider>
+<div class="range-slider" data-range-slider>
     <p class="range-value">{% if include.unit and include.unit != '' %}{{ include.unit }} · {% endif %}<span id="{{ include.id }}-value">{{ include.value }}</span></p>
     <input type="range" id="{{ include.id }}-input" value="{{ include.value }}" min="{{ include.min }}" max="{{ include.max }}">
 </div>

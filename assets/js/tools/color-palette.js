@@ -1,34 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const imageInput = document.getElementById('image-input');
-    const imagePreview = document.getElementById('image-preview');
-    const imageSelector = document.getElementById('image-selector');
+    const imageUpload = document.querySelector('[data-image-upload]');
+    const imagePreview = imageUpload ? imageUpload.querySelector('.image-upload__preview') : null;
     const colorsInput = document.getElementById('colors-input');
     const extractBtn = document.getElementById('extract-btn');
     const paletteOutput = document.getElementById('palette-output');
     const paletteActions = document.getElementById('palette-actions');
     const copyAllBtn = document.getElementById('copy-all-btn');
 
-    if (imagePreview) {
-        imagePreview.style.display = 'none';
-    }
-
     let currentPalette = [];
 
 
-    imageInput.addEventListener('change', function(e) {
-        const file = this.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                imagePreview.src = e.target.result;
-                imagePreview.style.display = 'block';
-                imageSelector.style.display = 'none';
-                paletteOutput.innerHTML = '';
-                paletteActions.style.display = 'none';
-                currentPalette = [];
-            };
-            reader.readAsDataURL(file);
-        }
+    imageUpload.addEventListener('image-upload:change', function() {
+        paletteOutput.innerHTML = '';
+        paletteActions.style.display = 'none';
+        currentPalette = [];
     });
 
     copyAllBtn.addEventListener('click', () => {

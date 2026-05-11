@@ -160,9 +160,6 @@
 
 // Game of Life
 #game-of-life-container {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
     margin: var(--spacing-lg) 0 0;
 }
 
@@ -270,10 +267,6 @@
 }
 
 #minesweeper-controls {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--spacing-sm);
     margin-top: var(--spacing-lg);
 }
 

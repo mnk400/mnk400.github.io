@@ -68,7 +68,8 @@
             padding-left: 2px;
         }
 
-        img {
+        > img,
+        > p > img {
             max-width: 100%;
             padding-top: var(--spacing-md);
             padding-bottom: var(--spacing-md);
@@ -77,7 +78,7 @@
         }
 
         .img-curved-edges {
-            padding: 0 !important;
+            padding: 0;
             max-width: 100%;
             display: block;
             margin-top: var(--spacing-md);
@@ -136,15 +137,10 @@
     }
 }
 
-// More index
-.more-search {
-    margin: 0 0 var(--spacing-md);
-}
-
 .more-page {
     display: grid;
     gap: var(--spacing-sm);
-    margin-top: 0;
+    margin-top: var(--spacing-md);
 }
 
 .more-section {
@@ -183,10 +179,6 @@
         grid-template-columns: 1fr;
         gap: 0;
     }
-}
-
-.more-chips {
-    margin: 0 0 var(--spacing-md);
 }
 
 .more-empty {

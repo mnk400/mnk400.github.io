@@ -169,7 +169,7 @@ class GradientWallpaperGenerator {
 
             this.gradientPreview.style.background = 'none';
             this.gradientPreview.innerHTML = `
-                <img src="${imageUrl}" class="img-curved-edges tool-preview-img" alt="Gradient Preview">
+                <img src="${imageUrl}" class="tool-preview-img" alt="Gradient Preview">
             `;
         });
     }

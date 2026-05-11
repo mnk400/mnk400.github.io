@@ -11,8 +11,6 @@
     align-items: baseline;
     font-size: 0.8em;
     color: var(--sec-text-color);
-    padding-bottom: var(--spacing-sm);
-    padding-top: var(--spacing-sm);
 }
 
 .music-widget-time-wrapper--page {
@@ -64,9 +62,6 @@
     border-radius: var(--radius-lg);
 
     @include hover-state-dark;
-    img {
-        margin: 0px !important;
-    }
 }
 
 .music-widget-art-wrapper {
@@ -83,10 +78,13 @@
     border-radius: var(--radius-md);
 }
 
-.music-widget-art {
+.music-widget .music-widget-art {
+    display: block;
     position: relative;
     width: 30px;
     height: 30px;
+    margin: 0;
+    padding: 0;
     object-fit: cover;
     flex-shrink: 0;
     border-radius: var(--radius-md);

@@ -6,6 +6,7 @@
 window.switchManager = window.switchManager || {};
 window.dropdownManager = window.dropdownManager || {};
 window.searchManager = window.searchManager || {};
+window.imageUploadManager = window.imageUploadManager || {};
 
 function initSelectionSwitch(containerOrId) {
   const container =
@@ -146,6 +147,54 @@ function initRangeSlider(container) {
   });
 
   container.dataset.rangeInitialized = "true";
+}
+
+function initImageUpload(containerOrId) {
+  const container =
+    typeof containerOrId === "string"
+      ? document.getElementById(containerOrId)
+      : containerOrId;
+  if (!container || container.dataset.imageUploadInitialized === "true") return;
+
+  const selector = container.querySelector(".image-upload__selector");
+  const input = container.querySelector(".image-upload__input");
+  const preview = container.querySelector(".image-upload__preview");
+  if (!selector || !input || !preview) return;
+
+  function setImage(file, dataUrl) {
+    preview.src = dataUrl;
+    preview.alt = file && file.name ? file.name : "";
+    container.classList.add("image-upload--has-preview");
+
+    const detail = { file, dataUrl, image: preview };
+    container.dispatchEvent(new CustomEvent("image-upload:change", { detail }));
+    container.dispatchEvent(new CustomEvent("change", { detail }));
+  }
+
+  selector.addEventListener("click", () => {
+    input.click();
+  });
+
+  input.addEventListener("change", () => {
+    const file = input.files && input.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setImage(file, event.target.result);
+    };
+    reader.readAsDataURL(file);
+  });
+
+  if (container.id) {
+    window.imageUploadManager[container.id] = {
+      getImage: () => preview,
+      getFile: () => (input.files && input.files[0]) || null,
+      hasImage: () => container.classList.contains("image-upload--has-preview"),
+    };
+  }
+
+  container.dataset.imageUploadInitialized = "true";
 }
 
 function initSearchComponent(containerOrId) {
@@ -462,16 +511,7 @@ document.addEventListener("DOMContentLoaded", function () {
     .querySelectorAll("[data-search-component]")
     .forEach(initSearchComponent);
   document.querySelectorAll("[data-range-slider]").forEach(initRangeSlider);
-
-  // Initialize image selector functionality
-  const imageInput = document.getElementById("image-input");
-  const imageSelector = document.getElementById("image-selector");
-
-  if (imageSelector && imageInput) {
-    imageSelector.addEventListener("click", function () {
-      imageInput.click();
-    });
-  }
+  document.querySelectorAll("[data-image-upload]").forEach(initImageUpload);
 
   // Initialize expandable sections
   const toggleButtons = document.querySelectorAll(".expandable-toggle");

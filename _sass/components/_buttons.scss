@@ -139,7 +139,6 @@ input[type="file"]::file-selector-button {
 // Selection switch component
 .selection-switch {
     display: flex;
-    margin: var(--spacing-md) 0;
     gap: var(--spacing-md);
     flex-wrap: nowrap;
     overflow-x: auto;
@@ -149,7 +148,6 @@ input[type="file"]::file-selector-button {
     scroll-padding-inline: var(--spacing-sm);
     scrollbar-width: none;
     font-weight: 300;
-    align-self: center;
 
     &::-webkit-scrollbar {
         display: none;
@@ -185,10 +183,6 @@ input[type="file"]::file-selector-button {
             padding: var(--spacing-xs) var(--spacing-md);
         }
     }
-    
-    &:last-child {
-        margin-bottom: var(--spacing-sm);
-    }
 }
 
 // Search pill component
@@ -201,7 +195,6 @@ input[type="file"]::file-selector-button {
     width: var(--site-search-closed-width);
     max-width: 100%;
     min-height: var(--control-height-md);
-    margin: var(--spacing-md) 0;
     border-radius: var(--radius-pill);
     transition: width var(--transition-slow), min-height var(--transition-slow), border-radius var(--transition-slow);
 

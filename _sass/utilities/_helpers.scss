@@ -59,6 +59,77 @@
     vertical-align: middle;
 }
 
+// Composition utilities
+.stack {
+    display: grid;
+    gap: var(--spacing-md);
+
+    > :where(h1, h2, h3, p) {
+        margin-block: 0;
+        padding-bottom: 0;
+    }
+}
+
+.stack--sm {
+    gap: var(--spacing-sm);
+}
+
+.stack--lg {
+    gap: var(--spacing-xl);
+}
+
+.cluster {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.cluster--sm {
+    gap: var(--spacing-sm);
+}
+
+.cluster--lg {
+    gap: var(--spacing-xl);
+}
+
+.cluster > .field {
+    flex: 1 1 200px;
+}
+
+.field {
+    display: grid;
+    gap: var(--spacing-xs);
+    min-width: 0;
+}
+
+.field__label {
+    color: var(--sec-text-color);
+    font-size: 0.85em;
+    line-height: 1;
+}
+
+.field__control {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    min-width: 0;
+
+    input[type="text"],
+    input[type="email"],
+    input[type="url"] {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+}
+
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
 // Spacing utilities
 .mb-0 { margin-bottom: 0; }
 .mb-sm { margin-bottom: var(--spacing-sm); }

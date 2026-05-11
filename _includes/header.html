@@ -6,12 +6,12 @@
 
     <!-- Settings panel reveal -->
     <div class="settings-panel" id="settingsPanel">
-        <div class="settings-panel-inner">
-            <div class="settings-row">
+        <div class="settings-panel-inner stack stack--sm">
+            <div class="field">
                 {% assign theme_options = "linen:Linen,charcoal:Charcoal,denim:Denim,ruby:Ruby,matcha:Matcha,butter:Butter,espresso:Espresso" | split: "," %}
                 {% include selection-switch.html id="themeSwitch" size="small" options=theme_options default_active="linen" %}
             </div>
-            <div class="settings-row">
+            <div class="field">
                 {% assign font_options = "default:Default,source-serif:Source Serif,inconsolata:Inconsolata" | split: "," %}
                 {% include selection-switch.html id="fontSwitch" size="small" options=font_options default_active="default" %}
             </div>

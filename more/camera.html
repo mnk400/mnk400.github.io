@@ -9,13 +9,13 @@ intro: See yourself live in ASCII art.
 scripts: [/assets/js/utils/device-detect.js, /assets/js/utils/ascii-utils.js, /assets/js/components/camera-manager.js, /assets/js/tools/camera-to-ascii.js]
 ---
 
-<div class="ascii-container">
+<div class="ascii-container stack">
     <video id="video" style="display: none;"></video>
 
-    <div class="controls">
+    <div class="stack">
         {% include range-slider.html id='width' value='80' min='15' max='150' unit='Characters' %}
 
-        <div class="button-container">
+        <div class="toolbar">
             <button id="start-btn" class="normal-btn">Start Camera</button>
             <button id="fullscreen-btn" class="normal-btn">Fullscreen</button>
         </div>

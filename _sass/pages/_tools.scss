@@ -2,14 +2,13 @@
 // TOOL PAGES (Color Palette, Gradient Generator, etc.)
 // =============================================================================
 
-// Color palette specific
-.palette-container {
-    margin: -10px 0;
-}
-
 .tool-preview-img {
+    display: block;
+    margin: 0;
     object-fit: contain;
+    padding: 0;
     width: 100%;
+    border-radius: var(--radius-md);
 }
 
 // ASCII Art styles
@@ -22,7 +21,6 @@
 
     #canvas-output {
         position: absolute;
-        margin-top: var(--spacing-xs);
         top: 0;
         left: 0;
         width: 100%;

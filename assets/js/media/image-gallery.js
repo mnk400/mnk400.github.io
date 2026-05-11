@@ -168,7 +168,7 @@
 
   function createControlGroup(label, control) {
     const group = document.createElement("div");
-    group.className = "image-gallery__control-group";
+    group.className = "image-gallery__control-group field";
     group.setAttribute("aria-label", label);
 
     group.appendChild(control);

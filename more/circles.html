@@ -9,13 +9,13 @@ intro: See yourself in real-time as circles.
 scripts: [/assets/js/utils/device-detect.js, /assets/js/utils/canvas-utils.js, /assets/js/components/camera-manager.js, /assets/js/tools/circle-camera.js]
 ---
 
-<div class="ascii-container">
+<div class="ascii-container stack">
     <video id="video" style="display: none;"></video>
 
-    <div class="controls">
+    <div class="stack">
         {% include range-slider.html id='resolution' value='40' min='10' max='100' unit='Resolution' %}
 
-        <div class="button-container">
+        <div class="toolbar">
             <button id="start-btn" class="normal-btn">Start Camera</button>
             <button id="fullscreen-btn" class="normal-btn">Fullscreen</button>
         </div>

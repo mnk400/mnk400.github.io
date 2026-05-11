@@ -12,22 +12,21 @@ scripts: [/assets/js/utils/ascii-utils.js, /assets/js/tools/photo-to-ascii.js]
 {% assign palette_options = "classic:Classic,blocks:Blocks,minimal:Minimal" | split: "," %}
 {% assign dither_options = "none:Smooth,ordered:Ordered,floyd:Floyd" | split: "," %}
 
-<div class="ascii-container">
-    <img id="image-preview" class="img-curved-edges">
-    <div class="controls">
+<div class="ascii-container stack">
+    <div class="stack">
         {% include image-upload.html %}
         {% include range-slider.html id='width' value='80' min='15' max='150' unit='Characters' %}
 
-        <div >
-            <span>palette</span>
+        <div class="field">
+            <span class="field__label">palette</span>
             {% include selection-switch.html id="ascii-palette-toggle" size="small" options=palette_options default_active="classic" %}
         </div>
-        <div >
-            <span>dither</span>
+        <div class="field">
+            <span class="field__label">dither</span>
             {% include selection-switch.html id="ascii-dither-toggle" size="small" options=dither_options default_active="none" %}
         </div>
 
-        <div class="button-container">
+        <div class="toolbar">
             <button id="convert-btn" class="normal-btn">Convert to ASCII</button>
             <button id="copy-btn" class="normal-btn" data-copy="" data-copy-feedback="Copied" style="display: none;">Copy Text</button>
             <button id="download-btn" class="normal-btn" style="display: none;">Download PNG</button>

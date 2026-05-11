@@ -26,28 +26,30 @@ scripts: [/assets/js/tools/more-index.js]
 This page is an ongoing list of random things and projects I've built.
 </p>
 
-{% include search-pill.html
-    id="more-search"
-    label="Search"
-    placeholder="search projects"
-    class="site-search--small more-search"
-%}
+<div class="stack">
+    {% include search-pill.html
+        id="more-search"
+        label="Search"
+        placeholder="search projects"
+        class="site-search--small"
+    %}
 
-<div class="selection-switch selection-switch--small more-chips" id="more-chips">
-    <span class="switch-option active" data-value="all">all</span>
-    {%- for cat in unique_categories -%}
-        <span class="switch-option" data-value="{{ cat | downcase }}">
-            {%- if cat == "Apps" -%}apps
-            {%- elsif cat == "CLI Tools" -%}cli tools
-            {%- elsif cat == "Galleries" -%}galleries
-            {%- elsif cat == "Fun Tools" -%}fun
-            {%- elsif cat == "Games" -%}games
-            {%- elsif cat == "Image Tools" -%}image tools
-            {%- elsif cat == "Music" -%}music
-            {%- else -%}{{ cat | downcase }}
-            {%- endif -%}
-        </span>
-    {%- endfor -%}
+    <div class="selection-switch selection-switch--small" id="more-chips">
+        <span class="switch-option active" data-value="all">all</span>
+        {%- for cat in unique_categories -%}
+            <span class="switch-option" data-value="{{ cat | downcase }}">
+                {%- if cat == "Apps" -%}apps
+                {%- elsif cat == "CLI Tools" -%}cli tools
+                {%- elsif cat == "Galleries" -%}galleries
+                {%- elsif cat == "Fun Tools" -%}fun
+                {%- elsif cat == "Games" -%}games
+                {%- elsif cat == "Image Tools" -%}image tools
+                {%- elsif cat == "Music" -%}music
+                {%- else -%}{{ cat | downcase }}
+                {%- endif -%}
+            </span>
+        {%- endfor -%}
+    </div>
 </div>
 
 <div class="more-page">

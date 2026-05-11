@@ -15,7 +15,7 @@ scripts: [/assets/js/games/minesweeper.js]
         </div>
         <div id="minesweeper-grid"></div>
     </div>
-    <div id="minesweeper-controls">
+    <div id="minesweeper-controls" class="toolbar">
         {% assign difficulty_options = "beginner:Beginner,intermediate:Intermediate,expert:Expert" | split: "," %}
         {% include selection-switch.html id="difficulty-selector" class="difficulty-selector" options=difficulty_options default_active="beginner" %}
         <button id="new-game-btn" class="normal-btn">New Game</button>

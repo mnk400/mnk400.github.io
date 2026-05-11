@@ -50,7 +50,7 @@ layout: default
         {% endif %}
 
         {% if kind == 'readme' and page.install %}
-        <div class="product__install">
+        <div class="product__install stack stack--sm">
             {% if has_install_tabs %}
             {% assign switch_options = '' %}
             {% for entry in page.install %}
@@ -65,7 +65,7 @@ layout: default
             {% assign options_arr = switch_options | split: ',' %}
             {% assign default_value = page.install[0].label | slugify %}
 
-            {% include selection-switch.html id="install-switch" size="small" options=options_arr default_active=default_value class="product__install-tabs" %}
+            {% include selection-switch.html id="install-switch" size="small" options=options_arr default_active=default_value %}
 
             <div class="product__install-panels">
                 {% for entry in page.install %}
