@@ -4,11 +4,21 @@
 
 // Post layout
 .post {
+    --post-header-gap: var(--spacing-md);
+    display: grid;
+    gap: var(--post-header-gap);
+
+    &--dated {
+        --post-header-gap: var(--spacing-xl);
+    }
 
     &__back {
         text-align: left;
         display: block;
-        margin-bottom: 25px;
+    }
+
+    &__header {
+        min-width: 0;
     }
 
     &__date {
@@ -16,19 +26,26 @@
         text-align: left;
         color: var(--sec-text-color);
         font-weight: 200;
-        margin-bottom: var(--spacing-xl);
     }
 
     &__title {
         font-size: 24pt;
         font-weight: 500;
-        margin-bottom: var(--spacing-md);
         text-align: left;
         line-height: 1.1em;
     }
 
     &__content {
+        --post-flow-space: var(--spacing-md);
         color: var(--text-color);
+
+        > * {
+            margin-block: 0;
+        }
+
+        > * + * {
+            margin-top: var(--post-flow-space);
+        }
 
         hr {
             width: 10%;
@@ -36,28 +53,23 @@
             opacity: 60%;
         }
 
+        p {
+            padding-bottom: 0;
+            margin: 0;
+        }
+
         ul {
             font-size: 12pt;
             list-style: disc;
-            padding-bottom: var(--spacing-md);
+            padding-bottom: 0;
             line-height: 1.3em;
             margin-left: var(--spacing-lg);
             color: var(--sec-text-color);
         }
 
-        p + ol {
-            margin-top: -8px;
-            margin-bottom: var(--spacing-md);
-        }
-
-        p + ul {
-            margin-top: -10px;
-            margin-bottom: var(--spacing-md);
-        }
-
         ol {
             list-style: disc;
-            padding-bottom: var(--spacing-md);
+            padding-bottom: 0;
             line-height: 1.65em;
             margin-left: var(--spacing-lg);
         }
@@ -71,18 +83,17 @@
         > img,
         > p > img {
             max-width: 100%;
-            padding-top: var(--spacing-md);
-            padding-bottom: var(--spacing-md);
+            padding: 0;
             display: block;
             margin: 0 auto;
         }
 
-        .img-curved-edges {
+        > .img-curved-edges,
+        > p > .img-curved-edges {
             padding: 0;
             max-width: 100%;
             display: block;
-            margin-top: var(--spacing-md);
-            margin-bottom: var(--spacing-md);
+            margin: 0;
             border-radius: var(--radius-md);
         }
 
@@ -106,7 +117,7 @@
         // Code blocks (syntax-highlighted and plain)
         .highlight pre {
             padding: 0;
-            margin-bottom: 0;
+            margin: 0;
         }
 
         .highlight,
@@ -117,7 +128,7 @@
             font-weight: 200;
             overflow-x: auto;
             border-radius: var(--radius-md);
-            margin-bottom: var(--spacing-lg);
+            margin-bottom: 0;
             font-size: 11pt;
             @include mono-font;
             color: var(--text-color);

@@ -344,6 +344,24 @@ Optional image gallery card captions:
 Caption text is hidden on narrow mobile screens to keep dense galleries
 focused on the images.
 
+Music album card:
+    <div class="album-item">
+        <div class="album-image-container">
+            <img src="cover.jpg" alt="Album title">
+            <div class="music-card-overlay">
+                <div class="music-card-copy">
+                    <p class="music-card-title">Album title</p>
+                    <p class="music-card-subtitle">Artist</p>
+                </div>
+                <span class="music-card-playcount">123 Plays</span>
+            </div>
+        </div>
+    </div>
+
+.album-image-container is a square, clipped media surface. The overlay fills
+the same surface with internal padding and grid/flex gaps; it does not rely on
+negative margins or external spacing.
+
 Color info card:
     <div class="color-info">
         <div class="color-detail">
@@ -517,7 +535,8 @@ Expandable content (pairs with .expandable-toggle button):
     <div class="expandable-content">
         Collapsible content
     </div>
-    Add .collapsed class to start closed.
+    Add .collapsed class to start closed. Open content has balanced padding on
+    all sides; avoid adding spacer elements for bottom breathing room.
 
 
 ================================================================================

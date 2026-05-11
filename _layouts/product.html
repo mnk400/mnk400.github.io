@@ -8,28 +8,30 @@ layout: default
     {% assign has_install_tabs = true %}
 {% endif %}
 
-<div class="product product--{{ kind }}">
+<div class="product product--{{ kind }} stack stack--lg">
 
-    <header class="product__hero">
+    <header class="product__hero stack stack--lg">
 
         {% if page.icon %}
         <img class="product__icon" src="{{ page.icon }}" alt="{{ page.title }} icon">
         {% endif %}
 
-        <h1 class="product__title">{{ page.title }}</h1>
+        <div class="product__summary stack stack--sm">
+            <h1 class="product__title">{{ page.title }}</h1>
 
-        {% if page.tagline %}
-        <p class="product__tagline">{{ page.tagline }}</p>
-        {% endif %}
+            {% if page.tagline %}
+            <p class="product__tagline">{{ page.tagline }}</p>
+            {% endif %}
+        </div>
 
         {% if page.lede %}
-        <div class="product__lede">
+        <div class="product__lede stack stack--sm">
             {{ page.lede | markdownify }}
         </div>
         {% endif %}
 
         {% if page.download or kind == 'native' and page.install %}
-        <div class="product__cta-row">
+        <div class="product__cta-row cluster">
             {% if page.download %}
             <a class="btn" href="{{ page.download.url }}" target="_blank" rel="noopener noreferrer">
                 <i class="ph-fill {{ page.download.icon | default: 'ph-download-simple' }}"></i>
@@ -120,18 +122,18 @@ layout: default
     {% endif %}
 
     {% if page.features %}
-    <section class="product__features">
+    <section class="product__features stack">
         {% if page.features_title %}<h2>{{ page.features_title }}</h2>{% else %}<h2>Features</h2>{% endif %}
         {% include info-grid.html items=page.features %}
     </section>
     {% endif %}
 
     {% if page.screenshots %}
-    <section class="product__screenshots">
+    <section class="product__screenshots stack">
         {% if page.screenshots_title %}<h2>{{ page.screenshots_title }}</h2>{% else %}<h2>More screenshots</h2>{% endif %}
         <div class="product__screenshots-grid">
             {% for shot in page.screenshots %}
-            <div class="product__screenshot">
+            <div class="product__screenshot stack stack--sm">
                 {% include zoomable-image.html src=shot.src alt=shot.alt %}
                 {% if shot.caption %}<p class="product__screenshot-caption">{{ shot.caption }}</p>{% endif %}
             </div>
@@ -154,7 +156,7 @@ layout: default
     </section>
     {% endif %}
 
-    <footer class="product__footer">
+    <footer class="product__footer toolbar">
         {% if page.repo %}
         <a href="https://github.com/{{ page.repo }}" target="_blank" rel="noopener noreferrer">
             <i class="ph-fill ph-github-logo"></i> View on GitHub

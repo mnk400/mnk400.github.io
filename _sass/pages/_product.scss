@@ -14,7 +14,6 @@
     &__hero {
         padding-bottom: var(--spacing-lg);
         border-bottom: var(--product-divider);
-        margin-bottom: var(--spacing-lg);
     }
 
     &__icon {
@@ -22,35 +21,20 @@
         height: 72px;
         border-radius: 16px;
         display: block;
-        margin-bottom: var(--spacing-lg);
     }
 
     &__title {
         font-size: 2.4em;
         line-height: 1.1;
-        margin: 0 0 var(--spacing-xs);
     }
 
     &__tagline {
         color: var(--sec-text-color);
         font-size: 1.05em;
-        margin: 0 0 var(--spacing-xl);
-    }
-
-    &__lede {
-        margin-bottom: var(--spacing-xl);
-
-        p {
-            margin: 0 0 var(--spacing-sm);
-            &:last-child { margin-bottom: 0; }
-        }
     }
 
     &__cta-row {
-        display: flex;
-        gap: var(--spacing-md);
-        flex-wrap: wrap;
-        margin-bottom: var(--spacing-lg);
+        align-items: stretch;
     }
 
     // Unified copy-command button (used in CTA row + install tabs)
@@ -81,13 +65,7 @@
         letter-spacing: 0.5px;
     }
 
-    // CLI install block
-    &__install {
-        margin-bottom: var(--spacing-lg);
-    }
-
     &__install-panel {
-        padding-top: var(--spacing-xs);
         display: none;
 
         &.active {
@@ -130,14 +108,7 @@
     &__features,
     &__screenshots,
     &__readme {
-        margin-bottom: var(--spacing-xl);
-    }
-
-    &__features,
-    &__screenshots {
-        h2 {
-            margin: 0 0 var(--spacing-lg);
-        }
+        min-width: 0;
     }
 
     // Hero / demo image
@@ -167,7 +138,6 @@
     }
 
     &__screenshot-caption {
-        margin: var(--spacing-sm) 0 0;
         color: var(--sec-text-color);
         font-size: 0.85em;
     }
@@ -186,7 +156,6 @@
 
         img {
             padding: 0;
-            margin: var(--spacing-md) 0;
             border-radius: var(--radius-md);
             @include soft-outline;
         }
@@ -194,15 +163,10 @@
 
     // Footer
     &__footer {
-        margin-top: var(--spacing-lg);
         padding-top: var(--spacing-lg);
         border-top: var(--product-divider);
         color: var(--sec-text-color);
         font-size: 0.9em;
-        display: flex;
-        flex-wrap: wrap;
-        gap: var(--spacing-sm);
-        align-items: center;
 
         a {
             color: var(--sec-text-color);
