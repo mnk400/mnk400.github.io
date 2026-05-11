@@ -108,6 +108,7 @@ input[type="file"]::file-selector-button {
 
 // Expandable toggle button
 .expandable-toggle {
+    box-sizing: border-box;
     width: 100%;
     padding: var(--spacing-md) var(--spacing-lg);
     background-color: var(--translucent-low);

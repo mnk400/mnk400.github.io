@@ -49,6 +49,15 @@ body {
     margin-bottom: var(--spacing-md);
 }
 
+.expandable-section--compact {
+    margin-bottom: 0;
+
+    .expandable-content {
+        margin-top: var(--spacing-sm);
+        padding-block: var(--spacing-sm);
+    }
+}
+
 .expandable-content {
     padding: var(--spacing-md) var(--spacing-lg);
     margin-top: var(--spacing-md);

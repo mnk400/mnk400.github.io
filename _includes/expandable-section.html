@@ -3,9 +3,10 @@
 - title: Text to show on the toggle button (required)
 - content: The content to show/hide (required)
 - expanded: Whether the section is expanded by default (optional, default: false)
+- class: Additional classes for the wrapper (optional)
 {% endcomment %}
 
-<div class="expandable-section" id="{{ include.id }}">
+<div class="expandable-section{% if include.class %} {{ include.class }}{% endif %}" id="{{ include.id }}">
     <button
         class="expandable-toggle"
         aria-expanded="{% if include.expanded %}true{% else %}false{% endif %}"

@@ -2,11 +2,18 @@
 // STYLES SPECIFIC TO THE HOME PAGE
 // =============================================================================
 
+// Top "about me" section
+.home__intro {
+    p {
+        font-size: 11.5pt;
+        font-weight: 200;
+        line-height: 1.5em;
+        text-align: left;
+    }
+}
 
 // Archive List
 .archive {
-    padding-bottom: var(--spacing-sm);
-
     ul {
         padding: 0;
         margin: 0;
@@ -26,20 +33,5 @@
         white-space: nowrap;
         opacity: 80%;
         margin-left: var(--spacing-xs);
-    }
-}
-
-// Top "about me" section
-.about {
-    h2 {
-        font-size: 12pt;
-    }
-
-    p {
-        font-size: 11.5pt;
-        font-weight: 200;
-        line-height: 1.5em;
-        text-align: left;
-        padding-bottom: var(--spacing-md);
     }
 }

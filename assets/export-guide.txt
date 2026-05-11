@@ -532,11 +532,15 @@ Fullscreen (for tools/games):
     <body class="fullscreen">
 
 Expandable content (pairs with .expandable-toggle button):
-    <div class="expandable-content">
-        Collapsible content
+    <div class="expandable-section expandable-section--compact">
+        <button class="expandable-toggle" aria-expanded="false">Title</button>
+        <div class="expandable-content collapsed">
+            Collapsible content
+        </div>
     </div>
     Add .collapsed class to start closed. Open content has balanced padding on
-    all sides; avoid adding spacer elements for bottom breathing room.
+    all sides; avoid adding spacer elements for bottom breathing room. Add
+    .expandable-section--compact to the wrapper for dense list-style panels.
 
 
 ================================================================================

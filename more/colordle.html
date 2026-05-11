@@ -10,6 +10,7 @@ scripts: [/assets/js/games/colordle.js]
 ---
 
 <div class="colordle-container">
+    <div class="stack stack--md">
     <p>Guess the hex color code in 6 tries!</p>
 
         {% capture how_to_play_content %}
@@ -30,11 +31,11 @@ scripts: [/assets/js/games/colordle.js]
         content=how_to_play_content
         expanded=false
         %}
-
         <div id="colordle-meta">
             <span>target color</span>
             <span><span id="guess-count">0</span>/6</span>
         </div>
+    </div>
 
         <div class="color-display" id="color-display"></div>
 
