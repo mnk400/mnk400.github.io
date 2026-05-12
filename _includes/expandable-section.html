@@ -14,5 +14,5 @@
         <span class="toggle-text">{{ include.title }}</span>
         <span class="toggle-icon">{% include icon.html name="plus" %}</span>
     </button>
-    <div class="expandable-content">{{ include.content }}</div>
+    <div class="expandable-content{% unless include.expanded %} collapsed{% endunless %}">{{ include.content }}</div>
 </div>
