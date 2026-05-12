@@ -266,15 +266,17 @@
 }
 
 // iPod controls and text
-text {
-    font-family: "Arial";
-    font-size: 110%;
-    font-weight: bold;
-    fill: #babdc1;
-}
+.ipod-container {
+    text {
+        font-family: "Arial";
+        font-size: 110%;
+        font-weight: bold;
+        fill: #babdc1;
+    }
 
-path {
-    fill: transparent;
+    path {
+        fill: transparent;
+    }
 }
 
 .ipod-skip {

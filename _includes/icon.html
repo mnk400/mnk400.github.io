@@ -1,0 +1,6 @@
+{%- assign _classes = "icon" -%}
+{%- if include.class -%}{%- assign _classes = _classes | append: " " | append: include.class -%}{%- endif -%}
+{%- assign _weight = include.weight | default: "bold" -%}
+{%- capture _svg -%}{%- include icons/{{ _weight }}/{{ include.name }}.svg -%}{%- endcapture -%}
+{%- capture _open -%}<svg class="{{ _classes }}" aria-hidden="true" {%- endcapture -%}
+{{- _svg | replace: "<svg", _open -}}

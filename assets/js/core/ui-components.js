@@ -8,6 +8,19 @@ window.dropdownManager = window.dropdownManager || {};
 window.searchManager = window.searchManager || {};
 window.imageUploadManager = window.imageUploadManager || {};
 
+const ICON_SVGS = {
+  "caret-down": '<svg class="icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"/></svg>',
+  "check": '<svg class="icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M232.49,80.49l-128,128a12,12,0,0,1-17,0l-56-56a12,12,0,1,1,17-17L96,183,215.51,63.51a12,12,0,0,1,17,17Z"/></svg>',
+};
+
+function iconEl(name, extraClass) {
+  const tpl = document.createElement("template");
+  tpl.innerHTML = ICON_SVGS[name];
+  const el = tpl.content.firstElementChild;
+  if (extraClass) el.classList.add(extraClass);
+  return el;
+}
+
 function initSelectionSwitch(containerOrId) {
   const container =
     typeof containerOrId === "string"
@@ -324,9 +337,7 @@ window.buildDropdown = window.buildDropdown || function ({ id, options, active, 
   const triggerText = document.createElement("span");
   triggerText.className = "selection-dropdown__trigger-text";
 
-  const chevron = document.createElement("i");
-  chevron.className = "ph-bold ph-caret-down selection-dropdown__chevron";
-  chevron.setAttribute("aria-hidden", "true");
+  const chevron = iconEl("caret-down", "selection-dropdown__chevron");
 
   trigger.append(triggerText, chevron);
 
@@ -348,9 +359,7 @@ window.buildDropdown = window.buildDropdown || function ({ id, options, active, 
     label.className = "selection-dropdown__option-label";
     label.textContent = opt.label;
 
-    const check = document.createElement("i");
-    check.className = "ph-bold ph-check selection-dropdown__option-check";
-    check.setAttribute("aria-hidden", "true");
+    const check = iconEl("check", "selection-dropdown__option-check");
 
     optEl.append(label, check);
     menu.appendChild(optEl);
@@ -562,7 +571,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const originalContent = this.innerHTML;
 
       Clipboard.copy(textToCopy).then(() => {
-        this.innerHTML = `<i class="ph-bold ph-check"></i> ${feedbackText}`;
+        this.innerHTML = `${ICON_SVGS["check"]} ${feedbackText}`;
         setTimeout(() => {
           this.innerHTML = originalContent;
         }, 1500);

@@ -13,7 +13,7 @@ scripts: [/assets/js/tools/historical-browser.js]
 <div class="historical-browser">
     <form id="historical-browser-form" class="historical-browser-search">
         <label class="historical-browser-search__field" for="url-input">
-            <i class="ph-bold ph-globe"></i>
+            {% include icon.html name="globe" %}
             <input
                 type="text"
                 id="url-input"
@@ -28,20 +28,20 @@ scripts: [/assets/js/tools/historical-browser.js]
             type="submit"
             aria-label="Open archived page"
         >
-            <i class="ph-bold ph-arrow-right"></i>
+            {% include icon.html name="arrow-right" %}
         </button>
     </form>
 
     <div class="historical-browser-toolbar" aria-label="Historical browser controls">
         <div class="historical-browser-nav" aria-label="Page navigation">
             <button id="browser-home" class="browser-control-button" type="button" aria-label="Home">
-                <i class="ph-bold ph-house"></i>
+                {% include icon.html name="house" %}
             </button>
             <button id="browser-back" class="browser-control-button" type="button" aria-label="Back">
-                <i class="ph-bold ph-arrow-left"></i>
+                {% include icon.html name="arrow-left" %}
             </button>
             <button id="browser-forward" class="browser-control-button" type="button" aria-label="Forward">
-                <i class="ph-bold ph-arrow-right"></i>
+                {% include icon.html name="arrow-right" %}
             </button>
         </div>
 
@@ -56,7 +56,7 @@ scripts: [/assets/js/tools/historical-browser.js]
 
     <div class="historical-browser-content">
         <div id="browser-empty-state" class="historical-browser-empty">
-            <i class="ph-bold ph-clock-counter-clockwise"></i>
+            {% include icon.html name="clock-counter-clockwise" %}
             <div class="historical-browser-starters" aria-label="Starter sites">
                 <button type="button" class="historical-browser-starter" data-url="apple.com">
                     apple.com

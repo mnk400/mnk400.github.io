@@ -1,3 +1,6 @@
+const PLAY_ICON_SVG = '<svg class="icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M240,128a15.74,15.74,0,0,1-7.6,13.51L88.32,229.65a16,16,0,0,1-16.2.3A15.86,15.86,0,0,1,64,216.13V39.87a15.86,15.86,0,0,1,8.12-13.82,16,16,0,0,1,16.2.3L232.4,114.49A15.74,15.74,0,0,1,240,128Z"/></svg>';
+const PAUSE_ICON_SVG = '<svg class="icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M216,48V208a16,16,0,0,1-16,16H160a16,16,0,0,1-16-16V48a16,16,0,0,1,16-16h40A16,16,0,0,1,216,48ZM96,32H56A16,16,0,0,0,40,48V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V48A16,16,0,0,0,96,32Z"/></svg>';
+
 document.addEventListener("DOMContentLoaded", function () {
   const nextButton = document.querySelector(".ipod-skip.next");
   const prevButton = document.querySelector(".ipod-skip.prev");
@@ -236,11 +239,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Function to update play/pause icon
   function updatePlayPauseIcon(isPlaying) {
-    const playPauseIcon = document.querySelector(".ipod-play-pause-icon i");
-    if (playPauseIcon) {
-      playPauseIcon.className = isPlaying
-        ? "ph-fill ph-pause"
-        : "ph-fill ph-play";
+    const container = document.querySelector(".ipod-play-pause-icon");
+    if (container) {
+      container.innerHTML = isPlaying ? PAUSE_ICON_SVG : PLAY_ICON_SVG;
     }
   }
 
@@ -341,23 +342,14 @@ document.addEventListener("DOMContentLoaded", function () {
   playPauseButton.addEventListener("click", function () {
     if (player) {
       const state = player.getPlayerState();
-      const playPauseIcon = document.querySelector(".ipod-play-pause-icon i");
 
       if (state === YT.PlayerState.PLAYING) {
         player.pauseVideo();
-        // Update icon to play when paused
-        if (playPauseIcon) {
-          playPauseIcon.className = "ph-fill ph-play";
-        }
-        // Show the "press play" message when paused
+        updatePlayPauseIcon(false);
         document.querySelector(".ipod-press-play-message").style.display = "block";
       } else {
         player.playVideo();
-        // Update icon to pause when playing
-        if (playPauseIcon) {
-          playPauseIcon.className = "ph-fill ph-pause";
-        }
-        // Hide the "press play" message when playing
+        updatePlayPauseIcon(true);
         document.querySelector(".ipod-press-play-message").style.display = "none";
       }
     }

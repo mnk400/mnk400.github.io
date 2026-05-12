@@ -6,7 +6,8 @@
     <article class="info-card{% unless item.icon %} info-card--no-icon{% endunless %}">
         {% if item.icon %}
         <span class="info-card__icon" aria-hidden="true">
-            <i class="ph-bold {{ item.icon }}"></i>
+            {%- assign _icon_name = item.icon | remove_first: "ph-" -%}
+            {% include icon.html name=_icon_name %}
         </span>
         {% endif %}
         <h3 class="info-card__title">{{ item.title }}</h3>

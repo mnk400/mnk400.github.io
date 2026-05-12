@@ -32,13 +32,9 @@
     align-items: center;
     justify-content: flex-start;
     grid-area: icon;
+    padding-top: 0.2em;
     align-self: center;
     color: var(--sec-text-color);
-
-    i {
-        font-size: 1em;
-        line-height: 1;
-    }
 }
 
 .info-card__title {

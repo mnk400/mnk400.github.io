@@ -33,8 +33,9 @@ layout: default
         {% if page.download or kind == 'native' and page.install %}
         <div class="product__cta-row cluster">
             {% if page.download %}
+            {%- assign _dl_icon = page.download.icon | default: 'ph-download-simple' | remove_first: 'ph-' -%}
             <a class="btn" href="{{ page.download.url }}" target="_blank" rel="noopener noreferrer">
-                <i class="ph-fill {{ page.download.icon | default: 'ph-download-simple' }}"></i>
+                {% include icon.html name=_dl_icon weight="fill" %}
                 {{ page.download.label | default: 'Download' }}
             </a>
             {% endif %}
@@ -43,7 +44,7 @@ layout: default
                 {% for entry in page.install %}
                 <button type="button" class="btn btn--outline product__copy-cmd"
                         data-copy="{{ entry.command }}" data-copy-feedback="Copied!">
-                    <i class="ph ph-bold ph-terminal"></i>
+                    {% include icon.html name="terminal" %}
                     <code>{{ entry.display_command | default: entry.command }}</code>
                 </button>
                 {% endfor %}
@@ -75,7 +76,7 @@ layout: default
                 <div class="product__install-panel{% if forloop.first %} active{% endif %}" data-install-panel="{{ value }}">
                     <button type="button" class="btn btn--outline product__copy-cmd product__copy-cmd--block"
                             data-copy="{{ entry.command }}" data-copy-feedback="Copied!">
-                        <i class="ph ph-bold ph-terminal"></i>
+                        {% include icon.html name="terminal" %}
                         <code>{{ entry.display_command | default: entry.command }}</code>
                         <span class="product__copy-label">copy</span>
                     </button>
@@ -86,7 +87,7 @@ layout: default
                 {% assign entry = page.install[0] %}
                 <button type="button" class="btn btn--outline product__copy-cmd product__copy-cmd--block"
                         data-copy="{{ entry.command }}" data-copy-feedback="Copied!">
-                    <i class="ph ph-bold ph-terminal"></i>
+                    {% include icon.html name="terminal" %}
                     <code>{{ entry.display_command | default: entry.command }}</code>
                     <span class="product__copy-label">copy</span>
                 </button>
@@ -159,7 +160,7 @@ layout: default
     <footer class="product__footer toolbar">
         {% if page.repo %}
         <a href="https://github.com/{{ page.repo }}" target="_blank" rel="noopener noreferrer">
-            <i class="ph-fill ph-github-logo"></i> View on GitHub
+            {% include icon.html name="github-logo" weight="fill" %} View on GitHub
         </a>
         {% if page.license %}<span class="product__meta-sep">·</span> <span>{{ page.license }}</span>{% endif %}
         {% if page.repo %}<span class="product__meta-sep">·</span> <a href="https://github.com/{{ page.repo }}/issues/new" target="_blank" rel="noopener noreferrer">Report an issue</a>{% endif %}

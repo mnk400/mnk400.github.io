@@ -12,7 +12,7 @@
         aria-expanded="{% if include.expanded %}true{% else %}false{% endif %}"
     >
         <span class="toggle-text">{{ include.title }}</span>
-        <span class="toggle-icon"><i class="ph-bold ph-plus"></i></span>
+        <span class="toggle-icon">{% include icon.html name="plus" %}</span>
     </button>
     <div class="expandable-content">{{ include.content }}</div>
 </div>

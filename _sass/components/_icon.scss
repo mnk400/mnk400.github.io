@@ -1,0 +1,12 @@
+// Inline SVG icons — sized like text, color via currentColor.
+// Matches the sizing behavior of the previous Phosphor `<i>` elements
+// so swaps are visually identical.
+.icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    line-height: 1em;
+    vertical-align: -0.12em;
+    flex-shrink: 0;
+    fill: currentColor;
+}

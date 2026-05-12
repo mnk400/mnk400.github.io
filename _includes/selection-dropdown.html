@@ -26,7 +26,7 @@
     aria-expanded="false"
   >
     <span class="selection-dropdown__trigger-text"></span>
-    <i class="ph-bold ph-caret-down selection-dropdown__chevron" aria-hidden="true"></i>
+    {% include icon.html name="caret-down" class="selection-dropdown__chevron" %}
   </button>
   <div class="selection-dropdown__menu collapsed" role="listbox">
     {% for option_raw in include.options %}
@@ -49,7 +49,7 @@
         data-value="{{ option_value }}"
       >
         <span class="selection-dropdown__option-label">{{ option_label }}</span>
-        <i class="ph-bold ph-check selection-dropdown__option-check" aria-hidden="true"></i>
+        {% include icon.html name="check" class="selection-dropdown__option-check" %}
       </button>
     {% endfor %}
   </div>

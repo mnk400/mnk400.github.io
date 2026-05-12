@@ -14,11 +14,11 @@
     aria-expanded="false"
     aria-controls="{{ search_id }}-field"
   >
-    <i class="ph-bold ph-magnifying-glass" aria-hidden="true"></i>
+    {% include icon.html name="magnifying-glass" %}
     <span>{{ search_label }}</span>
   </button>
   <label class="site-search__field" for="{{ search_id }}-field">
-    <i class="ph-bold ph-magnifying-glass" aria-hidden="true"></i>
+    {% include icon.html name="magnifying-glass" %}
     <input
       id="{{ search_id }}-field"
       type="search"
@@ -27,7 +27,7 @@
       aria-label="{{ search_label }}"
     >
     <button class="site-search__clear" type="button" aria-label="Clear search" hidden>
-      <i class="ph-bold ph-x" aria-hidden="true"></i>
+      {% include icon.html name="x" %}
     </button>
   </label>
 </div>

@@ -8,6 +8,12 @@
  */
 
 (function () {
+  const ICON_SVGS = {
+    "caret-left": '<svg class="icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z"/></svg>',
+    "caret-right": '<svg class="icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M184.49,136.49l-80,80a12,12,0,0,1-17-17L159,128,87.51,56.49a12,12,0,1,1,17-17l80,80A12,12,0,0,1,184.49,136.49Z"/></svg>',
+    "x": '<svg class="icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M208.49,191.51a12,12,0,0,1-17,17L128,145,64.49,208.49a12,12,0,0,1-17-17L111,128,47.51,64.49a12,12,0,0,1,17-17L128,111l63.51-63.52a12,12,0,0,1,17,17L145,128Z"/></svg>',
+  };
+
   let backdrop = null;
   let clonedImage = null;
   let controlsEl = null;
@@ -157,7 +163,7 @@
   function makeButton(className, icon, ariaLabel, onClick, parent = document.body) {
     const btn = document.createElement("button");
     btn.className = className;
-    btn.innerHTML = `<i class="ph-bold ${icon}"></i>`;
+    btn.innerHTML = ICON_SVGS[icon];
     btn.setAttribute("aria-label", ariaLabel);
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -219,14 +225,14 @@
     if (multi) {
       prevButton = makeButton(
         "image-zoom-control-button image-zoom-nav-button image-zoom-nav-button--prev",
-        "ph-caret-left",
+        "caret-left",
         "Previous image",
         () => navigate(-1),
         navLineEl,
       );
       nextButton = makeButton(
         "image-zoom-control-button image-zoom-nav-button image-zoom-nav-button--next",
-        "ph-caret-right",
+        "caret-right",
         "Next image",
         () => navigate(1),
         navLineEl,
@@ -243,7 +249,7 @@
 
     closeButton = makeButton(
       "image-zoom-control-button image-zoom-close",
-      "ph-x",
+      "x",
       "Close zoomed image",
       closeZoom,
       navLineEl,
