@@ -1,0 +1,42 @@
+// =============================================================================
+// REVEAL — staged fade-in primitive for async-loaded content
+// =============================================================================
+//
+// Apply `.reveal` to a host whose children appear after a network call. Mark
+// each async-loaded child with `.reveal__stage` (optionally `--1..4` for a
+// top-to-bottom cascade). Once data lands, the host gets `.is-ready` from JS
+// and stages fade+slide into place. Honors `prefers-reduced-motion`.
+
+$reveal-offset: 8px;
+$reveal-stagger: 60ms;
+
+.reveal {
+    &__stage {
+        opacity: 0;
+        transform: translateY($reveal-offset);
+        transition:
+            opacity var(--transition-slow),
+            transform var(--transition-slow);
+    }
+
+    &.is-ready &__stage {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    &.is-ready &__stage--1 { transition-delay: 0ms; }
+    &.is-ready &__stage--2 { transition-delay: $reveal-stagger; }
+    &.is-ready &__stage--3 { transition-delay: $reveal-stagger * 2; }
+    &.is-ready &__stage--4 { transition-delay: $reveal-stagger * 3; }
+
+    @media (prefers-reduced-motion: reduce) {
+        &__stage {
+            transform: none;
+            transition-duration: 0.01s;
+        }
+
+        &.is-ready &__stage {
+            transition-delay: 0ms;
+        }
+    }
+}

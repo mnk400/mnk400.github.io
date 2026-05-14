@@ -144,10 +144,11 @@ layout: default
     {% endif %}
 
     {% if kind == 'readme' %}
-    <section class="post__content product__readme github-readme__content"
+    <section class="product__readme reveal">
+        <div class="github-readme__loading" hidden>Loading README…</div>
+        <div class="post__content github-readme__content reveal__stage"
              data-repo="{{ page.repo }}"
-             data-branch="{{ page.branch | default: 'main' }}">
-        <div class="github-readme__loading">Loading README…</div>
+             data-branch="{{ page.branch | default: 'main' }}"></div>
     </section>
     {% endif %}
 

@@ -148,16 +148,24 @@
             font-style: italic;
         }
 
-        // Hide the repo's own title since the product hero already shows it.
-        > h1:first-child,
-        > h2:first-child {
-            display: none;
+        .github-readme__content {
+            // Hide the repo's own title since the product hero already shows it.
+            > h1:first-child,
+            > h2:first-child {
+                display: none;
+            }
         }
 
         img {
             padding: 0;
             border-radius: var(--radius-md);
+            opacity: 0;
+            transition: opacity var(--transition-slow);
             @include soft-outline;
+
+            &.loaded {
+                opacity: 1;
+            }
         }
     }
 

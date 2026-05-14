@@ -64,6 +64,13 @@
     display: grid;
     gap: var(--spacing-md);
 
+    // Grid items default to min-width: auto, which refuses to shrink below
+    // intrinsic content size — async content like the music widget can then
+    // push the whole layout past the viewport once it loads.
+    > * {
+        min-width: 0;
+    }
+
     > :where(h1, h2, h3, p) {
         margin-block: 0;
         padding-bottom: 0;

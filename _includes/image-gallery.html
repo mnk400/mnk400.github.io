@@ -28,7 +28,7 @@
 {%- assign grid_id = "image-gallery-grid-" | append: gallery_name -%}
 
 <div
-  class="{{ gallery_class }}"
+  class="{{ gallery_class }} reveal"
   id="image-gallery-{{ gallery_name }}"
   {% if include.source %}data-image-gallery data-gallery-source="{{ include.source }}"{% endif %}
   {% if include.base_url %}data-gallery-base-url="{{ include.base_url }}"{% endif %}
@@ -49,23 +49,25 @@
     class="image-gallery__status"
     id="{{ status_id }}"
     {% if include.source %}data-gallery-status{% endif %}
+    hidden
   >
     <p>{{ include.loading_text | default: "Loading images..." }}</p>
   </div>
 
   {% if include.summary %}
   <div
-    class="image-gallery__summary"
+    class="image-gallery__summary reveal__stage reveal__stage--1"
     data-gallery-summary
     hidden
   ></div>
   {% endif %}
 
   {% if include.controls %}
-  <div class="image-gallery__controls stack stack--sm" data-gallery-controls-root hidden></div>
+  <div class="image-gallery__controls reveal__stage reveal__stage--2 stack stack--sm" data-gallery-controls-root hidden></div>
   {% endif %}
 
   {% if include.search %}
+  <div class="reveal__stage reveal__stage--3">
     {% include search-pill.html
       id=include.search_id
       label=include.search_label
@@ -73,10 +75,11 @@
       target=include.search_target
       class=include.search_class
     %}
+  </div>
   {% endif %}
 
   <div
-    class="album-container image-gallery__grid"
+    class="album-container image-gallery__grid reveal__stage reveal__stage--4"
     id="{{ grid_id }}"
     {% if include.source %}data-gallery-grid{% endif %}
   ></div>

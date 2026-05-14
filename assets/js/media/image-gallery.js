@@ -433,6 +433,12 @@
 
     if (!source || !grid) return;
 
+    const slowLoadTimer = status
+      ? setTimeout(() => {
+          status.hidden = false;
+        }, 500)
+      : null;
+
     try {
       const response = await fetch(source);
       if (!response.ok) {
@@ -480,6 +486,7 @@
         return visibleItems;
       };
 
+      if (slowLoadTimer) clearTimeout(slowLoadTimer);
       if (status) status.hidden = true;
 
       if (controlsEnabled) {
@@ -497,6 +504,7 @@
       });
 
       const visibleItems = applyState();
+      root.classList.add("is-ready");
       root.dispatchEvent(
         new CustomEvent("image-gallery:loaded", {
           detail: { manifest, items, visibleItems },
@@ -504,6 +512,7 @@
       );
     } catch (error) {
       console.error("Error loading image gallery:", error);
+      if (slowLoadTimer) clearTimeout(slowLoadTimer);
       if (status) {
         status.hidden = false;
         status.textContent = "Could not load images. Please try again later.";
@@ -540,6 +549,7 @@
           if (selector === "[data-gallery-summary]") return null;
           return null;
         },
+        classList: { add() {} },
         dispatchEvent() {},
       },
       {},

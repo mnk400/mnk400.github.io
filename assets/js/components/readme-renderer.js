@@ -2,6 +2,11 @@
     const container = document.querySelector(".github-readme__content");
     if (!container) return;
 
+    const host = container.closest(".reveal");
+    const loading = host
+        ? host.querySelector(".github-readme__loading")
+        : null;
+
     const repo = container.getAttribute("data-repo");
     const branch = container.getAttribute("data-branch") || "main";
     const rawBase = "https://raw.githubusercontent.com/" + repo + "/" + branch;
@@ -11,6 +16,18 @@
         gfm: true,
         breaks: false,
     });
+
+    const slowLoadTimer = loading
+        ? setTimeout(function () {
+              loading.hidden = false;
+          }, 500)
+        : null;
+
+    function finish() {
+        if (slowLoadTimer) clearTimeout(slowLoadTimer);
+        if (loading) loading.hidden = true;
+        if (host) host.classList.add("is-ready");
+    }
 
     fetch(url)
         .then(function (res) {
@@ -63,15 +80,29 @@
             }
 
             // Make rendered images zoomable (image-zoom.js delegates on [data-zoomable])
+            // and fade each one in once its bytes arrive so they don't pop abruptly.
             const imgs = container.querySelectorAll("img");
             for (let i = 0; i < imgs.length; i++) {
-                imgs[i].setAttribute("data-zoomable", "");
+                const img = imgs[i];
+                img.setAttribute("data-zoomable", "");
+                if (img.complete && img.naturalWidth > 0) {
+                    img.classList.add("loaded");
+                } else {
+                    const markLoaded = function () {
+                        img.classList.add("loaded");
+                    };
+                    img.addEventListener("load", markLoaded, { once: true });
+                    img.addEventListener("error", markLoaded, { once: true });
+                }
             }
+
+            finish();
         })
         .catch(function () {
             container.innerHTML =
                 '<p>Could not load README. <a href="https://github.com/' +
                 repo +
                 '" target="_blank" rel="noopener noreferrer">View it on GitHub</a>.</p>';
+            finish();
         });
 })();
