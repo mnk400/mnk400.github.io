@@ -457,7 +457,11 @@
         metaPaths: config.metaPaths || ["meta"],
         widthPaths: config.widthPaths || ["image.width", "width", "dimensions.width_cm"],
         heightPaths: config.heightPaths || ["image.height", "height", "dimensions.height_cm"],
-        popularityPaths: config.popularityPaths || ["popularity.sitelinks", "sitelinks"],
+        popularityPaths: config.popularityPaths || [
+          "popularity.score",
+          "popularity.sitelinks",
+          "sitelinks",
+        ],
         baseUrl,
       };
       const items = rawItems.map((item, index) => normalizeItem(item, index, options));
