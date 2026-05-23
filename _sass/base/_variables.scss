@@ -30,14 +30,14 @@ $themes: (
         sec-text-color: #c2c2c2,
         code-bg: #212121,
     ),
-    ruby: (
+    plum: (
         background-main: #2a1a1d,
         background-darker: #3d1f24,
         text-color: #f5e8ea,
         sec-text-color: #e0d3d8,
         code-bg: #3d1f24,
     ),
-    matcha: (
+    moss: (
         background-main: #2a2f2a,
         background-darker: #1e231e,
         text-color: #f2faed,
@@ -57,11 +57,23 @@ $themes: (
         code-bg: #e6ca85,
     ),
     espresso: (
-        background-main: #352315,
-        background-darker: #2a1b10,
+        background-main: #1f1410,
+        background-darker: #160d0a,
         text-color: #f0e0d0,
         sec-text-color: #d4c0ac,
-        code-bg: #2a1b10,
+        code-bg: #160d0a,
+    ),
+    blush: (
+        background-main: #f1d9d3,
+        background-darker: #f6e5e0,
+        text-color: #4a2f35,
+        sec-text-color: #7a5560,
+        contrast-overlay: rgba(0, 0, 0, 0.7),
+        contrast-overlay-hover: rgba(0, 0, 0, 0.5),
+        translucent-low: rgba(0, 0, 0, 0.05),
+        translucent-medium: rgba(0, 0, 0, 0.07),
+        translucent-high: rgba(0, 0, 0, 0.2),
+        code-bg: #e8cdc6,
     ),
 );
 
