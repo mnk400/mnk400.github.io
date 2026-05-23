@@ -17,7 +17,7 @@ Repository: https://github.com/mnk400/mnk400.github.io
 Minimal HTML boilerplate to get the full design system:
 
     <!DOCTYPE html>
-    <html data-theme="light">
+    <html data-theme="linen">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -36,8 +36,9 @@ Minimal HTML boilerplate to get the full design system:
         <!-- Prevent flash of wrong theme -->
         <script>
             (function() {
-                var t = localStorage.getItem('theme') || 'light';
-                if (['light','dark','blue','red'].indexOf(t) === -1) t = 'light';
+                var valid = ['linen','charcoal','denim','plum','moss','butter','espresso','blush'];
+                var t = localStorage.getItem('theme') || 'linen';
+                if (valid.indexOf(t) === -1) t = 'linen';
                 document.documentElement.setAttribute('data-theme', t);
             })();
         </script>
@@ -85,7 +86,7 @@ The single stylesheet at /style/export.css bundles these modules:
 3. THEME SYSTEM
 ================================================================================
 
-Six themes: linen, charcoal, denim, ruby, matcha, butter.
+Eight themes: linen, charcoal, denim, plum, moss, butter, espresso, blush.
 
 Set via the data-theme attribute on <html>:
 
@@ -109,9 +110,11 @@ Theme values:
     LINEN     background: #f2f0ef  text: #3b3b3b
     CHARCOAL  background: #1a1a1a  text: #d0d0d0
     DENIM     background: #2d3d5a  text: #e8edf5
-    RUBY      background: #2a1a1d  text: #f5e8ea
-    MATCHA    background: #2a2f2a  text: #f2faed
+    PLUM      background: #2a1a1d  text: #f5e8ea
+    MOSS      background: #2a2f2a  text: #f2faed
     BUTTER    background: #F1D799  text: #4a4235
+    ESPRESSO  background: #1f1410  text: #f0e0d0
+    BLUSH     background: #f1d9d3  text: #4a2f35
 
 To add a theme toggle button:
 
@@ -979,7 +982,7 @@ DO
     - Use translucent surfaces with blur for floating elements
     - Keep text light (weight 300) for body copy
     - Animate transitions between states
-    - Support all four themes
+    - Support all eight themes
 
 DON'T
     - Hardcode color values (no raw hex in component styles)
