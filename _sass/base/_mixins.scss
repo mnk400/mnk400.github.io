@@ -74,9 +74,7 @@
         margin-bottom $duration,
         padding-top $duration,
         padding-bottom $duration;
-    will-change:
-        max-height, opacity, margin-top, margin-bottom, padding-top,
-        padding-bottom;
+    will-change: opacity;
 
     &.collapsed {
         max-height: 0 !important;

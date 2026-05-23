@@ -8,7 +8,7 @@
     backdrop-filter: blur(10px);
     border-radius: var(--radius-md);
     padding: var(--spacing-lg);
-    transition: background-color var(--transition-medium);
+    transition: background-color var(--transition-medium), scale var(--transition-fast);
 
     @include hover-interactive {
         background-color: var(--translucent-high);
@@ -16,6 +16,10 @@
 
     &--interactive {
         cursor: pointer;
+
+        &:active {
+            scale: 0.96;
+        }
     }
 
     &--no-padding {
@@ -51,6 +55,7 @@
         background-color: var(--translucent-low);
         border-radius: var(--radius-sm);
         overflow: hidden;
+        @include soft-outline(var(--translucent-medium));
 
         img {
             position: absolute;
@@ -168,6 +173,7 @@
             color: rgba(255, 255, 255, 0.8);
             font-size: 0.8em;
             text-align: left;
+            font-variant-numeric: tabular-nums;
         }
     }
 

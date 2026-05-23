@@ -4,7 +4,8 @@
 
 // Base button styles
 button,
-.btn {
+.btn,
+.normal-btn {
     padding: var(--spacing-sm) var(--spacing-lg);
     background-color: var(--contrast-overlay);
     color: var(--background-main);
@@ -13,7 +14,7 @@ button,
     font-size: 1em;
     font-weight: 300 !important;
     cursor: pointer;
-    transition: background-color var(--transition-medium);
+    transition: background-color var(--transition-medium), scale var(--transition-fast);
     backdrop-filter: blur(10px);
     @include system-font;
     text-decoration: none !important;
@@ -92,6 +93,18 @@ button,
     }
 }
 
+.btn:active,
+.normal-btn:active {
+    scale: 0.96;
+}
+
+// Copy buttons run their own "Copied!" confirmation swap on click — skip the
+// press scale so the two cues don't fire on top of each other.
+.btn[data-copy]:active,
+.normal-btn[data-copy]:active {
+    scale: 1;
+}
+
 // File input button styling
 input[type="file"]::file-selector-button {
     padding: var(--spacing-sm) var(--spacing-lg);
@@ -162,10 +175,14 @@ input[type="file"]::file-selector-button {
         background-color: var(--translucent-low);
         color: var(--text-color);
         cursor: pointer;
-        transition: all var(--transition-medium);
+        transition: background-color var(--transition-medium), color var(--transition-medium), scale var(--transition-fast);
 
         display: inline-block;
         @include soft-outline;
+
+        &:active {
+            scale: 0.96;
+        }
 
         @include hover-state-dark;
 

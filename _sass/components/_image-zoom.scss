@@ -163,6 +163,7 @@
 }
 
 .image-zoom-control-button {
+    position: relative;
     width: 24px;
     height: 24px;
     display: inline-flex;
@@ -180,6 +181,13 @@
     transition:
         color var(--transition-medium),
         opacity var(--transition-medium);
+
+    // Extend hit area to the 40x40 minimum without growing the visible glyph.
+    &::before {
+        content: "";
+        position: absolute;
+        inset: -8px;
+    }
 
     @include hover-interactive {
         background-color: transparent;

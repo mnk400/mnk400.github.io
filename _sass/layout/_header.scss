@@ -25,7 +25,11 @@ header {
     max-height: 0;
     overflow: hidden;
     opacity: 0;
-    transition: all var(--transition-slow);
+    transition:
+        max-height var(--transition-slow),
+        opacity var(--transition-slow),
+        margin-top var(--transition-slow),
+        padding-bottom var(--transition-slow);
 
     &.revealed {
         margin-top: calc(var(--spacing-2xl) * -0.6);

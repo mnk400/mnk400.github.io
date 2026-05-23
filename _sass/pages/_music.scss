@@ -36,6 +36,7 @@
 .music-widget-time {
     opacity: 0;
     transition: opacity var(--transition-slow);
+    font-variant-numeric: tabular-nums;
 }
 
 .music-widget {
@@ -75,7 +76,7 @@
     position: absolute;
     inset: 0;
     background-color: var(--translucent-high);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-sm);
 }
 
 .music-widget .music-widget-art {
@@ -87,7 +88,7 @@
     padding: 0;
     object-fit: cover;
     flex-shrink: 0;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-sm);
     opacity: 0;
     transition: opacity var(--transition-slow);
 

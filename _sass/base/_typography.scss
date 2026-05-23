@@ -17,6 +17,8 @@ body {
     font-size: calc(1em * var(--font-size-scale, 1));
     font-weight: 200;
     word-wrap: break-word;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 // Headings
@@ -27,6 +29,7 @@ h1 {
     font-weight: 500;
     margin-top: var(--spacing-md);
     margin-bottom: var(--spacing-sm);
+    text-wrap: balance;
 }
 
 h2 {
@@ -35,6 +38,7 @@ h2 {
     font-weight: 500;
     margin-top: var(--spacing-xs);
     margin-bottom: var(--spacing-md);
+    text-wrap: balance;
 }
 
 h3 {
@@ -43,6 +47,7 @@ h3 {
     font-weight: 400;
     margin-top: var(--spacing-xs);
     margin-bottom: var(--spacing-md);
+    text-wrap: balance;
 }
 
 // Body text
@@ -59,6 +64,7 @@ p {
         padding-bottom: var(--spacing-md);
         text-align: left;
         word-wrap: break-word;
+        text-wrap: pretty;
         letter-spacing: 0.2px;
         color: var(--sec-text-color);
     }

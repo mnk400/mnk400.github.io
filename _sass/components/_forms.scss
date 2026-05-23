@@ -189,7 +189,7 @@ input[type="color"] {
     height: 40px;
     border: none;
     cursor: pointer;
-    transition: all var(--transition-medium);
+    transition: background-color var(--transition-medium);
     padding: 0;
     overflow: hidden;
     @include translucent-surface(var(--translucent-low), 10px);
@@ -219,6 +219,7 @@ input[type="color"] {
     letter-spacing: 0.3px;
     line-height: 1;
     text-transform: lowercase;
+    font-variant-numeric: tabular-nums;
 }
 
 // Image upload
@@ -238,7 +239,7 @@ input[type="color"] {
     font-weight: 400;
     color: var(--text-color);
     border: none;
-    transition: all var(--transition-medium);
+    transition: background-color var(--transition-medium), color var(--transition-medium);
     @include translucent-surface(var(--translucent-low), 10px);
 
     @include hover-interactive {
@@ -259,6 +260,7 @@ input[type="color"] {
     width: 100%;
     border-radius: var(--radius-md);
     transition: opacity 0.5s ease-out;
+    @include soft-outline(var(--translucent-medium));
 
     &.fade-out {
         opacity: 0;
