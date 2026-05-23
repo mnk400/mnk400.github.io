@@ -8,16 +8,42 @@ const fontStacks = {
   "inconsolata": '"Inconsolata", monospace',
 };
 
+// Probe string used to ask the browser to load a webfont. The default stack is
+// system-only, so no probe is needed.
+const fontProbes = {
+  "source-serif": '1em "Source Serif 4"',
+  "inconsolata": '1em "Inconsolata"',
+};
+
 const fontScale = {
 };
 
-function setFont(font) {
-  if (!fontStacks[font]) return;
+function applyFont(font) {
   currentFont = font;
   localStorage.setItem("font", font);
   document.documentElement.style.setProperty("--font-family", fontStacks[font]);
   document.documentElement.style.setProperty("--font-size-scale", fontScale[font] || "1");
   updateFontSwitch();
+}
+
+function setFont(font) {
+  if (!fontStacks[font]) return;
+
+  // Reflect the selection in the switcher immediately so the click feels
+  // responsive, even if the font file isn't ready yet.
+  currentFont = font;
+  updateFontSwitch();
+
+  const probe = fontProbes[font];
+  if (probe && document.fonts && document.fonts.load) {
+    document.fonts.load(probe).then(() => {
+      // Only apply once the font is actually available — avoids the flash
+      // through the generic serif/monospace fallback.
+      if (currentFont === font) applyFont(font);
+    }).catch(() => applyFont(font));
+  } else {
+    applyFont(font);
+  }
 }
 
 function updateFontSwitch() {
