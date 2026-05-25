@@ -1,0 +1,42 @@
+---
+layout: post
+title: Galleries
+permalink: /galleries
+description: A small archive of public-domain works from artists I admire.
+---
+
+<p>
+    All of this art is public domain, but most archives that host it are either wiki-style with rough navigation, museum pages with limited set of artwork, or buried with ads. 
+</p>
+<p>
+    These pages are an attempt at a cleaner, searchable, sortable, filterable alternative. Started with Monet because nothing like it seemed to exist for him, then grew to cover a handful of other artists I like.
+</p>
+
+
+{%- assign gallery_pages = site.pages
+    | where: "category", "Galleries"
+    | sort: "order" -%}
+
+<div class="gallery-grid">
+    {%- for page in gallery_pages -%}
+    <a class="gallery-tile" href="{{ page.url | relative_url }}" target="_blank" rel="noopener noreferrer">
+        <span class="gallery-tile__cover">
+            {%- if page.image -%}
+            <img src="{{ page.image | relative_url }}" alt="" loading="lazy" decoding="async">
+            {%- endif -%}
+        </span>
+        <div class="gallery-tile__caption">
+            <h3 class="gallery-tile__title">
+                <span>{{ page.title }}</span>
+                <span class="gallery-tile__chevron" aria-hidden="true">{% include icon.html name="arrow-right" %}</span>
+            </h3>
+            {%- if page.years -%}
+            <p class="gallery-tile__meta">{{ page.years }}</p>
+            {%- endif -%}
+            {%- if page.blurb -%}
+            <p class="gallery-tile__blurb">{{ page.blurb }}</p>
+            {%- endif -%}
+        </div>
+    </a>
+    {%- endfor -%}
+</div>
