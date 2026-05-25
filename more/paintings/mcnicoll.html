@@ -1,0 +1,32 @@
+---
+layout: post
+title: Helen McNicoll
+permalink: /more/mcnicoll
+category: Galleries
+tags: [art, gallery, paintings, archive]
+description: Browse an archive of Helen McNicoll paintings.
+scripts: [/assets/js/media/image-gallery.js]
+header_only_view_transition: true
+---
+
+<p>
+    A small browser archive of Helen McNicoll paintings
+</p>
+
+{% include image-gallery.html
+    source="https://manik.cc/pipelines/paintings/mcnicoll/manifest.json"
+    items_key="paintings"
+    gallery_name="mcnicoll"
+    loading_text="Loading paintings..."
+    summary=true
+    controls=true
+    sort_options="year-desc,year-asc,popularity-desc"
+    default_sort="popularity-desc"
+    filter_options="decade,series"
+    search=true
+    search_id="mcnicoll-search"
+    search_label="Search"
+    search_placeholder="search paintings"
+    search_target="#image-gallery-mcnicoll"
+    search_class="site-search--small image-gallery__search"
+%}

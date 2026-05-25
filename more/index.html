@@ -5,7 +5,7 @@ permalink: /more
 scripts: [/assets/js/tools/more-index.js]
 ---
 
-{%- comment -%} Collect category pages in /more/ {%- endcomment -%}
+{%- comment -%} Collect category pages anywhere under /more/. {%- endcomment -%}
 {%- assign pages_in_more_dir = site.pages
     | where_exp: "page", "page.path contains 'more/'"
     | where_exp: "page", "page.name != 'index.html'"

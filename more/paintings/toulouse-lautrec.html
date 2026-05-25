@@ -1,23 +1,22 @@
 ---
 layout: post
-title: Monet
-permalink: /more/monet
+title: Henri de Toulouse-Lautrec
+permalink: /more/toulouse-lautrec
 category: Galleries
 tags: [art, gallery, paintings, archive]
-image: /assets/images/metadata/monet.jpg
-description: Browse Thousands of Claude Monet paintings.
+description: Browse an archive of Henri de Toulouse-Lautrec paintings.
 scripts: [/assets/js/media/image-gallery.js]
 header_only_view_transition: true
 ---
 
 <p>
-    A small browser for thousands of Claude Monet paintings
+    A small browser archive of Henri de Toulouse-Lautrec paintings
 </p>
 
 {% include image-gallery.html
-    source="https://manik.cc/pipelines/paintings/monet/manifest.json"
+    source="https://manik.cc/pipelines/paintings/toulouse-lautrec/manifest.json"
     items_key="paintings"
-    gallery_name="monet"
+    gallery_name="toulouse-lautrec"
     loading_text="Loading paintings..."
     summary=true
     controls=true
@@ -25,9 +24,9 @@ header_only_view_transition: true
     default_sort="popularity-desc"
     filter_options="decade,series"
     search=true
-    search_id="monet-search"
+    search_id="toulouse-lautrec-search"
     search_label="Search"
     search_placeholder="search paintings"
-    search_target="#image-gallery-monet"
+    search_target="#image-gallery-toulouse-lautrec"
     search_class="site-search--small image-gallery__search"
 %}

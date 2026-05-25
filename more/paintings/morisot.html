@@ -1,0 +1,33 @@
+---
+layout: post
+title: Berthe Morisot
+permalink: /more/morisot
+category: Galleries
+tags: [art, gallery, paintings, archive]
+image: /assets/images/metadata/morisot.jpg
+description: Browse an archive of Berthe Morisot paintings.
+scripts: [/assets/js/media/image-gallery.js]
+header_only_view_transition: true
+---
+
+<p>
+    A small browser archive of Berthe Morisot paintings
+</p>
+
+{% include image-gallery.html
+    source="https://manik.cc/pipelines/paintings/morisot/manifest.json"
+    items_key="paintings"
+    gallery_name="morisot"
+    loading_text="Loading paintings..."
+    summary=true
+    controls=true
+    sort_options="year-desc,year-asc,popularity-desc"
+    default_sort="popularity-desc"
+    filter_options="decade,series"
+    search=true
+    search_id="morisot-search"
+    search_label="Search"
+    search_placeholder="search paintings"
+    search_target="#image-gallery-morisot"
+    search_class="site-search--small image-gallery__search"
+%}
