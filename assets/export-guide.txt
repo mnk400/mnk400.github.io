@@ -531,6 +531,10 @@ repeated items do not become visually heavy on narrow pages.
 Page wrapper (centered, max-width 525px):
     <div class="wrapper">Content</div>
 
+html and body both use --background-main as the page background. Keep both in
+sync so browser canvas and View Transition paints never expose a transparent
+body over a default background.
+
 Fullscreen (for tools/games):
     <body class="fullscreen">
 
@@ -653,6 +657,10 @@ Coordinates cross-document View Transition state for this site's header and
 breadcrumb elements. Uses pageswap/pagereveal to detect home/subpage navigation,
 fold breadcrumb child snapshots into the header snapshot when needed, and set
 html[data-vt-direction="back"] for reverse animations.
+
+The CSS keeps the document root participating as the stable background layer and
+sets the view-transition overlay background to --background-main, so transparent
+content fades do not expose the browser canvas during rapid history navigation.
 
 No page-level skip logic is included. For pages with very large DOM subtrees,
 prefer opting expensive named regions out in CSS (for example setting

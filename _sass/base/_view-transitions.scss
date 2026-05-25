@@ -20,7 +20,11 @@ body.header-only-view-transition {
 }
 
 html {
-    view-transition-name: none;
+    view-transition-name: root;
+}
+
+::view-transition {
+    background-color: var(--background-main);
 }
 
 // -----------------------------------------------------------------------------
