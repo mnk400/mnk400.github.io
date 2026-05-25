@@ -191,6 +191,7 @@ Fonts:
 
 Links show a subtle underline on hover (text-decoration with --translucent-high color).
 Code gets --code-bg background with IBM Plex Mono at 11pt.
+Headings use balanced wrapping; body and post paragraphs use normal browser line wrapping.
 
 
 ================================================================================
