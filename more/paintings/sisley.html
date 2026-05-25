@@ -1,26 +1,26 @@
 ---
 layout: post
-title: Frederic Remington
-permalink: /more/remington
+title: Alfred Sisley
+permalink: /more/sisley
 category: Archive
 tags: [art, gallery, paintings, archive]
-image: /assets/images/metadata/remington.jpg
-years: "1881 – 1909"
-order: 5
-blurb: "Painted the Old West in its last days: cowboys, cavalry, dust, and horses."
-description: Browse an archive of Frederic Remington paintings.
+image: /assets/images/metadata/sisley.jpg
+years: "1860 – 1899"
+order: 7
+blurb: "Impressionist landscape painter with rivers, snow, small towns, and quiet weather."
+description: Browse an archive of Alfred Sisley paintings.
 scripts: [/assets/js/media/image-gallery.js]
 header_only_view_transition: true
 ---
 
 <p>
-    A small browser archive of Frederic Remington paintings
+    A small browser archive of Alfred Sisley paintings
 </p>
 
 {% include image-gallery.html
-    source="https://manik.cc/pipelines/paintings/remington/manifest.json"
+    source="https://manik.cc/pipelines/paintings/sisley/manifest.json"
     items_key="paintings"
-    gallery_name="remington"
+    gallery_name="sisley"
     loading_text="Loading paintings..."
     summary=true
     controls=true
@@ -28,9 +28,9 @@ header_only_view_transition: true
     default_sort="popularity-desc"
     filter_options="decade,series"
     search=true
-    search_id="remington-search"
+    search_id="sisley-search"
     search_label="Search"
     search_placeholder="search paintings"
-    search_target="#image-gallery-remington"
+    search_target="#image-gallery-sisley"
     search_class="site-search--small image-gallery__search"
 %}

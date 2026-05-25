@@ -40,7 +40,7 @@ This page is an ongoing list of random things and projects I've built.
             <span class="switch-option" data-value="{{ cat | downcase }}">
                 {%- if cat == "Apps" -%}apps
                 {%- elsif cat == "CLI Tools" -%}cli tools
-                {%- elsif cat == "Galleries" -%}galleries
+                {%- elsif cat == "Archive" -%}art archive
                 {%- elsif cat == "Fun Tools" -%}fun
                 {%- elsif cat == "Games" -%}games
                 {%- elsif cat == "Image Tools" -%}image tools
@@ -54,13 +54,53 @@ This page is an ongoing list of random things and projects I've built.
 
 <div class="more-page">
 {%- for cat in unique_categories -%}
-    {%- assign cat_pages = category_pages | where: "category", cat | sort: "title" -%}
+    {%- if cat == "Archive" -%}
+        {%- assign cat_pages = category_pages | where: "category", cat | sort: "order" -%}
+    {%- else -%}
+        {%- assign cat_pages = category_pages | where: "category", cat | sort: "title" -%}
+    {%- endif -%}
 
+    {%- if cat == "Archive" -%}
+    <div class="more-section more-section--widget" data-more-category="archive" data-more-widget>
+        <span class="more-section__label">art archive</span>
+        <span class="more-section__links">
+            <span class="more-section__widget-head">
+                <span
+                    class="more-section__item"
+                    data-more-search="archive art paintings public domain"
+                >
+                    <a href="{{ '/archive' | relative_url }}" title="Browse the art archive">Art Archive</a>
+                </span>
+                <button
+                    type="button"
+                    class="more-section__widget-toggle"
+                    aria-expanded="false"
+                    aria-controls="more-archive-sublist"
+                    aria-label="Show archive contents"
+                >
+                    {% include icon.html name="arrow-right" %}
+                </button>
+            </span>
+            <ul class="more-section__sublist collapsed" id="more-archive-sublist">
+                {%- for page in cat_pages -%}
+                    {%- assign tag_blob = page.tags | join: " " -%}
+                    <li
+                        class="more-section__subitem"
+                        data-more-search="{{ page.title | append: ' ' | append: page.description | append: ' archive art ' | append: tag_blob | strip | downcase | escape }}"
+                    >
+                        <a href="{{ page.url | relative_url }}"
+                            {%- if page.description %} title="{{ page.description }}"{% endif -%}
+                        >{{ page.title }}</a>
+                    </li>
+                {%- endfor -%}
+            </ul>
+        </span>
+    </div>
+    {%- else -%}
     <div class="more-section" data-more-category="{{ cat | downcase }}">
         <span class="more-section__label">
             {%- if cat == "Apps" -%}apps
             {%- elsif cat == "CLI Tools" -%}cli tools
-            {%- elsif cat == "Galleries" -%}galleries
             {%- elsif cat == "Fun Tools" -%}fun
             {%- elsif cat == "Games" -%}games
             {%- elsif cat == "Image Tools" -%}image tools
@@ -92,6 +132,7 @@ This page is an ongoing list of random things and projects I've built.
         {%- endfor -%}
         </span>
     </div>
+    {%- endif -%}
 {%- endfor -%}
 </div>
 

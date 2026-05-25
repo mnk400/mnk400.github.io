@@ -81,6 +81,14 @@
     gap: var(--spacing-md);
 }
 
+.post__content > hr.gallery-divider {
+    margin-top: var(--spacing-xl);
+}
+
+.post__content > hr.gallery-divider + * {
+    margin-top: var(--spacing-xl);
+}
+
 .gallery-tile {
     display: grid;
     grid-template-rows: auto auto;

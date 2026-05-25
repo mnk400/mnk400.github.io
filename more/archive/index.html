@@ -1,24 +1,33 @@
 ---
 layout: post
-title: Galleries
-permalink: /galleries
-description: A small archive of public-domain works from artists I admire.
+title: Art Archive
+permalink: /archive
+description: A small archive of artwork from artists I like.
 ---
 
 <p>
-    All of this art is public domain, but most archives that host it are either wiki-style with rough navigation, museum pages with limited set of artwork, or buried with ads. 
-</p>
-<p>
-    These pages are an attempt at a cleaner, searchable, sortable, filterable alternative. Started with Monet because nothing like it seemed to exist for him, then grew to cover a handful of other artists I like.
+    A small browser for public-domain paintings and artwork from artists I like, each archive is searchable, sortable, and filterable.
 </p>
 
+{%- capture motivation -%}
+<p>All of this art is public domain, but most archives that host it are either wiki-style with rough navigation, museum pages with a limited set of artwork, or buried under ads.</p>
+<p>These pages are an attempt at a cleaner alternative. Started with Monet because nothing like it seemed to exist for him, then grew to cover a handful of other artists I like.</p>
+{%- endcapture -%}
 
-{%- assign gallery_pages = site.pages
-    | where: "category", "Galleries"
+{% include expandable-section.html
+    id="archive-motivation"
+    title="Why I built this"
+    content=motivation
+%}
+
+<hr class="gallery-divider">
+
+{%- assign archive_pages = site.pages
+    | where: "category", "Archive"
     | sort: "order" -%}
 
 <div class="gallery-grid">
-    {%- for page in gallery_pages -%}
+    {%- for page in archive_pages -%}
     <a class="gallery-tile" href="{{ page.url | relative_url }}" target="_blank" rel="noopener noreferrer">
         <span class="gallery-tile__cover">
             {%- if page.image -%}
