@@ -494,6 +494,7 @@
           galleryName: album,
           galleryShowCaptions: "false",
         },
+        addEventListener() {},
         querySelector(selector) {
           if (selector === "[data-gallery-grid]") return grid;
           if (selector === "[data-gallery-status]") return status;
