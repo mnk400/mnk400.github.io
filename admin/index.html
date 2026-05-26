@@ -239,10 +239,22 @@
 
     let albums = [];
     let currentAlbum = localStorage.getItem('r2-admin-album') || '';
-    let manifest = { title: '', fields: [], images: [] };
+    let manifest = emptyManifest('');
     let savedManifestJson = '';
     let dragSrcIndex = null;
     let pendingDeletes = [];
+
+    function emptyManifest(album) {
+        const name = album ? album.charAt(0).toUpperCase() + album.slice(1) : '';
+        return {
+            version: 1,
+            name,
+            base_url: CONFIG.publicUrl || '',
+            items: [],
+            editor: { fields: [] },
+            source: { generator: 'admin-portal', generated: '' },
+        };
+    }
 
     // =========================================================================
     // R2 helpers
@@ -258,15 +270,23 @@
     async function getManifest(album) {
         const res = await r2Request('GET', `${album}/manifest.json`);
         if (!res.ok) {
-            if (res.status === 404) return { title: album.charAt(0).toUpperCase() + album.slice(1), fields: [], images: [] };
+            if (res.status === 404) return emptyManifest(album);
             throw new Error(`Failed to fetch manifest: ${res.status}`);
         }
         const data = await res.json();
-        if (!Array.isArray(data.fields)) data.fields = [];
+        if (data.version !== 1) {
+            throw new Error(`Unsupported manifest version (${data.version ?? 'v0'}). Expected v1.`);
+        }
+        if (!Array.isArray(data.items)) data.items = [];
+        if (!data.editor || !Array.isArray(data.editor.fields)) data.editor = { fields: [] };
+        if (!data.source) data.source = { generator: 'admin-portal', generated: '' };
         return data;
     }
 
     async function putManifest(album, data) {
+        data.source = data.source || { generator: 'admin-portal' };
+        data.source.generator = 'admin-portal';
+        data.source.generated = new Date().toISOString();
         const res = await r2Request('PUT', `${album}/manifest.json`, JSON.stringify(data, null, 2), 'application/json');
         if (!res.ok) throw new Error(`Failed to save manifest: ${res.status}`);
     }
@@ -355,7 +375,7 @@
             manifest = await getManifest(currentAlbum);
             markClean();
             renderGrid();
-            setStatus(`${manifest.images.length} image(s) in "${currentAlbum}"`);
+            setStatus(`${manifest.items.length} image(s) in "${currentAlbum}"`);
         } catch (e) {
             setStatus('Error: ' + e.message);
         }
@@ -373,7 +393,7 @@
 
     function promptManageFields() {
         // Format: "Camera: Canon AE-1, Pentax; Film: Portra, HP5; Location"
-        const current = manifest.fields.map(f =>
+        const current = manifest.editor.fields.map(f =>
             f.values && f.values.length ? `${f.name}: ${f.values.join(', ')}` : f.name
         ).join('; ');
         const input = prompt(
@@ -384,7 +404,7 @@
             current
         );
         if (input === null) return;
-        manifest.fields = input.split(';').map(seg => {
+        manifest.editor.fields = input.split(';').map(seg => {
             seg = seg.trim();
             if (!seg) return null;
             const colonIdx = seg.indexOf(':');
@@ -393,12 +413,12 @@
             const values = seg.substring(colonIdx + 1).split(',').map(s => s.trim()).filter(Boolean);
             return name ? { name, values } : null;
         }).filter(Boolean);
-        // Clear per-image meta values for removed fields
-        const fieldNames = new Set(manifest.fields.map(f => f.name));
-        manifest.images.forEach(img => {
-            if (!img.meta) return;
-            Object.keys(img.meta).forEach(key => {
-                if (!fieldNames.has(key)) delete img.meta[key];
+        // Clear per-item meta values for removed fields
+        const fieldNames = new Set(manifest.editor.fields.map(f => f.name));
+        manifest.items.forEach(item => {
+            if (!item.meta) return;
+            Object.keys(item.meta).forEach(key => {
+                if (!fieldNames.has(key)) delete item.meta[key];
             });
         });
         renderGrid();
@@ -415,16 +435,16 @@
         setStatus('Publishing...');
 
         try {
-            for (const image of pendingDeletes) {
-                setStatus(`Deleting ${image.key}...`);
-                await r2Request('DELETE', image.full);
-                await r2Request('DELETE', image.thumb);
+            for (const item of pendingDeletes) {
+                setStatus(`Deleting ${item.id}...`);
+                await r2Request('DELETE', item.full);
+                await r2Request('DELETE', item.thumb);
             }
 
             setStatus('Saving manifest...');
             await putManifest(currentAlbum, manifest);
             markClean();
-            setStatus(`Published! ${manifest.images.length} image(s) in "${currentAlbum}"`);
+            setStatus(`Published! ${manifest.items.length} image(s) in "${currentAlbum}"`);
 
             // Refresh album list in case a new album was created
             try {
@@ -450,11 +470,11 @@
         grid.innerHTML = '';
 
         const escape = (s) => s.replace(/"/g, '&quot;');
-        const fields = manifest.fields || [];
+        const fields = (manifest.editor && manifest.editor.fields) || [];
 
         // Build select/input HTML for each field definition
-        const fieldHtml = (image, idx) => fields.map(f => {
-            const val = (image.meta && image.meta[f.name]) || '';
+        const fieldHtml = (item, idx) => fields.map(f => {
+            const val = (item.meta && item.meta[f.name]) || '';
             if (f.values && f.values.length) {
                 const blank = `<option value=""${val ? '' : ' selected'}>— ${escape(f.name)} —</option>`;
                 const opts = f.values.map(v =>
@@ -465,22 +485,22 @@
             return `<input class="tile-field" type="text" value="${escape(val)}" placeholder="${escape(f.name)}" data-idx="${idx}" data-field="${escape(f.name)}">`;
         }).join('');
 
-        manifest.images.forEach((image, idx) => {
+        manifest.items.forEach((item, idx) => {
             const tile = document.createElement('div');
             tile.className = 'image-tile';
             tile.draggable = true;
             tile.dataset.idx = idx;
 
             tile.innerHTML = `
-                <img src="/r2/${image.thumb}" alt="${image.title || ''}" loading="lazy"
+                <img src="/r2/${item.thumb}" alt="${item.title || ''}" loading="lazy"
                     onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'broken-placeholder',innerHTML:'<i class=\\'ph-bold ph-image-broken\\'></i>'}))">
                 <button class="tile-delete" data-idx="${idx}" title="Delete">
                     <i class="ph-bold ph-trash"></i>
                 </button>
                 <div class="tile-overlay">
-                    <input class="tile-title" type="text" value="${(image.title || '').replace(/"/g, '&quot;')}"
+                    <input class="tile-title" type="text" value="${(item.title || '').replace(/"/g, '&quot;')}"
                         placeholder="Title" data-idx="${idx}">
-                    ${fieldHtml(image, idx)}
+                    ${fieldHtml(item, idx)}
                 </div>
             `;
             grid.appendChild(tile);
@@ -494,10 +514,10 @@
         grid.addEventListener('change', (e) => {
             const i = parseInt(e.target.dataset.idx);
             if (e.target.classList.contains('tile-title')) {
-                manifest.images[i].title = e.target.value;
+                manifest.items[i].title = e.target.value;
             } else if (e.target.classList.contains('tile-field')) {
-                if (!manifest.images[i].meta) manifest.images[i].meta = {};
-                manifest.images[i].meta[e.target.dataset.field] = e.target.value;
+                if (!manifest.items[i].meta) manifest.items[i].meta = {};
+                manifest.items[i].meta[e.target.dataset.field] = e.target.value;
             } else {
                 return;
             }
@@ -509,9 +529,9 @@
             const btn = e.target.closest('.tile-delete');
             if (!btn) return;
             const i = parseInt(btn.dataset.idx);
-            if (!confirm(`Delete "${manifest.images[i].key}"?`)) return;
-            pendingDeletes.push(manifest.images[i]);
-            manifest.images.splice(i, 1);
+            if (!confirm(`Delete "${manifest.items[i].id}"?`)) return;
+            pendingDeletes.push(manifest.items[i]);
+            manifest.items.splice(i, 1);
             renderGrid();
             updatePublishButton();
             setStatus('Unsaved changes — publish to finalize deletions');
@@ -548,8 +568,8 @@
             const targetIdx = parseInt(tile.dataset.idx);
             if (dragSrcIndex === null || dragSrcIndex === targetIdx) return;
 
-            const [moved] = manifest.images.splice(dragSrcIndex, 1);
-            manifest.images.splice(targetIdx, 0, moved);
+            const [moved] = manifest.items.splice(dragSrcIndex, 1);
+            manifest.items.splice(targetIdx, 0, moved);
             renderGrid();
             updatePublishButton();
             setStatus('Unsaved changes');
@@ -595,7 +615,7 @@
 
             const key = slugify(file.name);
             let finalKey = key;
-            if (manifest.images.some(img => img.key === finalKey)) {
+            if (manifest.items.some(item => item.id === finalKey)) {
                 finalKey = key.replace('.jpg', `-${Date.now().toString(36)}.jpg`);
             }
 
@@ -610,14 +630,16 @@
                     console.error('Thumb upload failed:', e);
                 }
 
-                manifest.images.push({
-                    key: finalKey,
+                manifest.items.push({
+                    id: finalKey,
+                    title: '',
                     thumb: `${currentAlbum}/thumbs/${finalKey}`,
                     full: `${currentAlbum}/full/${finalKey}`,
-                    title: '',
-                    meta: {},
                     width: resized.width,
                     height: resized.height,
+                    tags: [],
+                    meta: {},
+                    extras: {},
                 });
                 uploaded++;
             } catch (err) {
@@ -632,7 +654,7 @@
                 await putManifest(currentAlbum, manifest);
                 markClean();
                 renderGrid();
-                const msg = `Uploaded ${uploaded} photo(s): ${manifest.images.length} images in "${currentAlbum}"`;
+                const msg = `Uploaded ${uploaded} photo(s): ${manifest.items.length} images in "${currentAlbum}"`;
                 setStatus(errors ? msg + ` (${errors} failed)` : msg);
 
                 // Refresh album list in case a new album was created

@@ -450,8 +450,8 @@
       const options = {
         titlePaths: config.titlePaths || ["title", "name"],
         yearPaths: config.yearPaths || ["year", "date"],
-        collectionPaths: config.collectionPaths || ["collection", "museum"],
-        seriesPaths: config.seriesPaths || ["series"],
+        collectionPaths: config.collectionPaths || ["meta.Collection", "collection", "museum"],
+        seriesPaths: config.seriesPaths || ["meta.Series", "series"],
         thumbPaths: config.thumbPaths || ["image.thumb", "thumb", "thumbnail"],
         fullPaths: config.fullPaths || ["image.full", "full", "image"],
         metaPaths: config.metaPaths || ["meta"],
