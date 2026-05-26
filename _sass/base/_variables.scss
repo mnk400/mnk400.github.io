@@ -75,6 +75,18 @@ $themes: (
         translucent-high: rgba(0, 0, 0, 0.2),
         code-bg: #e8cdc6,
     ),
+    sky: (
+        background-main: #d9eaf8,
+        background-darker: #edf6fd,
+        text-color: #284454,
+        sec-text-color: #5a7180,
+        contrast-overlay: rgba(0, 0, 0, 0.7),
+        contrast-overlay-hover: rgba(0, 0, 0, 0.5),
+        translucent-low: rgba(0, 0, 0, 0.05),
+        translucent-medium: rgba(0, 0, 0, 0.07),
+        translucent-high: rgba(0, 0, 0, 0.2),
+        code-bg: #c9e0f2,
+    ),
 );
 
 @each $theme, $tokens in $themes {

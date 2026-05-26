@@ -12,6 +12,7 @@ window.__themeConfig = {
     butter:   { meta: "#F1D799" },
     espresso: { meta: "#1f1410" },
     blush:    { meta: "#f1d9d3" },
+    sky:      { meta: "#d9eaf8" },
   },
   get names() { return Object.keys(this.themes); },
 };

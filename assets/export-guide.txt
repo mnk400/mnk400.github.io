@@ -36,7 +36,7 @@ Minimal HTML boilerplate to get the full design system:
         <!-- Prevent flash of wrong theme -->
         <script>
             (function() {
-                var valid = ['linen','charcoal','denim','plum','moss','butter','espresso','blush'];
+                var valid = ['linen','charcoal','denim','plum','moss','butter','espresso','blush','sky'];
                 var t = localStorage.getItem('theme') || 'linen';
                 if (valid.indexOf(t) === -1) t = 'linen';
                 document.documentElement.setAttribute('data-theme', t);
@@ -86,7 +86,7 @@ The single stylesheet at /style/export.css bundles these modules:
 3. THEME SYSTEM
 ================================================================================
 
-Eight themes: linen, charcoal, denim, plum, moss, butter, espresso, blush.
+Nine themes: linen, charcoal, denim, plum, moss, butter, espresso, blush, sky.
 
 Set via the data-theme attribute on <html>:
 
@@ -115,6 +115,7 @@ Theme values:
     BUTTER    background: #F1D799  text: #4a4235
     ESPRESSO  background: #1f1410  text: #f0e0d0
     BLUSH     background: #f1d9d3  text: #4a2f35
+    SKY       background: #d9eaf8  text: #284454
 
 To add a theme toggle button:
 
@@ -996,7 +997,7 @@ DO
     - Use translucent surfaces with blur for floating elements
     - Keep text light (weight 300) for body copy
     - Animate transitions between states
-    - Support all eight themes
+    - Support all nine themes
 
 DON'T
     - Hardcode color values (no raw hex in component styles)
