@@ -178,63 +178,17 @@
 
 .more-section[hidden],
 .more-section__item[hidden],
-.more-section__subitem[hidden],
 .more-section__sep[hidden] {
     display: none;
 }
 
-// Widget variant (used by Art Archive row on /more/)
-.more-section__widget-head {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-}
-
-.more-section__widget-toggle {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    margin: 0;
-    background: none;
-    backdrop-filter: none;
-    border: none;
-    border-radius: 0;
+// "all →" link appended to the Archive row — visually separated from the
+// preceding artist list with a bullet that replaces what would be a comma.
+.more-section__item--bullet::before {
+    content: "·";
     color: var(--sec-text-color);
-    cursor: pointer;
-    line-height: 0;
-    font-size: 0.9em;
-
-    .icon {
-        transition: transform var(--transition-medium);
-    }
-
-    &[aria-expanded="true"] .icon {
-        transform: rotate(90deg);
-    }
-
-    @include hover-interactive {
-        background: none;
-        color: var(--text-color);
-    }
-}
-
-// Higher specificity to defeat `.post__content ul / li` defaults
-.post__content .more-section__sublist {
-    list-style: none;
-    margin: var(--spacing-2xs) 0 0;
-    padding: 0;
-    display: grid;
-    gap: 2px;
-    font-size: inherit;
-    line-height: 1.4;
-    @include expanding-collapsible(var(--transition-medium));
-}
-
-.post__content .more-section__subitem {
-    padding: 0;
-    color: var(--sec-text-color);
-    font-size: 0.9em;
+    opacity: 0.5;
+    margin: 0 var(--spacing-2xs);
 }
 
 @media screen and (max-width: 360px) {
