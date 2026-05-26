@@ -10,24 +10,6 @@
     "popularity-desc": "Popular first",
   };
 
-  function getNestedValue(item, path) {
-    if (!path) return undefined;
-    return path.split(".").reduce((value, key) => {
-      if (value == null) return undefined;
-      return value[key];
-    }, item);
-  }
-
-  function firstValue(item, paths) {
-    for (const path of paths) {
-      const value = getNestedValue(item, path);
-      if (value !== undefined && value !== null && value !== "") {
-        return value;
-      }
-    }
-    return "";
-  }
-
   function resolveUrl(value, baseUrl) {
     if (!value) return "";
     if (/^(https?:)?\/\//i.test(value) || value.startsWith("data:")) {
@@ -40,51 +22,40 @@
     return `${base}/${path}`;
   }
 
-  function stringifyMeta(value) {
-    if (!value) return "";
-    if (Array.isArray(value)) return value.filter(Boolean).join(" · ");
-    if (typeof value === "object") {
-      return Object.values(value).filter(Boolean).join(" · ");
-    }
-    return String(value);
-  }
-
-  function normalizeItem(item, index, options) {
-    const title = firstValue(item, options.titlePaths);
-    const year = firstValue(item, options.yearPaths);
-    const collection = firstValue(item, options.collectionPaths);
-    const series = firstValue(item, options.seriesPaths);
-    const thumb = resolveUrl(firstValue(item, options.thumbPaths), options.baseUrl);
-    const full = resolveUrl(firstValue(item, options.fullPaths), options.baseUrl) || thumb;
-    const explicitMeta = stringifyMeta(firstValue(item, options.metaPaths));
-    const width = Number(firstValue(item, options.widthPaths));
-    const height = Number(firstValue(item, options.heightPaths));
-    const popularity = Number(firstValue(item, options.popularityPaths));
+  function normalizeItem(item, index, baseUrl) {
+    const title = item.title || "";
+    const year = item.year || "";
+    const collection = item.meta?.Collection || "";
+    const series = item.meta?.Series || "";
+    const thumb = resolveUrl(item.thumb, baseUrl);
+    const full = resolveUrl(item.full, baseUrl) || thumb;
+    const width = Number(item.width);
+    const height = Number(item.height);
+    const popularity = Number(item.popularity?.score) || 0;
+    const tags = Array.isArray(item.tags) ? item.tags : [];
 
     const normalized = {
       raw: item,
       index,
-      title: title || "",
+      title,
       alt: title || "Gallery Image",
-      year: year || "",
-      collection: collection || "",
-      series: series || "",
-      detail: explicitMeta || [year, collection].filter(Boolean).join(" · "),
+      year,
+      collection,
+      series,
+      detail: [year, collection].filter(Boolean).join(" · "),
       captionMeta: [year, series].filter(Boolean).join(" · "),
       thumb,
       full,
       width: Number.isFinite(width) && width > 0 ? width : null,
       height: Number.isFinite(height) && height > 0 ? height : null,
-      popularity: Number.isFinite(popularity) ? popularity : 0,
+      popularity,
     };
     normalized.searchText = [
-      normalized.title,
-      normalized.year,
-      normalized.collection,
-      normalized.series,
-      normalized.detail,
-      stringifyMeta(item.tags),
-      stringifyMeta(item.keywords),
+      title,
+      year,
+      collection,
+      series,
+      tags.join(" "),
     ]
       .filter(Boolean)
       .join(" ")
@@ -92,13 +63,8 @@
     return normalized;
   }
 
-  function getItemsFromManifest(manifest, itemsKey) {
-    if (Array.isArray(manifest)) return manifest;
-    if (itemsKey && Array.isArray(manifest[itemsKey])) return manifest[itemsKey];
-    if (Array.isArray(manifest.items)) return manifest.items;
-    if (Array.isArray(manifest.images)) return manifest.images;
-    if (Array.isArray(manifest.paintings)) return manifest.paintings;
-    return [];
+  function getItemsFromManifest(manifest) {
+    return Array.isArray(manifest.items) ? manifest.items : [];
   }
 
   function parseList(value) {
@@ -416,9 +382,8 @@
 
   async function loadGallery(root, config) {
     const source = config.source || root.dataset.gallerySource;
-    const itemsKey = config.itemsKey || root.dataset.galleryItemsKey;
     const galleryName = config.galleryName || root.dataset.galleryName;
-    const baseUrl = config.baseUrl || root.dataset.galleryBaseUrl || "";
+    const baseUrlOverride = config.baseUrl || root.dataset.galleryBaseUrl || "";
     const showCaptions =
       config.showCaptions !== undefined
         ? config.showCaptions
@@ -446,25 +411,9 @@
       }
 
       const manifest = await response.json();
-      const rawItems = getItemsFromManifest(manifest, itemsKey);
-      const options = {
-        titlePaths: config.titlePaths || ["title", "name"],
-        yearPaths: config.yearPaths || ["year", "date"],
-        collectionPaths: config.collectionPaths || ["meta.Collection", "collection", "museum"],
-        seriesPaths: config.seriesPaths || ["meta.Series", "series"],
-        thumbPaths: config.thumbPaths || ["image.thumb", "thumb", "thumbnail"],
-        fullPaths: config.fullPaths || ["image.full", "full", "image"],
-        metaPaths: config.metaPaths || ["meta"],
-        widthPaths: config.widthPaths || ["image.width", "width", "dimensions.width_cm"],
-        heightPaths: config.heightPaths || ["image.height", "height", "dimensions.height_cm"],
-        popularityPaths: config.popularityPaths || [
-          "popularity.score",
-          "popularity.sitelinks",
-          "sitelinks",
-        ],
-        baseUrl,
-      };
-      const items = rawItems.map((item, index) => normalizeItem(item, index, options));
+      const baseUrl = baseUrlOverride || manifest.base_url || "";
+      const rawItems = getItemsFromManifest(manifest);
+      const items = rawItems.map((item, index) => normalizeItem(item, index, baseUrl));
       const state = {
         sortOptions: parseList(config.sortOptions || root.dataset.gallerySortOptions),
         filterOptions: parseList(
@@ -542,9 +491,7 @@
       {
         dataset: {
           gallerySource: `${baseUrl.replace(/\/$/, "")}/${album}/manifest.json`,
-          galleryItemsKey: "images",
           galleryName: album,
-          galleryBaseUrl: baseUrl,
           galleryShowCaptions: "false",
         },
         querySelector(selector) {

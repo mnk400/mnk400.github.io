@@ -1,14 +1,12 @@
 {% comment %}
   Image Gallery Shell
 
-  Shared gallery markup for image-backed masonry galleries. Data loading is
-  handled by page-specific JavaScript.
+  Shared gallery markup for image-backed masonry galleries. Consumes Gallery
+  Manifest v1 (see assets/js/media/image-gallery.manifest.md).
 
   Usage:
   {% include image-gallery.html
       source="https://example.com/manifest.json"
-      base_url="https://example.com"
-      items_key="paintings"
       gallery_name="monet"
       loading_text="Loading paintings..."
       summary=true
@@ -18,8 +16,7 @@
       filter_options="decade,series"
   %}
 
-  For R2-backed albums, pass source, base_url, items_key="images", and
-  show_captions=false.
+  base_url is read from the manifest. Pass base_url= only to override it.
 {% endcomment %}
 
 {%- assign gallery_name = include.gallery_name | default: "gallery" -%}
@@ -32,7 +29,6 @@
   id="image-gallery-{{ gallery_name }}"
   {% if include.source %}data-image-gallery data-gallery-source="{{ include.source }}"{% endif %}
   {% if include.base_url %}data-gallery-base-url="{{ include.base_url }}"{% endif %}
-  {% if include.items_key %}data-gallery-items-key="{{ include.items_key }}"{% endif %}
   data-gallery-name="{{ gallery_name }}"
   {% if include.show_captions != nil %}data-gallery-show-captions="{{ include.show_captions }}"{% endif %}
   {% if include.controls %}data-gallery-controls="{{ include.controls }}"{% endif %}
