@@ -49,13 +49,88 @@ function initSelectionSwitch(containerOrId) {
       const value = option.dataset.value || option.id;
       container.dispatchEvent(
         new CustomEvent("change", {
+          bubbles: true,
           detail: { value, element: option },
         }),
       );
     });
   });
 
+  setupSwitchOverflow(container);
   container.dataset.switchInitialized = "true";
+}
+
+function setupSwitchOverflow(container) {
+  const parent = container.parentElement;
+  if (parent && parent.classList.contains("selection-switch-wrap")) return;
+
+  const wrap = document.createElement("div");
+  wrap.className = "selection-switch-wrap";
+  if (parent) parent.insertBefore(wrap, container);
+  wrap.appendChild(container);
+
+  const makeChevron = (direction) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = `selection-switch-chevron selection-switch-chevron--${direction}`;
+    btn.setAttribute("aria-label", direction === "next" ? "Scroll right" : "Scroll left");
+    btn.disabled = true;
+    btn.setAttribute("aria-hidden", "true");
+    btn.appendChild(iconEl("caret-down"));
+    return btn;
+  };
+
+  const prev = makeChevron("prev");
+  const next = makeChevron("next");
+  wrap.append(prev, next);
+
+  const getMaxScroll = () => Math.max(0, container.scrollWidth - container.clientWidth);
+  const clampScroll = (x) => Math.max(0, Math.min(x, getMaxScroll()));
+
+  const update = () => {
+    const max = getMaxScroll();
+    const x = clampScroll(container.scrollLeft);
+    const showPrev = x > 1;
+    const showNext = x < max - 1;
+    prev.classList.toggle("is-visible", showPrev);
+    next.classList.toggle("is-visible", showNext);
+    prev.disabled = !showPrev;
+    next.disabled = !showNext;
+    prev.setAttribute("aria-hidden", String(!showPrev));
+    next.setAttribute("aria-hidden", String(!showNext));
+    wrap.classList.toggle("has-prev", showPrev);
+    wrap.classList.toggle("has-next", showNext);
+  };
+
+  const scrollByPage = (direction) => {
+    const chevronSpace = next.offsetWidth * 2;
+    const distance = Math.max(container.clientWidth - chevronSpace, container.clientWidth / 2);
+    const delta = direction === "next" ? distance : -distance;
+    container.scrollTo({
+      left: clampScroll(container.scrollLeft + delta),
+      behavior: "smooth",
+    });
+  };
+
+  prev.addEventListener("click", () => scrollByPage("prev"));
+  next.addEventListener("click", () => scrollByPage("next"));
+
+  let scheduled = false;
+  const schedule = () => {
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(() => {
+      scheduled = false;
+      update();
+    });
+  };
+
+  container.addEventListener("scroll", schedule, { passive: true });
+  window.addEventListener("resize", schedule);
+  if (typeof ResizeObserver !== "undefined") {
+    new ResizeObserver(schedule).observe(container);
+  }
+  schedule();
 }
 
 function initSelectionDropdown(containerOrId) {
@@ -318,7 +393,9 @@ window.buildSwitch = window.buildSwitch || function ({ id, options, active, size
   });
 
   initSelectionSwitch(el);
-  return el;
+  return el.parentElement && el.parentElement.classList.contains("selection-switch-wrap")
+    ? el.parentElement
+    : el;
 };
 
 window.buildDropdown = window.buildDropdown || function ({ id, options, active, ariaLabel, className }) {

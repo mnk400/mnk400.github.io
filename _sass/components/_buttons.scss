@@ -157,6 +157,7 @@ input[type="file"]::file-selector-button {
     flex-wrap: nowrap;
     overflow-x: auto;
     overflow-y: hidden;
+    overscroll-behavior-x: contain;
     max-width: 100%;
     padding: 1px;
     scroll-padding-inline: var(--spacing-sm);
@@ -200,6 +201,76 @@ input[type="file"]::file-selector-button {
             font-size: 0.85em;
             padding: var(--spacing-xs) var(--spacing-md);
         }
+    }
+}
+
+.selection-switch-wrap {
+    --switch-fade-width: 4.5em;
+    --switch-fade-left: #000;
+    --switch-fade-right: #000;
+    position: relative;
+    max-width: 100%;
+    min-width: 0;
+
+    &.has-prev {
+        --switch-fade-left: transparent;
+    }
+
+    &.has-next {
+        --switch-fade-right: transparent;
+    }
+
+    &.has-prev .selection-switch,
+    &.has-next .selection-switch {
+        mask-image: linear-gradient(to right, var(--switch-fade-left) 0, #000 var(--switch-fade-width), #000 calc(100% - var(--switch-fade-width)), var(--switch-fade-right) 100%);
+    }
+}
+
+.selection-switch-chevron {
+    position: absolute;
+    top: 1px;
+    bottom: 1px;
+    aspect-ratio: 1;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-pill);
+    background-color: var(--background-main);
+    color: var(--text-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-medium), scale var(--transition-fast);
+    z-index: 2;
+    @include soft-outline;
+
+    @include hover-state-dark;
+
+    &:active {
+        scale: 0.94;
+    }
+
+    &.is-visible {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    &--prev {
+        left: 0;
+        --switch-chevron-rotation: 90deg;
+    }
+
+    &--next {
+        right: 0;
+        --switch-chevron-rotation: -90deg;
+    }
+
+    .icon {
+        width: 0.7em;
+        height: 0.7em;
+        transform: rotate(var(--switch-chevron-rotation));
     }
 }
 

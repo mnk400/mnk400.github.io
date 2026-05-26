@@ -233,12 +233,16 @@ Selection switch (radio-like toggle group):
     </div>
 
     Auto-initialized by ui-components.js on DOMContentLoaded — clicks toggle
-    .active and fire a 'change' CustomEvent with { detail: { value, element } }.
+    .active and fire a bubbling 'change' CustomEvent with
+    { detail: { value, element } }.
     The container id is required to register with window.switchManager (see §8).
     Uses pill shape (border-radius: var(--radius-pill)). Long option sets
     scroll horizontally instead of wrapping; each .switch-option is
-    flex: 0 0 auto. The component is spacing-neutral: wrap it in .stack,
-    .field, .toolbar, or another layout primitive to create outer spacing.
+    flex: 0 0 auto. Horizontal overscroll is contained. Switches are
+    automatically wrapped in .selection-switch-wrap; when they overflow, the
+    wrapper shows edge fades and keyboard-safe chevron scroll buttons. The
+    component is spacing-neutral: wrap it in .stack, .field, .toolbar, or another
+    layout primitive to create outer spacing.
 
 Search pill:
     <div id="project-search" class="site-search" data-search-component
@@ -704,7 +708,8 @@ Provides seven reusable features (auto-initializes on DOMContentLoaded):
        window.switchManager['my-switch'].getActive()        // -> 'opt2'
    Convenience helper for change handling:
        window.initSwitch('my-switch', (value, element) => { ... })
-   Or listen to the 'change' CustomEvent directly on the container.
+   Or listen to the bubbling 'change' CustomEvent directly on the container or
+   an ancestor. window.buildSwitch(...) returns the auto-created wrapper.
 
 5. Selection dropdowns
    Auto-initializes all [data-selection-dropdown] containers (see §6 for HTML).
@@ -1082,6 +1087,10 @@ These are ready-to-use HTML patterns that work with the exported CSS and JS.
         <button class="switch-option" data-value="b">Option B</button>
         <button class="switch-option" data-value="c">Option C</button>
     </div>
+
+    ui-components.js automatically wraps the switch in .selection-switch-wrap
+    when initialized so long option sets can show edge fades and scroll
+    chevrons.
 
 
 --- Translucent surface (custom element) ---
