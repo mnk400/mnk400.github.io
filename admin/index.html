@@ -244,12 +244,29 @@
     let dragSrcIndex = null;
     let pendingDeletes = [];
 
+    function albumBaseUrl(album) {
+        const publicUrl = (CONFIG.publicUrl || '').replace(/\/$/, '');
+        return publicUrl && album ? `${publicUrl}/${album}` : publicUrl;
+    }
+
+    function albumRelativePath(album, path) {
+        if (!path) return '';
+        const cleanPath = String(path).replace(/^\//, '');
+        return cleanPath.startsWith(`${album}/`) ? cleanPath.slice(album.length + 1) : cleanPath;
+    }
+
+    function objectKey(album, path) {
+        if (!path) return '';
+        const cleanPath = String(path).replace(/^\//, '');
+        return cleanPath.startsWith(`${album}/`) ? cleanPath : `${album}/${cleanPath}`;
+    }
+
     function emptyManifest(album) {
         const name = album ? album.charAt(0).toUpperCase() + album.slice(1) : '';
         return {
             version: 1,
             name,
-            base_url: CONFIG.publicUrl || '',
+            base_url: albumBaseUrl(album),
             items: [],
             editor: { fields: [] },
             source: { generator: 'admin-portal', generated: '' },
@@ -280,6 +297,11 @@
         if (!Array.isArray(data.items)) data.items = [];
         if (!data.editor || !Array.isArray(data.editor.fields)) data.editor = { fields: [] };
         if (!data.source) data.source = { generator: 'admin-portal', generated: '' };
+        data.base_url = albumBaseUrl(album);
+        data.items.forEach(item => {
+            item.thumb = albumRelativePath(album, item.thumb);
+            item.full = albumRelativePath(album, item.full);
+        });
         return data;
     }
 
@@ -437,8 +459,8 @@
         try {
             for (const item of pendingDeletes) {
                 setStatus(`Deleting ${item.id}...`);
-                await r2Request('DELETE', item.full);
-                await r2Request('DELETE', item.thumb);
+                await r2Request('DELETE', objectKey(currentAlbum, item.full));
+                await r2Request('DELETE', objectKey(currentAlbum, item.thumb));
             }
 
             setStatus('Saving manifest...');
@@ -492,7 +514,7 @@
             tile.dataset.idx = idx;
 
             tile.innerHTML = `
-                <img src="/r2/${item.thumb}" alt="${item.title || ''}" loading="lazy"
+                <img src="/r2/${objectKey(currentAlbum, item.thumb)}" alt="${item.title || ''}" loading="lazy"
                     onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'broken-placeholder',innerHTML:'<i class=\\'ph-bold ph-image-broken\\'></i>'}))">
                 <button class="tile-delete" data-idx="${idx}" title="Delete">
                     <i class="ph-bold ph-trash"></i>
@@ -633,8 +655,8 @@
                 manifest.items.push({
                     id: finalKey,
                     title: '',
-                    thumb: `${currentAlbum}/thumbs/${finalKey}`,
-                    full: `${currentAlbum}/full/${finalKey}`,
+                    thumb: `thumbs/${finalKey}`,
+                    full: `full/${finalKey}`,
                     width: resized.width,
                     height: resized.height,
                     tags: [],
