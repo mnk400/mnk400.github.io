@@ -3,8 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const urlInput = document.getElementById("url-input");
     const iframeContainer = document.getElementById("historical-content-viewer");
     const goButton = document.getElementById("go-button");
-    const yearTimeline = document.getElementById("year-timeline");
-    const browserStatus = document.getElementById("browser-status");
+    const timelineSlot = document.getElementById("year-timeline");
     const emptyState = document.getElementById("browser-empty-state");
     const loadingState = document.getElementById("browser-loading-state");
     const homeButton = document.getElementById("browser-home");
@@ -12,39 +11,46 @@ document.addEventListener("DOMContentLoaded", () => {
     const forwardButton = document.getElementById("browser-forward");
     const starterButtons = document.querySelectorAll(".historical-browser-starter");
 
-    if (!browserForm || !urlInput || !iframeContainer || !goButton || !yearTimeline) {
+    if (!browserForm || !urlInput || !iframeContainer || !goButton || !timelineSlot) {
         console.error("Historical browser controls not found");
         return;
     }
 
     const defaultYear = 2007;
     let selectedYear = defaultYear;
+    let yearSwitch = null;
     let navigationHistory = [];
     let currentHistoryIndex = -1;
     let isLoadingSnapshot = false;
 
-    function populateYearTimeline() {
+    function buildYearSwitch() {
         const currentYear = new Date().getFullYear();
-        const years = [];
+        const options = [];
 
         for (let year = currentYear; year >= 1998; year--) {
-            years.push(year);
+            options.push({ value: String(year), label: String(year) });
         }
 
-        yearTimeline.replaceChildren(
-            ...years.map((year) => {
-                const button = document.createElement("button");
-                button.type = "button";
-                button.className = "historical-browser-year";
-                button.dataset.year = year;
-                button.textContent = year;
-                button.setAttribute("aria-label", `${year} snapshot`);
-                button.setAttribute("aria-pressed", String(year === selectedYear));
-                return button;
-            })
-        );
+        const switchWrap = window.buildSwitch({
+            id: "year-switch",
+            options,
+            active: String(selectedYear),
+            size: "small",
+            ariaLabel: "Snapshot year",
+        });
 
-        updateSelectedYearButton();
+        timelineSlot.replaceChildren(switchWrap);
+        yearSwitch = switchWrap.querySelector(".selection-switch") || switchWrap;
+
+        yearSwitch.addEventListener("change", (event) => {
+            setSelectedYear(Number(event.detail.value));
+
+            if (currentHistoryIndex >= 0 && urlInput.value.trim()) {
+                loadUrlInWaybackMachine(urlInput.value, selectedYear);
+            }
+        });
+
+        centerSelectedYear();
     }
 
     function normalizeUrl(url) {
@@ -66,12 +72,6 @@ document.addEventListener("DOMContentLoaded", () => {
         return `https://web.archive.org/web/${timestamp}/${url}`;
     }
 
-    function setStatus(text) {
-        if (browserStatus) {
-            browserStatus.textContent = text;
-        }
-    }
-
     function setLoadingState(isLoading) {
         isLoadingSnapshot = isLoading;
 
@@ -84,39 +84,28 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    function centerSelectedYearButton(selectedButton) {
-        if (!selectedButton) {
-            return;
-        }
+    function centerSelectedYear() {
+        if (!yearSwitch) return;
+
+        const active = yearSwitch.querySelector(".switch-option.active");
+        if (!active) return;
 
         requestAnimationFrame(() => {
-            yearTimeline.scrollLeft =
-                selectedButton.offsetLeft -
-                (yearTimeline.clientWidth - selectedButton.offsetWidth) / 2;
+            yearSwitch.scrollLeft =
+                active.offsetLeft -
+                (yearSwitch.clientWidth - active.offsetWidth) / 2;
         });
-    }
-
-    function updateSelectedYearButton() {
-        const buttons = yearTimeline.querySelectorAll(".historical-browser-year");
-        let selectedButton = null;
-
-        buttons.forEach((button) => {
-            const isSelected = Number(button.dataset.year) === selectedYear;
-            button.classList.toggle("active", isSelected);
-            button.setAttribute("aria-pressed", String(isSelected));
-
-            if (isSelected) {
-                selectedButton = button;
-            }
-        });
-
-        centerSelectedYearButton(selectedButton);
-        setStatus(`${selectedYear} snapshot`);
     }
 
     function setSelectedYear(year) {
         selectedYear = Number(year);
-        updateSelectedYearButton();
+
+        const manager = window.switchManager["year-switch"];
+        if (manager) {
+            manager.setActive(String(selectedYear));
+        }
+
+        centerSelectedYear();
     }
 
     function updateNavigationButtonStates() {
@@ -137,7 +126,6 @@ document.addEventListener("DOMContentLoaded", () => {
         setSelectedYear(Number(historyItem.year));
         setLoadingState(true);
         updateNavigationButtonStates();
-        setStatus(`Fetching ${historyItem.year} snapshot...`);
         iframeContainer.src = historyItem.waybackUrl;
     }
 
@@ -166,7 +154,6 @@ document.addEventListener("DOMContentLoaded", () => {
     function updateUrlBarFromIframe() {
         if (isLoadingSnapshot) {
             setLoadingState(false);
-            setStatus(`${selectedYear} snapshot`);
         }
 
         try {
@@ -195,20 +182,6 @@ document.addEventListener("DOMContentLoaded", () => {
     browserForm.addEventListener("submit", (event) => {
         event.preventDefault();
         loadUrlInWaybackMachine(urlInput.value, selectedYear);
-    });
-
-    yearTimeline.addEventListener("click", (event) => {
-        const yearButton = event.target.closest(".historical-browser-year");
-
-        if (!yearButton) {
-            return;
-        }
-
-        setSelectedYear(Number(yearButton.dataset.year));
-
-        if (currentHistoryIndex >= 0 && urlInput.value.trim()) {
-            loadUrlInWaybackMachine(urlInput.value, selectedYear);
-        }
     });
 
     starterButtons.forEach((button) => {
@@ -249,9 +222,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     iframeContainer.addEventListener("load", updateUrlBarFromIframe);
-    window.addEventListener("resize", updateSelectedYearButton);
+    window.addEventListener("resize", centerSelectedYear);
 
-    populateYearTimeline();
+    buildYearSwitch();
     updateNavigationButtonStates();
     setLoadingState(false);
 });

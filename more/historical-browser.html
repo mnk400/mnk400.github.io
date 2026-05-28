@@ -11,48 +11,44 @@ scripts: [/assets/js/tools/historical-browser.js]
 ---
 
 <div class="historical-browser">
-    <form id="historical-browser-form" class="historical-browser-search">
-        <label class="historical-browser-search__field" for="url-input">
-            {% include icon.html name="globe" %}
-            <input
-                type="text"
-                id="url-input"
-                inputmode="url"
-                autocomplete="url"
-                placeholder="apple.com"
-            />
-        </label>
-        <button
-            id="go-button"
-            class="historical-browser-go-btn"
-            type="submit"
-            aria-label="Open archived page"
-        >
-            {% include icon.html name="arrow-right" %}
-        </button>
-    </form>
-
-    <div class="historical-browser-toolbar" aria-label="Historical browser controls">
+    <div class="historical-browser-bar">
         <div class="historical-browser-nav" aria-label="Page navigation">
             <button id="browser-home" class="browser-control-button" type="button" aria-label="Home">
                 {% include icon.html name="house" %}
             </button>
-            <button id="browser-back" class="browser-control-button" type="button" aria-label="Back">
-                {% include icon.html name="arrow-left" %}
-            </button>
-            <button id="browser-forward" class="browser-control-button" type="button" aria-label="Forward">
-                {% include icon.html name="arrow-right" %}
-            </button>
-        </div>
-
-        <div class="historical-browser-timeline" aria-label="Snapshot year">
-            <div id="year-timeline" class="historical-browser-timeline__track">
-                <!-- Years will be populated by JavaScript -->
+            <div class="historical-browser-history">
+                <button id="browser-back" class="browser-control-button browser-control-button--segment" type="button" aria-label="Back">
+                    {% include icon.html name="arrow-left" %}
+                </button>
+                <button id="browser-forward" class="browser-control-button browser-control-button--segment" type="button" aria-label="Forward">
+                    {% include icon.html name="arrow-right" %}
+                </button>
             </div>
         </div>
 
-        <p id="browser-status" class="historical-browser-status">2007 snapshot</p>
+        <form id="historical-browser-form" class="historical-browser-search">
+            <label class="historical-browser-search__field" for="url-input">
+                {% include icon.html name="globe" %}
+                <input
+                    type="text"
+                    id="url-input"
+                    inputmode="url"
+                    autocomplete="url"
+                    placeholder="apple.com"
+                />
+            </label>
+            <button
+                id="go-button"
+                class="historical-browser-go-btn"
+                type="submit"
+                aria-label="Open archived page"
+            >
+                {% include icon.html name="arrow-right" %}
+            </button>
+        </form>
     </div>
+
+    <div id="year-timeline" class="historical-browser-timeline" aria-label="Snapshot year"></div>
 
     <div class="historical-browser-content">
         <div id="browser-empty-state" class="historical-browser-empty">

@@ -55,7 +55,16 @@
     margin-top: var(--spacing-lg);
 }
 
+.historical-browser-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    min-width: 0;
+}
+
 .historical-browser-search {
+    flex: 1;
+    min-width: 0;
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     gap: var(--spacing-sm);
@@ -64,7 +73,7 @@
 
 .historical-browser-search__field {
     min-width: 0;
-    min-height: 44px;
+    min-height: var(--control-height-md);
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);
@@ -94,7 +103,6 @@
 
 .historical-browser-go-btn,
 .browser-control-button,
-.historical-browser-year,
 .historical-browser-starter {
     display: inline-flex;
     align-items: center;
@@ -111,35 +119,23 @@
 }
 
 .historical-browser-go-btn {
-    width: 44px;
-    height: 44px;
+    width: var(--control-height-md);
+    height: var(--control-height-md);
     padding: 0;
     font-size: 1em;
 }
 
-.historical-browser-toolbar {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    grid-template-areas:
-        "nav status"
-        "timeline timeline";
-    gap: var(--spacing-sm);
-    align-items: center;
-    padding: var(--spacing-sm);
-    @include translucent-surface;
-}
-
 .historical-browser-nav {
-    grid-area: nav;
     display: flex;
     gap: var(--spacing-xs);
+    flex-shrink: 0;
 }
 
 .browser-control-button {
-    width: 30px;
-    height: 30px;
+    width: var(--control-height-md);
+    height: var(--control-height-md);
     padding: 0;
-    font-size: 0.95em;
+    font-size: 1em;
 
     &:disabled {
         color: var(--sec-text-color);
@@ -150,53 +146,22 @@
     }
 }
 
-.historical-browser-timeline {
-    grid-area: timeline;
-    min-width: 0;
-    overflow: hidden;
-}
-
-.historical-browser-timeline__track {
+.historical-browser-history {
     display: flex;
-    gap: var(--spacing-xs);
-    overflow-x: auto;
-    padding: 1px;
-    scroll-padding-inline: var(--spacing-sm);
-    scrollbar-width: none;
+    border-radius: var(--radius-md);
+    background-color: var(--translucent-low);
+    @include soft-outline;
+    overflow: hidden;
 
-    &::-webkit-scrollbar {
-        display: none;
+    .browser-control-button--segment {
+        background-color: transparent;
+        outline: none;
+        border-radius: 0;
     }
 }
 
-.historical-browser-year {
-    flex: 0 0 auto;
-    min-width: 48px;
-    padding: var(--spacing-xs) var(--spacing-sm);
-    font-size: 0.8em;
-    font-weight: 300 !important;
-
-    &.active {
-        background-color: var(--contrast-overlay);
-        color: var(--background-main);
-        outline-color: transparent;
-    }
-}
-
-.historical-browser .historical-browser-status {
-    grid-area: status;
-    justify-self: end;
-    align-self: center;
-    display: inline-flex;
-    align-items: center;
-    min-height: 30px;
-    margin: 0;
-    padding: 0;
-    color: var(--sec-text-color);
-    font-size: 0.75em;
-    line-height: 1;
-    text-align: right;
-    white-space: nowrap;
+.historical-browser-timeline {
+    min-width: 0;
 }
 
 .historical-browser-content {
@@ -258,35 +223,16 @@
 }
 
 @media screen and (max-width: $breakpoint-mobile) {
-    .historical-browser-toolbar {
-        grid-template-columns: auto minmax(0, 1fr);
-        grid-template-areas:
-            "nav status"
-            "timeline timeline";
+    .historical-browser-bar {
         gap: var(--spacing-xs);
-        padding: 6px;
     }
 
     .historical-browser-nav {
-        justify-content: flex-start;
+        gap: 4px;
     }
 
-    .historical-browser .historical-browser-status {
-        justify-self: end;
-        min-height: 32px;
-        font-size: 0.72em;
-        text-align: right;
-    }
-
-    .browser-control-button {
-        width: 32px;
-        height: 32px;
-    }
-
-    .historical-browser-year {
-        min-width: 44px;
-        padding: var(--spacing-xs) var(--spacing-sm);
-        font-size: 0.78em;
+    .historical-browser-history .browser-control-button--segment {
+        width: var(--control-height-sm);
     }
 
     .historical-browser-content {

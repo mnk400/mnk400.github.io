@@ -173,7 +173,7 @@
     controlsRoot.innerHTML = "";
     controlsRoot.hidden = false;
 
-    if (state.sortOptions.length > 0) {
+    if (state.sortOptions.length > 1) {
       const sortOptions = state.sortOptions.map((value) => ({
         value,
         label: SORT_LABELS[value] || value,
@@ -196,21 +196,23 @@
       const decades = uniqueValues(items, getDecadeValue).sort((a, b) => {
         return Number.parseInt(b, 10) - Number.parseInt(a, 10);
       });
-      const decadeSwitch = buildSwitch({
-        id: `image-gallery-decade-${galleryName}`,
-        ariaLabel: "Filter by decade",
-        options: [
-          { value: "all", label: "All" },
-          ...decades.map((decade) => ({ value: decade, label: decade })),
-        ],
-        active: state.decade,
-        size: "small",
-      });
-      decadeSwitch.addEventListener("change", (event) => {
-        state.decade = event.detail.value;
-        applyState();
-      });
-      controlsRoot.appendChild(createControlGroup("Decade", decadeSwitch));
+      if (decades.length > 1) {
+        const decadeSwitch = buildSwitch({
+          id: `image-gallery-decade-${galleryName}`,
+          ariaLabel: "Filter by decade",
+          options: [
+            { value: "all", label: "All" },
+            ...decades.map((decade) => ({ value: decade, label: decade })),
+          ],
+          active: state.decade,
+          size: "small",
+        });
+        decadeSwitch.addEventListener("change", (event) => {
+          state.decade = event.detail.value;
+          applyState();
+        });
+        controlsRoot.appendChild(createControlGroup("Decade", decadeSwitch));
+      }
     }
 
     if (state.filterOptions.includes("series")) {
@@ -218,17 +220,19 @@
         .map((series) => ({ value: series, label: humanizeValue(series) }))
         .sort((a, b) => a.label.localeCompare(b.label));
 
-      const dropdown = buildDropdown({
-        id: `image-gallery-series-${galleryName}`,
-        ariaLabel: "Filter by series",
-        options: [{ value: "all", label: "All series" }, ...seriesOptions],
-        active: state.series,
-      });
-      dropdown.addEventListener("change", (event) => {
-        state.series = event.detail.value;
-        applyState();
-      });
-      controlsRoot.appendChild(createControlGroup("Series", dropdown));
+      if (seriesOptions.length > 1) {
+        const dropdown = buildDropdown({
+          id: `image-gallery-series-${galleryName}`,
+          ariaLabel: "Filter by series",
+          options: [{ value: "all", label: "All series" }, ...seriesOptions],
+          active: state.series,
+        });
+        dropdown.addEventListener("change", (event) => {
+          state.series = event.detail.value;
+          applyState();
+        });
+        controlsRoot.appendChild(createControlGroup("Series", dropdown));
+      }
     }
   }
 
