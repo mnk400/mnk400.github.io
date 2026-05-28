@@ -22,7 +22,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install image tooling
-        run: sudo apt-get update && sudo apt-get install -y imagemagick fonts-inter
+        run: sudo apt-get update && sudo apt-get install -y imagemagick fonts-inter fontconfig
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
@@ -31,7 +31,7 @@ jobs:
           bundler-cache: true
 
       - name: Generate preview images
-        run: ruby scripts/generate_previews.rb
+        run: PREVIEW_FONT="$(fc-match -f '%{file}' Inter)" ruby scripts/generate_previews.rb
 
       - name: Build site
         run: bundle exec jekyll build
