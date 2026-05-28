@@ -3,7 +3,7 @@ layout: post
 title: More
 description: "Manik's personal website and blog"
 ---
-<img src="/assets/picture.jpg" class="me">
+<img src="/assets/images/site/me.jpg" class="me">
 
 <a href="https://www.last.fm/user/mnk_400"><img src="https://lastfm-recently-played.vercel.app/api?user=mnk_400" height="auto" width="350px"/></a>
 

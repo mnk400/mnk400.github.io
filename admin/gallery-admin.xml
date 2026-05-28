@@ -13,7 +13,7 @@
   <Overview>Admin panel for managing R2-hosted data. Upload, reorder, title, and delete images across albums.</Overview>
   <Category>Tools: Productivity:</Category>
   <WebUI>http://[IP]:[PORT:3333]/</WebUI>
-  <Icon>https://raw.githubusercontent.com/mnk400/mnk400.github.io/master/assets/images/favicon.png</Icon>
+  <Icon>https://raw.githubusercontent.com/mnk400/mnk400.github.io/master/assets/images/site/favicon.ico</Icon>
   <ExtraParams/>
   <Description>Gallery Admin — manage R2-hosted photo albums with drag-and-drop upload, reordering, and manifest publishing.</Description>
   <Config Name="Web UI Port" Target="3333" Default="3333" Mode="tcp" Description="Port for the admin web UI" Type="Port" Display="always" Required="true">3333</Config>

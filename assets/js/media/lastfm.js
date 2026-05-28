@@ -26,7 +26,7 @@ async function fetchMusicWidget() {
       const isNowPlaying = track["@attr"]?.nowplaying === "true";
       const imageUrl =
         track.image.find((img) => img.size === "large")["#text"] ||
-        "/assets/album-placeholder.png";
+        "/assets/images/site/album-placeholder.png";
 
       artEl.src = imageUrl;
       trackEl.textContent = track.name;
@@ -186,7 +186,7 @@ async function fetchTopAlbums() {
     const items = data.topalbums.album.map((album) => ({
       imageUrl:
         album.image.find((img) => img.size === "large")["#text"] ||
-        "/assets/album-placeholder.png",
+        "/assets/images/site/album-placeholder.png",
       title: album.name,
       subtitle: album.artist.name,
       playcount: album.playcount,
@@ -210,7 +210,7 @@ function fetchArtistImage(artistName) {
 
     const timeout = setTimeout(() => {
       cleanup();
-      resolve("/assets/album-placeholder.png");
+      resolve("/assets/images/site/album-placeholder.png");
     }, 5000);
 
     window[callbackName] = (data) => {
@@ -219,7 +219,7 @@ function fetchArtistImage(artistName) {
       if (data.data && data.data.length > 0) {
         resolve(data.data[0].picture_medium);
       } else {
-        resolve("/assets/album-placeholder.png");
+        resolve("/assets/images/site/album-placeholder.png");
       }
     };
 
@@ -227,7 +227,7 @@ function fetchArtistImage(artistName) {
     script.onerror = () => {
       clearTimeout(timeout);
       cleanup();
-      resolve("/assets/album-placeholder.png");
+      resolve("/assets/images/site/album-placeholder.png");
     };
     document.head.appendChild(script);
   });
@@ -256,7 +256,7 @@ async function fetchTopArtists() {
       imageUrl:
         imageResults[index].status === "fulfilled"
           ? imageResults[index].value
-          : "/assets/album-placeholder.png",
+          : "/assets/images/site/album-placeholder.png",
       title: artist.name,
       subtitle: null,
       playcount: artist.playcount,

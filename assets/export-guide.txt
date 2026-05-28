@@ -744,8 +744,9 @@ Provides seven reusable features (auto-initializes on DOMContentLoaded):
    and listen for 'site-search:change' on the target.
 
 Note: This file also contains site-specific functions (triggerPhotoReveal,
-toggleHeaderVisibility) that are only used on manik.cc. They are harmless
-to load but not relevant for external use.
+toggleHeaderVisibility) that are only used on manik.cc. The default reveal
+photo is /assets/images/site/me.jpg. These helpers are harmless to load but
+not relevant for external use.
 
 
 --- image-zoom.js ---

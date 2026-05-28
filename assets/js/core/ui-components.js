@@ -471,7 +471,7 @@ window.initDropdown = window.initDropdown || function (id, callback) {
 let photoRevealTimeout = null;
 let isTransitioning = false;
 
-function triggerPhotoReveal(imagePath = "/assets/images/me.jpg") {
+function triggerPhotoReveal(imagePath = "/assets/images/site/me.jpg") {
   const container = document.getElementById("titlePhotoContainer");
   if (!container || isTransitioning) return;
 
@@ -549,7 +549,7 @@ function handleSiteNameClick(event) {
   if ("ontouchstart" in window || navigator.maxTouchPoints > 0) {
     menu.classList.toggle("is-open");
   } else {
-    triggerPhotoReveal("/assets/images/me.jpg");
+    triggerPhotoReveal("/assets/images/site/me.jpg");
   }
 }
 
