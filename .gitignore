@@ -2,6 +2,8 @@
 .sass-cache
 .jekyll-cache
 _site
+_data/generated_previews.yml
+assets/images/previews/generated/
 Gemfile.lock
 _posts/_site
  _posts/.jekyll-cache

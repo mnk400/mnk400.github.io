@@ -29,6 +29,13 @@ ZZZzz /,`.-'`'    -.  ;-;;,_
         {% else %}
         <meta name="description" content="{{ site.description }}" />
         {% endif %}
+        {% assign generated_preview = site.data.generated_previews[page.path] %}
+        {% assign social_image = generated_preview | default: page.image | default: "/assets/images/previews/site-preview.jpg" %}
+        {% if social_image contains "://" %}
+        {% assign social_image_url = social_image %}
+        {% else %}
+        {% assign social_image_url = social_image | absolute_url %}
+        {% endif %}
 
         <!-- Open Graph-->
         <meta property="og:type" content="website" />
@@ -41,14 +48,11 @@ ZZZzz /,`.-'`'    -.  ;-;;,_
         <meta property="og:description" content="{{ page.description }}" />
         {% else %}
         <meta property="og:description" content="{{ site.description }}" />
-        {% endif %} {% if page.image %}
-        <meta property="og:image" content="{{ site.url }}{{ page.image }}" />
-        {% else %}
-        <meta
-            property="og:image"
-            content="{{ site.url }}/assets/images/previews/site-preview.jpg"
-        />
-        {% endif %} {% if page.title %}
+        {% endif %}
+        <meta property="og:image" content="{{ social_image_url }}" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:image" content="{{ social_image_url }}" />
+        {% if page.title %}
         <title>{{ page.title }} — Manik</title>
         {% else %}
         <title>Manik</title>
@@ -126,9 +130,7 @@ ZZZzz /,`.-'`'    -.  ;-;;,_
                 {% if page.description %}
                 "description": "{{ page.description }}",
                 {% endif %}
-                {% if page.image %}
-                "image": "{{ site.url }}{{ page.image }}",
-                {% endif %}
+                "image": "{{ social_image_url }}",
                 "mainEntityOfPage": "{{ site.url }}{{ page.url }}"
             }
         </script>
