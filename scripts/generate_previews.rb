@@ -21,9 +21,15 @@ FONT_CANDIDATES = [
   "/usr/share/fonts/truetype/liberation2/LiberationSans-Regular.ttf"
 ].compact
 DEFAULT_FONT = FONT_CANDIDATES.find { |font| Pathname.new(font).exist? } || "Helvetica"
+def executable_on_path?(command)
+  ENV.fetch("PATH", "").split(File::PATH_SEPARATOR).any? do |directory|
+    File.executable?(File.join(directory, command))
+  end
+end
+
 MAGICK_COMMAND = ENV["MAGICK_COMMAND"] ||
-                 (system("command", "-v", "magick", out: File::NULL) && "magick") ||
-                 (system("command", "-v", "convert", out: File::NULL) && "convert")
+                 (executable_on_path?("magick") && "magick") ||
+                 (executable_on_path?("convert") && "convert")
 SITE_LABEL = "manik.cc"
 WIDTH = 1200
 HEIGHT = 630
