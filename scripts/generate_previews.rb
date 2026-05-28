@@ -120,14 +120,6 @@ def make_text_png(title, subtitle, font, title_color: "white", subtitle_color: "
   file = Tempfile.new(["preview-text", ".png"])
   file.close
 
-  title_file = Tempfile.new("preview-title")
-  title_file.write(title)
-  title_file.close
-
-  subtitle_file = Tempfile.new("preview-subtitle")
-  subtitle_file.write(subtitle)
-  subtitle_file.close
-
   run_magick(
     "-size", "1000x480",
     "xc:none",
@@ -138,7 +130,7 @@ def make_text_png(title, subtitle, font, title_color: "white", subtitle_color: "
     "-fill", title_color,
     "-pointsize", "88",
     "-interline-spacing", "-8",
-    "caption:@#{title_file.path}",
+    "caption:#{title}",
     ")",
     "-gravity", "northwest",
     "-geometry", "+0+66",
@@ -148,12 +140,10 @@ def make_text_png(title, subtitle, font, title_color: "white", subtitle_color: "
     "-fill", subtitle_color,
     "-pointsize", "42",
     "-gravity", "northwest",
-    "-annotate", "+0+0", "@#{subtitle_file.path}",
+    "-annotate", "+0+0", subtitle,
     file.path
   )
 
-  title_file.unlink
-  subtitle_file.unlink
   file
 end
 
