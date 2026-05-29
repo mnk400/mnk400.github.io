@@ -5,7 +5,7 @@ archive:
   label: Archive
   chip: archive
   sort: order
-paintings:
+archive/paintings:
   label: Paintings
   chip: paintings
   sort: order

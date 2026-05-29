@@ -76,7 +76,11 @@
                     {%- for slug in segs limit: num_ancestors -%}
                         {%- assign accum_url = accum_url | append: "/" | append: slug -%}
                         {%- assign hub_url = accum_url | append: "/" -%}
-                        {%- assign cat_entry = site.data.categories[slug] -%}
+                        {%- assign cat_key = accum_url | remove_first: "/" -%}
+                        {%- assign cat_entry = site.data.categories[cat_key] -%}
+                        {%- unless cat_entry -%}
+                            {%- assign cat_entry = site.data.categories[slug] -%}
+                        {%- endunless -%}
                         {%- assign cat_label = cat_entry.label | default: slug -%}
                         {%- assign hub_page = site.more | where: "url", hub_url | first -%}
                         {%- assign vt_name = "nav-mid-" | append: forloop.index0 -%}

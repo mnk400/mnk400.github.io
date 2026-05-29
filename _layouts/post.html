@@ -2,15 +2,20 @@
 layout: default
 ---
 
-<div class="post{% if page.date %} post--dated{% endif %}">
+{% assign show_post_date = false %}
+{% if page.collection == "posts" and page.date %}
+	{% assign show_post_date = true %}
+{% endif %}
 
-	{% if page.title or page.date %}
+<div class="post{% if show_post_date %} post--dated{% endif %}">
+
+	{% if page.title or show_post_date %}
 	<header class="post__header stack stack--sm">
 		{% if page.title %}
 		<h1 class="post__title">{{ page.title }}</h1>
 		{% endif %}
 
-		{% if page.date%}
+		{% if show_post_date %}
 		<p class="post__date">{{ page.date | date: '%B %-d, %Y' }}.
 			{% if page.edit %}
 			Edited on {{ page.edit | date: '%B %-d, %Y' }}.

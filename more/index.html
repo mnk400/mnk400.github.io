@@ -5,10 +5,10 @@ permalink: /more/
 scripts: [/assets/js/tools/more-index.js]
 ---
 
-{%- comment -%} Collect collection items with a derived category (skip hubs, top-level pages, disabled). {%- endcomment -%}
+{%- comment -%} Collect leaf collection items with a derived category (skip hubs, top-level pages, disabled). {%- endcomment -%}
 {%- assign cat_items = "" | split: "," -%}
 {%- for item in site.more -%}
-    {%- unless item.disabled == true or item.name == "index.html" -%}
+    {%- unless item.disabled == true or item.path contains "/index.html" -%}
         {%- assign rel_path = item.path | remove_first: "_more/" -%}
         {%- assign segs = rel_path | split: "/" -%}
         {%- if segs.size > 1 -%}
@@ -17,17 +17,37 @@ scripts: [/assets/js/tools/more-index.js]
     {%- endunless -%}
 {%- endfor -%}
 
-{%- comment -%} Unique sorted category slugs that actually have items. {%- endcomment -%}
-{%- assign present_slugs = "" | split: "," -%}
+{%- comment -%} Unique sorted top-level category slugs for the filter chips. {%- endcomment -%}
+{%- assign present_roots = "" | split: "," -%}
 {%- for item in cat_items -%}
     {%- assign rel_path = item.path | remove_first: "_more/" -%}
     {%- assign segs = rel_path | split: "/" -%}
-    {%- assign slug = segs[0] -%}
-    {%- unless present_slugs contains slug -%}
-        {%- assign present_slugs = present_slugs | push: slug -%}
+    {%- assign root = segs[0] -%}
+    {%- unless present_roots contains root -%}
+        {%- assign present_roots = present_roots | push: root -%}
     {%- endunless -%}
 {%- endfor -%}
-{%- assign present_slugs = present_slugs | sort -%}
+{%- assign present_roots = present_roots | sort -%}
+
+{%- comment -%} Unique sorted display groups. Direct items use their root; nested items use their parent path. {%- endcomment -%}
+{%- assign group_paths = "" | split: "," -%}
+{%- for item in cat_items -%}
+    {%- assign rel_path = item.path | remove_first: "_more/" -%}
+    {%- assign segs = rel_path | split: "/" -%}
+    {%- assign group_count = segs.size | minus: 1 -%}
+    {%- assign group_path = "" -%}
+    {%- for seg in segs limit: group_count -%}
+        {%- if forloop.first -%}
+            {%- assign group_path = seg -%}
+        {%- else -%}
+            {%- assign group_path = group_path | append: "/" | append: seg -%}
+        {%- endif -%}
+    {%- endfor -%}
+    {%- unless group_paths contains group_path -%}
+        {%- assign group_paths = group_paths | push: group_path -%}
+    {%- endunless -%}
+{%- endfor -%}
+{%- assign group_paths = group_paths | sort -%}
 
 <p>
 This page is an ongoing list of random things and projects I've built.
@@ -43,39 +63,66 @@ This page is an ongoing list of random things and projects I've built.
 
     <div class="selection-switch selection-switch--small" id="more-chips">
         <span class="switch-option active" data-value="all">all</span>
-        {%- for slug in present_slugs -%}
-            {%- assign cat = site.data.categories[slug] -%}
-            <span class="switch-option" data-value="{{ slug }}">{{ cat.chip | default: slug }}</span>
+        {%- for root in present_roots -%}
+            {%- assign cat = site.data.categories[root] -%}
+            <span class="switch-option" data-value="{{ root }}">{{ cat.chip | default: root }}</span>
         {%- endfor -%}
     </div>
 </div>
 
 <div class="more-page">
-{%- for slug in present_slugs -%}
-    {%- assign cat = site.data.categories[slug] -%}
+{%- for group_path in group_paths -%}
+    {%- assign group_segs = group_path | split: "/" -%}
+    {%- assign root = group_segs[0] -%}
+    {%- assign group_slug = group_segs | last -%}
+    {%- assign cat = site.data.categories[root] -%}
+    {%- assign group_cat = site.data.categories[group_path] -%}
+    {%- assign group_label = group_cat.label | default: cat.label | default: group_slug -%}
+    {%- assign group_chip = group_cat.chip | default: group_slug -%}
+    {%- assign sort_key = group_cat.sort | default: cat.sort | default: "title" -%}
+    {%- assign group_items = "" | split: "," -%}
 
-    {%- comment -%} Filter cat_items to this slug. {%- endcomment -%}
-    {%- assign in_cat = "" | split: "," -%}
     {%- for item in cat_items -%}
         {%- assign item_rel = item.path | remove_first: "_more/" -%}
         {%- assign item_segs = item_rel | split: "/" -%}
-        {%- if item_segs[0] == slug -%}
-            {%- assign in_cat = in_cat | push: item -%}
+        {%- assign item_group_count = item_segs.size | minus: 1 -%}
+        {%- assign item_group_path = "" -%}
+        {%- for seg in item_segs limit: item_group_count -%}
+            {%- if forloop.first -%}
+                {%- assign item_group_path = seg -%}
+            {%- else -%}
+                {%- assign item_group_path = item_group_path | append: "/" | append: seg -%}
+            {%- endif -%}
+        {%- endfor -%}
+        {%- if item_group_path == group_path -%}
+            {%- assign group_items = group_items | push: item -%}
         {%- endif -%}
     {%- endfor -%}
+    {%- assign group_items = group_items | sort: sort_key -%}
+    {%- assign hub_url = group_path | prepend: "/" | append: "/" -%}
+    {%- assign hub_page = site.more | where: "url", hub_url | first -%}
 
-    {%- assign sort_key = cat.sort | default: "title" -%}
-    {%- assign in_cat = in_cat | sort: sort_key -%}
-
-    <div class="more-section" data-more-category="{{ slug }}">
-        <span class="more-section__label">{{ cat.chip | default: slug }}</span>
+    <div class="more-section" data-more-category="{{ root }}">
+        <span class="more-section__label">
+            {%- if group_segs.size == 1 -%}
+                {{ cat.chip | default: root }}
+            {%- else -%}
+                {%- assign root_label = cat.chip | default: root -%}
+                <span>{{ root_label }}</span><span class="more-section__path-sep">/</span>
+                {%- if hub_page -%}
+                    <a href="{{ hub_url | relative_url }}">{{ group_chip }}</a>
+                {%- else -%}
+                    <span>{{ group_chip }}</span>
+                {%- endif -%}
+            {%- endif -%}
+        </span>
         <span class="more-section__links">
-        {%- for item in in_cat -%}
+        {%- for item in group_items -%}
             {%- assign tag_blob = item.tags | join: " " -%}
             {%- assign link_text = item.short_title | default: item.title -%}
             <span
                 class="more-section__item"
-                data-more-search="{{ item.title | append: ' ' | append: item.short_title | append: ' ' | append: item.description | append: ' ' | append: cat.label | append: ' ' | append: tag_blob | strip | downcase | escape }}"
+                data-more-search="{{ item.title | append: ' ' | append: item.short_title | append: ' ' | append: item.description | append: ' ' | append: cat.label | append: ' ' | append: group_label | append: ' ' | append: tag_blob | strip | downcase | escape }}"
             >
             {%- if item.external_url -%}
                 <a href="{{ item.external_url }}" target="_blank" rel="noopener noreferrer">

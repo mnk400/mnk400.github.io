@@ -153,8 +153,8 @@
 
 .more-section {
     display: grid;
-    grid-template-columns: 95px minmax(0, 1fr);
-    gap: var(--spacing-md);
+    grid-template-columns: 130px minmax(0, 1fr);
+    gap: var(--spacing-lg);
     align-items: baseline;
     font-size: 11.5pt;
     line-height: 25px;
@@ -164,6 +164,15 @@
     color: var(--sec-text-color);
     font-size: 0.85em;
     white-space: nowrap;
+}
+
+.more-section__label a {
+    color: inherit;
+}
+
+.more-section__path-sep {
+    opacity: 0.45;
+    margin: 0 4px;
 }
 
 .more-section__links {
@@ -180,15 +189,6 @@
 .more-section__item[hidden],
 .more-section__sep[hidden] {
     display: none;
-}
-
-// "all →" link appended to the Archive row — visually separated from the
-// preceding artist list with a bullet that replaces what would be a comma.
-.more-section__item--bullet::before {
-    content: "·";
-    color: var(--sec-text-color);
-    opacity: 0.5;
-    margin: 0 var(--spacing-2xs);
 }
 
 @media screen and (max-width: 360px) {

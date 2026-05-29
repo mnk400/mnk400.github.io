@@ -20,18 +20,31 @@ This is a Jekyll static site (portfolio/blog) with vanilla JavaScript and SCSS. 
 - `_includes/` - Reusable Liquid components (header, image-zoom, music-widget, etc.)
 - `_sass/` - SCSS organized as: `base/` (variables, mixins) → `components/` → `pages/`
 - `assets/js/` - Vanilla JS organized as: `core/` (theme, navigation) → `components/` → `tools/` → `games/`
-- `more/` - Interactive tools and games (each has HTML page + JS module)
+- `_more/` - Collection-backed interactive tools, games, archives, and subcategory pages
+- `more/` - The `/more/` index page, generated from the `_more` collection
 - `_posts/` - Markdown blog posts
 
 ### Theme System
 
-Four themes defined in `_sass/base/_variables.scss` (light, dark, blue, red). Theme manager in `assets/js/core/theme-manager.js` toggles via `data-theme` attribute on `<html>` and persists to localStorage.
+Themes are defined in `_sass/base/_variables.scss`. Theme manager in `assets/js/core/theme-manager.js` toggles via `data-theme` attribute on `<html>` and persists to localStorage.
+
+### More Collection
+
+The `_more` collection is configured in `_config.yml` with `output: true` and path-based permalinks. Its directory structure is the source of truth for categories and subcategories:
+
+- `_more/games/colordle.html` → `/games/colordle`
+- `_more/archive/paintings/monet.html` → `/archive/paintings/monet`
+- `_more/archive/paintings/index.html` → hub page for `/archive/paintings/`
+
+The `/more/` index derives its rows from `_more` paths. Direct children render under their top-level category, while nested pages render as full path rows like `archive / paintings`. Category metadata lives in `_data/categories.yml`; use top-level keys (`games`) and full-path keys (`archive/paintings`) for labels, chips, and sort behavior.
+
+Do not use `disabled: true` to hide hub pages from `/more/`. Hub pages are inferred from `index.html` collection documents.
 
 ### Patterns
 
 - **SCSS**: Use CSS custom properties from `_variables.scss` and mixins from `_mixins.scss`
 - **JavaScript**: IIFE pattern for module encapsulation, event delegation for performance
-- **New tools**: Create HTML in `/more/`, add JS in `assets/js/tools/`, styles in `_sass/pages/_tools.scss`
+- **New tools**: Create HTML in `_more/<category>/<slug>.html`, add JS in `assets/js/tools/`, styles in `_sass/pages/_tools.scss`, and update `_data/categories.yml` if adding a category or subcategory
 - **Layouts**: Use `layout: post` in front matter for content/tool pages
 
 ## Design System Export

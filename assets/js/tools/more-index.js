@@ -19,34 +19,24 @@ document.addEventListener("DOMContentLoaded", () => {
                 section.dataset.moreCategory === activeCategory;
 
             const items = Array.from(section.querySelectorAll(".more-section__item"));
-            // Bullet items (e.g. archive "all →") tag along passively — they show
-            // only when at least one regular item in the section is visible, and
-            // they're never the basis for "is this the last visible item" comma logic.
-            const isBullet = (item) => item.classList.contains("more-section__item--bullet");
-            const regular = items.filter((i) => !isBullet(i));
-            const bullets = items.filter(isBullet);
-            const visibleRegular = [];
+            const visibleItems = [];
 
-            regular.forEach((item) => {
+            items.forEach((item) => {
                 const matchesQuery =
                     !query || item.dataset.moreSearch.includes(query);
                 const show = matchesCategory && matchesQuery;
                 item.hidden = !show;
-                if (show) visibleRegular.push(item);
+                if (show) visibleItems.push(item);
             });
 
-            bullets.forEach((item) => {
-                item.hidden = visibleRegular.length === 0;
-            });
-
-            regular.forEach((item) => {
+            items.forEach((item) => {
                 const sep = item.querySelector(".more-section__sep");
-                if (sep) sep.hidden = item === visibleRegular[visibleRegular.length - 1];
+                if (sep) sep.hidden = item === visibleItems[visibleItems.length - 1];
             });
 
-            const sectionVisible = visibleRegular.length > 0;
+            const sectionVisible = visibleItems.length > 0;
             section.hidden = !sectionVisible;
-            visible += visibleRegular.length + (sectionVisible ? bullets.length : 0);
+            visible += visibleItems.length;
         });
 
         if (empty) empty.hidden = visible !== 0;
