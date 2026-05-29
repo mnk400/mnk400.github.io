@@ -353,23 +353,53 @@ Optional image gallery card captions:
 Caption text is hidden on narrow mobile screens to keep dense galleries
 focused on the images.
 
-Music album card:
-    <div class="album-item">
-        <div class="album-image-container">
+Reveal card (image with hover/focus overlay):
+    <a class="reveal-card" href="/detail">
+        <span class="reveal-card__media">
+            <img src="image.jpg" alt="">
+            <span class="reveal-card__overlay">
+                <span class="reveal-card__copy">
+                    <span class="reveal-card__title">Title</span>
+                    <span class="reveal-card__meta">Metadata</span>
+                </span>
+                <span class="reveal-card__body">Short supporting copy.</span>
+            </span>
+        </span>
+    </a>
+
+.reveal-card__media is a clipped media surface with an overlay that fades in
+on desktop hover, keyboard focus, touch-hover, or when .is-revealed is added to
+.reveal-card. The image itself does not zoom or animate. Customize with CSS
+variables on .reveal-card:
+    --reveal-card-ratio        Aspect ratio, default 1
+    --reveal-card-padding      Overlay padding, default 0.8em
+    --reveal-card-title-size   Overlay title size, default 1.1em
+    --reveal-card-meta-size    Overlay metadata size, default 0.8em
+    --reveal-card-body-size    Overlay body size, default 0.9em
+
+ui-components.js auto-initializes reveal cards on page load. For dynamically
+inserted cards, call initRevealCards(container). On touch devices, tapping the
+image reveals the overlay and keeps it visible; if the reveal-card is also a
+link, the first image tap reveals and the second image tap follows the link.
+Non-image link areas, such as a separate caption row, follow the link normally.
+Wrap related cards in .reveal-card-group to keep only one revealed card active.
+
+Music album card composition:
+    <div class="album-item reveal-card">
+        <div class="reveal-card__media">
             <img src="cover.jpg" alt="Album title">
-            <div class="music-card-overlay">
-                <div class="music-card-copy">
-                    <p class="music-card-title">Album title</p>
-                    <p class="music-card-subtitle">Artist</p>
+            <div class="reveal-card__overlay">
+                <div class="reveal-card__copy">
+                    <p class="reveal-card__title">Album title</p>
+                    <p class="reveal-card__meta">Artist</p>
                 </div>
-                <span class="music-card-playcount">123 Plays</span>
+                <span class="reveal-card__meta reveal-card__meta--bottom">123 Plays</span>
             </div>
         </div>
     </div>
 
-.album-image-container is a square, clipped media surface. The overlay fills
-the same surface with internal padding and grid/flex gaps; it does not rely on
-negative margins or external spacing.
+.album-item only supplies the music page's staggered fade-in state; the media
+surface and overlay behavior come from .reveal-card.
 
 Color info card:
     <div class="color-info">

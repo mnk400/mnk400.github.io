@@ -153,20 +153,7 @@ function renderMusicGrid(grid, items) {
     }, index * 60);
   });
 
-  // Add event listeners for tap support on mobile
-  const containers = grid.querySelectorAll(".album-image-container");
-  containers.forEach((item) => {
-    item.addEventListener("click", function () {
-      containers.forEach((otherItem) => {
-        if (otherItem !== this) {
-          otherItem
-            .querySelector(".music-card-overlay")
-            .classList.remove("show-overlay");
-        }
-      });
-      this.querySelector(".music-card-overlay").classList.toggle("show-overlay");
-    });
-  });
+  if (typeof initRevealCards === "function") initRevealCards(grid);
 }
 
 async function fetchTopAlbums() {

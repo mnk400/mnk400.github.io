@@ -23,33 +23,33 @@ description: A small archive of artwork from artists I like.
     content=motivation
 %}
 
-<hr class="gallery-divider">
-
 {%- assign hub_path = page.path -%}
 {%- assign archive_pages = site.more
     | where_exp: "p", "p.path contains '_more/archive/paintings/'"
     | where_exp: "p", "p.path != hub_path"
     | sort: "order" -%}
 
-<div class="gallery-grid">
+<div class="painting-index-grid reveal-card-group">
     {%- for page in archive_pages -%}
-    <a class="gallery-tile" href="{{ page.url | relative_url }}">
-        <span class="gallery-tile__cover">
+    {%- assign card_title_id = "painting-index-title-" | append: forloop.index -%}
+    {%- assign card_details_id = "painting-index-details-" | append: forloop.index -%}
+    <a class="painting-index-card reveal-card" href="{{ page.url | relative_url }}" aria-labelledby="{{ card_title_id }}" aria-describedby="{{ card_details_id }}">
+        <span class="reveal-card__media">
             {%- if page.image -%}
             <img src="{{ page.image | relative_url }}" alt="" loading="lazy" decoding="async">
             {%- endif -%}
+            <span class="reveal-card__overlay" id="{{ card_details_id }}">
+                {% if page.years %}
+                <span class="reveal-card__meta">active {{ page.years }}</span>
+                {% endif %}
+                {% if page.blurb %}
+                <span class="reveal-card__body">{{ page.blurb }}</span>
+                {% endif %}
+            </span>
         </span>
-        <div class="gallery-tile__caption">
-            <h3 class="gallery-tile__title">
-                <span>{{ page.title }}</span>
-                <span class="gallery-tile__chevron" aria-hidden="true">{% include icon.html name="arrow-right" %}</span>
-            </h3>
-            {%- if page.years -%}
-            <p class="gallery-tile__meta">active {{ page.years }}</p>
-            {%- endif -%}
-            {%- if page.blurb -%}
-            <p class="gallery-tile__blurb">{{ page.blurb }}</p>
-            {%- endif -%}
+        <div class="painting-index-card__caption">
+            <span class="painting-index-card__title" id="{{ card_title_id }}">{{ page.title }}</span>
+            <span class="painting-index-card__arrow" aria-hidden="true">{% include icon.html name="arrow-up-right" %}</span>
         </div>
     </a>
     {%- endfor -%}

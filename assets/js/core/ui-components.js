@@ -546,11 +546,48 @@ function handleSiteNameClick(event) {
   const menu = document.getElementById("siteNameMenu");
   if (!menu) return;
 
-  if ("ontouchstart" in window || navigator.maxTouchPoints > 0) {
+  if ("ontouchstart" in window || (window.navigator?.maxTouchPoints || 0) > 0) {
     menu.classList.toggle("is-open");
   } else {
     triggerPhotoReveal("/assets/images/site/me.jpg");
   }
+}
+
+function isTouchLikeInput() {
+  return (
+    window.matchMedia?.("(hover: none)").matches ||
+    "ontouchstart" in window ||
+    (window.navigator?.maxTouchPoints || 0) > 0
+  );
+}
+
+function initRevealCards(root = document) {
+  root.querySelectorAll(".reveal-card__media").forEach((media) => {
+    if (media.dataset.revealCardReady === "true") return;
+
+    media.dataset.revealCardReady = "true";
+    media.addEventListener("click", (event) => {
+      if (!isTouchLikeInput()) return;
+
+      const card = media.closest(".reveal-card");
+      if (!card) return;
+
+      const linkedCard = card.matches("a[href]") ? card : card.closest("a[href]");
+      if (card.classList.contains("is-revealed")) return;
+
+      if (linkedCard) event.preventDefault();
+      event.stopPropagation();
+
+      const group = card.closest(".reveal-card-group") || card.parentElement;
+      group
+        ?.querySelectorAll(".reveal-card.is-revealed")
+        .forEach((otherCard) => {
+          if (otherCard !== card) otherCard.classList.remove("is-revealed");
+        });
+
+      card.classList.add("is-revealed");
+    });
+  });
 }
 
 // Touch hover handler for mobile devices
@@ -598,6 +635,7 @@ document.addEventListener("DOMContentLoaded", function () {
     .forEach(initSearchComponent);
   document.querySelectorAll("[data-range-slider]").forEach(initRangeSlider);
   document.querySelectorAll("[data-image-upload]").forEach(initImageUpload);
+  initRevealCards(document);
 
   // Initialize expandable sections
   const toggleButtons = document.querySelectorAll(".expandable-toggle");
