@@ -1,0 +1,36 @@
+---
+redirect_from: /more/zorn
+layout: post
+title: Anders Zorn
+short_title: Zorn
+tags: [art, gallery, paintings, archive]
+image: /assets/images/previews/paintings/zorn.jpg
+years: "1880 – 1920"
+order: 9
+blurb: "Swedish painter best known for people portraits, in very fluid watercolor and oil."
+description: Browse an archive of Anders Zorn paintings.
+scripts: [/assets/js/media/image-gallery.js]
+header_only_view_transition: true
+disabled: true
+---
+
+<p>
+    A small browser archive of Anders Zorn paintings
+</p>
+
+{% include image-gallery.html
+    source="https://manik.cc/pipelines/paintings/zorn/manifest.json"
+    gallery_name="zorn"
+    loading_text="Loading paintings..."
+    summary=true
+    controls=true
+    sort_options="year-desc,year-asc,popularity-desc"
+    default_sort="popularity-desc"
+    filter_options="decade,series"
+    search=true
+    search_id="zorn-search"
+    search_label="Search"
+    search_placeholder="search paintings"
+    search_target="#image-gallery-zorn"
+    search_class="site-search--small image-gallery__search"
+%}

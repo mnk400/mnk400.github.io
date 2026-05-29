@@ -1,0 +1,26 @@
+apps:
+  label: Apps
+  chip: apps
+archive:
+  label: Archive
+  chip: archive
+  sort: order
+paintings:
+  label: Paintings
+  chip: paintings
+  sort: order
+cli-tools:
+  label: CLI Tools
+  chip: cli tools
+fun-tools:
+  label: Fun Tools
+  chip: fun
+games:
+  label: Games
+  chip: games
+image-tools:
+  label: Image Tools
+  chip: image tools
+music:
+  label: Music
+  chip: music

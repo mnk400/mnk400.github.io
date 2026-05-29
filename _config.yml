@@ -24,12 +24,13 @@ sass:
 plugins:
   - jekyll-sitemap
   - jekyll-paginate
+  - jekyll-redirect-from
 
 # Collections
 collections:
-  tools:
+  more:
     output: true
-    permalink: /more/:path/
+    permalink: /:path
 
 # Defaults
 defaults:
@@ -42,3 +43,7 @@ defaults:
       path: ""
     values:
       layout: "default"
+  - scope:
+      type: more
+    values:
+      layout: post

@@ -1,0 +1,24 @@
+---
+redirect_from: /more/camera
+layout: tool
+title: Live ASCII Camera
+description: Convert your camera feed into real-time ASCII art
+tags: [art, camera, ascii, webcam, tool]
+intro: See yourself live in ASCII art.
+scripts: [/assets/js/utils/device-detect.js, /assets/js/utils/ascii-utils.js, /assets/js/components/camera-manager.js, /assets/js/tools/camera-to-ascii.js]
+---
+
+<div class="ascii-container stack">
+    <video id="video" style="display: none;"></video>
+
+    <div class="stack">
+        {% include range-slider.html id='width' value='80' min='15' max='150' unit='Characters' %}
+
+        <div class="toolbar">
+            <button id="start-btn" class="normal-btn">Start Camera</button>
+            <button id="fullscreen-btn" class="normal-btn">Fullscreen</button>
+        </div>
+    </div>
+
+    <pre id="ascii-output"></pre>
+</div>

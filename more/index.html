@@ -1,26 +1,33 @@
 ---
 layout: post
 title: Collection of Random Stuff
-permalink: /more
+permalink: /more/
 scripts: [/assets/js/tools/more-index.js]
 ---
 
-{%- comment -%} Collect category pages anywhere under /more/. {%- endcomment -%}
-{%- assign pages_in_more_dir = site.pages
-    | where_exp: "page", "page.path contains 'more/'"
-    | where_exp: "page", "page.name != 'index.html'"
-    | where_exp: "page", "page.name != 'v2.html'"
-    | where_exp: "page", "page.disabled != true" -%}
-
-{%- assign category_pages = pages_in_more_dir
-    | where_exp: "page", "page.category" -%}
-
-{%- comment -%} Build unique sorted categories list {%- endcomment -%}
-{%- assign unique_categories = "" | split: "," -%}
-{%- for page in category_pages -%}
-    {%- assign unique_categories = unique_categories | push: page.category -%}
+{%- comment -%} Collect collection items with a derived category (skip hubs, top-level pages, disabled). {%- endcomment -%}
+{%- assign cat_items = "" | split: "," -%}
+{%- for item in site.more -%}
+    {%- unless item.disabled == true or item.name == "index.html" -%}
+        {%- assign rel_path = item.path | remove_first: "_more/" -%}
+        {%- assign segs = rel_path | split: "/" -%}
+        {%- if segs.size > 1 -%}
+            {%- assign cat_items = cat_items | push: item -%}
+        {%- endif -%}
+    {%- endunless -%}
 {%- endfor -%}
-{%- assign unique_categories = unique_categories | uniq | sort -%}
+
+{%- comment -%} Unique sorted category slugs that actually have items. {%- endcomment -%}
+{%- assign present_slugs = "" | split: "," -%}
+{%- for item in cat_items -%}
+    {%- assign rel_path = item.path | remove_first: "_more/" -%}
+    {%- assign segs = rel_path | split: "/" -%}
+    {%- assign slug = segs[0] -%}
+    {%- unless present_slugs contains slug -%}
+        {%- assign present_slugs = present_slugs | push: slug -%}
+    {%- endunless -%}
+{%- endfor -%}
+{%- assign present_slugs = present_slugs | sort -%}
 
 <p>
 This page is an ongoing list of random things and projects I've built.
@@ -36,57 +43,47 @@ This page is an ongoing list of random things and projects I've built.
 
     <div class="selection-switch selection-switch--small" id="more-chips">
         <span class="switch-option active" data-value="all">all</span>
-        {%- for cat in unique_categories -%}
-            <span class="switch-option" data-value="{{ cat | downcase }}">
-                {%- if cat == "Apps" -%}apps
-                {%- elsif cat == "CLI Tools" -%}cli tools
-                {%- elsif cat == "Archive" -%}archive
-                {%- elsif cat == "Fun Tools" -%}fun
-                {%- elsif cat == "Games" -%}games
-                {%- elsif cat == "Image Tools" -%}image tools
-                {%- elsif cat == "Music" -%}music
-                {%- else -%}{{ cat | downcase }}
-                {%- endif -%}
-            </span>
+        {%- for slug in present_slugs -%}
+            {%- assign cat = site.data.categories[slug] -%}
+            <span class="switch-option" data-value="{{ slug }}">{{ cat.chip | default: slug }}</span>
         {%- endfor -%}
     </div>
 </div>
 
 <div class="more-page">
-{%- for cat in unique_categories -%}
-    {%- if cat == "Archive" -%}
-        {%- assign cat_pages = category_pages | where: "category", cat | sort: "order" -%}
-    {%- else -%}
-        {%- assign cat_pages = category_pages | where: "category", cat | sort: "title" -%}
-    {%- endif -%}
+{%- for slug in present_slugs -%}
+    {%- assign cat = site.data.categories[slug] -%}
 
-    <div class="more-section" data-more-category="{{ cat | downcase }}">
-        <span class="more-section__label">
-            {%- if cat == "Apps" -%}apps
-            {%- elsif cat == "CLI Tools" -%}cli tools
-            {%- elsif cat == "Archive" -%}archive
-            {%- elsif cat == "Fun Tools" -%}fun
-            {%- elsif cat == "Games" -%}games
-            {%- elsif cat == "Image Tools" -%}image tools
-            {%- elsif cat == "Music" -%}music
-            {%- else -%}{{ cat }}
-            {%- endif -%}
-        </span>
+    {%- comment -%} Filter cat_items to this slug. {%- endcomment -%}
+    {%- assign in_cat = "" | split: "," -%}
+    {%- for item in cat_items -%}
+        {%- assign item_rel = item.path | remove_first: "_more/" -%}
+        {%- assign item_segs = item_rel | split: "/" -%}
+        {%- if item_segs[0] == slug -%}
+            {%- assign in_cat = in_cat | push: item -%}
+        {%- endif -%}
+    {%- endfor -%}
+
+    {%- assign sort_key = cat.sort | default: "title" -%}
+    {%- assign in_cat = in_cat | sort: sort_key -%}
+
+    <div class="more-section" data-more-category="{{ slug }}">
+        <span class="more-section__label">{{ cat.chip | default: slug }}</span>
         <span class="more-section__links">
-        {%- for page in cat_pages -%}
-            {%- assign tag_blob = page.tags | join: " " -%}
-            {%- assign link_text = page.short_title | default: page.title -%}
+        {%- for item in in_cat -%}
+            {%- assign tag_blob = item.tags | join: " " -%}
+            {%- assign link_text = item.short_title | default: item.title -%}
             <span
                 class="more-section__item"
-                data-more-search="{{ page.title | append: ' ' | append: page.short_title | append: ' ' | append: page.description | append: ' ' | append: cat | append: ' ' | append: tag_blob | strip | downcase | escape }}"
+                data-more-search="{{ item.title | append: ' ' | append: item.short_title | append: ' ' | append: item.description | append: ' ' | append: cat.label | append: ' ' | append: tag_blob | strip | downcase | escape }}"
             >
-            {%- if page.external_url -%}
-                <a href="{{ page.external_url }}" target="_blank" rel="noopener noreferrer">
+            {%- if item.external_url -%}
+                <a href="{{ item.external_url }}" target="_blank" rel="noopener noreferrer">
                     {{- link_text }} {% include icon.html name="arrow-up-right" %}
                 </a>
             {%- else -%}
-                <a href="{{ page.url | relative_url }}"
-                    {%- if page.description %} title="{{ page.description }}"{% endif -%}
+                <a href="{{ item.url | relative_url }}"
+                    {%- if item.description %} title="{{ item.description }}"{% endif -%}
                 >{{ link_text }}</a>
             {%- endif -%}
 
@@ -95,11 +92,6 @@ This page is an ongoing list of random things and projects I've built.
             {% endunless -%}
             </span>
         {%- endfor -%}
-        {%- if cat == "Archive" -%}
-            <span class="more-section__item more-section__item--bullet">
-                <a href="{{ '/archive' | relative_url }}" title="Browse the full art archive">all</a>
-            </span>
-        {%- endif -%}
         </span>
     </div>
 {%- endfor -%}

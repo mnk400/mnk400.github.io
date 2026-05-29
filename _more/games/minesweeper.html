@@ -1,0 +1,23 @@
+---
+redirect_from: /more/minesweeper
+layout: post
+title: Minesweeper
+tags: [game, puzzle]
+scripts: [/assets/js/games/minesweeper.js]
+---
+
+<div class="game-wrapper">
+    <div id="minesweeper-container">
+        <div id="minesweeper-header">
+            <div id="mine-counter">Mines: 10</div>
+            <div id="game-timer">Time: 0</div>
+        </div>
+        <div id="minesweeper-grid"></div>
+    </div>
+    <div id="minesweeper-controls" class="toolbar">
+        {% assign difficulty_options = "beginner:Beginner,intermediate:Intermediate,expert:Expert" | split: "," %}
+        {% include selection-switch.html id="difficulty-selector" class="difficulty-selector" options=difficulty_options default_active="beginner" %}
+        <button id="new-game-btn" class="normal-btn">New Game</button>
+        <span id="game-status"></span>
+    </div>
+</div>

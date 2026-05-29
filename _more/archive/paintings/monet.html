@@ -1,0 +1,35 @@
+---
+redirect_from: /more/monet
+layout: post
+title: Claude Monet
+short_title: Monet
+tags: [art, gallery, paintings, archive]
+image: /assets/images/previews/paintings/monet.jpg
+years: "1858 – 1926"
+order: 1
+blurb: "Impressionist I adore who painted the same lily pond a hundred times over."
+description: Browse Thousands of Claude Monet paintings.
+scripts: [/assets/js/media/image-gallery.js]
+header_only_view_transition: true
+---
+
+<p>
+    A small browser for thousands of Claude Monet paintings
+</p>
+
+{% include image-gallery.html
+    source="https://manik.cc/pipelines/paintings/monet/manifest.json"
+    gallery_name="monet"
+    loading_text="Loading paintings..."
+    summary=true
+    controls=true
+    sort_options="year-desc,year-asc,popularity-desc"
+    default_sort="popularity-desc"
+    filter_options="decade,series"
+    search=true
+    search_id="monet-search"
+    search_label="Search"
+    search_placeholder="search paintings"
+    search_target="#image-gallery-monet"
+    search_class="site-search--small image-gallery__search"
+%}

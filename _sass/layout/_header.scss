@@ -238,6 +238,10 @@ header:has(.header-breadcrumb) {
     font-weight: 400;
 }
 
+.header-breadcrumb .breadcrumb-mid {
+    color: var(--sec-text-color);
+}
+
 .breadcrumb-current {
     color: var(--sec-text-color);
 }

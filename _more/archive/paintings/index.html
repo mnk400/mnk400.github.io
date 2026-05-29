@@ -1,0 +1,57 @@
+---
+layout: post
+title: Archive of Paintings
+short_title: Paintings
+permalink: /archive/paintings/
+redirect_from: /archive/
+image: /assets/images/previews/archive.jpg
+description: A small archive of artwork from artists I like.
+disabled: true
+---
+
+<p>
+    A small browser for public-domain paintings and artwork from artists I like, each archive is searchable, sortable, and filterable.
+</p>
+
+{%- capture motivation -%}
+<p>All of this art is public domain, but most archives that host it are either wiki-style with rough navigation, museum pages with a limited set of artwork, or buried under ads.</p>
+<p>These pages are an attempt at a cleaner alternative. Started with Monet because nothing like it seemed to exist for him, then grew to cover a handful of other artists I like.</p>
+{%- endcapture -%}
+
+{% include expandable-section.html
+    id="archive-motivation"
+    title="Why I built this"
+    content=motivation
+%}
+
+<hr class="gallery-divider">
+
+{%- assign hub_path = page.path -%}
+{%- assign archive_pages = site.more
+    | where_exp: "p", "p.path contains '_more/archive/paintings/'"
+    | where_exp: "p", "p.path != hub_path"
+    | sort: "order" -%}
+
+<div class="gallery-grid">
+    {%- for page in archive_pages -%}
+    <a class="gallery-tile" href="{{ page.url | relative_url }}">
+        <span class="gallery-tile__cover">
+            {%- if page.image -%}
+            <img src="{{ page.image | relative_url }}" alt="" loading="lazy" decoding="async">
+            {%- endif -%}
+        </span>
+        <div class="gallery-tile__caption">
+            <h3 class="gallery-tile__title">
+                <span>{{ page.title }}</span>
+                <span class="gallery-tile__chevron" aria-hidden="true">{% include icon.html name="arrow-right" %}</span>
+            </h3>
+            {%- if page.years -%}
+            <p class="gallery-tile__meta">active {{ page.years }}</p>
+            {%- endif -%}
+            {%- if page.blurb -%}
+            <p class="gallery-tile__blurb">{{ page.blurb }}</p>
+            {%- endif -%}
+        </div>
+    </a>
+    {%- endfor -%}
+</div>

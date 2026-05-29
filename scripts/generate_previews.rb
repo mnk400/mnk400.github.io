@@ -69,7 +69,16 @@ rescue Psych::SyntaxError => error
 end
 
 def site_pages
-  patterns = ["*.html", "*.md", "_posts/*.{md,html}", "about/**/*.{md,html}", "more/**/*.{md,html}"]
+  patterns = [
+    "*.html",
+    "*.md",
+    "_posts/*.{md,html}",
+    "_more/**/*.{md,html}",
+    "about/**/*.{md,html}",
+    "art/**/*.{md,html}",
+    "more/**/*.{md,html}",
+    "photos/**/*.{md,html}"
+  ]
 
   patterns.flat_map { |pattern| ROOT.glob(pattern) }
           .select(&:file?)
@@ -81,6 +90,7 @@ def public_path_for(path)
   relative = path.relative_path_from(ROOT).to_s
   return "/" if relative == "index.html"
 
+  relative = relative.delete_prefix("_more/")
   relative = relative.delete_suffix("index.html")
   relative = relative.delete_suffix(".html")
   relative = relative.delete_suffix(".md")

@@ -1,0 +1,31 @@
+---
+redirect_from: /more/flappybird
+layout: post
+title: Flappy Bird
+image: /assets/images/previews/flappy.jpg
+tags: [game, arcade, canvas]
+scripts: [/assets/js/utils/device-detect.js, /assets/js/games/flappybird.js]
+---
+
+<br/>
+<div class="game-wrapper">
+    <div id="flappy-meta">
+        <span id="score">Score · 0</span>
+        <span id="high-score">Best · 0</span>
+    </div>
+    <div id="flappy-game-container">
+        <canvas id="flappyCanvas" width="525" height="640"></canvas>
+        <div id="flappy-ui">
+            <div id="game-over" style="display: none;">
+                <h2>game over</h2>
+                <p>final · <span id="final-score">0</span></p>
+                <button id="restart-btn" class="normal-btn button-dark-forced">play again</button>
+            </div>
+            <div id="start-screen">
+                <h2>flappy bird</h2>
+                <p>press space or click to fly</p>
+                <button id="start-btn" class="normal-btn button-dark-forced">start</button>
+            </div>
+        </div>
+    </div>
+</div>

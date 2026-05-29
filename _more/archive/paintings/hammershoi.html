@@ -1,0 +1,35 @@
+---
+redirect_from: /more/hammershoi
+layout: post
+title: Vilhelm Hammershøi
+short_title: Hammershøi
+tags: [art, gallery, paintings, archive]
+image: /assets/images/previews/paintings/hammershoi.jpg
+years: "1884 – 1916"
+order: 11
+blurb: "Danish painter of quiet interiors, gray light, turned backs, and still rooms."
+description: Browse an archive of Vilhelm Hammershøi paintings.
+scripts: [/assets/js/media/image-gallery.js]
+header_only_view_transition: true
+---
+
+<p>
+    A small browser archive of Vilhelm Hammershøi paintings
+</p>
+
+{% include image-gallery.html
+    source="https://manik.cc/pipelines/paintings/hammershoi/manifest.json"
+    gallery_name="hammershoi"
+    loading_text="Loading paintings..."
+    summary=true
+    controls=true
+    sort_options="year-desc,year-asc,popularity-desc"
+    default_sort="popularity-desc"
+    filter_options="decade,series"
+    search=true
+    search_id="hammershoi-search"
+    search_label="Search"
+    search_placeholder="search paintings"
+    search_target="#image-gallery-hammershoi"
+    search_class="site-search--small image-gallery__search"
+%}

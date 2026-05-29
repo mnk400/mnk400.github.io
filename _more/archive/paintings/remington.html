@@ -1,0 +1,35 @@
+---
+redirect_from: /more/remington
+layout: post
+title: Frederic Remington
+short_title: Remington
+tags: [art, gallery, paintings, archive]
+image: /assets/images/previews/paintings/remington.jpg
+years: "1881 – 1909"
+order: 5
+blurb: "Painted the Old West in its last days: cowboys, cavalry, dust, and horses."
+description: Browse an archive of Frederic Remington paintings.
+scripts: [/assets/js/media/image-gallery.js]
+header_only_view_transition: true
+---
+
+<p>
+    A small browser archive of Frederic Remington paintings
+</p>
+
+{% include image-gallery.html
+    source="https://manik.cc/pipelines/paintings/remington/manifest.json"
+    gallery_name="remington"
+    loading_text="Loading paintings..."
+    summary=true
+    controls=true
+    sort_options="year-desc,year-asc,popularity-desc"
+    default_sort="popularity-desc"
+    filter_options="decade,series"
+    search=true
+    search_id="remington-search"
+    search_label="Search"
+    search_placeholder="search paintings"
+    search_target="#image-gallery-remington"
+    search_class="site-search--small image-gallery__search"
+%}

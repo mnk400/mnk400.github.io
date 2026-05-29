@@ -1,0 +1,36 @@
+---
+redirect_from: /more/ascii
+layout: tool
+title: ASCII Art Converter
+description: Convert an image into a simple ASCII art
+tags: [art, image, ascii, converter, tool]
+intro: Convert an image to ASCII art.
+scripts: [/assets/js/utils/ascii-utils.js, /assets/js/tools/photo-to-ascii.js]
+---
+
+{% assign palette_options = "classic:Classic,blocks:Blocks,minimal:Minimal" | split: "," %}
+{% assign dither_options = "none:Smooth,ordered:Ordered,floyd:Floyd" | split: "," %}
+
+<div class="ascii-container stack">
+    <div class="stack">
+        {% include image-upload.html %}
+        {% include range-slider.html id='width' value='80' min='15' max='150' unit='Characters' %}
+
+        <div class="field">
+            <span class="field__label">palette</span>
+            {% include selection-switch.html id="ascii-palette-toggle" size="small" options=palette_options default_active="classic" %}
+        </div>
+        <div class="field">
+            <span class="field__label">dither</span>
+            {% include selection-switch.html id="ascii-dither-toggle" size="small" options=dither_options default_active="none" %}
+        </div>
+
+        <div class="toolbar">
+            <button id="convert-btn" class="normal-btn">Convert to ASCII</button>
+            <button id="copy-btn" class="normal-btn" data-copy="" data-copy-feedback="Copied" style="display: none;">Copy Text</button>
+            <button id="download-btn" class="normal-btn" style="display: none;">Download PNG</button>
+        </div>
+    </div>
+
+    <pre id="ascii-output"></pre>
+</div>

@@ -43,8 +43,8 @@
                     />
                 </div>
                 <div class="site-name-menu" id="siteNameMenu">
-                    <a href="/more">more</a>
-                    <a href="/photos">photos</a>
+                    <a href="/more/">more</a>
+                    <a href="/photos/">photos</a>
                     <a href="https://linkedin.com/in/manik-kumar" target="_blank">linkedin</a>
                     <a href="mailto:me@manik.cc">email</a>
                     <span class="menu-sep">/</span>
@@ -62,7 +62,34 @@
                 </a>
                 <a href="/" class="breadcrumb-home">Manik</a>
                 <span class="breadcrumb-sep">/</span>
-                <span class="breadcrumb-current">{{ page.title }}</span>
+                {%- if page.collection == "more" -%}
+                    {%- assign rel_path = page.path | remove_first: "_more/" -%}
+                    {%- assign all_segs = rel_path | split: "/" -%}
+                    {%- assign segs = "" | split: "," -%}
+                    {%- for s in all_segs -%}
+                        {%- unless s == "index.html" -%}
+                            {%- assign segs = segs | push: s -%}
+                        {%- endunless -%}
+                    {%- endfor -%}
+                    {%- assign num_ancestors = segs.size | minus: 1 -%}
+                    {%- assign accum_url = "" -%}
+                    {%- for slug in segs limit: num_ancestors -%}
+                        {%- assign accum_url = accum_url | append: "/" | append: slug -%}
+                        {%- assign hub_url = accum_url | append: "/" -%}
+                        {%- assign cat_entry = site.data.categories[slug] -%}
+                        {%- assign cat_label = cat_entry.label | default: slug -%}
+                        {%- assign hub_page = site.more | where: "url", hub_url | first -%}
+                        {%- assign vt_name = "nav-mid-" | append: forloop.index0 -%}
+                        {%- assign vt_sep_name = "nav-sep-mid-" | append: forloop.index0 -%}
+                        {%- if hub_page -%}
+                            <a href="{{ hub_url }}" class="breadcrumb-mid" style="view-transition-name: {{ vt_name }}">{{ cat_label }}</a>
+                        {%- else -%}
+                            <span class="breadcrumb-mid" style="view-transition-name: {{ vt_name }}">{{ cat_label }}</span>
+                        {%- endif -%}
+                        <span class="breadcrumb-sep breadcrumb-sep--mid" style="view-transition-name: {{ vt_sep_name }}">/</span>
+                    {%- endfor -%}
+                {%- endif -%}
+                <span class="breadcrumb-current">{{ page.short_title | default: page.title }}</span>
             </nav>
             {% endif %}
         </div>
