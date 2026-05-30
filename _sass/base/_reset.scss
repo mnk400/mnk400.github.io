@@ -120,4 +120,19 @@ table {
     border-spacing: 0;
 }
 
+// Loading-state placeholder fill for in-flow images (blog posts, hero images,
+// anywhere the img sits directly in the document flow). The shape-imposed
+// container patterns (.reveal-card__media, .image-ratio-box) paint their own
+// placeholder, and icons want true transparency, so opt those out below.
+img {
+    background-color: var(--translucent-low);
+}
+
+.reveal-card__media img,
+.image-ratio-box img,
+.product__icon,
+.site-name-flower {
+    background-color: transparent;
+}
+
 /* END RESET */

@@ -112,13 +112,13 @@ layout: default
 
     {% if page.hero_image %}
     <section class="product__hero-image">
-        {% include zoomable-image.html src=page.hero_image alt=page.title %}
+        {% include zoomable-image.html src=page.hero_image alt=page.title width=page.hero_image_width height=page.hero_image_height %}
     </section>
     {% endif %}
 
     {% if page.demo_image %}
     <section class="product__demo">
-        {% include zoomable-image.html src=page.demo_image alt=page.title %}
+        {% include zoomable-image.html src=page.demo_image alt=page.title width=page.demo_image_width height=page.demo_image_height %}
     </section>
     {% endif %}
 
@@ -135,7 +135,7 @@ layout: default
         <div class="product__screenshots-grid">
             {% for shot in page.screenshots %}
             <div class="product__screenshot stack stack--sm">
-                {% include zoomable-image.html src=shot.src alt=shot.alt %}
+                {% include zoomable-image.html src=shot.src alt=shot.alt width=shot.width height=shot.height %}
                 {% if shot.caption %}<p class="product__screenshot-caption">{{ shot.caption }}</p>{% endif %}
             </div>
             {% endfor %}
@@ -148,7 +148,8 @@ layout: default
         <div class="github-readme__loading" hidden>Loading README…</div>
         <div class="post__content github-readme__content reveal__stage"
              data-repo="{{ page.repo }}"
-             data-branch="{{ page.branch | default: 'main' }}"></div>
+             data-branch="{{ page.branch | default: 'main' }}"
+             {% if page.readme_images %}data-readme-images='{{ page.readme_images | jsonify }}'{% endif %}></div>
     </section>
     {% endif %}
 

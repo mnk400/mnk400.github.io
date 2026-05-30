@@ -241,8 +241,7 @@
       if (img.naturalWidth > 0 && img.naturalHeight > 0) {
         const ratioBox = img.closest(".image-ratio-box");
         if (ratioBox) {
-          ratioBox.style.paddingBottom =
-            (img.naturalHeight / img.naturalWidth) * 100 + "%";
+          ratioBox.style.aspectRatio = `${img.naturalWidth} / ${img.naturalHeight}`;
         }
       }
       card.classList.add("loaded");
@@ -293,7 +292,7 @@
     ratioBox.className = "image-ratio-box";
 
     const aspectRatio = item.width && item.height ? item.width / item.height : 1;
-    ratioBox.style.paddingBottom = (1 / aspectRatio) * 100 + "%";
+    ratioBox.style.aspectRatio = `${item.width || 1} / ${item.height || 1}`;
 
     const img = document.createElement("img");
     img.dataset.src = item.thumb;

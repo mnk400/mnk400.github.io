@@ -158,14 +158,10 @@
 
         img {
             padding: 0;
+            max-width: 100%;
+            height: auto;
             border-radius: var(--radius-md);
-            opacity: 0;
-            transition: opacity var(--transition-slow);
             @include soft-outline;
-
-            &.loaded {
-                opacity: 1;
-            }
         }
     }
 

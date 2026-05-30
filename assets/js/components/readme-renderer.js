@@ -12,6 +12,16 @@
     const rawBase = "https://raw.githubusercontent.com/" + repo + "/" + branch;
     const url = rawBase + "/README.md";
 
+    // Optional manifest of {path, width, height} for README images, declared in
+    // the page front matter. The dims become HTML width/height attrs so the
+    // browser reserves space before the bytes arrive — same CLS trick we use
+    // for blog images, just driven by the page since the image lives upstream.
+    let imageDims = [];
+    const dimsAttr = container.getAttribute("data-readme-images");
+    if (dimsAttr) {
+        try { imageDims = JSON.parse(dimsAttr) || []; } catch (e) {}
+    }
+
     marked.setOptions({
         gfm: true,
         breaks: false,
@@ -80,19 +90,19 @@
             }
 
             // Make rendered images zoomable (image-zoom.js delegates on [data-zoomable])
-            // and fade each one in once its bytes arrive so they don't pop abruptly.
+            // and apply any front-matter dims so space is reserved before bytes arrive.
             const imgs = container.querySelectorAll("img");
             for (let i = 0; i < imgs.length; i++) {
                 const img = imgs[i];
                 img.setAttribute("data-zoomable", "");
-                if (img.complete && img.naturalWidth > 0) {
-                    img.classList.add("loaded");
-                } else {
-                    const markLoaded = function () {
-                        img.classList.add("loaded");
-                    };
-                    img.addEventListener("load", markLoaded, { once: true });
-                    img.addEventListener("error", markLoaded, { once: true });
+                const src = img.getAttribute("src") || "";
+                for (let j = 0; j < imageDims.length; j++) {
+                    const entry = imageDims[j];
+                    if (entry && entry.path && src.indexOf(entry.path) !== -1) {
+                        if (entry.width) img.setAttribute("width", entry.width);
+                        if (entry.height) img.setAttribute("height", entry.height);
+                        break;
+                    }
                 }
             }
 

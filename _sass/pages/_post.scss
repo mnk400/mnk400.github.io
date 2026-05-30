@@ -79,6 +79,10 @@
         > img,
         > p > img {
             max-width: 100%;
+            // Must pair with `height: auto` so the HTML `height` attr (used for
+            // CLS reservation) doesn't become a hard pixel height when CSS
+            // shrinks the width via max-width.
+            height: auto;
             padding: 0;
             display: block;
             margin: 0 auto;

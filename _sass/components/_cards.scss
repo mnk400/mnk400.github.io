@@ -52,10 +52,9 @@
     }
 
     // Aspect-ratio skeleton — reserves height before image loads so the
-    // masonry layout never reflows. padding-bottom is set inline from the
-    // manifest's width/height ratio.
+    // masonry layout never reflows. The ratio is set inline as `aspect-ratio`
+    // from the manifest's width/height.
     .image-ratio-box {
-        position: relative;
         width: 100%;
         background-color: var(--translucent-low);
         border-radius: var(--radius-sm);
@@ -63,16 +62,10 @@
         @include soft-outline(var(--translucent-medium));
 
         img {
-            position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
             display: block;
             object-fit: cover;
-            // Override .post__content img padding so the ratio-box background
-            // doesn't peek through as a faint bar at the top/bottom edges.
-            padding: 0;
         }
     }
 }

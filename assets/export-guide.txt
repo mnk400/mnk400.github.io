@@ -571,6 +571,23 @@ html and body both use --background-main as the page background. Keep both in
 sync so browser canvas and View Transition paints never expose a transparent
 body over a default background.
 
+Image patterns — two shapes for two intents, do not mix:
+
+  Shape-imposed (cards, gallery tiles, screenshot grids):
+    Container sets `aspect-ratio` (via CSS or inline) at width:100%; img inside
+    is width:100%, height:100%, object-fit:cover. The container reserves
+    layout space, paints the placeholder fill, and crops arbitrary sources to
+    the chosen shape. Examples: .reveal-card__media, .image-ratio-box.
+
+  Natural-aspect (in-flow blog post images, hero images that preserve source
+  shape):
+    Use {% include zoomable-image.html src= alt= width=N height=N %}. The
+    width/height attrs feed the browser the intrinsic ratio so it reserves
+    correct space pre-load. Base `img` CSS supplies `max-width: 100%`,
+    `height: auto`, and a translucent placeholder fill. For EXIF-rotated
+    camera images (orientation 5–8), swap width/height to match displayed
+    dims, not stored bytes.
+
 Fullscreen (for tools/games):
     <body class="fullscreen">
 

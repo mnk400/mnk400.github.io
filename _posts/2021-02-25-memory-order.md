@@ -3,7 +3,7 @@ layout: post
 title: "C vs Fortran memory order"
 description: "Understanding the difference between row-major and column-major memory ordering in C/C++ vs Fortran"
 date: 2021-02-25
-image: https://i.imgur.com/XAXOPdT.png
+image: /assets/images/posts/memory-order/XAXOPdT.png
 ---
 # C vs Fortran memory order.
 
@@ -12,14 +12,14 @@ There are two major types of memory ordering techniques used in programming lang
 ## Row-major memory order
 In C/C++ arrays are indexed using row-major order, where consecutive elements of a row are stored next to each other. This means in a multidimensional array, let's say a 2D array, the first row is stored in a contiguous patch of memory, then the second row, and so on. 
 
-![](https://i.imgur.com/XAXOPdT.png)
+{% include zoomable-image.html src="/assets/images/posts/memory-order/XAXOPdT.png" alt="Row-major memory order diagram" width=443 height=241 %}
 
 Another way to state the above would say that the most rapidly changing index is the last in ```array[i][j]```. Here the index *j* would be the fastest-changing index and *j* refers to each column(or the elements inside the row). The index *i* would refer to the entire row.
 
 ## Column-major memory order
 In Fortran arrays are indexed using column-major order, where consecutive elements of a column instead of a row are stored next to each other. This means in a 2D array, the first column is stored in a contiguous patch of memory, then the second column, and so on. 
 
-![](https://i.imgur.com/GGgqpfw.png)
+{% include zoomable-image.html src="/assets/images/posts/memory-order/GGgqpfw.png" alt="Column-major memory order diagram" width=443 height=241 %}
 
 Hence in the case of ```array[i][j]```, the index row index, *i.e.* *i* would change the quickest rather than *j*, that is of course because the column elements instead of row elements are stored in contiguous memory.
 
@@ -56,10 +56,10 @@ Using ```order='F'``` you can specified Fortran-like memory ordering. The output
 
 The following diagrams depict how row-major and column-major memory orders would differ in higher dimensions.
 
-![](https://i.imgur.com/LD9MIOF.png)
+{% include zoomable-image.html src="/assets/images/posts/memory-order/LD9MIOF.png" alt="Row-major memory order in 3D" width=603 height=581 %}
 
 The above shows row-major memory order when using a 3D array. 
 
-![](https://i.imgur.com/PuCzUQk.png)
+{% include zoomable-image.html src="/assets/images/posts/memory-order/PuCzUQk.png" alt="Column-major memory order in 3D" width=603 height=201 %}
 
 The above shows column-major memory order when using a 3D array.

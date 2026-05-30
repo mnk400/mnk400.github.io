@@ -90,6 +90,6 @@ $$\left[\left(\alpha^{(n e w)}-\alpha^{(o l d)}\right)^{2}+\left(\beta^{(n e w)}
 
 Following are the results of the above algorithm for a gumbel destibution generated using α = 2.3 and β = 4.0 ran multiple times and averaged.
  
-![](https://i.imgur.com/EjvbGg5.png)
+{% include zoomable-image.html src="/assets/images/posts/gumble-mle/EjvbGg5.png" alt="Gumbel MLE iteration results" width=756 height=164 %}
 
 [Link to the code.](https://github.com/mnk400/gumbelMLE)
