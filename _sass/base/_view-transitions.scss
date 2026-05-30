@@ -2,21 +2,12 @@
 // VIEW TRANSITIONS (cross-document page navigation)
 // =============================================================================
 
-$vt-slide-distance: 12px;
-$vt-easing: cubic-bezier(0.4, 0, 0.2, 1);
-
 @view-transition {
     navigation: auto;
 }
 
 .page-content {
     view-transition-name: page-content;
-}
-
-body.header-only-view-transition {
-    .page-content {
-        view-transition-name: none;
-    }
 }
 
 html {
@@ -57,21 +48,21 @@ html {
 
 @keyframes vt-slide-out-up {
     from { opacity: 1; transform: translateY(0); }
-    to { opacity: 0; transform: translateY(-$vt-slide-distance); }
+    to { opacity: 0; transform: translateY(calc(var(--motion-slide-offset) * -1)); }
 }
 
 @keyframes vt-slide-in-up {
-    from { opacity: 0; transform: translateY($vt-slide-distance); }
+    from { opacity: 0; transform: translateY(var(--motion-slide-offset)); }
     to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes vt-slide-out-down {
     from { opacity: 1; transform: translateY(0); }
-    to { opacity: 0; transform: translateY($vt-slide-distance); }
+    to { opacity: 0; transform: translateY(var(--motion-slide-offset)); }
 }
 
 @keyframes vt-slide-in-down {
-    from { opacity: 0; transform: translateY(-$vt-slide-distance); }
+    from { opacity: 0; transform: translateY(calc(var(--motion-slide-offset) * -1)); }
     to { opacity: 1; transform: translateY(0); }
 }
 
@@ -90,11 +81,11 @@ html {
 // -----------------------------------------------------------------------------
 
 ::view-transition-old(page-content) {
-    animation: vt-slide-out-up 0.25s $vt-easing both;
+    animation: vt-slide-out-up var(--transition-slow) both;
 }
 
 ::view-transition-new(page-content) {
-    animation: vt-slide-in-up 0.25s $vt-easing both;
+    animation: vt-slide-in-up var(--transition-slow) both;
 }
 
 html[data-vt-direction="back"] {
@@ -112,28 +103,29 @@ html[data-vt-direction="back"] {
 // -----------------------------------------------------------------------------
 
 ::view-transition-old(site-header) {
-    animation: vt-fade-out 0.2s $vt-easing both;
+    animation: vt-fade-out var(--transition-medium) both;
 }
 
 ::view-transition-new(site-header) {
-    animation: vt-fade-in 0.2s $vt-easing both;
+    animation: vt-fade-in var(--transition-medium) both;
 }
 
 // -----------------------------------------------------------------------------
-// Nav breadcrumb shared elements: let the UA crossfade run.
-// Using `animation: none` here leaves both old+new snapshots at opacity 1 for
-// the full duration, which doubles-up any subpixel/font-loading mismatch into
-// visible ghosting. A short fade hides those mismatches on identical elements.
+// Nav breadcrumb shared elements: short crossfade.
+// `animation: none` would leave both old+new snapshots at opacity 1 for the full
+// duration, doubling up any subpixel/font-loading mismatch into visible ghosting.
 // -----------------------------------------------------------------------------
 
 ::view-transition-old(nav-back),
-::view-transition-new(nav-back),
 ::view-transition-old(nav-home),
+::view-transition-old(nav-sep) {
+    animation: vt-fade-out var(--transition-medium) both;
+}
+
+::view-transition-new(nav-back),
 ::view-transition-new(nav-home),
-::view-transition-old(nav-sep),
 ::view-transition-new(nav-sep) {
-    animation-duration: 0.2s;
-    animation-timing-function: $vt-easing;
+    animation: vt-fade-in var(--transition-medium) both;
 }
 
 // -----------------------------------------------------------------------------

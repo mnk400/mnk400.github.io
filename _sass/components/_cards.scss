@@ -41,6 +41,11 @@
     opacity: 0;
     transition: opacity var(--transition-slow);
     width: 100%;
+    // Skip layout/paint for offscreen cards. Big galleries (Monet ~2k items)
+    // froze Safari's VT snapshot for 1–2s; with this the browser only
+    // rasterizes visible cards, so the snapshot stays cheap.
+    content-visibility: auto;
+    contain-intrinsic-size: auto 0 auto 400px;
 
     &.loaded {
         opacity: 1;

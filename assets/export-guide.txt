@@ -698,10 +698,10 @@ The CSS keeps the document root participating as the stable background layer and
 sets the view-transition overlay background to --background-main, so transparent
 content fades do not expose the browser canvas during rapid history navigation.
 
-No page-level skip logic is included. For pages with very large DOM subtrees,
-prefer opting expensive named regions out in CSS (for example setting
-view-transition-name: none on the heavy page content) while keeping lightweight
-shared elements such as headers named.
+No page-level skip logic is included. For pages with very large DOM subtrees
+(e.g. galleries with thousands of items), rely on `content-visibility: auto` on
+the heavy children so the browser skips offscreen rendering — this also keeps
+the VT snapshot cheap on Safari.
 
 
 --- ui-components.js ---

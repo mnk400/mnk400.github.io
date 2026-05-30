@@ -7,13 +7,12 @@
 // top-to-bottom cascade). Once data lands, the host gets `.is-ready` from JS
 // and stages fade+slide into place. Honors `prefers-reduced-motion`.
 
-$reveal-offset: 8px;
 $reveal-stagger: 60ms;
 
 .reveal {
     &__stage {
         opacity: 0;
-        transform: translateY($reveal-offset);
+        transform: translateY(var(--motion-slide-offset));
         transition:
             opacity var(--transition-slow),
             transform var(--transition-slow);

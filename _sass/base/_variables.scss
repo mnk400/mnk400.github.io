@@ -135,6 +135,9 @@ $themes: (
     --transition-backdrop: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-slowest: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 
+    // Motion tokens (shared by view transitions + reveal)
+    --motion-slide-offset: 8px;
+
     // Shadows
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
     --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);
