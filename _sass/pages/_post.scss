@@ -48,6 +48,10 @@
             margin-top: var(--post-flow-space);
         }
 
+        h1, h2 {
+            margin-top: var(--spacing-lg);
+        }
+
         hr {
             width: 10%;
             color: var(--background-main);

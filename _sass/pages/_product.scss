@@ -126,6 +126,7 @@
 
     &__hero-image,
     &__demo {
+        margin-top: var(--spacing-md);
         img {
             border-radius: var(--radius-lg);
         }
