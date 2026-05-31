@@ -39,16 +39,22 @@ description: A small archive of artwork from artists I like.
             <img src="{{ page.image | relative_url }}" alt="" loading="lazy" decoding="async">
             {%- endif -%}
             <span class="reveal-card__overlay" id="{{ card_details_id }}">
-                {% if page.years %}
-                <span class="reveal-card__meta">active {{ page.years }}</span>
-                {% endif %}
                 {% if page.blurb %}
                 <span class="reveal-card__body">{{ page.blurb }}</span>
                 {% endif %}
             </span>
         </span>
         <div class="painting-index-card__caption">
-            <span class="painting-index-card__title" id="{{ card_title_id }}">{{ page.title }}</span>
+            <div class="painting-index-card__heading">
+                <span class="painting-index-card__title" id="{{ card_title_id }}">{{ page.title }}</span>
+                {%- if page.years or page.works -%}
+                <span class="painting-index-card__sub">
+                    {%- if page.years -%}active {{ page.years }}{%- endif -%}
+                    {%- if page.years and page.works %} &middot; {% endif -%}
+                    {%- if page.works -%}{{ page.works }} works{%- endif -%}
+                </span>
+                {%- endif -%}
+            </div>
             <span class="painting-index-card__arrow" aria-hidden="true">{% include icon.html name="arrow-up-right" %}</span>
         </div>
     </a>

@@ -121,6 +121,10 @@
         .reveal-card__overlay {
             opacity: 1;
         }
+
+        .reveal-card__overlay > * {
+            transform: translateY(0);
+        }
     }
 
     &:focus-visible {
@@ -132,6 +136,10 @@
 
         .reveal-card__overlay {
             opacity: 1;
+        }
+
+        .reveal-card__overlay > * {
+            transform: translateY(0);
         }
     }
 }
@@ -168,15 +176,24 @@
     gap: var(--spacing-sm);
     padding: var(--reveal-card-padding);
     border-radius: inherit;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.52);
     color: rgba(255, 255, 255, 0.92);
     opacity: 0;
     transition: opacity var(--transition-slow);
+
+    > * {
+        transform: translateY(6px);
+        transition: transform var(--transition-slow);
+    }
 }
 
 .reveal-card.is-revealed .reveal-card__overlay,
 .reveal-card__overlay.show-overlay {
     opacity: 1;
+
+    > * {
+        transform: translateY(0);
+    }
 }
 
 .reveal-card__copy {
