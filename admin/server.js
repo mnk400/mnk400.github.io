@@ -95,6 +95,17 @@ function requireCreds(res) {
   return true;
 }
 
+function serveFile(res, fileName, contentType) {
+  const filePath = path.join(__dirname, fileName);
+  if (!fs.existsSync(filePath)) {
+    res.writeHead(404);
+    res.end('Not found');
+    return;
+  }
+  res.writeHead(200, { 'Content-Type': contentType });
+  res.end(fs.readFileSync(filePath));
+}
+
 // =============================================================================
 // HTTP server
 // =============================================================================
@@ -121,6 +132,16 @@ const server = http.createServer(async (req, res) => {
     html = html.replace('</head>', configScript + '\n</head>');
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     return res.end(html);
+  }
+
+  if (req.method === 'GET' && url.pathname === '/admin.css') {
+    serveFile(res, 'admin.css', 'text/css; charset=utf-8');
+    return;
+  }
+
+  if (req.method === 'GET' && url.pathname === '/admin.js') {
+    serveFile(res, 'admin.js', 'application/javascript; charset=utf-8');
+    return;
   }
 
   // Discover albums: /api/albums

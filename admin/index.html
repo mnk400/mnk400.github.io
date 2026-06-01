@@ -10,219 +10,31 @@
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
     <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2/src/bold/style.css">
 
-    <style>
-        body {
-            padding: var(--spacing-xl);
-            font-weight: 300;
-        }
-
-        .admin-wrapper {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--spacing-xl);
-        }
-
-        .admin-header h1 { margin: 0; }
-
-        .album-bar {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            margin-bottom: var(--spacing-md);
-            flex-wrap: wrap;
-        }
-
-        .album-actions {
-            display: flex;
-            gap: var(--spacing-sm);
-            margin-bottom: var(--spacing-xl);
-        }
-
-        /* Upload zone — uses .image-selector pattern */
-        .upload-zone {
-            margin-bottom: var(--spacing-xl);
-        }
-
-        .upload-zone input[type="file"] { display: none; }
-
-        .image-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: var(--spacing-md);
-        }
-
-        .image-tile {
-            position: relative;
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            background: var(--translucent-low);
-            cursor: grab;
-            transition: outline var(--transition-medium);
-            outline: 2px solid transparent;
-        }
-
-        .image-tile.dragging { opacity: 0.4; }
-        .image-tile.drag-over { outline: 2px solid var(--contrast-overlay); }
-
-        .image-tile img {
-            width: 100%;
-            display: block;
-            aspect-ratio: 1;
-            object-fit: cover;
-        }
-
-        .image-tile .tile-overlay {
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            padding: var(--spacing-xs) var(--spacing-sm);
-            background: var(--translucent-high);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            display: flex;
-            flex-direction: column;
-            align-items: stretch;
-            gap: 2px;
-        }
-
-        .image-tile .tile-title,
-        .image-tile .tile-field {
-            width: 100%;
-            min-width: 0;
-            background: none;
-            border: none;
-            color: #fff;
-            font-size: 0.7em;
-            font-family: inherit;
-            font-weight: 300;
-            padding: 2px 0;
-            outline: none;
-        }
-
-        .image-tile .tile-title:focus,
-        .image-tile .tile-field:focus {
-            border-bottom: 1px solid var(--sec-text-color);
-        }
-
-        .image-tile .tile-field option {
-            color: #000;
-        }
-
-        .image-tile .tile-delete {
-            position: absolute;
-            top: 6px;
-            right: 6px;
-            width: 28px;
-            height: 28px;
-            padding: 0;
-            border-radius: 50%;
-            border: none;
-            background: var(--translucent-high);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            color: #fff;
-            cursor: pointer;
-            line-height: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background var(--transition-medium), opacity var(--transition-medium);
-            z-index: 2;
-            opacity: 0;
-        }
-
-        .image-tile .tile-delete i { font-size: 14px; }
-
-        @media (any-hover: hover) {
-            .image-tile:hover .tile-delete { opacity: 1; }
-            .image-tile .tile-delete:hover { background: var(--contrast-overlay-hover); }
-        }
-
-        .image-tile .broken-placeholder {
-            width: 100%;
-            aspect-ratio: 1;
-            background: var(--translucent-high);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--sec-text-color);
-            font-size: 1.5em;
-        }
-
-        .action-bar {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-            margin-bottom: var(--spacing-md);
-        }
-
-        .action-bar .status-bar {
-            flex: 1;
-            margin-bottom: 0;
-        }
-
-        .status-bar {
-            font-size: 0.8em;
-            color: var(--sec-text-color);
-            margin-bottom: var(--spacing-md);
-        }
-
-        .btn--publish {
-            white-space: nowrap;
-            display: none;
-        }
-
-        .btn--publish.has-changes {
-            display: inline-flex;
-            animation: pulse-accent 2s infinite;
-        }
-
-        @keyframes pulse-accent {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        @media (max-width: 600px) {
-            .image-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
-        }
-    </style>
+    <link rel="stylesheet" href="/admin.css">
 </head>
 <body>
-    <div class="admin-wrapper">
-        <!-- TODO: theme toggle -->
-        <div class="admin-header">
-            <h1>Admin</h1>
-        </div>
+    <div class="admin-wrapper stack stack--lg">
+        <h1>Admin</h1>
 
-        <!-- Album selector -->
-        <div class="album-bar">
-            <div class="selection-switch" id="album-switch"></div>
-        </div>
+        <div class="selection-switch" id="album-switch"></div>
 
-        <div class="album-actions">
-            <button class="btn" onclick="promptNewAlbum()">
+        <div class="cluster cluster--sm">
+            <button class="btn" id="new-album-btn">
                 <i class="ph-bold ph-plus"></i> New Album
             </button>
-            <button class="btn" onclick="promptManageFields()">
+            <button class="btn" id="manage-fields-btn">
                 <i class="ph-bold ph-sliders"></i> Manage Fields
             </button>
         </div>
 
-        <!-- Upload zone -->
-        <div class="upload-zone image-selector" id="upload-zone">
+        <div class="upload-zone" id="upload-zone">
             <p>Drop images here or click to upload</p>
-            <input type="file" id="file-input" multiple accept="image/*">
+            <input class="image-upload__input" type="file" id="file-input" multiple accept="image/*">
         </div>
 
-        <!-- Action bar with publish button -->
-        <div class="action-bar">
+        <div class="action-bar toolbar">
             <div class="status-bar" id="status-bar"></div>
-            <button class="btn btn--publish" id="publish-btn" onclick="publish()" disabled>
+            <button class="btn btn--publish" id="publish-btn" disabled>
                 Publish
             </button>
         </div>
@@ -230,499 +42,81 @@
         <div class="image-grid" id="image-grid"></div>
     </div>
 
+    <div class="admin-modal" id="fields-modal" hidden>
+        <form class="admin-modal__panel" id="fields-form">
+            <div class="admin-modal__header flex-between">
+                <h2>Manage Fields</h2>
+                <button class="btn field-row__remove" id="fields-close-btn" type="button" aria-label="Close">
+                    <i class="ph-bold ph-x"></i>
+                </button>
+            </div>
+
+            <div class="stack">
+                <p class="admin-modal__hint">
+                    Fields define the per-image values stored in item.meta. Options are only used by Select fields.
+                </p>
+
+                <div class="cluster cluster--sm" aria-label="Common fields">
+                    <button class="btn btn--small" type="button" data-field-template="owned">Owned</button>
+                    <button class="btn btn--small" type="button" data-field-template="camera">Camera</button>
+                    <button class="btn btn--small" type="button" data-field-template="film">Film</button>
+                    <button class="btn btn--small" type="button" data-field-template="location">Location</button>
+                    <button class="btn btn--small" type="button" data-field-template="notes">Notes</button>
+                </div>
+
+                <div class="stack stack--sm" id="field-manager"></div>
+
+                <button class="btn" type="button" id="add-field-btn">
+                    <i class="ph-bold ph-plus"></i> Add Field
+                </button>
+            </div>
+
+            <div class="admin-modal__footer flex-between">
+                <button class="btn" type="button" id="fields-cancel-btn">Cancel</button>
+                <button class="btn" type="submit">Save Fields</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="item-editor" id="item-editor" hidden>
+        <div class="item-editor__backdrop" data-close-editor></div>
+        <form class="item-editor__panel" id="item-editor-form">
+            <div class="item-editor__header flex-between">
+                <h2>Edit Image</h2>
+                <button class="btn field-row__remove" type="button" data-close-editor aria-label="Close editor">
+                    <i class="ph-bold ph-x"></i>
+                </button>
+            </div>
+
+            <img class="item-editor__preview" id="editor-preview" alt="">
+
+            <div class="stack">
+                <div class="field">
+                    <label class="field__label" for="editor-title">Title</label>
+                    <input id="editor-title" type="text" autocomplete="off">
+                </div>
+
+                <div class="field">
+                    <label class="field__label" for="editor-description">Description</label>
+                    <textarea id="editor-description"></textarea>
+                </div>
+
+                <div class="stack" id="editor-meta"></div>
+            </div>
+
+            <div class="item-editor__footer flex-between">
+                <button class="btn" type="button" id="editor-delete-btn">
+                    <i class="ph-bold ph-trash"></i> Delete
+                </button>
+                <button class="btn" type="button" data-close-editor>Done</button>
+            </div>
+        </form>
+    </div>
+
     <script src="https://manik.cc/assets/js/core/theme-config.js"></script>
     <script src="https://manik.cc/assets/js/core/theme-manager.js"></script>
     <script src="https://manik.cc/assets/js/core/ui-components.js"></script>
 
-    <script>
-    const CONFIG = window.__R2_CONFIG || { publicUrl: '', bucket: '', albums: ['photos', 'art'] };
-
-    let albums = [];
-    let currentAlbum = localStorage.getItem('r2-admin-album') || '';
-    let manifest = emptyManifest('');
-    let savedManifestJson = '';
-    let dragSrcIndex = null;
-    let pendingDeletes = [];
-
-    function albumBaseUrl(album) {
-        const publicUrl = (CONFIG.publicUrl || '').replace(/\/$/, '');
-        return publicUrl && album ? `${publicUrl}/${album}` : publicUrl;
-    }
-
-    function albumRelativePath(album, path) {
-        if (!path) return '';
-        const cleanPath = String(path).replace(/^\//, '');
-        return cleanPath.startsWith(`${album}/`) ? cleanPath.slice(album.length + 1) : cleanPath;
-    }
-
-    function objectKey(album, path) {
-        if (!path) return '';
-        const cleanPath = String(path).replace(/^\//, '');
-        return cleanPath.startsWith(`${album}/`) ? cleanPath : `${album}/${cleanPath}`;
-    }
-
-    function emptyManifest(album) {
-        const name = album ? album.charAt(0).toUpperCase() + album.slice(1) : '';
-        return {
-            version: 1,
-            name,
-            base_url: albumBaseUrl(album),
-            items: [],
-            editor: { fields: [] },
-            source: { generator: 'admin-portal', generated: '' },
-        };
-    }
-
-    // =========================================================================
-    // R2 helpers
-    // =========================================================================
-
-    async function r2Request(method, objectKey, body, contentType) {
-        const opts = { method };
-        if (contentType) opts.headers = { 'Content-Type': contentType };
-        if (body && method !== 'GET' && method !== 'HEAD') opts.body = body;
-        return fetch('/r2/' + encodeURIComponent(objectKey).replace(/%2F/g, '/'), opts);
-    }
-
-    async function getManifest(album) {
-        const res = await r2Request('GET', `${album}/manifest.json`);
-        if (!res.ok) {
-            if (res.status === 404) return emptyManifest(album);
-            throw new Error(`Failed to fetch manifest: ${res.status}`);
-        }
-        const data = await res.json();
-        if (data.version !== 1) {
-            throw new Error(`Unsupported manifest version (${data.version ?? 'v0'}). Expected v1.`);
-        }
-        if (!Array.isArray(data.items)) data.items = [];
-        if (!data.editor || !Array.isArray(data.editor.fields)) data.editor = { fields: [] };
-        if (!data.source) data.source = { generator: 'admin-portal', generated: '' };
-        data.base_url = albumBaseUrl(album);
-        data.items.forEach(item => {
-            item.thumb = albumRelativePath(album, item.thumb);
-            item.full = albumRelativePath(album, item.full);
-        });
-        return data;
-    }
-
-    async function putManifest(album, data) {
-        data.source = data.source || { generator: 'admin-portal' };
-        data.source.generator = 'admin-portal';
-        data.source.generated = new Date().toISOString();
-        const res = await r2Request('PUT', `${album}/manifest.json`, JSON.stringify(data, null, 2), 'application/json');
-        if (!res.ok) throw new Error(`Failed to save manifest: ${res.status}`);
-    }
-
-    async function putImage(album, folder, key, blob, contentType) {
-        const res = await r2Request('PUT', `${album}/${folder}/${key}`, await blob.arrayBuffer(), contentType);
-        if (!res.ok) throw new Error(`Failed to upload ${folder}/${key}: ${res.status}`);
-    }
-
-    // =========================================================================
-    // Dirty state
-    // =========================================================================
-
-    function isDirty() {
-        return JSON.stringify(manifest) !== savedManifestJson || pendingDeletes.length > 0;
-    }
-
-    function updatePublishButton() {
-        const btn = document.getElementById('publish-btn');
-        const dirty = isDirty();
-        btn.disabled = !dirty;
-        btn.classList.toggle('has-changes', dirty);
-    }
-
-    function markClean() {
-        savedManifestJson = JSON.stringify(manifest);
-        pendingDeletes = [];
-        updatePublishButton();
-    }
-
-    // =========================================================================
-    // Image processing
-    // =========================================================================
-
-    function resizeImage(file, maxSize) {
-        return new Promise((resolve) => {
-            const img = new Image();
-            const url = URL.createObjectURL(file);
-            img.onload = () => {
-                URL.revokeObjectURL(url);
-                let { width, height } = img;
-                const ratio = Math.min(1, maxSize / width, maxSize / height);
-                const nw = Math.round(width * ratio);
-                const nh = Math.round(height * ratio);
-                const c = document.createElement('canvas');
-                c.width = nw; c.height = nh;
-                c.getContext('2d').drawImage(img, 0, 0, nw, nh);
-                c.toBlob(blob => resolve({ blob, width: nw, height: nh }), 'image/jpeg', 0.9);
-            };
-            img.src = url;
-        });
-    }
-
-    function slugify(name) {
-        return name.toLowerCase().replace(/\.[^.]+$/, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '.jpg';
-    }
-
-    // =========================================================================
-    // Albums
-    // =========================================================================
-
-    function renderAlbumSwitch() {
-        const sw = document.getElementById('album-switch');
-        sw.innerHTML = '';
-        albums.forEach(a => {
-            const btn = document.createElement('button');
-            btn.className = 'switch-option' + (a === currentAlbum ? ' active' : '');
-            btn.textContent = a;
-            btn.onclick = () => switchAlbum(a);
-            sw.appendChild(btn);
-        });
-    }
-
-    async function switchAlbum(album) {
-        if (isDirty() && !confirm('You have unpublished changes. Discard them?')) return;
-        currentAlbum = album;
-        localStorage.setItem('r2-admin-album', album);
-        pendingDeletes = [];
-        renderAlbumSwitch();
-        await refreshAlbum();
-    }
-
-    async function refreshAlbum() {
-        setStatus('Loading manifest...');
-        try {
-            manifest = await getManifest(currentAlbum);
-            markClean();
-            renderGrid();
-            setStatus(`${manifest.items.length} image(s) in "${currentAlbum}"`);
-        } catch (e) {
-            setStatus('Error: ' + e.message);
-        }
-    }
-
-    function promptNewAlbum() {
-        const name = prompt('New album name (lowercase, no spaces):');
-        if (!name) return;
-        const slug = name.toLowerCase().replace(/[^a-z0-9-]/g, '');
-        if (!slug) return;
-        if (albums.includes(slug)) { alert('Album already exists.'); return; }
-        albums.push(slug);
-        switchAlbum(slug);
-    }
-
-    function promptManageFields() {
-        // Format: "Camera: Canon AE-1, Pentax; Film: Portra, HP5; Location"
-        const current = manifest.editor.fields.map(f =>
-            f.values && f.values.length ? `${f.name}: ${f.values.join(', ')}` : f.name
-        ).join('; ');
-        const input = prompt(
-            'Fields for this album (semicolon-separated).\n' +
-            'Add preset values after colon: "Camera: Canon, Pentax"\n' +
-            'Omit colon for free-text: "Location"\n' +
-            'Example: Camera: Canon AE-1, Pentax; Film: Portra, HP5; Location',
-            current
-        );
-        if (input === null) return;
-        manifest.editor.fields = input.split(';').map(seg => {
-            seg = seg.trim();
-            if (!seg) return null;
-            const colonIdx = seg.indexOf(':');
-            if (colonIdx === -1) return { name: seg, values: [] };
-            const name = seg.substring(0, colonIdx).trim();
-            const values = seg.substring(colonIdx + 1).split(',').map(s => s.trim()).filter(Boolean);
-            return name ? { name, values } : null;
-        }).filter(Boolean);
-        // Clear per-item meta values for removed fields
-        const fieldNames = new Set(manifest.editor.fields.map(f => f.name));
-        manifest.items.forEach(item => {
-            if (!item.meta) return;
-            Object.keys(item.meta).forEach(key => {
-                if (!fieldNames.has(key)) delete item.meta[key];
-            });
-        });
-        renderGrid();
-        updatePublishButton();
-        setStatus('Fields updated — publish to save');
-    }
-
-    // =========================================================================
-    // Publish
-    // =========================================================================
-
-    async function publish() {
-        if (!isDirty()) return;
-        setStatus('Publishing...');
-
-        try {
-            for (const item of pendingDeletes) {
-                setStatus(`Deleting ${item.id}...`);
-                await r2Request('DELETE', objectKey(currentAlbum, item.full));
-                await r2Request('DELETE', objectKey(currentAlbum, item.thumb));
-            }
-
-            setStatus('Saving manifest...');
-            await putManifest(currentAlbum, manifest);
-            markClean();
-            setStatus(`Published! ${manifest.items.length} image(s) in "${currentAlbum}"`);
-
-            // Refresh album list in case a new album was created
-            try {
-                const res = await fetch('/api/albums');
-                if (res.ok) {
-                    const discovered = await res.json();
-                    if (discovered.length) albums = discovered;
-                    if (!albums.includes(currentAlbum)) albums.push(currentAlbum);
-                    renderAlbumSwitch();
-                }
-            } catch {}
-        } catch (e) {
-            setStatus('Publish error: ' + e.message);
-        }
-    }
-
-    // =========================================================================
-    // Image grid (event delegation)
-    // =========================================================================
-
-    function renderGrid() {
-        const grid = document.getElementById('image-grid');
-        grid.innerHTML = '';
-
-        const escape = (s) => s.replace(/"/g, '&quot;');
-        const fields = (manifest.editor && manifest.editor.fields) || [];
-
-        // Build select/input HTML for each field definition
-        const fieldHtml = (item, idx) => fields.map(f => {
-            const val = (item.meta && item.meta[f.name]) || '';
-            if (f.values && f.values.length) {
-                const blank = `<option value=""${val ? '' : ' selected'}>— ${escape(f.name)} —</option>`;
-                const opts = f.values.map(v =>
-                    `<option value="${escape(v)}"${v === val ? ' selected' : ''}>${escape(v)}</option>`
-                ).join('');
-                return `<select class="tile-field" data-idx="${idx}" data-field="${escape(f.name)}">${blank}${opts}</select>`;
-            }
-            return `<input class="tile-field" type="text" value="${escape(val)}" placeholder="${escape(f.name)}" data-idx="${idx}" data-field="${escape(f.name)}">`;
-        }).join('');
-
-        manifest.items.forEach((item, idx) => {
-            const tile = document.createElement('div');
-            tile.className = 'image-tile';
-            tile.draggable = true;
-            tile.dataset.idx = idx;
-
-            tile.innerHTML = `
-                <img src="/r2/${objectKey(currentAlbum, item.thumb)}" alt="${item.title || ''}" loading="lazy"
-                    onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'broken-placeholder',innerHTML:'<i class=\\'ph-bold ph-image-broken\\'></i>'}))">
-                <button class="tile-delete" data-idx="${idx}" title="Delete">
-                    <i class="ph-bold ph-trash"></i>
-                </button>
-                <div class="tile-overlay">
-                    <input class="tile-title" type="text" value="${(item.title || '').replace(/"/g, '&quot;')}"
-                        placeholder="Title" data-idx="${idx}">
-                    ${fieldHtml(item, idx)}
-                </div>
-            `;
-            grid.appendChild(tile);
-        });
-    }
-
-    // Single delegated listener for all grid interactions
-    (function setupGridEvents() {
-        const grid = document.getElementById('image-grid');
-
-        grid.addEventListener('change', (e) => {
-            const i = parseInt(e.target.dataset.idx);
-            if (e.target.classList.contains('tile-title')) {
-                manifest.items[i].title = e.target.value;
-            } else if (e.target.classList.contains('tile-field')) {
-                if (!manifest.items[i].meta) manifest.items[i].meta = {};
-                manifest.items[i].meta[e.target.dataset.field] = e.target.value;
-            } else {
-                return;
-            }
-            updatePublishButton();
-            setStatus('Unsaved changes');
-        });
-
-        grid.addEventListener('click', (e) => {
-            const btn = e.target.closest('.tile-delete');
-            if (!btn) return;
-            const i = parseInt(btn.dataset.idx);
-            if (!confirm(`Delete "${manifest.items[i].id}"?`)) return;
-            pendingDeletes.push(manifest.items[i]);
-            manifest.items.splice(i, 1);
-            renderGrid();
-            updatePublishButton();
-            setStatus('Unsaved changes — publish to finalize deletions');
-        });
-
-        grid.addEventListener('dragstart', (e) => {
-            const tile = e.target.closest('.image-tile');
-            if (!tile) return;
-            dragSrcIndex = parseInt(tile.dataset.idx);
-            tile.classList.add('dragging');
-            e.dataTransfer.effectAllowed = 'move';
-        });
-
-        grid.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
-        });
-
-        grid.addEventListener('dragenter', (e) => {
-            const tile = e.target.closest('.image-tile');
-            if (tile) tile.classList.add('drag-over');
-        });
-
-        grid.addEventListener('dragleave', (e) => {
-            const tile = e.target.closest('.image-tile');
-            if (tile) tile.classList.remove('drag-over');
-        });
-
-        grid.addEventListener('drop', (e) => {
-            e.preventDefault();
-            const tile = e.target.closest('.image-tile');
-            if (!tile) return;
-            tile.classList.remove('drag-over');
-            const targetIdx = parseInt(tile.dataset.idx);
-            if (dragSrcIndex === null || dragSrcIndex === targetIdx) return;
-
-            const [moved] = manifest.items.splice(dragSrcIndex, 1);
-            manifest.items.splice(targetIdx, 0, moved);
-            renderGrid();
-            updatePublishButton();
-            setStatus('Unsaved changes');
-        });
-
-        grid.addEventListener('dragend', () => {
-            document.querySelectorAll('.dragging, .drag-over').forEach(el => {
-                el.classList.remove('dragging', 'drag-over');
-            });
-            dragSrcIndex = null;
-        });
-    })();
-
-    // =========================================================================
-    // Upload
-    // =========================================================================
-
-    (function setupUpload() {
-        const zone = document.getElementById('upload-zone');
-        const fileInput = document.getElementById('file-input');
-
-        zone.addEventListener('click', () => fileInput.click());
-        zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('dragover'); });
-        zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
-        zone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            zone.classList.remove('dragover');
-            handleFiles(e.dataTransfer.files);
-        });
-        fileInput.addEventListener('change', (e) => { handleFiles(e.target.files); e.target.value = ''; });
-    })();
-
-    async function handleFiles(fileList) {
-        const files = [...fileList].filter(f => f.type.startsWith('image/'));
-        if (!files.length) return;
-
-        let uploaded = 0;
-        let errors = 0;
-
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            setStatus(`Uploading ${i + 1}/${files.length}...`);
-
-            const key = slugify(file.name);
-            let finalKey = key;
-            if (manifest.items.some(item => item.id === finalKey)) {
-                finalKey = key.replace('.jpg', `-${Date.now().toString(36)}.jpg`);
-            }
-
-            try {
-                const resized = await resizeImage(file, 2000);
-                await putImage(currentAlbum, 'full', finalKey, resized.blob, 'image/jpeg');
-
-                try {
-                    const thumb = await resizeImage(file, 400);
-                    await putImage(currentAlbum, 'thumbs', finalKey, thumb.blob, 'image/jpeg');
-                } catch (e) {
-                    console.error('Thumb upload failed:', e);
-                }
-
-                manifest.items.push({
-                    id: finalKey,
-                    title: '',
-                    thumb: `thumbs/${finalKey}`,
-                    full: `full/${finalKey}`,
-                    width: resized.width,
-                    height: resized.height,
-                    tags: [],
-                    meta: {},
-                    extras: {},
-                });
-                uploaded++;
-            } catch (err) {
-                errors++;
-                console.error('Upload error:', err);
-            }
-        }
-
-        if (uploaded > 0) {
-            setStatus('Updating manifest...');
-            try {
-                await putManifest(currentAlbum, manifest);
-                markClean();
-                renderGrid();
-                const msg = `Uploaded ${uploaded} photo(s): ${manifest.items.length} images in "${currentAlbum}"`;
-                setStatus(errors ? msg + ` (${errors} failed)` : msg);
-
-                // Refresh album list in case a new album was created
-                try {
-                    const res = await fetch('/api/albums');
-                    if (res.ok) {
-                        const discovered = await res.json();
-                        if (discovered.length) albums = discovered;
-                        if (!albums.includes(currentAlbum)) albums.push(currentAlbum);
-                        renderAlbumSwitch();
-                    }
-                } catch {}
-            } catch (e) {
-                renderGrid();
-                updatePublishButton();
-                setStatus('Upload done but manifest save failed: ' + e.message);
-            }
-        } else {
-            setStatus(`Upload failed for all ${files.length} file(s)`);
-        }
-    }
-
-    // =========================================================================
-    // Init
-    // =========================================================================
-
-    function setStatus(msg) {
-        document.getElementById('status-bar').textContent = msg;
-    }
-
-    (async function init() {
-        try {
-            const res = await fetch('/api/albums');
-            if (res.ok) {
-                const discovered = await res.json();
-                albums = discovered.length ? discovered : CONFIG.albums;
-            } else {
-                albums = CONFIG.albums;
-            }
-        } catch {
-            albums = CONFIG.albums;
-        }
-        if (!currentAlbum || !albums.includes(currentAlbum)) currentAlbum = albums[0] || 'photos';
-        renderAlbumSwitch();
-        await refreshAlbum();
-    })();
-    </script>
+    <script src="/admin.js"></script>
 </body>
 </html>

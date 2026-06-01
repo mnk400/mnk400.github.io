@@ -16,6 +16,7 @@ Format for JSON manifests consumed by `image-gallery.js`
     {
       "id": "beach-001.jpg",
       "title": "",
+      "description": "optional per-image note",
       "year": "",
       "thumb": "thumbs/beach-001.jpg",
       "full":  "full/beach-001.jpg",
@@ -35,7 +36,20 @@ Format for JSON manifests consumed by `image-gallery.js`
 
   "editor": {
     "fields": [
-      { "name": "Camera", "values": ["Canon AE-1", "Pentax"] }
+      {
+        "name": "Film",
+        "type": "select",
+        "values": ["Portra 400", "HP5"],
+        "placeholder": "",
+        "display": "card"
+      },
+      {
+        "name": "Owned",
+        "type": "text",
+        "values": [],
+        "placeholder": "2022-now",
+        "display": "card"
+      }
     ]
   },
 
@@ -66,6 +80,7 @@ These are the only fields `image-gallery.js` should need to read to render sorti
 | ------------ | -------------- | ---------------------------------------------------------------------------------- |
 | `id`         | string         | Stable identifier. Used for dedup/keys; not displayed.                             |
 | `title`      | string         | Shown in captions when `show_captions` is enabled.                                 |
+| `description` | string        | Optional per-image note. Admin tooling may edit it; gallery rendering is opt-in.    |
 | `year`       | string         | Free-form ("1872", "c. 1870"). 4-digit year is regex-extracted for decade filter.  |
 | `thumb`      | string         | URL. Absolute, or relative to `base_url`.                                          |
 | `full`       | string         | URL. Falls back to `thumb` if absent.                                              |
@@ -123,13 +138,25 @@ For tooling that edits the manifest. The admin portal stores its field schema he
 ```json
 "editor": {
   "fields": [
-    { "name": "Camera", "values": ["Canon AE-1", "Pentax"] },
-    { "name": "Location", "values": [] }
+    { "name": "Camera", "type": "text", "placeholder": "Canon AE-1", "display": "card", "values": [] },
+    { "name": "Film", "type": "select", "values": ["Portra 400", "HP5"], "display": "card" },
+    { "name": "Notes", "type": "textarea", "placeholder": "Private note", "display": "editor", "values": [] }
   ]
 }
 ```
 
-`fields[].values` is the preset list (dropdown choices); empty means free text.
+`fields[].name` is both the editor label and the key used in `item.meta`.
+`fields[].type` is optional and defaults to `select` when `values` are present,
+otherwise `text`. Supported admin field types are:
+
+- `text` — free-form single-line string.
+- `textarea` — free-form longer string.
+- `select` — controlled list; `values` supplies the dropdown options.
+
+`fields[].values` is only meaningful for `select` fields. Non-select fields
+should keep it empty or omit it.
+`fields[].placeholder` is an optional editor hint.
+
 Generators that don't have an editor (like the paintings pipeline) omit this.
 
 ### `source`
