@@ -5,6 +5,8 @@
 // Zoomable image cursor
 [data-zoomable] {
     cursor: zoom-in;
+    border-radius: var(--radius-md);
+    box-shadow: inset 0 0 0 1px var(--translucent-medium);
     // Force GPU layer to prevent Safari flash
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
@@ -58,6 +60,7 @@
                 transform var(--transition-slow);
     cursor: default;
     border-radius: 0 !important;
+    background-color: transparent;
     object-fit: contain;
     margin: 0;
     padding: 0;
@@ -68,7 +71,7 @@
     transform: translateZ(0);
 
     &.zoomed {
-        box-shadow: var(--shadow-lg);
+        box-shadow: none;
     }
 }
 

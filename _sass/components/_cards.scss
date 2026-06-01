@@ -57,15 +57,15 @@
     .image-ratio-box {
         width: 100%;
         background-color: var(--translucent-low);
-        border-radius: var(--radius-sm);
+        border-radius: var(--radius-md);
         overflow: hidden;
-        @include soft-outline(var(--translucent-medium));
 
         img {
             width: 100%;
             height: 100%;
             display: block;
             object-fit: cover;
+            border-radius: inherit;
         }
     }
 }

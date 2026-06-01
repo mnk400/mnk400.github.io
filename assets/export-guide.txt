@@ -335,9 +335,9 @@ space before the image decodes — prevents masonry reflow on load:
         </div>
     </div>
 Add the .loaded class to .image-card once the image decodes to fade it in.
-.image-ratio-box uses a small radius and clips the image to match the site's
-gallery treatment. .image-card is width: 100% so cards fill masonry columns,
-including image-only cards with no caption text.
+.image-ratio-box clips images to the standard media radius. .image-card is
+width: 100% so cards fill masonry columns, including image-only cards with no
+caption text.
 
 Optional image gallery card captions:
     <div class="image-card image-gallery-card loaded">
@@ -801,6 +801,8 @@ not relevant for external use.
 Path: /assets/js/components/image-zoom.js
 
 Self-contained image lightbox. Add data-zoomable to any <img> and it works.
+Zoomable images have the standard media radius and a subtle inset edge. The
+lightbox image is transparent and shadowless.
 
     <img src="photo.jpg" alt="Description" data-zoomable>
     <img src="thumb.jpg" alt="Description" data-zoomable data-full-src="full.jpg">
