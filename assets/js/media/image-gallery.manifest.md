@@ -80,7 +80,7 @@ These are the only fields `image-gallery.js` should need to read to render sorti
 | ------------ | -------------- | ---------------------------------------------------------------------------------- |
 | `id`         | string         | Stable identifier. Used for dedup/keys; not displayed.                             |
 | `title`      | string         | Shown in captions when `show_captions` is enabled.                                 |
-| `description` | string        | Optional per-image note. Admin tooling may edit it; gallery rendering is opt-in.    |
+| `description` | string        | Optional per-image note.                                                           |
 | `year`       | string         | Free-form ("1872", "c. 1870"). 4-digit year is regex-extracted for decade filter.  |
 | `thumb`      | string         | URL. Absolute, or relative to `base_url`.                                          |
 | `full`       | string         | URL. Falls back to `thumb` if absent.                                              |
@@ -91,35 +91,15 @@ These are the only fields `image-gallery.js` should need to read to render sorti
 | `meta`       | object         | `{ [fieldName: string]: string }`. Filter dimensions live here. See below.         |
 | `extras`     | object         | Reserved for generator-specific data the renderer must ignore.                     |
 
-## Filter and sort conventions
+## Field conventions
 
-The Liquid include drives which controls show up:
-
-```liquid
-{% include image-gallery.html
-    source=".../manifest.json"
-    sort_options="year-desc,year-asc,popularity-desc"
-    filter_options="decade,meta:Series,meta:Collection"
-%}
-```
-
-### Built-in filters
-
-- `decade` — derived from `year` (e.g. `1872` → `1870s`).
-
-### Meta filters
-
-`meta:<FieldName>` — builds a filter from unique values of `item.meta[FieldName]`.
-Works with any string-valued meta field. Examples:
-
-- `meta:Camera`   for photos
-- `meta:Series`   for paintings
-- `meta:Whatever` for future uses 
-
-### Sort options
-
-- `year-desc`, `year-asc` — sorted by extracted 4-digit year, missing years last.
-- `popularity-desc` — sorted by `popularity.score` descending.
+- `year` may be free-form, but a 4-digit year should appear when chronological
+  sorting or decade grouping is useful.
+- `meta` should contain human-readable string values for flexible display,
+  filtering, and search dimensions such as `Camera`, `Film`, `Series`,
+  `Collection`, or `Owned`.
+- `popularity.score` is the canonical numeric score if a producer wants to
+  expose popularity sorting.
 
 ## URL handling
 

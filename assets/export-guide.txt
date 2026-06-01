@@ -346,12 +346,13 @@ Optional image gallery card captions:
         </div>
         <div class="image-gallery-card__caption">
             <div class="image-gallery-card__title">Artwork title</div>
+            <div class="image-gallery-card__body">Optional description.</div>
             <div class="image-gallery-card__meta">1889 · Museum name</div>
         </div>
     </div>
 
-Caption text is hidden on narrow mobile screens to keep dense galleries
-focused on the images.
+Caption title, body, and meta use descending visual emphasis. Caption text is
+hidden on narrow mobile screens to keep dense galleries focused on the images.
 
 Reveal card (image with hover/focus overlay):
     <a class="reveal-card" href="/detail">

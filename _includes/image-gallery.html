@@ -13,8 +13,23 @@
       controls=true
       sort_options="year-desc,year-asc"
       default_sort="year-desc"
-      filter_options="decade,series"
+      filter_options="decade,meta:Series"
+      caption_title="title"
+      caption_body="description"
+      caption_meta="meta:Owned"
+      zoom_meta="meta:Owned"
   %}
+
+  Caption/zoom field selectors are comma-separated. Use top-level item fields
+  like "title", "description", "year", "tags", or meta fields like
+  "meta:Owned" and "meta:Series".
+
+  Defaults:
+    caption_title="title"
+    caption_body=""
+    caption_meta=""
+    zoom_title="title"
+    zoom_meta=""
 
   base_url is read from the manifest. Pass base_url= only to override it.
 {% endcomment %}
@@ -35,6 +50,11 @@
   {% if include.sort_options %}data-gallery-sort-options="{{ include.sort_options }}"{% endif %}
   {% if include.default_sort %}data-gallery-default-sort="{{ include.default_sort }}"{% endif %}
   {% if include.filter_options %}data-gallery-filter-options="{{ include.filter_options }}"{% endif %}
+  {% if include.caption_title %}data-gallery-caption-title="{{ include.caption_title }}"{% endif %}
+  {% if include.caption_body %}data-gallery-caption-body="{{ include.caption_body }}"{% endif %}
+  {% if include.caption_meta %}data-gallery-caption-meta="{{ include.caption_meta }}"{% endif %}
+  {% if include.zoom_title %}data-gallery-zoom-title="{{ include.zoom_title }}"{% endif %}
+  {% if include.zoom_meta %}data-gallery-zoom-meta="{{ include.zoom_meta }}"{% endif %}
 >
   {% if include.description %}
   <p>{{ include.description }}</p>

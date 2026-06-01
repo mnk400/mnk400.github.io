@@ -9,7 +9,6 @@
     "year-asc": "Earliest first",
     "popularity-desc": "Popular first",
   };
-
   function resolveUrl(value, baseUrl) {
     if (!value) return "";
     if (/^(https?:)?\/\//i.test(value) || value.startsWith("data:")) {
@@ -24,9 +23,9 @@
 
   function normalizeItem(item, index, baseUrl) {
     const title = item.title || "";
+    const description = item.description || "";
     const year = item.year || "";
-    const collection = item.meta?.Collection || "";
-    const series = item.meta?.Series || "";
+    const meta = item.meta && typeof item.meta === "object" ? item.meta : {};
     const thumb = resolveUrl(item.thumb, baseUrl);
     const full = resolveUrl(item.full, baseUrl) || thumb;
     const width = Number(item.width);
@@ -38,12 +37,10 @@
       raw: item,
       index,
       title,
-      alt: title || "Gallery Image",
+      description,
+      meta,
+      alt: title || description || "Gallery image",
       year,
-      collection,
-      series,
-      detail: [year, collection].filter(Boolean).join(" · "),
-      captionMeta: [year, series].filter(Boolean).join(" · "),
       thumb,
       full,
       width: Number.isFinite(width) && width > 0 ? width : null,
@@ -52,15 +49,45 @@
     };
     normalized.searchText = [
       title,
+      description,
       year,
-      collection,
-      series,
+      Object.values(meta)
+        .filter((value) => ["number", "string"].includes(typeof value))
+        .join(" "),
       tags.join(" "),
     ]
       .filter(Boolean)
       .join(" ")
       .toLowerCase();
     return normalized;
+  }
+
+  function readOption(configValue, datasetValue, fallback) {
+    return configValue ?? datasetValue ?? fallback;
+  }
+
+  function getFieldValue(item, field) {
+    if (!field) return "";
+    if (field.startsWith("meta:")) {
+      return item.meta?.[field.slice(5)] || "";
+    }
+
+    if (field.startsWith("raw:")) {
+      return item.raw?.[field.slice(4)] || "";
+    }
+
+    if (field === "tags") {
+      return Array.isArray(item.raw?.tags) ? item.raw.tags.join(", ") : "";
+    }
+
+    return item[field] || item.raw?.[field] || "";
+  }
+
+  function formatFields(item, fields) {
+    return parseList(fields)
+      .map((field) => getFieldValue(item, field))
+      .filter(Boolean)
+      .join(" · ");
   }
 
   function getItemsFromManifest(manifest) {
@@ -108,6 +135,21 @@
     );
   }
 
+  function filterValue(item, option) {
+    if (option === "decade") return getDecadeValue(item);
+    return getFieldValue(item, option);
+  }
+
+  function filterLabel(option) {
+    if (option === "decade") return "Decade";
+    if (option.startsWith("meta:")) return option.slice(5);
+    return humanizeValue(option);
+  }
+
+  function controlIdPart(value) {
+    return String(value).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  }
+
   function sortItems(items, sortValue) {
     const sorted = [...items];
 
@@ -151,11 +193,11 @@
   function getVisibleItems(items, state) {
     const query = state.query.trim().toLowerCase();
     const filtered = items.filter((item) => {
-      if (state.decade !== "all" && getDecadeValue(item) !== state.decade) {
-        return false;
-      }
-      if (state.series !== "all" && item.series !== state.series) {
-        return false;
+      for (const option of state.filterOptions) {
+        const selected = state.filters[option] || "all";
+        if (selected !== "all" && filterValue(item, option) !== selected) {
+          return false;
+        }
       }
       if (query && !item.searchText.includes(query)) {
         return false;
@@ -192,48 +234,41 @@
       controlsRoot.appendChild(createControlGroup("Sort", sortSwitch));
     }
 
-    if (state.filterOptions.includes("decade")) {
-      const decades = uniqueValues(items, getDecadeValue).sort((a, b) => {
-        return Number.parseInt(b, 10) - Number.parseInt(a, 10);
+    state.filterOptions.forEach((option) => {
+      const label = filterLabel(option);
+      const values = uniqueValues(items, (item) => filterValue(item, option));
+      if (values.length <= 1) return;
+
+      if (option === "decade") {
+        values.sort((a, b) => Number.parseInt(b, 10) - Number.parseInt(a, 10));
+      }
+
+      const filterOptions = values
+        .map((value) => ({
+          value,
+          label: value,
+        }))
+        .sort((a, b) => {
+          if (option === "decade") return 0;
+          return a.label.localeCompare(b.label);
+        });
+      const controlConfig = {
+        id: `image-gallery-${controlIdPart(option)}-${galleryName}`,
+        ariaLabel: `Filter by ${label.toLowerCase()}`,
+        options: [{ value: "all", label: option === "decade" ? "All" : `All ${label.toLowerCase()}` }, ...filterOptions],
+        active: state.filters[option] || "all",
+      };
+      const control =
+        option === "decade"
+          ? buildSwitch({ ...controlConfig, size: "small" })
+          : buildDropdown(controlConfig);
+
+      control.addEventListener("change", (event) => {
+        state.filters[option] = event.detail.value;
+        applyState();
       });
-      if (decades.length > 1) {
-        const decadeSwitch = buildSwitch({
-          id: `image-gallery-decade-${galleryName}`,
-          ariaLabel: "Filter by decade",
-          options: [
-            { value: "all", label: "All" },
-            ...decades.map((decade) => ({ value: decade, label: decade })),
-          ],
-          active: state.decade,
-          size: "small",
-        });
-        decadeSwitch.addEventListener("change", (event) => {
-          state.decade = event.detail.value;
-          applyState();
-        });
-        controlsRoot.appendChild(createControlGroup("Decade", decadeSwitch));
-      }
-    }
-
-    if (state.filterOptions.includes("series")) {
-      const seriesOptions = uniqueValues(items, (item) => item.series)
-        .map((series) => ({ value: series, label: humanizeValue(series) }))
-        .sort((a, b) => a.label.localeCompare(b.label));
-
-      if (seriesOptions.length > 1) {
-        const dropdown = buildDropdown({
-          id: `image-gallery-series-${galleryName}`,
-          ariaLabel: "Filter by series",
-          options: [{ value: "all", label: "All series" }, ...seriesOptions],
-          active: state.series,
-        });
-        dropdown.addEventListener("change", (event) => {
-          state.series = event.detail.value;
-          applyState();
-        });
-        controlsRoot.appendChild(createControlGroup("Series", dropdown));
-      }
-    }
+      controlsRoot.appendChild(createControlGroup(label, control));
+    });
   }
 
   function setLoaded(card, img) {
@@ -302,27 +337,40 @@
     img.setAttribute("data-zoomable", "");
     img.setAttribute("data-full-src", item.full);
     img.setAttribute("data-gallery-index", options.galleryIndex ?? item.index);
-    if (item.title) img.setAttribute("data-title", item.title);
-    if (item.detail) img.setAttribute("data-meta", item.detail);
+    const zoomTitle = formatFields(item, options.zoomTitleFields);
+    const zoomMeta = formatFields(item, options.zoomMetaFields);
+    if (zoomTitle) img.setAttribute("data-title", zoomTitle);
+    if (zoomMeta) img.setAttribute("data-meta", zoomMeta);
 
     ratioBox.appendChild(img);
     card.appendChild(ratioBox);
 
-    if (options.showCaptions && (item.title || item.captionMeta)) {
+    const captionTitle = formatFields(item, options.captionTitleFields);
+    const captionBody = formatFields(item, options.captionBodyFields);
+    const captionMeta = formatFields(item, options.captionMetaFields);
+
+    if (options.showCaptions && (captionTitle || captionBody || captionMeta)) {
       const caption = document.createElement("div");
       caption.className = "image-gallery-card__caption";
 
-      if (item.title) {
+      if (captionTitle) {
         const title = document.createElement("div");
         title.className = "image-gallery-card__title";
-        title.textContent = item.title;
+        title.textContent = captionTitle;
         caption.appendChild(title);
       }
 
-      if (item.captionMeta) {
+      if (captionBody) {
+        const body = document.createElement("div");
+        body.className = "image-gallery-card__body";
+        body.textContent = captionBody;
+        caption.appendChild(body);
+      }
+
+      if (captionMeta) {
         const meta = document.createElement("div");
         meta.className = "image-gallery-card__meta";
-        meta.textContent = item.captionMeta;
+        meta.textContent = captionMeta;
         caption.appendChild(meta);
       }
 
@@ -391,6 +439,31 @@
       config.showCaptions !== undefined
         ? config.showCaptions
         : root.dataset.galleryShowCaptions !== "false";
+    const captionTitleFields = readOption(
+      config.captionTitle,
+      root.dataset.galleryCaptionTitle,
+      "title",
+    );
+    const captionBodyFields = readOption(
+      config.captionBody,
+      root.dataset.galleryCaptionBody,
+      "",
+    );
+    const captionMetaFields = readOption(
+      config.captionMeta,
+      root.dataset.galleryCaptionMeta,
+      "",
+    );
+    const zoomTitleFields = readOption(
+      config.zoomTitle,
+      root.dataset.galleryZoomTitle,
+      "title",
+    );
+    const zoomMetaFields = readOption(
+      config.zoomMeta,
+      root.dataset.galleryZoomMeta,
+      "",
+    );
     const grid = root.querySelector("[data-gallery-grid]");
     const status = root.querySelector("[data-gallery-status]");
     const summary = root.querySelector("[data-gallery-summary]");
@@ -427,10 +500,12 @@
           root.dataset.galleryDefaultSort ||
           parseList(config.sortOptions || root.dataset.gallerySortOptions)[0] ||
           "manifest",
-        decade: "all",
-        series: "all",
+        filters: {},
         query: root.dataset.searchQuery || "",
       };
+      state.filterOptions.forEach((option) => {
+        state.filters[option] = "all";
+      });
 
       const applyState = () => {
         const visibleItems = getVisibleItems(items, state);
@@ -438,7 +513,14 @@
           summary.hidden = false;
           summary.textContent = formatSummary(visibleItems.length, items.length);
         }
-        renderMasonry(root, grid, visibleItems, galleryName, { showCaptions });
+        renderMasonry(root, grid, visibleItems, galleryName, {
+          showCaptions,
+          captionTitleFields,
+          captionBodyFields,
+          captionMetaFields,
+          zoomTitleFields,
+          zoomMetaFields,
+        });
         return visibleItems;
       };
 
