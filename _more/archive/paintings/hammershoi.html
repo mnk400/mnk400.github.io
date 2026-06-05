@@ -8,14 +8,14 @@ image: /assets/images/previews/paintings/hammershoi.jpg
 years: "1884 – 1916"
 works: "100+"
 order: 11
-blurb: "Danish painter of quiet interiors, gray light, turned backs, and still rooms."
-description: Browse an archive of Vilhelm Hammershøi paintings.
+description: "Danish painter of quiet interiors, gray light, turned backs, and still rooms."
+entity:
+  same_as:
+    - https://en.wikipedia.org/wiki/Vilhelm_Hammersh%C3%B8i
 scripts: [/assets/js/media/image-gallery.js]
 ---
 
-<p>
-    A small browser archive of Vilhelm Hammershøi paintings
-</p>
+<p>A small browser archive of {{ page.title }} paintings. {{ page.description }}</p>
 
 {% include image-gallery.html
     source="https://manik.cc/pipelines/paintings/hammershoi/manifest.json"

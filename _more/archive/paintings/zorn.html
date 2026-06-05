@@ -8,15 +8,15 @@ image: /assets/images/previews/paintings/zorn.jpg
 years: "1880 – 1920"
 works: "300+"
 order: 9
-blurb: "Swedish painter best known for people portraits, in very fluid watercolor and oil."
-description: Browse an archive of Anders Zorn paintings.
+description: "Swedish painter best known for people portraits, in very fluid watercolor and oil."
+entity:
+  same_as:
+    - https://en.wikipedia.org/wiki/Anders_Zorn
 scripts: [/assets/js/media/image-gallery.js]
 disabled: true
 ---
 
-<p>
-    A small browser archive of Anders Zorn paintings
-</p>
+<p>A small browser archive of {{ page.title }} paintings. {{ page.description }}</p>
 
 {% include image-gallery.html
     source="https://manik.cc/pipelines/paintings/zorn/manifest.json"

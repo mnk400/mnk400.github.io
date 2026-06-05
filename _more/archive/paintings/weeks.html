@@ -8,14 +8,14 @@ image: /assets/images/previews/paintings/weeks.jpg
 years: "1876 – 1903"
 works: "80+"
 order: 8
-blurb: "American painter of markets, courtyards, caravans, and luminous travel scenes."
-description: Browse an archive of Edwin Lord Weeks paintings.
+description: "American painter of markets, courtyards, caravans, and luminous travel scenes."
+entity:
+  same_as:
+    - https://en.wikipedia.org/wiki/Edwin_Lord_Weeks
 scripts: [/assets/js/media/image-gallery.js]
 ---
 
-<p>
-    A small browser archive of Edwin Lord Weeks paintings
-</p>
+<p>A small browser archive of {{ page.title }} paintings. {{ page.description }}</p>
 
 {% include image-gallery.html
     source="https://manik.cc/pipelines/paintings/weeks/manifest.json"

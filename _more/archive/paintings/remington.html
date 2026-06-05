@@ -8,14 +8,14 @@ image: /assets/images/previews/paintings/remington.jpg
 years: "1881 – 1909"
 works: "80+"
 order: 5
-blurb: "Painted the Old West in its last days: cowboys, cavalry, dust, and horses."
-description: Browse an archive of Frederic Remington paintings.
+description: "Painted the Old West in its last days: cowboys, cavalry, dust, and horses."
+entity:
+  same_as:
+    - https://en.wikipedia.org/wiki/Frederic_Remington
 scripts: [/assets/js/media/image-gallery.js]
 ---
 
-<p>
-    A small browser archive of Frederic Remington paintings
-</p>
+<p>A small browser archive of {{ page.title }} paintings. {{ page.description }}</p>
 
 {% include image-gallery.html
     source="https://manik.cc/pipelines/paintings/remington/manifest.json"

@@ -8,14 +8,14 @@ image: /assets/images/previews/paintings/sisley.jpg
 years: "1860 – 1899"
 works: "800+"
 order: 7
-blurb: "Impressionist landscape painter with rivers, snow, small towns, and quiet weather."
-description: Browse an archive of Alfred Sisley paintings.
+description: "Impressionist landscape painter with rivers, snow, small towns, and quiet weather."
+entity:
+  same_as:
+    - https://en.wikipedia.org/wiki/Alfred_Sisley
 scripts: [/assets/js/media/image-gallery.js]
 ---
 
-<p>
-    A small browser archive of Alfred Sisley paintings
-</p>
+<p>A small browser archive of {{ page.title }} paintings. {{ page.description }}</p>
 
 {% include image-gallery.html
     source="https://manik.cc/pipelines/paintings/sisley/manifest.json"

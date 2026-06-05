@@ -8,14 +8,14 @@ image: /assets/images/previews/paintings/vermeer.jpg
 years: "1650 – 1672"
 works: "35+"
 order: 12
-blurb: "Dutch master of luminous rooms, suspended gestures, letters, music, and pearl light."
-description: Browse an archive of Johannes Vermeer paintings.
+description: "Dutch master of luminous rooms, suspended gestures, letters, music, and pearl light."
+entity:
+  same_as:
+    - https://en.wikipedia.org/wiki/Johannes_Vermeer
 scripts: [/assets/js/media/image-gallery.js]
 ---
 
-<p>
-    A small browser archive of Johannes Vermeer paintings
-</p>
+<p>A small browser archive of {{ page.title }} paintings. {{ page.description }}</p>
 
 {% include image-gallery.html
     source="https://manik.cc/pipelines/paintings/vermeer/manifest.json"

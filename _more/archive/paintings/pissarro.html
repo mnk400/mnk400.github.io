@@ -8,14 +8,14 @@ image: /assets/images/previews/paintings/pissarro.jpg
 years: "1855 – 1903"
 works: "750+"
 order: 3
-blurb: "Landscape painter, and the quiet mentor to half the Impressionist movement."
-description: Browse an Archive of Pissarro paintings.
+description: "Landscape painter and the quiet mentor to half the Impressionist movement."
+entity:
+  same_as:
+    - https://en.wikipedia.org/wiki/Camille_Pissarro
 scripts: [/assets/js/media/image-gallery.js]
 ---
 
-<p>
-    A small browser archive of Camille Pissarro paintings
-</p>
+<p>A small browser archive of {{ page.title }} paintings. {{ page.description }}</p>
 
 {% include image-gallery.html
     source="https://manik.cc/pipelines/paintings/pissarro/manifest.json"

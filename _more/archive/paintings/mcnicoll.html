@@ -8,14 +8,14 @@ image: /assets/images/previews/paintings/mcnicoll.jpg
 years: "1902 – 1915"
 works: "25+"
 order: 4
-blurb: "Canadian Impressionist with beautiful sunlit scenes of people, almost modern."
-description: Browse an archive of Helen McNicoll paintings.
+description: "Canadian Impressionist with beautiful, almost modern sunlit scenes of people."
+entity:
+  same_as:
+    - https://en.wikipedia.org/wiki/Helen_McNicoll
 scripts: [/assets/js/media/image-gallery.js]
 ---
 
-<p>
-    A small browser archive of Helen McNicoll paintings
-</p>
+<p>A small browser archive of {{ page.title }} paintings. {{ page.description }}</p>
 
 {% include image-gallery.html
     source="https://manik.cc/pipelines/paintings/mcnicoll/manifest.json"

@@ -8,14 +8,14 @@ image: /assets/images/previews/paintings/toulouse-lautrec.jpg
 years: "1881 – 1901"
 works: "200+"
 order: 6
-blurb: "Post-Impressionist chronicler of Paris nightlife, people of all kinds."
-description: Browse an archive of Henri de Toulouse-Lautrec paintings.
+description: "Post-Impressionist chronicler of Paris nightlife and people of all kinds."
+entity:
+  same_as:
+    - https://en.wikipedia.org/wiki/Henri_de_Toulouse-Lautrec
 scripts: [/assets/js/media/image-gallery.js]
 ---
 
-<p>
-    A small browser archive of Henri de Toulouse-Lautrec paintings
-</p>
+<p>A small browser archive of {{ page.title }} paintings. {{ page.description }}</p>
 
 {% include image-gallery.html
     source="https://manik.cc/pipelines/paintings/toulouse-lautrec/manifest.json"

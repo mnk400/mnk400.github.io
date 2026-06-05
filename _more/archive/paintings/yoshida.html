@@ -8,14 +8,14 @@ image: /assets/images/previews/paintings/yoshida.jpg
 years: "1902 – 1915"
 works: "60+"
 order: 10
-blurb: "Japanese woodblock painter, gentle colors, and beautiful landscapes."
-description: Browse an archive of Hiroshi Yoshida paintings.
+description: "Japanese woodblock artist of gentle colors and beautiful landscapes."
+entity:
+  same_as:
+    - https://en.wikipedia.org/wiki/Hiroshi_Yoshida
 scripts: [/assets/js/media/image-gallery.js]
 ---
 
-<p>
-    A small browser archive of Hiroshi Yoshida paintings
-</p>
+<p>A small browser archive of {{ page.title }} paintings. {{ page.description }}</p>
 
 {% include image-gallery.html
     source="https://manik.cc/pipelines/paintings/yoshida/manifest.json"

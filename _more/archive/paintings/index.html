@@ -5,7 +5,7 @@ short_title: Paintings
 permalink: /archive/paintings/
 redirect_from: /archive/
 image: /assets/images/previews/archive.jpg
-description: A small archive of artwork from artists I like.
+description: A small archive of public-domain paintings from artists I like — Monet, Vermeer, Pissarro, Hammershøi, and more.
 ---
 
 <p>
@@ -39,8 +39,8 @@ description: A small archive of artwork from artists I like.
             <img src="{{ page.image | relative_url }}" alt="" loading="lazy" decoding="async">
             {%- endif -%}
             <span class="reveal-card__overlay" id="{{ card_details_id }}">
-                {% if page.blurb %}
-                <span class="reveal-card__body">{{ page.blurb }}</span>
+                {% if page.description %}
+                <span class="reveal-card__body">{{ page.description }}</span>
                 {% endif %}
             </span>
         </span>

@@ -8,14 +8,14 @@ image: /assets/images/previews/paintings/gwen-john.jpg
 years: "1897 – 1920"
 works: "70+"
 order: 13
-blurb: "Welsh painter of quiet interiors, solitary women, pale rooms, and devotional stillness."
-description: Browse an archive of Gwen John paintings.
+description: "Welsh painter of quiet interiors, solitary women, pale rooms, and devotional stillness."
+entity:
+  same_as:
+    - https://en.wikipedia.org/wiki/Gwen_John
 scripts: [/assets/js/media/image-gallery.js]
 ---
 
-<p>
-    A small browser archive of Gwen John paintings
-</p>
+<p>A small browser archive of {{ page.title }} paintings. {{ page.description }}</p>
 
 {% include image-gallery.html
     source="https://manik.cc/pipelines/paintings/gwen-john/manifest.json"

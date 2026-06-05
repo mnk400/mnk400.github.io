@@ -8,14 +8,14 @@ image: /assets/images/previews/paintings/morisot.jpg
 years: "1864 – 1895"
 works: "150+"
 order: 2
-blurb: "Founding Impressionist with a soft touch for women, family, and everyday scenes."
-description: Browse an archive of Berthe Morisot paintings.
+description: "A founding Impressionist with a soft touch for women, family, and everyday scenes."
+entity:
+  same_as:
+    - https://en.wikipedia.org/wiki/Berthe_Morisot
 scripts: [/assets/js/media/image-gallery.js]
 ---
 
-<p>
-    A small browser archive of Berthe Morisot paintings
-</p>
+<p>A small browser archive of {{ page.title }} paintings. {{ page.description }}</p>
 
 {% include image-gallery.html
     source="https://manik.cc/pipelines/paintings/morisot/manifest.json"

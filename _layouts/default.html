@@ -10,7 +10,7 @@ ZZZzz /,`.-'`'    -.  ;-;;,_
 -->
 <!doctype html>
 
-<html>
+<html lang="en">
     <head>
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -20,10 +20,7 @@ ZZZzz /,`.-'`'    -.  ;-;;,_
         />
 
         <meta name="author" content="Manik Kumar" />
-        <meta
-            name="keywords"
-            content="portfolio, developer, software engineer, projects, blog"
-        />
+        <link rel="canonical" href="{{ site.url }}{{ page.url }}" />
         {% if page.description %}
         <meta name="description" content="{{ page.description }}" />
         {% else %}
@@ -113,27 +110,7 @@ ZZZzz /,`.-'`'    -.  ;-;;,_
         </script>
 
         <!-- Structured Data -->
-        <script type="application/ld+json">
-            {
-                "@context": "https://schema.org",
-                "@type": "{% if page.layout == 'post' %}Article{% else %}WebPage{% endif %}",
-                "headline": "{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}",
-                "author": {
-                    "@type": "Person",
-                    "name": "Manik Kumar"
-                },
-                "publisher": {
-                    "@type": "Person",
-                    "name": "Manik Kumar"
-                },
-                "url": "{{ site.url }}{{ page.url }}",
-                {% if page.description %}
-                "description": "{{ page.description }}",
-                {% endif %}
-                "image": "{{ social_image_url }}",
-                "mainEntityOfPage": "{{ site.url }}{{ page.url }}"
-            }
-        </script>
+        {% include structured-data.html social_image_url=social_image_url %}
 
         {% if page.use_math %}
         <!-- Config for LaTeX rendering -->

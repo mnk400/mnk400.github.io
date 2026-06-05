@@ -8,14 +8,14 @@ image: /assets/images/previews/paintings/monet.jpg
 years: "1858 – 1926"
 works: "2,000+"
 order: 1
-blurb: "Impressionist I adore who painted the same lily pond a hundred times over."
-description: Browse Thousands of Claude Monet paintings.
+description: "An Impressionist I adore who painted the same lily pond a hundred times over."
+entity:
+  same_as:
+    - https://en.wikipedia.org/wiki/Claude_Monet
 scripts: [/assets/js/media/image-gallery.js]
 ---
 
-<p>
-    A small browser for thousands of Claude Monet paintings
-</p>
+<p>A small browser archive of {{ page.title }} paintings. {{ page.description }}</p>
 
 {% include image-gallery.html
     source="https://manik.cc/pipelines/paintings/monet/manifest.json"
