@@ -1,0 +1,134 @@
+---
+import { site } from '../data/site.ts';
+import Header from '../components/Header.astro';
+import StructuredData from '../components/StructuredData.astro';
+import '../styles/main.scss';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  useMath?: boolean;
+  headScripts?: string[];
+  scripts?: string[];
+  styles?: string[];
+  kind?: string;
+  pageTitle?: string; // used for breadcrumb-current
+  entity?: { type?: string; name?: string; same_as?: string[] };
+  schemaType?: string;
+  layoutKind?: string; // analog of page.layout (post / product)
+}
+
+const {
+  title,
+  description = site.description,
+  image,
+  useMath = false,
+  headScripts = [],
+  scripts = [],
+  styles = [],
+  kind,
+  pageTitle,
+  entity,
+  schemaType,
+  layoutKind,
+} = Astro.props;
+
+const pathname = Astro.url.pathname;
+const canonical = `${site.url}${pathname}`;
+
+const socialImagePath = image ?? '/assets/images/previews/site-preview.jpg';
+const socialImageUrl = socialImagePath.includes('://')
+  ? socialImagePath
+  : `${site.url}${socialImagePath}`;
+
+const pageTitleFull = title ? `${title} — Manik` : 'Manik';
+const ogTitle = title ? `${title} — Manik` : 'Manik';
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+
+    <meta name="author" content="Manik Kumar" />
+    <link rel="canonical" href={canonical} />
+    <meta name="description" content={description} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={socialImageUrl} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={socialImageUrl} />
+    <title>{pageTitleFull}</title>
+
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+    <link rel="icon" href="/assets/images/site/favicon.ico" />
+
+    <script src="/assets/js/core/theme-config.js" is:inline></script>
+    <script src="/assets/js/core/url-params.js" is:inline></script>
+    <script src="/assets/js/core/view-transitions.js" is:inline></script>
+
+    {styles.map(href => (
+      <link rel="stylesheet" type="text/css" href={href} />
+    ))}
+
+    <!-- Core JavaScript modules -->
+    <script src="/assets/js/core/theme-manager.js" is:inline></script>
+    <script src="/assets/js/core/font-manager.js" is:inline></script>
+    <script src="/assets/js/core/navigation.js" is:inline></script>
+    <script src="/assets/js/utils/clipboard.js" is:inline></script>
+    <script src="/assets/js/core/ui-components.js" is:inline></script>
+    <script src="/assets/js/components/image-zoom.js" is:inline></script>
+    {headScripts.map(src => <script src={src} is:inline></script>)}
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WLJ3VCYPD9"></script>
+    <meta name="p:domain_verify" content="bba1d80d0778741b7525ee227f44f5ff" />
+    <script is:inline>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-WLJ3VCYPD9');
+    </script>
+
+    <StructuredData
+      url={pathname}
+      socialImageUrl={socialImageUrl}
+      schemaType={schemaType}
+      title={title}
+      description={description}
+      layout={layoutKind}
+      entity={entity}
+    />
+
+    {useMath && (
+      <>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML" is:inline></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js" is:inline></script>
+        <script type="text/x-mathjax-config" is:inline>
+          MathJax.Hub.Config({ "HTML-CSS" : { availableFonts : ["Tex"], scale : 70 } });
+        </script>
+      </>
+    )}
+  </head>
+  <body>
+    <div class="wrapper">
+      <Header pathname={pathname} pageTitle={pageTitle} />
+      <main class="page-content">
+        <slot />
+      </main>
+    </div>
+    {kind === 'readme' && (
+      <>
+        <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js" is:inline></script>
+        <script src="/assets/js/components/readme-renderer.js" is:inline></script>
+      </>
+    )}
+    {scripts.map(src => <script src={src} is:inline></script>)}
+  </body>
+</html>

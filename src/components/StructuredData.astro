@@ -1,0 +1,81 @@
+---
+import { site } from '../data/site.ts';
+
+interface EntityProps {
+  type?: string;
+  name?: string;
+  same_as?: string[];
+}
+
+interface Props {
+  url: string;
+  socialImageUrl: string;
+  schemaType?: string;
+  title?: string;
+  description?: string;
+  layout?: string;
+  entity?: EntityProps;
+  breadcrumbs?: { label: string; href: string }[];
+}
+
+const {
+  url,
+  socialImageUrl,
+  schemaType: schemaTypeOverride,
+  title,
+  description,
+  layout,
+  entity,
+  breadcrumbs,
+} = Astro.props;
+
+const inferredType =
+  schemaTypeOverride ??
+  (entity ? 'CollectionPage' : layout === 'post' ? 'Article' : 'WebPage');
+
+const headlineOrName =
+  inferredType === 'Article' ? { headline: title ?? site.title } : { name: title ?? site.title };
+
+const aboutBlock = entity
+  ? {
+      about: {
+        '@type': entity.type ?? 'Person',
+        name: entity.name ?? title,
+        ...(entity.same_as ? { sameAs: entity.same_as } : {}),
+      },
+    }
+  : {};
+
+const pageSchema = {
+  '@context': 'https://schema.org',
+  '@type': inferredType,
+  ...headlineOrName,
+  url: `${site.url}${url}`,
+  ...(description ? { description } : {}),
+  image: socialImageUrl,
+  author: { '@type': 'Person', name: 'Manik Kumar' },
+  publisher: { '@type': 'Person', name: 'Manik Kumar' },
+  isPartOf: { '@type': 'WebSite', name: site.title, url: site.url },
+  ...aboutBlock,
+  mainEntityOfPage: `${site.url}${url}`,
+};
+
+let breadcrumbSchema: object | null = null;
+if (url !== '/' && breadcrumbs && breadcrumbs.length > 0) {
+  breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Manik', item: `${site.url}/` },
+      ...breadcrumbs.map((c, i) => ({
+        '@type': 'ListItem',
+        position: i + 2,
+        name: c.label,
+        item: `${site.url}${c.href}`,
+      })),
+    ],
+  };
+}
+---
+<script type="application/ld+json" set:html={JSON.stringify(pageSchema)} />
+{breadcrumbSchema && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />}

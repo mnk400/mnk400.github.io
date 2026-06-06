@@ -1,0 +1,112 @@
+---
+import Default from '../layouts/Default.astro';
+import ExpandableSection from '../components/ExpandableSection.astro';
+import MusicWidget from '../components/MusicWidget.astro';
+import Footer from '../components/Footer.astro';
+
+// Read posts as raw text so Jekyll-specific `layout:` frontmatter doesn't
+// get interpreted by Astro as a layout import. Spike-mode parser; we'll
+// move posts to a content collection during the blog phase.
+const postRaw = import.meta.glob<string>('/_posts/*.md', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+});
+
+type Post = {
+  title: string;
+  url: string;
+  date: Date;
+  monthYear: string;
+  external: boolean;
+};
+
+function parseFrontmatter(raw: string): Record<string, string> {
+  const match = raw.match(/^---\s*\n([\s\S]*?)\n---/);
+  if (!match) return {};
+  const out: Record<string, string> = {};
+  for (const line of match[1].split('\n')) {
+    const m = line.match(/^([\w-]+):\s*(.*)$/);
+    if (!m) continue;
+    out[m[1]] = m[2].trim().replace(/^["'](.*)["']$/, '$1');
+  }
+  return out;
+}
+
+const posts: Post[] = Object.entries(postRaw).map(([path, raw]) => {
+  const file = path.split('/').pop()!;
+  const fm = parseFrontmatter(raw);
+  const match = file.match(/^(\d{4})-(\d{2})-(\d{2})-(.+)\.md$/)!;
+  const [, y, m, d, slug] = match;
+  const date = new Date(`${y}-${m}-${d}`);
+  const external = fm.type === 'external';
+  const url = external ? fm.link! : `/${y}/${m}/${d}/${slug}`;
+  const monthYear = date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' })
+    .replace(' ', '-');
+  return { title: fm.title ?? slug, url, date, monthYear, external };
+}).sort((a, b) => b.date.getTime() - a.date.getTime());
+---
+<Default
+  description="Manik's personal website and blog"
+  scripts={['/assets/js/media/lastfm.js', '/assets/js/location-time.js']}
+>
+  <div class="home stack stack--md">
+    <div class="home__intro stack stack--sm">
+      <p>
+        Hi! I am
+        <b>
+          <a href="#" class="site-title-link" onclick="triggerPhotoReveal('/assets/images/site/me.jpg'); return false;">Manik</a>,
+        </b>
+        a software developer who lives in Seattle, these days I help build software for
+        <b>
+          <a href="#" class="site-title-link" onclick="triggerPhotoReveal('/assets/images/site/kindle.png'); return false;">
+            Kindle
+          </a>
+        </b>
+        apps and devices. I graduated from
+        <b>
+          <a href="#" class="site-title-link" onclick="triggerPhotoReveal('/assets/images/site/paws.jpg'); return false;">
+            Northeastern University
+          </a>
+        </b>
+        in Boston.
+      </p>
+      <p>
+        I'm also an amateur photographer who spends a lot of my free time
+        exploring photography.
+      </p>
+    </div>
+
+    <ExpandableSection id="blog-archive" class="expandable-section--compact" title="<b>Archive</b>">
+      <div class="archive">
+        <ul>
+          {posts.map(post => (
+            <li>
+              {post.external ? (
+                <a href={post.url} target="_blank">{post.title}</a>
+              ) : (
+                <a href={post.url}>{post.title}</a>
+              )}
+              <span class="date">{post.monthYear}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </ExpandableSection>
+
+    <div class="music-widget-section stack stack--sm">
+      <div class="music-widget-header">
+        <span class="music-widget-label" id="music-widget-label">
+          Last listened to …
+        </span>
+        <span class="music-widget-time-wrapper">
+          <span class="music-widget-time-placeholder">…</span>
+          <span class="music-widget-time" id="music-widget-time"></span>
+        </span>
+      </div>
+      <MusicWidget />
+    </div>
+    <div></div>
+    <Footer />
+  </div>
+</Default>

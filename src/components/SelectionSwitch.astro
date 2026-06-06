@@ -1,0 +1,32 @@
+---
+interface SwitchOption {
+  value: string;
+  label: string;
+}
+
+interface Props {
+  id: string;
+  options: SwitchOption[];
+  defaultActive?: string;
+  size?: 'small' | 'default';
+  class?: string;
+}
+
+const { id, options, defaultActive, size = 'default', class: extraClass } = Astro.props;
+const activeValue = defaultActive ?? options[0]?.value;
+
+const classes = [
+  'selection-switch',
+  size === 'small' && 'selection-switch--small',
+  extraClass,
+].filter(Boolean).join(' ');
+---
+<div class={classes} id={id}>
+  {options.map(opt => (
+    <span
+      id={opt.value}
+      class:list={['switch-option', { active: opt.value === activeValue }]}
+      data-value={opt.value}
+    >{opt.label}</span>
+  ))}
+</div>

@@ -1,0 +1,92 @@
+---
+import SelectionSwitch from './SelectionSwitch.astro';
+import Icon from './Icon.astro';
+
+interface Props {
+  pathname: string;
+  pageTitle?: string;
+}
+
+const { pathname, pageTitle } = Astro.props;
+const isHome = pathname === '/' || pathname === '/index.html';
+
+const themeOptions = [
+  { value: 'linen', label: 'Linen' },
+  { value: 'charcoal', label: 'Charcoal' },
+  { value: 'denim', label: 'Denim' },
+  { value: 'plum', label: 'Plum' },
+  { value: 'moss', label: 'Moss' },
+  { value: 'butter', label: 'Butter' },
+  { value: 'blush', label: 'Blush' },
+  { value: 'sky', label: 'Sky' },
+  { value: 'espresso', label: 'Espresso' },
+];
+
+const fontOptions = [
+  { value: 'default', label: 'Default Font' },
+  { value: 'source-serif', label: 'Source Serif' },
+  { value: 'inconsolata', label: 'Inconsolata' },
+];
+---
+<header>
+  <div class="title-photo-container" id="titlePhotoContainer">
+    <img src="/assets/images/site/me.jpg" alt="Manik" class="title-photo" />
+  </div>
+
+  <div class="settings-panel" id="settingsPanel">
+    <div class="settings-panel-inner stack stack--sm">
+      <div class="field">
+        <SelectionSwitch id="themeSwitch" size="small" options={themeOptions} defaultActive="linen" />
+      </div>
+      <div class="field">
+        <SelectionSwitch id="fontSwitch" size="small" options={fontOptions} defaultActive="default" />
+      </div>
+    </div>
+    <script is:inline>
+      initSwitch('themeSwitch', function (val) { setTheme(val); });
+      initSwitch('fontSwitch', function (val) { setFont(val); });
+    </script>
+  </div>
+
+  <div class="header-row">
+    <div class="header-left">
+      {isHome ? (
+        <div class="site-name-group">
+          <div class="site-name-lockup">
+            <a
+              href="#"
+              class="site-name"
+              id="title-photo-trigger"
+              onclick="handleSiteNameClick(event); return false;"
+            >Manik</a>
+            <img
+              src="/assets/images/site/favicon.ico"
+              alt=""
+              class="site-name-flower"
+              aria-hidden="true"
+              decoding="sync"
+              fetchpriority="high"
+            />
+          </div>
+          <div class="site-name-menu" id="siteNameMenu">
+            <a href="/more/">more</a>
+            <a href="/photos/">photos</a>
+            <a href="https://linkedin.com/in/manik-kumar" target="_blank">linkedin</a>
+            <a href="mailto:me@manik.cc">email</a>
+            <span class="menu-sep">/</span>
+            <a href="#" onclick="toggleSettings(); return false;"><span class="settings-toggle-text">settings</span></a>
+          </div>
+        </div>
+      ) : (
+        <nav class="header-breadcrumb">
+          <a href="#" class="breadcrumb-back" onclick="handleBackNavigation(); return false;">
+            <Icon name="arrow-down-left" />
+          </a>
+          <a href="/" class="breadcrumb-home">Manik</a>
+          <span class="breadcrumb-sep">/</span>
+          <span class="breadcrumb-current">{pageTitle}</span>
+        </nav>
+      )}
+    </div>
+  </div>
+</header>

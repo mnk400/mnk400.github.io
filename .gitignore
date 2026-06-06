@@ -11,3 +11,8 @@ admin/.env
 admin/node_modules
 .wranger
 admin/.wranger
+
+# Astro
+node_modules
+dist
+.astro
