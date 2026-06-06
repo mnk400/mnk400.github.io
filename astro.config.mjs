@@ -1,5 +1,6 @@
 import { defineConfig } from 'astro/config';
 import { fileURLToPath } from 'node:url';
+import icon from 'astro-icon';
 
 const sassLoadPaths = [
   fileURLToPath(new URL('./_sass', import.meta.url)),
@@ -7,6 +8,7 @@ const sassLoadPaths = [
 
 export default defineConfig({
   site: process.env.SITE_URL ?? 'https://astro.manik.cc',
+  integrations: [icon()],
   vite: {
     css: {
       preprocessorOptions: {

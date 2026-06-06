@@ -144,15 +144,16 @@ Phases are **roughly ordered** but can interleave. Phase 0 is done. Phase 1 is p
 - `/` renders end-to-end
 
 ### Phase 0.5 — `astro-icon` swap (do before Phase 1)
-Every page port from Phase 1 onward references the Icon component. Swap to `astro-icon` + `@iconify-json/ph` now so we never have to re-migrate icon names later.
+Every page port from Phase 1 onward references the Icon component. Swap to `astro-icon` now so we never have to re-migrate icon names later.
 
-- `npm install astro-icon @iconify-json/ph`
+- Install `astro-icon` + the Iconify icon-set package we want to use
 - Add the integration in `astro.config.mjs`
-- Replace `src/components/Icon.astro` with `astro-icon`'s `<Icon>` (or keep a thin wrapper for API consistency)
-- Update existing references: in `Header.astro`, `MusicWidget.astro`, `ExpandableSection.astro` — change `name="arrow-up-right"` to `name="ph:arrow-up-right-bold"` (Phosphor's Iconify ID format)
-- Delete `_includes/icons/` once nothing in `src/` references them via `import.meta.glob`
+- Rewrite `src/components/Icon.astro` as a thin wrapper around `astro-icon`'s `<Icon>` that preserves the existing callsite API (`<Icon name="arrow-down-left" weight="bold" />`) and applies our defaults (`class="icon"`, `aria-hidden`)
+- Delete `_includes/icons/` and `_includes/icon.html` once nothing in `src/` references them via `import.meta.glob`
 
-**Done criteria:** all current Icon usages render unchanged; `_includes/icons/` deleted; new icons added via Iconify ID, no SVG files copied.
+The wrapper is the only file in the codebase that knows which Iconify set we use. Adding a new icon = use its name; no SVG copying. Swapping icon sets later = change one file.
+
+**Done criteria:** all current Icon usages render unchanged; `_includes/icons/` and `_includes/icon.html` deleted; new icons added by name, no SVG files copied.
 
 ### Phase 1 — Static pages + `<ClientRouter />` (low risk, finish quickly)
 This phase deliberately bundles the second-page port with client-router setup. We need a second URL to validate transitions against; doing both together avoids a separate retrofit later, and means every interactive port from Phase 4 onward is already tested against same-document navigation.
@@ -292,7 +293,7 @@ A one-time audit, sorted by verdict so future-you doesn't re-litigate.
 ### Adopt
 | Library | Replaces | Phase | Why |
 |---|---|---|---|
-| `astro-icon` + `@iconify-json/ph` | hand-managed `_includes/icons/*.svg` | 0.5 | Tree-shaken Phosphor icons via Iconify IDs. Kills the "add a new icon = copy an SVG file" friction. |
+| `astro-icon` (+ an Iconify set) | hand-managed `_includes/icons/*.svg` | 0.5 | Tree-shaken icons via a single wrapper component. Kills the "add a new icon = copy an SVG file" friction. The wrapper hides the icon set from callsites, so switching sets later is a one-file change. |
 | Astro `<Image>` | hand-written `<img>` tags for static images | 5 | AVIF/WebP, responsive srcsets, inferred dimensions, blurry placeholders. Add `media.manik.cc` to `image.domains` for R2-hosted manifest images. |
 | Shiki (built-in) | Rouge syntax highlighting | 2 | Free with Astro markdown. Better output than Rouge, no runtime JS. |
 | Bundled `marked` (npm) | `marked@15.0.7` from jsdelivr CDN | 4 | Removes a runtime network hop on product/readme pages; version pinning that survives CDN outages. |

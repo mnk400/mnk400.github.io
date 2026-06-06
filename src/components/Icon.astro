@@ -1,5 +1,10 @@
 ---
-type IconWeight = 'bold' | 'fill';
+import { Icon as IconifyIcon } from 'astro-icon/components';
+
+// Site-wide icon component. Wraps Iconify so the rest of the codebase
+// never has to know which icon set is underneath — to switch sets
+// later, this file is the only one that changes.
+type IconWeight = 'thin' | 'light' | 'regular' | 'bold' | 'fill' | 'duotone';
 
 interface Props {
   name: string;
@@ -8,20 +13,7 @@ interface Props {
 }
 
 const { name, weight = 'bold', class: extraClass } = Astro.props;
-
-const icons = import.meta.glob<string>('/_includes/icons/**/*.svg', {
-  query: '?raw',
-  import: 'default',
-  eager: true,
-});
-
-const key = `/_includes/icons/${weight}/${name}.svg`;
-const raw = icons[key];
-if (!raw) {
-  throw new Error(`Icon not found: ${weight}/${name}. Add ${key} or check the name.`);
-}
-
+const resolved = weight === 'regular' ? `ph:${name}` : `ph:${name}-${weight}`;
 const classes = ['icon', extraClass].filter(Boolean).join(' ');
-const svg = raw.replace('<svg', `<svg class="${classes}" aria-hidden="true"`);
 ---
-<Fragment set:html={svg} />
+<IconifyIcon name={resolved} class={classes} aria-hidden="true" />
