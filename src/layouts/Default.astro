@@ -35,12 +35,13 @@ const {
 } = Astro.props;
 
 const pathname = Astro.url.pathname;
-const canonical = `${site.url}${pathname}`;
+const origin = Astro.site!.origin;
+const canonical = `${origin}${pathname}`;
 
 const socialImagePath = image ?? '/assets/images/previews/site-preview.jpg';
 const socialImageUrl = socialImagePath.includes('://')
   ? socialImagePath
-  : `${site.url}${socialImagePath}`;
+  : `${origin}${socialImagePath}`;
 
 const pageTitleFull = title ? `${title} — Manik` : 'Manik';
 const ogTitle = title ? `${title} — Manik` : 'Manik';

@@ -29,6 +29,8 @@ const {
   breadcrumbs,
 } = Astro.props;
 
+const origin = Astro.site!.origin;
+
 const inferredType =
   schemaTypeOverride ??
   (entity ? 'CollectionPage' : layout === 'post' ? 'Article' : 'WebPage');
@@ -50,14 +52,14 @@ const pageSchema = {
   '@context': 'https://schema.org',
   '@type': inferredType,
   ...headlineOrName,
-  url: `${site.url}${url}`,
+  url: `${origin}${url}`,
   ...(description ? { description } : {}),
   image: socialImageUrl,
   author: { '@type': 'Person', name: 'Manik Kumar' },
   publisher: { '@type': 'Person', name: 'Manik Kumar' },
-  isPartOf: { '@type': 'WebSite', name: site.title, url: site.url },
+  isPartOf: { '@type': 'WebSite', name: site.title, url: origin },
   ...aboutBlock,
-  mainEntityOfPage: `${site.url}${url}`,
+  mainEntityOfPage: `${origin}${url}`,
 };
 
 let breadcrumbSchema: object | null = null;
@@ -66,12 +68,12 @@ if (url !== '/' && breadcrumbs && breadcrumbs.length > 0) {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Manik', item: `${site.url}/` },
+      { '@type': 'ListItem', position: 1, name: 'Manik', item: `${origin}/` },
       ...breadcrumbs.map((c, i) => ({
         '@type': 'ListItem',
         position: i + 2,
         name: c.label,
-        item: `${site.url}${c.href}`,
+        item: `${origin}${c.href}`,
       })),
     ],
   };

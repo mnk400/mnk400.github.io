@@ -57,6 +57,26 @@ Examples:
 
 ---
 
+## Lifecycle rule (mandatory for every interactive port)
+
+`<ClientRouter />` is enabled from Phase 1 onward (see phases below). That means navigations are **same-document** — `DOMContentLoaded` fires once, not on every page change. Any new code that depends on first-paint-time init **must** register against Astro's lifecycle events, not `DOMContentLoaded`.
+
+```js
+// ❌ won't re-run after client navigation
+document.addEventListener('DOMContentLoaded', init);
+
+// ✅ runs on initial load AND every client-side page change
+document.addEventListener('astro:page-load', init);
+```
+
+For inline `<script>` tags inside `.astro` components: add `is:inline` and listen to `astro:page-load`. For external modules loaded via `<script src="...">`: same rule, the file's top-level event listener uses `astro:page-load`.
+
+**Bucket 3 escape hatch:** `assets/js/core/ui-components.js` (and similar legacy files) still register on `DOMContentLoaded`. We don't rewrite them yet — instead `Default.astro` includes a small shim that calls the same global init functions on `astro:page-load`. Init functions are idempotent via `data-*-initialized` guards, so double-firing is safe. When Phase 6 rewrites these files, the shim is deleted.
+
+**Validation:** during a port, click around between two ported pages without a full reload. Theme switcher, expandable section, music widget, photo reveal — all must work on the destination page.
+
+---
+
 ## Definition of "done" for a page
 
 A page slice is done when:
@@ -67,7 +87,8 @@ A page slice is done when:
 4. Any Bucket 2 files this is the last consumer of have been deleted; otherwise they stay
 5. Front matter has been mapped into the Astro page's frontmatter (typed) — no leftover `layout: post` references the Astro side reads
 6. If the page does interactive things, hover/click/touch tested in a real browser, not just `curl` parity
-7. SEO surfaces still emit: OG, structured data, canonical URL, social preview image
+7. SEO surfaces still emit: OG, structured data, canonical URL, social preview image — all derived from `Astro.site`, not a hardcoded host
+8. Any interactive script uses `astro:page-load` (not `DOMContentLoaded`) — and the page works correctly when arrived at via client-side nav, not only direct load
 
 Not required:
 - Performance work (defer to a final pass)
@@ -133,13 +154,23 @@ Every page port from Phase 1 onward references the Icon component. Swap to `astr
 
 **Done criteria:** all current Icon usages render unchanged; `_includes/icons/` deleted; new icons added via Iconify ID, no SVG files copied.
 
-### Phase 1 — Static pages (low risk, finish quickly)
+### Phase 1 — Static pages + `<ClientRouter />` (low risk, finish quickly)
+This phase deliberately bundles the second-page port with client-router setup. We need a second URL to validate transitions against; doing both together avoids a separate retrofit later, and means every interactive port from Phase 4 onward is already tested against same-document navigation.
+
+Pages:
 - `/about` → port `about/index.md`, define `Post.astro` layout, port breadcrumb variant of Header
 - `/love` → tiny static page
 - `/404` → port `404.html`
-- These force the breadcrumb variant of Header into existence and validate the post layout shape
 
-**Done criteria:** four URLs working, `Post.astro` layout established, Header.astro covers both variants.
+Client router setup (was Phase 7, moved here):
+- Add `<ClientRouter />` to `Default.astro`
+- Port `view-transitions.js`: direction detection (forward/back) and the breadcrumb-name swap logic move from `pageswap`/`pagereveal` (cross-document) to `astro:before-swap` / `astro:after-swap` hooks
+- Add the lifecycle-shim script in `Default.astro` that re-runs `ui-components.js`'s global init functions on `astro:page-load` (see Lifecycle rule above)
+- Verify SCSS view-transition rules in `_sass/base/_view-transitions.scss` still apply — they should, but Safari needs a click-through test
+
+Deferred to Phase 7 (still): `transition:persist` decisions for the music widget and any background video — those need real consumer components in place first.
+
+**Done criteria:** four URLs working, `Post.astro` layout established, Header.astro covers both variants, client-side navigation between any two pages doesn't lose theme switcher / expandable / music-widget behavior, browser back-button still triggers the reverse-direction transition.
 
 ### Phase 2 — Content collections + blog
 - Move `_posts/*.md` → `src/content/posts/*.md`
@@ -170,9 +201,9 @@ This is the one that justifies the migration. If this phase doesn't feel meaning
 - Each `_more/<cat>/<slug>.html` → `src/pages/<cat>/<slug>.astro`
 - Script references move from front matter `scripts: [...]` to `<script src="...">` at bottom of `.astro`
 - Bucket 1: each game's JS file moves from `assets/js/games/` to a per-page co-located script or stays in `public/` if cleaner
-- No JS rewrites here — these are mechanical ports
+- **No structural rewrites**, but the lifecycle rule applies: if the original JS used `DOMContentLoaded`, change that single line to `astro:page-load` during the port. Game/tool internals stay untouched.
 
-**Done criteria:** every URL under `/games/`, `/cli-tools/`, `/fun-tools/`, `/image-tools/`, `/apps/`, `/music/`, `/archive/things/` works.
+**Done criteria:** every URL under `/games/`, `/cli-tools/`, `/fun-tools/`, `/image-tools/`, `/apps/`, `/music/`, `/archive/things/` works, including arriving via client-side navigation from another ported page.
 
 ### Phase 5 — Image gallery + archive pages
 - Port `_includes/image-gallery.html` → `src/components/ImageGallery.astro` with **typed props** (no more 18 data-attrs)
@@ -194,14 +225,17 @@ With most pages now Astro-native, the shape of shared components is finally clea
 
 **Done criteria:** no more global functions called from inline scripts in templates. `assets/js/core/ui-components.js` deleted.
 
-### Phase 7 — View Transitions + persist
-- Add Astro `<ClientRouter />` to `Default.astro`
-- Port `view-transitions.js` direction-detection logic to `astro:before-swap` / `astro:after-swap` hooks
-- Decide what gets `transition:persist`: music widget (yes), background video if added (yes), header (no — it changes between home/sub variants)
-- Validate Safari behavior — Astro's same-document VT is more robust than cross-document, but Safari still surprises
-- Delete `_sass/base/_view-transitions.scss`'s cross-document declarations; keep the keyframes and per-name animations
+### Phase 7 — `transition:persist` decisions
+`<ClientRouter />` and the view-transition direction logic landed in Phase 1. This phase is about what survives across navigations.
 
-**Done criteria:** music keeps playing across navigations. No visual regression on transition behavior.
+- Apply `transition:persist` to the music widget so audio doesn't restart on nav
+- If a background video gets added, persist it the same way
+- Header is intentionally **not** persisted — it changes between home and sub variants
+- Re-validate Safari behavior with persistent elements in place (different surface than Phase 1's transition test)
+- Delete `_sass/base/_view-transitions.scss`'s cross-document `@view-transition` declaration since same-document is now the default; keep the keyframes and per-name animations
+- Audit any remaining `DOMContentLoaded` references in code we own and convert them — Phase 1's lifecycle rule should have caught these already, but a final sweep is cheap
+
+**Done criteria:** music keeps playing across navigations; no `DOMContentLoaded` left in our own code (Bucket 3 files excluded until Phase 6).
 
 ### Phase 8 — SCSS modernization (optional, can wait)
 - Migrate `_sass/` from `@import` to `@use`/`@forward`
@@ -242,6 +276,9 @@ The icon set stays in place. The pattern in `src/components/Icon.astro` (`?raw` 
 
 ### CSS link tag in dev vs production
 In dev, Vite injects CSS via `<script type="module" src=".../main.scss">`. In prod, Astro emits a real `<link rel="stylesheet">`. Don't be alarmed by the missing `<link>` in dev `curl` output.
+
+### Canonical / OG / schema URLs derive from `Astro.site`
+`src/data/site.ts` no longer carries a `url:` field. `Default.astro` and `StructuredData.astro` read `Astro.site!.origin` instead, which respects `astro.config.mjs`'s `site` (set to `https://astro.manik.cc` by default, overridable via `SITE_URL` env var). This is how the staging deployment doesn't claim to be the production Jekyll site to crawlers and social previews. Set `SITE_URL=https://manik.cc` in the Cloudflare prod build env at cutover.
 
 ### Existing `assets/` is symlinked into `public/`
 This is the cheapest way to keep `/assets/*` URLs working while we migrate. As individual JS files move (Bucket 1 or Bucket 3), delete them from `assets/` and add to `public/assets/` directly if needed. Astro/Vite follows the symlink.
@@ -291,6 +328,6 @@ A one-time audit, sorted by verdict so future-you doesn't re-litigate.
 
 A scratch area for "I noticed X while porting Y" observations. Don't be precious — write things down, move them up into the plan when they become real.
 
-- [ ] Header's `view-transition-name` rules in `_view-transitions.scss` may need rework once `<ClientRouter />` lands (Phase 7)
+- [ ] Header's `view-transition-name` rules in `_view-transitions.scss` may need rework once `<ClientRouter />` lands (Phase 1)
 - [ ] Inline `onclick="handleSiteNameClick(...)"` survives the port but feels wrong long-term — convert during Phase 6 chrome rewrite
 - [ ] `index.astro`'s spike-mode `parseFrontmatter()` regex needs deletion in Phase 2
