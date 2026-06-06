@@ -9,6 +9,10 @@ archive/paintings:
   label: Paintings
   chip: paintings
   sort: order
+archive/things:
+  label: Things
+  chip: things
+  sort: order
 cli-tools:
   label: CLI Tools
   chip: cli tools
