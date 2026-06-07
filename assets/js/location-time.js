@@ -12,8 +12,11 @@ function updateLocationTime() {
   el.textContent = `${timeString} · Seattle, WA`;
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+// Track the interval handle so re-firing on client-side nav doesn't stack
+// multiple timers. astro:page-load fires on initial load AND on every nav.
+let _locationTimeInterval = null;
+document.addEventListener("astro:page-load", () => {
   updateLocationTime();
-  // Update every minute
-  setInterval(updateLocationTime, 60000);
+  if (_locationTimeInterval) clearInterval(_locationTimeInterval);
+  _locationTimeInterval = setInterval(updateLocationTime, 60000);
 });

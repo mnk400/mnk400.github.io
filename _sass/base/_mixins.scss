@@ -2,6 +2,34 @@
 // MIXINS
 // =============================================================================
 
+// Reset a <button> so it renders like inline text. The global `button` rule
+// in _buttons.scss paints background, padding, border-radius, hover bg, and
+// forces font-weight 300 — used by <button>s that semantically need to be
+// triggers but visually need to look like a link or icon.
+@mixin button-as-text {
+    background: none;
+    background-color: transparent;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    backdrop-filter: none;
+    transition: none;
+
+    &:hover,
+    &:focus,
+    &:focus-visible,
+    &.touch-hover {
+        background: none;
+        background-color: transparent;
+        backdrop-filter: none;
+        color: inherit; // global `button:hover { color: var(--background-main) }` would invert the icon
+    }
+}
+
 // Translucent surface with blur and outline
 @mixin translucent-surface($bg: var(--translucent-low), $blur: 10px) {
     background-color: $bg;

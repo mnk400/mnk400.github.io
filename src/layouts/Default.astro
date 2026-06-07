@@ -1,7 +1,10 @@
 ---
+import { ClientRouter } from 'astro:transitions';
 import { site } from '../data/site.ts';
 import Header from '../components/Header.astro';
 import StructuredData from '../components/StructuredData.astro';
+import { themes, defaultTheme } from '../lib/theme.ts';
+import { fonts, defaultFont } from '../lib/font.ts';
 import '../styles/main.scss';
 
 interface Props {
@@ -70,21 +73,92 @@ const ogTitle = title ? `${title} — Manik` : 'Manik';
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
     <link rel="icon" href="/assets/images/site/favicon.ico" />
 
-    <script src="/assets/js/core/theme-config.js" is:inline></script>
-    <script src="/assets/js/core/url-params.js" is:inline></script>
-    <script src="/assets/js/core/view-transitions.js" is:inline></script>
+    <!-- Pre-paint theme + font apply. Runs synchronously before CSS so the
+         page never flashes the wrong palette. Data is sourced from the same
+         lib modules the switcher components use, via define:vars. -->
+    <script is:inline define:vars={{ themes, defaultTheme, fonts, defaultFont }}>
+      (function () {
+        var themeNames = themes.map(function (t) { return t.name; });
+        var fontNames = fonts.map(function (f) { return f.name; });
+
+        var urlTheme = new URL(location.href).searchParams.get('theme');
+        var storedTheme = localStorage.getItem('theme');
+        var themeName =
+          urlTheme && themeNames.indexOf(urlTheme) !== -1 ? urlTheme :
+          storedTheme && themeNames.indexOf(storedTheme) !== -1 ? storedTheme :
+          defaultTheme;
+        var theme = themes.find(function (t) { return t.name === themeName; });
+        document.documentElement.setAttribute('data-theme', themeName);
+        var metaTag = document.querySelector('meta[name="theme-color"]');
+        if (!metaTag) {
+          metaTag = document.createElement('meta');
+          metaTag.name = 'theme-color';
+          document.head.appendChild(metaTag);
+        }
+        metaTag.content = theme.meta;
+
+        var storedFont = localStorage.getItem('font');
+        var fontName =
+          storedFont && fontNames.indexOf(storedFont) !== -1 ? storedFont : defaultFont;
+        var font = fonts.find(function (f) { return f.name === fontName; });
+        document.documentElement.style.setProperty('--font-family', font.stack);
+        document.documentElement.style.setProperty(
+          '--font-size-scale',
+          String(font.scale != null ? font.scale : 1),
+        );
+      })();
+    </script>
+
+    <ClientRouter />
+
+    <!-- View transition direction + breadcrumb-name swap on home↔sub navs.
+         Same-document via ClientRouter; pageswap/pagereveal of the old MPA
+         model become astro:before-preparation and astro:before-swap.
+         Plain (bundled) script: runs once, registers document listeners
+         that survive DOM swaps. -->
+    <script>
+      (function () {
+        var breadcrumbSelectors = ['.breadcrumb-back', '.breadcrumb-home', '.breadcrumb-sep'];
+
+        function setBreadcrumbNames(doc, value) {
+          breadcrumbSelectors.forEach(function (sel) {
+            var el = doc.querySelector(sel);
+            if (el) el.style.viewTransitionName = value;
+          });
+        }
+
+        function isHomePage(url) {
+          var path = url instanceof URL ? url.pathname : new URL(url, location.origin).pathname;
+          return path === '/' || path === '/index.html';
+        }
+
+        document.addEventListener('astro:before-preparation', function (event) {
+          if (isHomePage(event.to)) {
+            setBreadcrumbNames(document, 'none');
+          }
+        });
+
+        document.addEventListener('astro:before-swap', function (event) {
+          event.newDocument.documentElement.dataset.vtDirection = event.direction;
+
+          if (isHomePage(event.from)) {
+            setBreadcrumbNames(event.newDocument, 'none');
+          }
+
+          if (event.viewTransition && event.viewTransition.finished) {
+            event.viewTransition.finished.finally(function () {
+              delete document.documentElement.dataset.vtDirection;
+              setBreadcrumbNames(document, '');
+            });
+          }
+        });
+      })();
+    </script>
 
     {styles.map(href => (
       <link rel="stylesheet" type="text/css" href={href} />
     ))}
 
-    <!-- Core JavaScript modules -->
-    <script src="/assets/js/core/theme-manager.js" is:inline></script>
-    <script src="/assets/js/core/font-manager.js" is:inline></script>
-    <script src="/assets/js/core/navigation.js" is:inline></script>
-    <script src="/assets/js/utils/clipboard.js" is:inline></script>
-    <script src="/assets/js/core/ui-components.js" is:inline></script>
-    <script src="/assets/js/components/image-zoom.js" is:inline></script>
     {headScripts.map(src => <script src={src} is:inline></script>)}
 
     <!-- Google Analytics -->
@@ -131,5 +205,53 @@ const ogTitle = title ? `${title} — Manik` : 'Manik';
       </>
     )}
     {scripts.map(src => <script src={src} is:inline></script>)}
+
+    <!-- Global page-chrome behaviors: scroll class toggle on <html> + touch
+         hover visual feedback. Both registered once on document; survive DOM
+         swaps because the listeners aren't on swapped elements. -->
+    <script>
+      // Scroll class on <html>: CSS toggles header state when scrollY > 30.
+      let ticking = false;
+      function updateScrollClass() {
+        document.documentElement.classList.toggle('is-scrolled', window.scrollY > 30);
+        ticking = false;
+      }
+      window.addEventListener('scroll', () => {
+        if (!ticking) {
+          requestAnimationFrame(updateScrollClass);
+          ticking = true;
+        }
+      }, { passive: true });
+      // Run on initial paint and after every client-side nav (scroll resets to 0).
+      document.addEventListener('astro:page-load', updateScrollClass);
+
+      // Touch-hover: visual tap feedback for mobile.
+      if ('ontouchstart' in window) {
+        const SELECTORS = 'a, button, .btn, .switch-option, .selection-dropdown__trigger, .selection-dropdown__option, .expandable-toggle, .site-search__trigger';
+        let touchStart = 0;
+        let activeTarget: Element | null = null;
+
+        document.addEventListener('touchstart', (e) => {
+          activeTarget = (e.target as Element).closest(SELECTORS);
+          if (activeTarget) {
+            touchStart = Date.now();
+            activeTarget.classList.add('touch-hover');
+          }
+        }, { passive: true });
+
+        const endTouch = () => {
+          if (!activeTarget) return;
+          const elapsed = Date.now() - touchStart;
+          const target = activeTarget;
+          activeTarget = null;
+          setTimeout(
+            () => target.classList.remove('touch-hover'),
+            Math.max(0, 150 - elapsed),
+          );
+        };
+        document.addEventListener('touchend', endTouch, { passive: true });
+        document.addEventListener('touchcancel', endTouch, { passive: true });
+      }
+    </script>
   </body>
 </html>

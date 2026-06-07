@@ -255,7 +255,9 @@ async function fetchTopArtists() {
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+// Use astro:page-load so this also runs after client-side navigation, not
+// just on initial document load.
+document.addEventListener("astro:page-load", () => {
   // Check if we're on the music page (has the toggle switches)
   const isMusicPage = document.getElementById("view-toggle") !== null;
 

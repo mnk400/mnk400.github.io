@@ -1,0 +1,23 @@
+---
+import ThemeSwitcher from './ThemeSwitcher.astro';
+import FontSwitcher from './FontSwitcher.astro';
+---
+<div class="settings-panel" id="settingsPanel" data-settings-panel>
+  <div class="settings-panel-inner stack stack--sm">
+    <div class="field"><ThemeSwitcher /></div>
+    <div class="field"><FontSwitcher /></div>
+  </div>
+</div>
+
+<script>
+  // Two-way coordination via custom events. Triggers (in Header) dispatch
+  // 'settings:toggle'; the panel updates its visibility and re-broadcasts
+  // 'settings:state-changed' so the trigger UI (link text, menu open-class)
+  // can react. Listeners are on document, so they survive DOM swaps.
+  document.addEventListener('settings:toggle', () => {
+    const panel = document.getElementById('settingsPanel');
+    if (!panel) return;
+    const isOpen = panel.classList.toggle('revealed');
+    document.dispatchEvent(new CustomEvent('settings:state-changed', { detail: { isOpen } }));
+  });
+</script>

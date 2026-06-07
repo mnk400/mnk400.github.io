@@ -1,5 +1,5 @@
 ---
-import SelectionSwitch from './SelectionSwitch.astro';
+import SettingsPanel from './SettingsPanel.astro';
 import Icon from './Icon.astro';
 
 interface Props {
@@ -9,56 +9,25 @@ interface Props {
 
 const { pathname, pageTitle } = Astro.props;
 const isHome = pathname === '/' || pathname === '/index.html';
-
-const themeOptions = [
-  { value: 'linen', label: 'Linen' },
-  { value: 'charcoal', label: 'Charcoal' },
-  { value: 'denim', label: 'Denim' },
-  { value: 'plum', label: 'Plum' },
-  { value: 'moss', label: 'Moss' },
-  { value: 'butter', label: 'Butter' },
-  { value: 'blush', label: 'Blush' },
-  { value: 'sky', label: 'Sky' },
-  { value: 'espresso', label: 'Espresso' },
-];
-
-const fontOptions = [
-  { value: 'default', label: 'Default Font' },
-  { value: 'source-serif', label: 'Source Serif' },
-  { value: 'inconsolata', label: 'Inconsolata' },
-];
 ---
 <header>
   <div class="title-photo-container" id="titlePhotoContainer">
     <img src="/assets/images/site/me.jpg" alt="Manik" class="title-photo" />
   </div>
 
-  <div class="settings-panel" id="settingsPanel">
-    <div class="settings-panel-inner stack stack--sm">
-      <div class="field">
-        <SelectionSwitch id="themeSwitch" size="small" options={themeOptions} defaultActive="linen" />
-      </div>
-      <div class="field">
-        <SelectionSwitch id="fontSwitch" size="small" options={fontOptions} defaultActive="default" />
-      </div>
-    </div>
-    <script is:inline>
-      initSwitch('themeSwitch', function (val) { setTheme(val); });
-      initSwitch('fontSwitch', function (val) { setFont(val); });
-    </script>
-  </div>
+  <SettingsPanel />
 
   <div class="header-row">
     <div class="header-left">
       {isHome ? (
         <div class="site-name-group">
           <div class="site-name-lockup">
-            <a
-              href="#"
+            <button
+              type="button"
               class="site-name"
               id="title-photo-trigger"
-              onclick="handleSiteNameClick(event); return false;"
-            >Manik</a>
+              data-site-name-trigger
+            >Manik</button>
             <img
               src="/assets/images/site/favicon.ico"
               alt=""
@@ -74,14 +43,14 @@ const fontOptions = [
             <a href="https://linkedin.com/in/manik-kumar" target="_blank">linkedin</a>
             <a href="mailto:me@manik.cc">email</a>
             <span class="menu-sep">/</span>
-            <a href="#" onclick="toggleSettings(); return false;"><span class="settings-toggle-text">settings</span></a>
+            <button type="button" class="menu-trigger" data-settings-trigger><span class="settings-toggle-text">settings</span></button>
           </div>
         </div>
       ) : (
         <nav class="header-breadcrumb">
-          <a href="#" class="breadcrumb-back" onclick="handleBackNavigation(); return false;">
+          <button type="button" class="breadcrumb-back" data-back-nav>
             <Icon name="arrow-down-left" />
-          </a>
+          </button>
           <a href="/" class="breadcrumb-home">Manik</a>
           <span class="breadcrumb-sep">/</span>
           <span class="breadcrumb-current">{pageTitle}</span>
@@ -90,3 +59,129 @@ const fontOptions = [
     </div>
   </div>
 </header>
+
+<script>
+  // Photo reveal animation (used by the site-name in header AND any
+  // [data-photo-reveal] link in page content).
+  let photoRevealTimeout: number | null = null;
+  let isTransitioning = false;
+
+  function triggerPhotoReveal(imagePath: string) {
+    const container = document.getElementById('titlePhotoContainer');
+    if (!container || isTransitioning) return;
+    const img = container.querySelector<HTMLImageElement>('.title-photo');
+    if (!img) return;
+
+    if (photoRevealTimeout) {
+      clearTimeout(photoRevealTimeout);
+      photoRevealTimeout = null;
+    }
+
+    const revealWithImage = () => {
+      container.classList.add('revealed');
+      photoRevealTimeout = window.setTimeout(() => {
+        container.classList.remove('revealed');
+        photoRevealTimeout = null;
+      }, 2500);
+    };
+
+    const preloadAndReveal = () => {
+      const preloader = new Image();
+      preloader.onload = () => {
+        img.src = imagePath;
+        revealWithImage();
+        isTransitioning = false;
+      };
+      preloader.onerror = () => { isTransitioning = false; };
+      preloader.src = imagePath;
+    };
+
+    isTransitioning = true;
+
+    if (container.classList.contains('revealed')) {
+      container.classList.remove('revealed');
+      setTimeout(preloadAndReveal, 300);
+    } else {
+      preloadAndReveal();
+    }
+  }
+
+  function isTouchLikeInput() {
+    return (
+      window.matchMedia?.('(hover: none)').matches ||
+      'ontouchstart' in window ||
+      (window.navigator?.maxTouchPoints || 0) > 0
+    );
+  }
+
+  function handleBackNavigation() {
+    const currentUrl = window.location.href;
+    const currentDomain = window.location.hostname;
+    const referrer = document.referrer;
+
+    if (!referrer) { window.location.href = '/'; return; }
+
+    let referrerUrl: URL;
+    try {
+      referrerUrl = new URL(referrer);
+    } catch {
+      window.location.href = '/';
+      return;
+    }
+
+    if (referrerUrl.hostname !== currentDomain) { window.location.href = '/'; return; }
+    if (referrer === currentUrl) { window.location.href = '/'; return; }
+
+    window.history.back();
+  }
+
+  // Delegated click handler — survives DOM swaps because it's on document.
+  document.addEventListener('click', (event) => {
+    const target = event.target as HTMLElement | null;
+    if (!target) return;
+
+    const photoTrigger = target.closest<HTMLElement>('[data-photo-reveal]');
+    if (photoTrigger) {
+      event.preventDefault();
+      triggerPhotoReveal(photoTrigger.dataset.photoReveal || '/assets/images/site/me.jpg');
+      return;
+    }
+
+    const siteName = target.closest<HTMLElement>('[data-site-name-trigger]');
+    if (siteName) {
+      event.preventDefault();
+      const menu = document.getElementById('siteNameMenu');
+      if (isTouchLikeInput() && menu) {
+        menu.classList.toggle('is-open');
+      } else {
+        triggerPhotoReveal('/assets/images/site/me.jpg');
+      }
+      return;
+    }
+
+    const settingsTrigger = target.closest<HTMLElement>('[data-settings-trigger]');
+    if (settingsTrigger) {
+      event.preventDefault();
+      document.dispatchEvent(new CustomEvent('settings:toggle'));
+      return;
+    }
+
+    const backNav = target.closest<HTMLElement>('[data-back-nav]');
+    if (backNav) {
+      event.preventDefault();
+      handleBackNavigation();
+      return;
+    }
+  });
+
+  // React to settings panel open/close to update the trigger link text and
+  // the site-name menu's open class. SettingsPanel owns its state; we react.
+  document.addEventListener('settings:state-changed', (e: Event) => {
+    const isOpen = (e as CustomEvent<{ isOpen: boolean }>).detail.isOpen;
+    const menu = document.getElementById('siteNameMenu');
+    if (menu) menu.classList.toggle('is-open', isOpen);
+    document.querySelectorAll('.settings-toggle-text').forEach(el => {
+      el.textContent = isOpen ? 'close' : 'settings';
+    });
+  });
+</script>

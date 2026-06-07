@@ -43,17 +43,25 @@ Examples:
 - `src/components/Footer.astro`
 - `src/components/StructuredData.astro`
 
-### Bucket 3 — Shared infrastructure
-Used by many pages, shape is uncertain until we've ported several consumers. Defer to a dedicated phase. Astro consumes the existing file unchanged in the meantime.
+### Bucket 3 — Shared infrastructure (lift just-in-time)
 
-Examples:
-- `assets/js/core/ui-components.js` (~700 lines, 8 component types)
-- `assets/js/core/theme-manager.js`, `font-manager.js`
-- `assets/js/components/image-zoom.js`
-- `_sass/` (entire tree — consumed via Vite `loadPaths`)
-- `assets/js/components/readme-renderer.js`, `release-meta.js`
+**Updated after Phase 1.** The original plan deferred all Bucket 3 rewrites to a single late phase. Phase 1 proved that strategy doesn't survive client routing — globals wired via inline template scripts get orphaned when the DOM swaps. So Bucket 3 splits into three sub-buckets, each with its own rule:
 
-**Hard rule:** never rewrite a Bucket 3 file as part of a page slice. It always becomes its own phase once we have enough consumers to design against.
+**B3a — State utilities** (`theme-manager.js`, `font-manager.js`, `theme-config.js`, `url-params.js`)
+
+App-level state that needs to be owned by Astro. Convert to TS modules under `src/lib/` when the first Astro consumer (a switcher component) needs them. The legacy JS files keep existing on disk and continue serving at their public URLs for external design-system consumers — we just stop loading them into Astro pages.
+
+**B3b — Generic widgets** (the `init*` functions inside `ui-components.js`: selection switch, dropdown, search, range slider, image upload, expandable section, copy-to-clipboard, reveal cards)
+
+Each widget gets lifted to a self-owning Astro component when an Astro page first needs it. The lifted component sets its own `data-*-initialized="true"` guard so the legacy `ui-components.js` (still loaded for non-ported pages) skips it. When all consumers of a given widget have been lifted, the corresponding code path in `ui-components.js` is deleted.
+
+**B3c — Page-specific scripts** (`lastfm.js`, `location-time.js`, `image-zoom.js`, individual game/tool JS)
+
+These were always page-local in Astro's model. The minimal patch is correct: change `DOMContentLoaded` → `astro:page-load`, add an idempotency guard if the script registers anything that would stack on re-firing (e.g. `setInterval`). Don't restructure them. They get deleted as their owning page is ported under the bucket-1 rule.
+
+**Why this split:** the cost of lifting is per-widget, not per-codebase. If you only need a switcher today, you only lift the switcher. The hard rule is "no NEW consumers of legacy globals from Astro pages" — every page port either uses already-lifted components, or lifts what it needs in the same commit.
+
+Examples that stay as Bucket 3 reference (not lifted yet, no Astro consumer): `_sass/` (consumed via Vite loadPaths, fine as-is), `readme-renderer.js` and `release-meta.js` (used only by product pages we haven't ported).
 
 ---
 
@@ -69,9 +77,22 @@ document.addEventListener('DOMContentLoaded', init);
 document.addEventListener('astro:page-load', init);
 ```
 
-For inline `<script>` tags inside `.astro` components: add `is:inline` and listen to `astro:page-load`. For external modules loaded via `<script src="...">`: same rule, the file's top-level event listener uses `astro:page-load`.
+For component-local behavior, use a plain `<script>` inside the `.astro` file (Astro bundles it, deduplicates across the page, and processes TypeScript). Inside that script, hook `astro:page-load` for any per-navigation setup. **Do not reach for `is:inline` by default** — it opts the script out of bundling, runs it eagerly per-document, and loses TypeScript. Reserve `is:inline` for cases that genuinely need it:
 
-**Bucket 3 escape hatch:** `assets/js/core/ui-components.js` (and similar legacy files) still register on `DOMContentLoaded`. We don't rewrite them yet — instead `Default.astro` includes a small shim that calls the same global init functions on `astro:page-load`. Init functions are idempotent via `data-*-initialized` guards, so double-firing is safe. When Phase 6 rewrites these files, the shim is deleted.
+- **Pre-paint setup** that must run synchronously before CSS resolves (theme/font apply in `Default.astro`).
+- **Third-party CDN scripts** (MathJax, gtag bootstrap, `marked` from jsdelivr) that can't be bundled.
+- **Inline config snippets** that emit literal JSON/JS into the document (JSON-LD, `window.dataLayer = ...`).
+- **Deliberate `data-astro-rerun`** cases — only when a script must re-execute on each navigation.
+
+For external modules loaded via `<script src="...">`: same rule, the file's top-level event listener uses `astro:page-load`.
+
+**No new inline scripts in templates that wire globals.** A pattern like:
+
+```astro
+<script>initSwitch('themeSwitch', val => setTheme(val))</script>
+```
+
+inside `Header.astro` looks like the Jekyll inline-include style — but it runs ONCE on initial load and registers handlers on what is then the live DOM. After client-side navigation the new DOM has no listeners, even though the Jekyll-style helper still exists on `window`. **Replacement:** an Astro component that owns markup + co-located script for its own behavior (`ThemeSwitcher.astro`, etc.). This was the Phase 1 lesson — bandaging globals does not survive client routing.
 
 **Validation:** during a port, click around between two ported pages without a full reload. Theme switcher, expandable section, music widget, photo reveal — all must work on the destination page.
 
@@ -143,7 +164,7 @@ Phases are **roughly ordered** but can interleave. Phase 0 is done. Phase 1 is p
 - Base layout, Header (home variant), Footer, Icon, MusicWidget, ExpandableSection, SelectionSwitch, StructuredData components
 - `/` renders end-to-end
 
-### Phase 0.5 — `astro-icon` swap (do before Phase 1)
+### Phase 0.5 — `astro-icon` swap ✅ done
 Every page port from Phase 1 onward references the Icon component. Swap to `astro-icon` now so we never have to re-migrate icon names later.
 
 - Install `astro-icon` + the Iconify icon-set package we want to use
@@ -155,7 +176,7 @@ The wrapper is the only file in the codebase that knows which Iconify set we use
 
 **Done criteria:** all current Icon usages render unchanged; `_includes/icons/` and `_includes/icon.html` deleted; new icons added by name, no SVG files copied.
 
-### Phase 1 — Static pages + `<ClientRouter />` (low risk, finish quickly)
+### Phase 1 — Static pages + `<ClientRouter />` (in progress)
 This phase deliberately bundles the second-page port with client-router setup. We need a second URL to validate transitions against; doing both together avoids a separate retrofit later, and means every interactive port from Phase 4 onward is already tested against same-document navigation.
 
 Pages:
@@ -171,7 +192,7 @@ Client router setup (was Phase 7, moved here):
 
 Deferred to Phase 7 (still): `transition:persist` decisions for the music widget and any background video — those need real consumer components in place first.
 
-**Done criteria:** four URLs working, `Post.astro` layout established, Header.astro covers both variants, client-side navigation between any two pages doesn't lose theme switcher / expandable / music-widget behavior, browser back-button still triggers the reverse-direction transition.
+**Done criteria:** four URLs working, `Post.astro` layout established, Header.astro covers both variants, client-side navigation between any two pages doesn't lose theme switcher / expandable / music-widget behavior, browser back-button still triggers the reverse-direction transition. **Additionally** (added mid-phase): all chrome rendered on the four URLs has been lifted to self-owning Astro components — `ThemeSwitcher`, `FontSwitcher`, `SettingsPanel`, `SelectionSwitch`, `ExpandableSection` — with no remaining inline `<script>initGlobal(...)</script>` template wiring.
 
 ### Phase 2 — Content collections + blog
 - Move `_posts/*.md` → `src/content/posts/*.md`
@@ -215,16 +236,15 @@ This is the one that justifies the migration. If this phase doesn't feel meaning
 
 **Done criteria:** all archive pages and `/photos/` work; ImageGallery component has typed props; gallery JS doesn't read DOM-level data-attrs anymore.
 
-### Phase 6 — Shared infrastructure (Bucket 3 promotion)
-With most pages now Astro-native, the shape of shared components is finally clear. Do the rewrites.
+### Phase 6 — Retire remaining legacy paths (housekeeping)
+**Reshaped after Phase 1.** Under the just-in-time lifting rule (see Bucket 3), most rewrites will have happened as part of the page phases that needed them. This phase is the cleanup pass, not a big lift:
 
-- Port `ui-components.js` → small, co-located scripts inside each component (`SelectionSwitch.astro`, `SelectionDropdown.astro`, `SearchPill.astro`, `RangeSlider.astro`, `ImageUpload.astro`, `ExpandableSection.astro`). Kill global `window.switchManager` etc; use module-scoped state. Touch-hover handler becomes a single global script.
-- Port `theme-manager.js` + `theme-config.js` → `src/scripts/theme.ts`, imported where needed. Kill `window.__themeConfig`.
-- Port `font-manager.js` similarly.
-- Port `navigation.js` (back button + scroll class) — keep as a `<script>` in `Default.astro`.
-- Port `image-zoom.js` → can stay vanilla; just gets a clean entry point.
+- Audit `assets/js/core/ui-components.js`: for each `init*` function, identify whether all Astro consumers have moved to lifted components. Delete code paths that no longer have any consumer (Astro or legacy reference page).
+- Audit `assets/js/core/theme-manager.js`, `font-manager.js`, `theme-config.js`, `url-params.js`: if no Astro page loads them, decide their long-term status (probably handed to Phase 8's design-system export pipeline).
+- Audit `assets/js/components/image-zoom.js`, `readme-renderer.js`, `release-meta.js`: same exercise. Each likely got patched or lifted during its consumer's port.
+- Final sweep: any `<script>` in a template that wires a global gets one last review. None should remain.
 
-**Done criteria:** no more global functions called from inline scripts in templates. `assets/js/core/ui-components.js` deleted.
+**Done criteria:** every line of `assets/js/core/` and `assets/js/components/` has a justified consumer (Astro page, legacy reference page, or design-system export), or is deleted. No `window.*` writes from any Astro `.astro` file.
 
 ### Phase 7 — `transition:persist` decisions
 `<ClientRouter />` and the view-transition direction logic landed in Phase 1. This phase is about what survives across navigations.
@@ -330,5 +350,8 @@ A one-time audit, sorted by verdict so future-you doesn't re-litigate.
 A scratch area for "I noticed X while porting Y" observations. Don't be precious — write things down, move them up into the plan when they become real.
 
 - [ ] Header's `view-transition-name` rules in `_view-transitions.scss` may need rework once `<ClientRouter />` lands (Phase 1)
-- [ ] Inline `onclick="handleSiteNameClick(...)"` survives the port but feels wrong long-term — convert during Phase 6 chrome rewrite
 - [ ] `index.astro`'s spike-mode `parseFrontmatter()` regex needs deletion in Phase 2
+- [x] ~~Inline `onclick="handleSiteNameClick(...)"` survives the port but feels wrong long-term~~ — lifted in Phase 1 under the new just-in-time rule
+- [x] ~~Trigger-style `<a href="#">` elements get intercepted by `ClientRouter` and run the full transition lifecycle on click — DOM swap wipes any state the click handler just set~~ — Phase 1 fix: triggers (settings, photo reveal, breadcrumb-back) are `<button type="button">`. Rule: if it's not a navigation, it's not an `<a>`.
+- [ ] Every future phase opens with a "chrome audit": list the chrome surfaces the new pages touch, identify which need B3a/B3b lifting, lift them in the same commit
+- [ ] Phase 6 cleanup target: `index.astro` passes legacy `/assets/js/*` paths through `scripts:` prop, rendered by `Default.astro` as `<script src=... is:inline>`. Bridge pattern, fine for now — each ported page should either lift to a co-located `<script>` or import a processed module from `src/`, never add new `scripts:` consumers.

@@ -1,0 +1,68 @@
+---
+import Default from './Default.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  date?: Date | string;
+  edit?: Date | string;
+  showDate?: boolean;
+  scripts?: string[];
+  styles?: string[];
+  headScripts?: string[];
+  entity?: { type?: string; name?: string; same_as?: string[] };
+  schemaType?: string;
+  kind?: string;
+}
+
+const {
+  title,
+  description,
+  image,
+  date,
+  edit,
+  showDate = false,
+  scripts,
+  styles,
+  headScripts,
+  entity,
+  schemaType,
+  kind,
+} = Astro.props;
+
+const formatDate = (d: Date | string) =>
+  new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+const showHeader = !!title || showDate;
+---
+<Default
+  title={title}
+  description={description}
+  image={image}
+  scripts={scripts}
+  styles={styles}
+  headScripts={headScripts}
+  entity={entity}
+  schemaType={schemaType}
+  kind={kind}
+  layoutKind="post"
+  pageTitle={title}
+>
+  <div class:list={['post', { 'post--dated': showDate }]}>
+    {showHeader && (
+      <header class="post__header stack stack--sm">
+        {title && <h1 class="post__title">{title}</h1>}
+        {showDate && date && (
+          <p class="post__date">
+            {formatDate(date)}.
+            {edit && <> Edited on {formatDate(edit)}.</>}
+          </p>
+        )}
+      </header>
+    )}
+    <div class="post__content">
+      <slot />
+    </div>
+  </div>
+</Default>

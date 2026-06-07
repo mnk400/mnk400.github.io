@@ -1,0 +1,46 @@
+---
+import SelectionSwitch from './SelectionSwitch.astro';
+import { themes, defaultTheme } from '../lib/theme.ts';
+
+const options = themes.map(t => ({ value: t.name, label: t.label }));
+const SWITCH_ID = 'themeSwitch';
+---
+<SelectionSwitch id={SWITCH_ID} options={options} defaultActive={defaultTheme} size="small" />
+
+<script>
+  import { setTheme, applyTheme, getActiveTheme } from '../lib/theme.ts';
+
+  function syncActive(switchEl: HTMLElement, value: string) {
+    switchEl.querySelectorAll<HTMLElement>('.switch-option').forEach(opt => {
+      opt.classList.toggle('active', opt.dataset.value === value);
+    });
+  }
+
+  function wire() {
+    const sw = document.getElementById('themeSwitch');
+    if (!sw) return;
+    syncActive(sw, getActiveTheme());
+    if (sw.dataset.themeWired === 'true') return;
+    sw.dataset.themeWired = 'true';
+    sw.addEventListener('change', (e: Event) => {
+      const value = (e as CustomEvent<{ value: string }>).detail?.value;
+      if (value) {
+        setTheme(value);
+        syncActive(sw, value);
+      }
+    });
+  }
+
+  // Apply theme to the incoming document before swap so the new page paints
+  // with the right colors immediately — no flash.
+  document.addEventListener('astro:before-swap', (e: Event) => {
+    const newDoc = (e as Event & { newDocument: Document }).newDocument;
+    applyTheme(getActiveTheme(), newDoc);
+  });
+
+  // Initial load + every client-side navigation.
+  document.addEventListener('astro:page-load', () => {
+    applyTheme(getActiveTheme());
+    wire();
+  });
+</script>

@@ -1,0 +1,43 @@
+---
+import SelectionSwitch from './SelectionSwitch.astro';
+import { fonts, defaultFont } from '../lib/font.ts';
+
+const options = fonts.map(f => ({ value: f.name, label: f.label }));
+const SWITCH_ID = 'fontSwitch';
+---
+<SelectionSwitch id={SWITCH_ID} options={options} defaultActive={defaultFont} size="small" />
+
+<script>
+  import { setFont, applyFont, getActiveFont } from '../lib/font.ts';
+
+  function syncActive(switchEl: HTMLElement, value: string) {
+    switchEl.querySelectorAll<HTMLElement>('.switch-option').forEach(opt => {
+      opt.classList.toggle('active', opt.dataset.value === value);
+    });
+  }
+
+  function wire() {
+    const sw = document.getElementById('fontSwitch');
+    if (!sw) return;
+    syncActive(sw, getActiveFont());
+    if (sw.dataset.fontWired === 'true') return;
+    sw.dataset.fontWired = 'true';
+    sw.addEventListener('change', (e: Event) => {
+      const value = (e as CustomEvent<{ value: string }>).detail?.value;
+      if (value) {
+        setFont(value);
+        syncActive(sw, value);
+      }
+    });
+  }
+
+  document.addEventListener('astro:before-swap', (e: Event) => {
+    const newDoc = (e as Event & { newDocument: Document }).newDocument;
+    applyFont(getActiveFont(), newDoc);
+  });
+
+  document.addEventListener('astro:page-load', () => {
+    applyFont(getActiveFont());
+    wire();
+  });
+</script>

@@ -149,10 +149,12 @@ header:has(.header-breadcrumb) {
 }
 
 .site-name {
+    @include button-as-text;
     font-size: 1.5em;
-    font-weight: 400;
+    font-weight: 400 !important; // override global `button { font-weight: 300 !important }`
     text-decoration: none;
     color: var(--text-color);
+    line-height: inherit;
 
     &:hover {
         color: var(--text-color);
@@ -181,7 +183,8 @@ header:has(.header-breadcrumb) {
         padding-top 0.3s ease;
     padding-top: var(--spacing-xs);
 
-    > a {
+    > a,
+    > .menu-trigger {
         text-decoration: none;
         color: var(--sec-text-color);
         transition:
@@ -195,6 +198,11 @@ header:has(.header-breadcrumb) {
             text-decoration-color: var(--translucent-high);
             text-underline-offset: 2px;
         }
+    }
+
+    > .menu-trigger {
+        @include button-as-text;
+        font-weight: inherit !important; // override global `button { font-weight: 300 !important }`
     }
 }
 
@@ -231,7 +239,13 @@ header:has(.header-breadcrumb) {
 }
 
 .breadcrumb-back {
-   font-size: 0.9em;
+    @include button-as-text;
+    font-size: 0.9em;
+    font-weight: inherit !important; // override global `button { font-weight: 300 !important }`
+    line-height: 1;
+    align-self: center; // baseline doesn't work for icon-only buttons; center inside the breadcrumb flex row
+    display: inline-flex;
+    align-items: center;
 }
 
 .breadcrumb-home {
