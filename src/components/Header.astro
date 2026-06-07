@@ -5,17 +5,11 @@ import type { BreadcrumbItem } from '../lib/breadcrumbs.ts';
 
 interface Props {
   pathname: string;
-  pageTitle?: string;
   breadcrumbs?: BreadcrumbItem[];
 }
 
-const { pathname, pageTitle, breadcrumbs = [] } = Astro.props;
+const { pathname, breadcrumbs = [] } = Astro.props;
 const isHome = pathname === '/' || pathname === '/index.html';
-const displayBreadcrumbs = breadcrumbs.length > 0
-  ? breadcrumbs
-  : pageTitle
-    ? [{ label: pageTitle, href: pathname, current: true }]
-    : [];
 ---
 <header>
   <div class="title-photo-container" id="titlePhotoContainer">
@@ -59,9 +53,9 @@ const displayBreadcrumbs = breadcrumbs.length > 0
             <Icon name="arrow-down-left" />
           </button>
           <a href="/" class="breadcrumb-home">Manik</a>
-          {displayBreadcrumbs.map((item) => (
+          {breadcrumbs.map((item) => (
             <>
-              <span class:list={['breadcrumb-sep', { 'breadcrumb-root-sep': item === displayBreadcrumbs[0] }]}>/</span>
+              <span class:list={['breadcrumb-sep', { 'breadcrumb-root-sep': item === breadcrumbs[0] }]}>/</span>
               {item.current ? (
                 <span class="breadcrumb-current">{item.label}</span>
               ) : (

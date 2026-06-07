@@ -7,13 +7,13 @@ interface SwitchOption {
 interface Props {
   id: string;
   options: SwitchOption[];
-  defaultActive?: string;
+  active?: string;
   size?: 'small' | 'default';
   class?: string;
 }
 
-const { id, options, defaultActive, size = 'default', class: extraClass } = Astro.props;
-const activeValue = defaultActive ?? options[0]?.value;
+const { id, options, active, size = 'default', class: extraClass } = Astro.props;
+const activeValue = active ?? options[0]?.value;
 
 const classes = [
   'selection-switch',

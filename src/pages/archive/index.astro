@@ -1,3 +1,26 @@
 ---
-return Astro.redirect('/archive/paintings/', 301);
+import Post from '../../layouts/Post.astro';
+import ArchiveIndex from '../../components/ArchiveIndex.astro';
+import { getMoreGroups, moreItems, type MoreItem } from '../../lib/more.ts';
+
+const archiveFamilies = getMoreGroups()
+  .filter((group) => group.root === 'archive')
+  .flatMap((group): MoreItem[] => group.hub ? [group.hub] : []);
+const hub = moreItems.find((item) => item.id === 'archive');
 ---
+<Post
+  title={hub?.title ?? 'Archive'}
+  description={hub?.description}
+  image={hub?.image}
+>
+  <p>
+    {hub?.description ?? 'Small browsable archives of paintings, objects, gear, and other things I like.'}
+  </p>
+
+  <ArchiveIndex
+    items={archiveFamilies}
+    idPrefix="archive"
+    emptyText="No archive families are live yet."
+    useShortTitle
+  />
+</Post>

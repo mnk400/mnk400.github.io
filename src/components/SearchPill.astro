@@ -56,7 +56,10 @@ const {
     const clear = container.querySelector<HTMLButtonElement>('.site-search__clear');
     if (!trigger || !input) return;
 
-    const getQuery = () => input.value.trim().toLowerCase();
+    const triggerEl = trigger;
+    const inputEl = input;
+
+    const getQuery = () => inputEl.value.trim().toLowerCase();
 
     function emitChange() {
       const query = getQuery();
@@ -80,24 +83,24 @@ const {
 
     function setOpen(open: boolean, focusInput: boolean) {
       container.classList.toggle('is-open', open);
-      trigger.setAttribute('aria-expanded', String(open));
-      if (open && focusInput) input.focus();
+      triggerEl.setAttribute('aria-expanded', String(open));
+      if (open && focusInput) inputEl.focus();
     }
 
     function setValue(value: string, shouldEmit: boolean) {
-      input.value = value || '';
+      inputEl.value = value || '';
       container.classList.toggle('has-query', getQuery().length > 0);
       if (clear) clear.hidden = getQuery().length === 0;
       if (shouldEmit) emitChange();
     }
 
-    trigger.addEventListener('click', () => setOpen(true, true));
-    input.addEventListener('input', emitChange);
-    input.addEventListener('focus', () => setOpen(true, false));
-    input.addEventListener('blur', () => {
+    triggerEl.addEventListener('click', () => setOpen(true, true));
+    inputEl.addEventListener('input', emitChange);
+    inputEl.addEventListener('focus', () => setOpen(true, false));
+    inputEl.addEventListener('blur', () => {
       if (!getQuery()) setOpen(false, false);
     });
-    input.addEventListener('keydown', (event) => {
+    inputEl.addEventListener('keydown', (event) => {
       if (event.key !== 'Escape') return;
       if (getQuery()) setValue('', true);
       setOpen(false, false);

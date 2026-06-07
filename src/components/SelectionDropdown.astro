@@ -9,13 +9,13 @@ interface DropdownOption {
 interface Props {
   id: string;
   options: DropdownOption[];
-  defaultActive?: string;
+  active?: string;
   ariaLabel?: string;
   class?: string;
 }
 
-const { id, options, defaultActive, ariaLabel, class: extraClass } = Astro.props;
-const activeValue = defaultActive ?? options[0]?.value;
+const { id, options, active, ariaLabel, class: extraClass } = Astro.props;
+const activeValue = active ?? options[0]?.value;
 const classes = ['selection-dropdown', extraClass].filter(Boolean).join(' ');
 ---
 <div

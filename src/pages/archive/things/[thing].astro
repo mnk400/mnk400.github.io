@@ -4,12 +4,10 @@ import ImageGallery from '../../../components/ImageGallery.astro';
 import { thingGalleryItems, type ThingGalleryItemData } from '../../../data/more/things.ts';
 
 export function getStaticPaths() {
-  return thingGalleryItems
-    .filter((thing) => thing.listed !== false)
-    .map((thing) => ({
-      params: { thing: thing.id.split('/').at(-1) },
-      props: { thing },
-    }));
+  return thingGalleryItems.flatMap((thing) => {
+    const slug = thing.id.split('/').at(-1);
+    return slug ? [{ params: { thing: slug }, props: { thing } }] : [];
+  });
 }
 
 interface Props {

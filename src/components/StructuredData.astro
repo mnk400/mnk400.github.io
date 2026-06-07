@@ -79,5 +79,5 @@ if (url !== '/' && breadcrumbs && breadcrumbs.length > 0) {
   };
 }
 ---
-<script type="application/ld+json" set:html={JSON.stringify(pageSchema)} />
-{breadcrumbSchema && <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />}
+<script type="application/ld+json" is:inline set:html={JSON.stringify(pageSchema)} />
+{breadcrumbSchema && <script type="application/ld+json" is:inline set:html={JSON.stringify(breadcrumbSchema)} />}

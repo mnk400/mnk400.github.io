@@ -77,6 +77,7 @@ export interface MoreGroup {
   label: string;
   chip: string;
   sort: 'title' | 'order';
+  rootHub?: MoreItem;
   hub?: MoreItem;
   items: MoreItem[];
 }
@@ -332,6 +333,7 @@ export function getMoreGroups(): MoreGroup[] {
         label: groupCategory?.label ?? rootCategory?.label ?? groupSlug,
         chip: groupCategory?.chip ?? groupSlug,
         sort,
+        rootHub: hubsByUrl.get(`/${root}/`),
         hub: hubsByUrl.get(`/${path}/`),
         items: sortedItems,
       };

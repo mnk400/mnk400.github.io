@@ -201,6 +201,14 @@ function filterLabel(option: string): string {
   return humanizeValue(option);
 }
 
+function galleryLabel(name: string): string {
+  return name
+    .replace(/[-_]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    || 'gallery';
+}
+
 function controlIdPart(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
@@ -276,7 +284,7 @@ function setupControls(
     }));
     const sortSwitch = createSelectionSwitch({
       id: `image-gallery-sort-${galleryName}`,
-      ariaLabel: 'Sort paintings',
+      ariaLabel: `Sort ${galleryLabel(galleryName)}`,
       options: sortOptions,
       active: state.sort,
       size: 'small',

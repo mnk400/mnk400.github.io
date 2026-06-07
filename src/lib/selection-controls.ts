@@ -155,6 +155,10 @@ export function initSelectionDropdown(container: HTMLElement) {
   const options = Array.from(container.querySelectorAll<HTMLElement>('.selection-dropdown__option'));
   if (!trigger || !triggerText || !menu || options.length === 0) return;
 
+  const triggerEl = trigger;
+  const triggerTextEl = triggerText;
+  const menuEl = menu;
+
   function setActive(value: string, shouldDispatch: boolean) {
     const activeOption = options.find((opt) => opt.dataset.value === value);
     if (!activeOption) return;
@@ -165,21 +169,21 @@ export function initSelectionDropdown(container: HTMLElement) {
       opt.setAttribute('aria-selected', String(isActive));
     });
     const label = activeOption.querySelector('.selection-dropdown__option-label');
-    triggerText.textContent = (label || activeOption).textContent;
+    triggerTextEl.textContent = (label || activeOption).textContent;
     if (shouldDispatch) dispatchChange(container, value, activeOption);
   }
 
   function setOpen(open: boolean) {
-    menu.classList.toggle('collapsed', !open);
-    trigger.setAttribute('aria-expanded', String(open));
+    menuEl.classList.toggle('collapsed', !open);
+    triggerEl.setAttribute('aria-expanded', String(open));
   }
 
   const initial = options.find((opt) => opt.classList.contains('active')) || options[0];
   setActive(initial.dataset.value || '', false);
   setOpen(false);
 
-  trigger.addEventListener('click', () => {
-    setOpen(trigger.getAttribute('aria-expanded') !== 'true');
+  triggerEl.addEventListener('click', () => {
+    setOpen(triggerEl.getAttribute('aria-expanded') !== 'true');
   });
 
   options.forEach((option) => {

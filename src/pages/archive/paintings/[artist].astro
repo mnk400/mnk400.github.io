@@ -1,21 +1,21 @@
 ---
 import Post from '../../../layouts/Post.astro';
 import ImageGallery from '../../../components/ImageGallery.astro';
-import { moreLeafItems, type MoreItem } from '../../../lib/more.ts';
+import { paintingGalleryItems, type PaintingGalleryItemData } from '../../../data/more/paintings.ts';
 
 export function getStaticPaths() {
-  const paintings = moreLeafItems.filter((item) => item.groupPath === 'archive/paintings' && item.ported);
-  return paintings.map((painting) => ({
-    params: { artist: painting.slug },
-    props: { painting },
-  }));
+  return paintingGalleryItems.flatMap((painting) => {
+    const slug = painting.id.split('/').at(-1);
+    return slug ? [{ params: { artist: slug }, props: { painting } }] : [];
+  });
 }
 
 interface Props {
-  painting: MoreItem;
+  painting: PaintingGalleryItemData;
 }
 
 const { painting } = Astro.props;
+const slug = painting.id.split('/').at(-1) ?? 'paintings';
 ---
 <Post
   title={painting.title}
@@ -26,8 +26,8 @@ const { painting } = Astro.props;
   <p>A small browser archive of {painting.title} paintings. {painting.description}</p>
 
   <ImageGallery
-    source={`https://manik.cc/pipelines/paintings/${painting.slug}/manifest.json`}
-    galleryName={painting.slug}
+    source={painting.source}
+    galleryName={slug}
     loadingText="Loading paintings..."
     summary
     controls
@@ -37,7 +37,7 @@ const { painting } = Astro.props;
     captionMeta={['year', 'meta:Series']}
     zoomMeta={['year', 'meta:Collection']}
     search={{
-      id: `${painting.slug}-search`,
+      id: `${slug}-search`,
       label: 'Search',
       placeholder: 'search paintings',
       class: 'site-search--small image-gallery__search',

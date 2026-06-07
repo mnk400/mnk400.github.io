@@ -81,7 +81,7 @@ const galleryConfig: ImageGalleryConfig = { ...config, loadingText };
     data-gallery-grid
   />
 
-  <script type="application/json" data-image-gallery-config set:html={JSON.stringify(galleryConfig)} />
+  <script type="application/json" data-image-gallery-config is:inline set:html={JSON.stringify(galleryConfig)} />
 </div>
 
 <script>

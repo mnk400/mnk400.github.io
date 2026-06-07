@@ -1,0 +1,70 @@
+---
+import Icon from './Icon.astro';
+import type { MoreItem } from '../lib/more.ts';
+
+interface Props {
+  items: MoreItem[];
+  idPrefix: string;
+  emptyText?: string;
+  showMeta?: boolean;
+  useShortTitle?: boolean;
+}
+
+const {
+  items,
+  idPrefix,
+  emptyText = 'No archives are live yet.',
+  showMeta = false,
+  useShortTitle = false,
+} = Astro.props;
+---
+{items.length > 0 ? (
+  <div class="archive-index-grid reveal-card-group">
+    {items.map((item, index) => {
+      const titleId = `${idPrefix}-title-${index + 1}`;
+      const detailsId = `${idPrefix}-details-${index + 1}`;
+      const isPorted = item.ported;
+      const CardTag = isPorted ? 'a' : 'div';
+      const title = useShortTitle ? item.shortTitle ?? item.title : item.title;
+
+      return (
+        <CardTag
+          class:list={['archive-index-card', 'reveal-card', { 'archive-index-card--pending': !isPorted }]}
+          href={isPorted ? item.url : undefined}
+          aria-labelledby={titleId}
+          aria-describedby={detailsId}
+        >
+          <span class="reveal-card__media">
+            {item.image && (
+              <img src={item.image} alt="" loading="lazy" decoding="async" />
+            )}
+            <span class="reveal-card__overlay" id={detailsId}>
+              {item.description && (
+                <span class="reveal-card__body">{item.description}</span>
+              )}
+            </span>
+          </span>
+          <div class="archive-index-card__caption">
+            <div class="archive-index-card__heading">
+              <span class="archive-index-card__title" id={titleId}>{title}</span>
+              {showMeta && (item.years || item.works) && (
+                <span class="archive-index-card__sub">
+                  {item.years && <>active {item.years}</>}
+                  {item.years && item.works && <> · </>}
+                  {item.works && <>{item.works} works</>}
+                </span>
+              )}
+            </div>
+            {isPorted && (
+              <span class="archive-index-card__arrow" aria-hidden="true">
+                <Icon name="arrow-up-right" />
+              </span>
+            )}
+          </div>
+        </CardTag>
+      );
+    })}
+  </div>
+) : (
+  <p>{emptyText}</p>
+)}

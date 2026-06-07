@@ -291,7 +291,7 @@ New shape:
 - `src/lib/more.ts` merges Astro-owned metadata with legacy `_more/**/*.html` front matter. Ported pages move their listing/routing metadata into the right `src/data/more/*.ts` family file; legacy front matter is parsed only for pages that have not moved yet.
 - `src/pages/more/index.astro` renders the index from typed metadata and small Astro components. It must not depend on Liquid includes or `site.more`.
 - Old `/more/<slug>` URLs are generated as redirects from the typed metadata's `redirect_from` values when `item.ported === true`.
-- Category hubs and families use dedicated Astro routes/components rather than generic `layout:` front matter. For repeated archive families, prefer dynamic routes like `src/pages/archive/paintings/[artist].astro` and `src/pages/archive/things/[thing].astro` plus typed gallery components over copied pages.
+- Category hubs and families use dedicated Astro routes/components rather than generic `layout:` front matter. `/archive/` is a real hub page, not a redirect to paintings. For repeated archive families, prefer dynamic routes like `src/pages/archive/paintings/[artist].astro` and `src/pages/archive/things/[thing].astro` plus typed gallery components over copied pages.
 
 What survives from Jekyll front matter:
 
@@ -314,11 +314,12 @@ Implementation slice:
 4. While leaf pages are unported, render their index entries as pending text rather than live links to missing routes. Flip each entry to a link by moving its metadata into a `src/data/more/*.ts` family file and marking it ported by construction.
 5. Add the compatibility redirect route for old `/more/<slug>` URLs, but only emit redirects for `item.ported === true`.
 6. Port `_more/archive/paintings/index.html` → `src/pages/archive/paintings/index.astro`, and move the painting hub/items metadata into `src/data/more/paintings.ts`.
-7. Update Header.astro's breadcrumb logic to use the typed categories module.
-8. Update StructuredData.astro's BreadcrumbList logic the same way.
-9. Delete `more/index.html` and each ported `_more/**` source file after its Astro route/data replacement lands. Keep `_includes/header.html` until the last legacy Jekyll reference page/layout that includes it is gone.
+7. Port `src/pages/archive/index.astro` as a real archive family hub, using the same archive card component as paintings/things instead of redirecting to a single family.
+8. Update Header.astro's breadcrumb logic to use the typed categories module.
+9. Update StructuredData.astro's BreadcrumbList logic the same way.
+10. Delete `more/index.html` and each ported `_more/**` source file after its Astro route/data replacement lands. Keep `_includes/header.html` until the last legacy Jekyll reference page/layout that includes it is gone.
 
-**Done criteria:** `/more/`, `/archive/paintings/`, `/archive/things/`, old `/more/<slug>` redirects, breadcrumbs all work; old Bucket 1 hub files and ported `_more/**` sources are deleted; `_includes/header.html` remains only if legacy reference pages still consume it.
+**Done criteria:** `/more/`, `/archive/`, `/archive/paintings/`, `/archive/things/`, old `/more/<slug>` redirects, breadcrumbs all work; old Bucket 1 hub files and ported `_more/**` sources are deleted; `_includes/header.html` remains only if legacy reference pages still consume it.
 
 ### Phase 4 — Tools and games (volume work)
 - Each `_more/<cat>/<slug>.html` → `src/pages/<cat>/<slug>.astro`

@@ -17,7 +17,7 @@ interface Props {
   scripts?: string[];
   styles?: string[];
   kind?: string;
-  pageTitle?: string; // used for breadcrumb-current
+  pageTitle?: string; // optional breadcrumb label override
   entity?: { type?: string; name?: string; same_as?: string[] };
   schemaType?: string;
   layoutKind?: string; // analog of page.layout (post / product)
@@ -79,6 +79,7 @@ const ogTitle = title ? `${title} — Manik` : 'Manik';
          page never flashes the wrong palette. Data is sourced from the same
          lib modules the switcher components use, via define:vars. -->
     <script is:inline define:vars={{ themes, defaultTheme, fonts, defaultFont }}>
+      // @ts-nocheck -- variables in this pre-paint script are injected by Astro define:vars.
       (function () {
         var themeNames = themes.map(function (t) { return t.name; });
         var fontNames = fonts.map(function (f) { return f.name; });
@@ -122,14 +123,14 @@ const ogTitle = title ? `${title} — Manik` : 'Manik';
       (function () {
         var breadcrumbSelectors = ['.breadcrumb-back', '.breadcrumb-home', '.breadcrumb-sep'];
 
-        function setBreadcrumbNames(doc, value) {
+        function setBreadcrumbNames(doc: Document, value: string) {
           breadcrumbSelectors.forEach(function (sel) {
-            var el = doc.querySelector(sel);
+            var el = doc.querySelector<HTMLElement>(sel);
             if (el) el.style.viewTransitionName = value;
           });
         }
 
-        function isHomePage(url) {
+        function isHomePage(url: URL | string) {
           var path = url instanceof URL ? url.pathname : new URL(url, location.origin).pathname;
           return path === '/' || path === '/index.html';
         }
@@ -164,7 +165,7 @@ const ogTitle = title ? `${title} — Manik` : 'Manik';
     {headScripts.map(src => <script src={src} is:inline></script>)}
 
     <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WLJ3VCYPD9"></script>
+    <script async is:inline src="https://www.googletagmanager.com/gtag/js?id=G-WLJ3VCYPD9"></script>
     <meta name="p:domain_verify" content="bba1d80d0778741b7525ee227f44f5ff" />
     <script is:inline>
       window.dataLayer = window.dataLayer || [];
@@ -196,7 +197,7 @@ const ogTitle = title ? `${title} — Manik` : 'Manik';
   </head>
   <body>
     <div class="wrapper">
-      <Header pathname={pathname} pageTitle={pageTitle} breadcrumbs={breadcrumbs} />
+      <Header pathname={pathname} breadcrumbs={breadcrumbs} />
       <main class="page-content">
         <slot />
       </main>
