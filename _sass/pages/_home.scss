@@ -12,6 +12,21 @@
     }
 }
 
+// Inline photo-reveal triggers in the intro paragraph. <button>s rather
+// than <a>s so ClientRouter doesn't intercept them as same-document nav.
+.site-title-link {
+    @include button-as-text;
+    font-weight: inherit !important; // override global `button { font-weight: 300 !important }`
+    display: inline;
+    line-height: inherit;
+
+    @media (any-hover: hover) {
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
 // Archive List
 .archive {
     ul {
