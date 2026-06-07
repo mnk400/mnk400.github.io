@@ -1,0 +1,25 @@
+---
+import { getEntry, render } from 'astro:content';
+import ProductPage from '../../components/ProductPage.astro';
+import { cliToolProductItems } from '../../data/more/cli-tools.ts';
+import type { ProductItemData } from '../../data/more/products.ts';
+
+export function getStaticPaths() {
+  return cliToolProductItems.flatMap((product) => {
+    const slug = product.id.split('/').at(-1);
+    return slug ? [{ params: { tool: slug }, props: { product } }] : [];
+  });
+}
+
+interface Props {
+  product: ProductItemData;
+}
+
+const { product } = Astro.props;
+
+const readme = product.kind === 'readme' ? await getEntry('readmes', product.id) : undefined;
+const ReadmeContent = readme ? (await render(readme)).Content : null;
+---
+<ProductPage product={product}>
+  {ReadmeContent && <ReadmeContent slot="readme" />}
+</ProductPage>

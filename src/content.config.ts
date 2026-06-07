@@ -1,5 +1,8 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
+import { cliToolProductItems } from './data/more/cli-tools.ts';
+import type { ProductItemData } from './data/more/products.ts';
+import { fetchReadmeMarkdown } from './lib/load-readme.ts';
 
 const posts = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/posts' }),
@@ -16,4 +19,32 @@ const posts = defineCollection({
   }),
 });
 
-export const collections = { posts };
+// All products with kind:'readme' whose README should be baked at build time.
+// Extend by importing additional family arrays here.
+const readmeProducts: ProductItemData[] = [
+  ...cliToolProductItems,
+].filter((p) => p.kind === 'readme' && p.repo);
+
+const readmes = defineCollection({
+  loader: {
+    name: 'product-readmes',
+    load: async ({ store, renderMarkdown, parseData, logger }) => {
+      store.clear();
+      for (const product of readmeProducts) {
+        const md = await fetchReadmeMarkdown(product);
+        if (!md) {
+          logger.warn(`README skipped for ${product.id}`);
+          continue;
+        }
+        store.set({
+          id: product.id,
+          data: await parseData({ id: product.id, data: {} }),
+          body: md,
+          rendered: await renderMarkdown(md),
+        });
+      }
+    },
+  },
+});
+
+export const collections = { posts, readmes };

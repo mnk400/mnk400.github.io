@@ -136,7 +136,7 @@ This patch is a bridge, not the long-term pattern. If a page-specific script is 
 
 **Why this split:** the cost of lifting is per-widget, not per-codebase. If you only need a switcher today, you only lift the switcher. The hard rule is "no NEW consumers of legacy globals from Astro pages" — every page port either uses already-lifted components, or lifts what it needs in the same commit.
 
-Examples that stay as Bucket 3 reference (not lifted yet, no Astro consumer): `_sass/` (consumed via Vite loadPaths, fine as-is), `readme-renderer.js` and `release-meta.js` (used only by product pages we haven't ported).
+Examples that stay as Bucket 3 reference (not lifted yet, no Astro consumer): `_sass/` (consumed via Vite loadPaths, fine as-is).
 
 ---
 
@@ -155,7 +155,7 @@ document.addEventListener('astro:page-load', init);
 For component-local behavior, use a plain `<script>` inside the `.astro` file (Astro bundles it, deduplicates across the page, and processes TypeScript). Inside that script, hook `astro:page-load` for any per-navigation setup. **Do not reach for `is:inline` by default** — it opts the script out of bundling, runs it eagerly per-document, and loses TypeScript. Reserve `is:inline` for cases that genuinely need it:
 
 - **Pre-paint setup** that must run synchronously before CSS resolves (theme/font apply in `Default.astro`).
-- **Third-party CDN scripts** (MathJax, gtag bootstrap, `marked` from jsdelivr) that can't be bundled.
+- **Third-party CDN scripts** (MathJax, gtag bootstrap) that can't be bundled.
 - **Inline config snippets** that emit literal JSON/JS into the document (JSON-LD, `window.dataLayer = ...`).
 - **Deliberate `data-astro-rerun`** cases — only when a script must re-execute on each navigation.
 
@@ -311,9 +311,27 @@ Implementation slice:
 
 ### Phase 4 — Tools and games (volume work)
 - Each `_more/<cat>/<slug>.html` → `src/pages/<cat>/<slug>.astro`
-- Script references move from front matter `scripts: [...]` to `<script src="...">` at bottom of `.astro`
-- Bucket 1: each game's JS file moves from `assets/js/games/` to a per-page co-located script or stays in `public/` if cleaner
+- Each port adds its typed `/more/` entry in the matching family file (`src/data/more/apps.ts`, `cli-tools.ts`, `games.ts`, etc.) and imports that family from `src/data/more-items.ts`.
+- Script references move from front matter `scripts: [...]` to explicit page-local `<script>` imports/tags in the `.astro` route. Do not add new `scripts:` prop consumers.
+- Bucket 1: each page-local JS file moves from `assets/js/games/` / `assets/js/tools/` to a per-page co-located script or stays under `/assets/js/` only as a temporary bridge if cleaner.
 - **No structural rewrites**, but the lifecycle rule applies: if the original JS used `DOMContentLoaded`, change that single line to `astro:page-load` during the port. Game/tool internals stay untouched.
+- Delete the matching `_more/<cat>/<slug>.html` source in the same commit that adds the Astro route/data.
+
+Recommended order:
+
+1. **Product pages first:** port `_more/apps/gulp.html` and `_more/cli-tools/{bend,nfo,rex}.html`.
+   - Add `src/data/more/apps.ts` and `src/data/more/cli-tools.ts` with product/readme fields.
+   - Add a typed `ProductPage.astro` component rather than a generic front-matter layout.
+   - Lift only the product behaviors needed now: copy buttons, release metadata, README rendering. Keep them component/lib owned, not `ui-components.js` globals.
+   - Bundle `marked` from npm for README rendering instead of adding a new CDN/global script dependency.
+2. **Simple games/tools:** port `random-wiki`, `tictactoe`, `minesweeper`, `gameoflife`, and `colordle`.
+   - Preserve markup/behavior; convert lifecycle hooks to `astro:page-load`.
+   - Prefer co-located scripts once touched, especially for games.
+3. **Utility-heavy tools:** port `ascii`, `color-palette`, `gradient-generator`, `historical-browser`, `camera`, `circles`, and `flappybird`.
+   - Lift shared dynamic controls only when the page needs them.
+   - Keep camera/canvas helper modules scoped and avoid new `window.*` contracts where practical.
+4. **Music pages last in Phase 4:** port `music` and `ipod` after the simpler interactive pages prove the route/script pattern.
+   - These are the bridge into Phase 7's `transition:persist` decisions.
 
 **Done criteria:** every URL under `/games/`, `/cli-tools/`, `/fun-tools/`, `/image-tools/`, `/apps/`, and `/music/` works, including arriving via client-side navigation from another ported page.
 
@@ -331,7 +349,7 @@ Implementation slice:
 
 - Audit `assets/js/core/ui-components.js`: for each `init*` function, identify whether all Astro consumers have moved to lifted components. Delete code paths that no longer have any consumer (Astro or legacy reference page).
 - Audit `assets/js/core/theme-manager.js`, `font-manager.js`, `theme-config.js`, `url-params.js`: if no Astro page loads them, decide their long-term status (probably handed to Phase 8's design-system export pipeline).
-- Audit `assets/js/components/image-zoom.js`, `readme-renderer.js`, `release-meta.js`: same exercise. Each likely got patched or lifted during its consumer's port.
+- Audit `assets/js/components/image-zoom.js`, `readme-renderer.js`, `release-meta.js`: same exercise. Product pages now use `src/lib/product-readme.ts` and `src/lib/product-release.ts`; the legacy files remain only for design-system export / unported reference pages until final cleanup.
 - Final sweep: any `<script>` in a template that wires a global gets one last review. None should remain.
 
 **Done criteria:** every line of `assets/js/core/` and `assets/js/components/` has a justified consumer (Astro page, legacy reference page, or design-system export), or is deleted. No `window.*` writes from any Astro `.astro` file.

@@ -144,11 +144,6 @@
     }
 
     &__readme {
-        .github-readme__loading {
-            color: var(--sec-text-color);
-            font-style: italic;
-        }
-
         .github-readme__content {
             // Hide the repo's own title since the product hero already shows it.
             > h1:first-child,

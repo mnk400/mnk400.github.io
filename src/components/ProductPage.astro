@@ -1,0 +1,243 @@
+---
+import Default from '../layouts/Default.astro';
+import Icon from './Icon.astro';
+import SelectionSwitch from './SelectionSwitch.astro';
+import ZoomableImage from './ZoomableImage.astro';
+import type { ProductItemData, ProductInstall } from '../data/more/products.ts';
+
+interface Props {
+  product: ProductItemData;
+}
+
+const { product } = Astro.props;
+const kind = product.kind ?? 'native';
+const install = product.install ?? [];
+const hasInstallTabs = kind === 'readme' && install.length > 1;
+const installSwitchId = `${product.id.replace(/[^a-z0-9]+/gi, '-')}-install-switch`;
+
+function installValue(entry: ProductInstall): string {
+  return entry.label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}
+---
+<Default
+  title={product.title}
+  description={product.description}
+  image={product.image ?? product.heroImage}
+  layoutKind="product"
+  pageTitle={product.title}
+>
+  <div class:list={['product', `product--${kind}`, 'stack', 'stack--sm']}>
+    <header class="product__hero stack stack--lg">
+      {product.icon && (
+        <img class="product__icon" src={product.icon} alt={`${product.title} icon`} />
+      )}
+
+      <div class="product__summary stack stack--sm">
+        <h1 class="product__title">{product.title}</h1>
+        {product.tagline && <p class="product__tagline">{product.tagline}</p>}
+      </div>
+
+      {(product.download || (kind === 'native' && install.length > 0)) && (
+        <div class="product__cta-row cluster">
+          {product.download && (
+            <a class="btn" href={product.download.url} target="_blank" rel="noopener noreferrer">
+              <Icon name={product.download.icon ?? 'download-simple'} weight={product.download.icon ? 'fill' : 'bold'} />
+              {product.download.label}
+            </a>
+          )}
+
+          {kind === 'native' && install.map((entry) => (
+            <button
+              type="button"
+              class="btn btn--outline product__copy-cmd"
+              data-copy={entry.command}
+              data-copy-feedback="Copied!"
+            >
+              <Icon name="terminal" />
+              <code>{entry.displayCommand ?? entry.command}</code>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {kind === 'readme' && install.length > 0 && (
+        <div class="product__install stack stack--sm" data-product-install>
+          {hasInstallTabs ? (
+            <>
+              <SelectionSwitch
+                id={installSwitchId}
+                size="small"
+                options={install.map((entry) => ({ value: installValue(entry), label: entry.label }))}
+                active={installValue(install[0])}
+              />
+
+              <div class="product__install-panels">
+                {install.map((entry, index) => (
+                  <div
+                    class:list={['product__install-panel', { active: index === 0 }]}
+                    data-install-panel={installValue(entry)}
+                  >
+                    <button
+                      type="button"
+                      class="btn btn--outline product__copy-cmd product__copy-cmd--block"
+                      data-copy={entry.command}
+                      data-copy-feedback="Copied!"
+                    >
+                      <Icon name="terminal" />
+                      <code>{entry.displayCommand ?? entry.command}</code>
+                      <span class="product__copy-label">copy</span>
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <button
+              type="button"
+              class="btn btn--outline product__copy-cmd product__copy-cmd--block"
+              data-copy={install[0].command}
+              data-copy-feedback="Copied!"
+            >
+              <Icon name="terminal" />
+              <code>{install[0].displayCommand ?? install[0].command}</code>
+              <span class="product__copy-label">copy</span>
+            </button>
+          )}
+        </div>
+      )}
+
+      {(product.meta || product.repo) && (
+        <p class="product__meta">
+          {product.meta?.map((item, index) => (
+            <span class:list={['product__meta-item', { 'product__meta-item--sep': index < (product.meta?.length ?? 0) - 1 }]}>
+              {item}
+            </span>
+          ))}
+          {product.repo && (
+            <span class="product__release" data-release-repo={product.repo} hidden>
+              <span class="product__release-version"></span>
+              <span class="product__release-date"></span>
+            </span>
+          )}
+        </p>
+      )}
+    </header>
+
+    {product.heroImage && (
+      <section class="product__hero-image">
+        <ZoomableImage
+          src={product.heroImage}
+          alt={product.title}
+          width={product.heroImageWidth}
+          height={product.heroImageHeight}
+        />
+      </section>
+    )}
+
+    {product.features && (
+      <section class="product__features stack">
+        <h2>Features</h2>
+        <div class="info-grid info-grid--cards">
+          {product.features.map((feature) => (
+            <article class:list={['info-card', { 'info-card--no-icon': !feature.icon }]}>
+              {feature.icon && (
+                <span class="info-card__icon" aria-hidden="true">
+                  <Icon name={feature.icon} />
+                </span>
+              )}
+              <h3 class="info-card__title">{feature.title}</h3>
+              <p class="info-card__body">{feature.body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+    )}
+
+    {Astro.slots.has('default') && (
+      <section class="post__content product__body">
+        <slot />
+      </section>
+    )}
+
+    {Astro.slots.has('readme') && (
+      <section class="product__readme">
+        <div class="post__content github-readme__content">
+          <slot name="readme" />
+        </div>
+      </section>
+    )}
+
+    <footer class="product__footer toolbar">
+      {product.repo && (
+        <>
+          <a href={`https://github.com/${product.repo}`} target="_blank" rel="noopener noreferrer">
+            <Icon name="github-logo" weight="fill" /> View on GitHub
+          </a>
+          <span class="product__meta-sep">·</span>
+          <a href={`https://github.com/${product.repo}/issues/new`} target="_blank" rel="noopener noreferrer">
+            Report an issue
+          </a>
+        </>
+      )}
+    </footer>
+  </div>
+</Default>
+
+<script>
+  import { copyText } from '../lib/clipboard.ts';
+  import { initProductReleaseMeta } from '../lib/product-release.ts';
+  import '../lib/image-zoom.ts';
+
+  declare global {
+    interface Window {
+      __productCopyRegistered?: boolean;
+    }
+  }
+
+  function initProductInstallTabs() {
+    document.querySelectorAll<HTMLElement>('[data-product-install]').forEach((root) => {
+      if (root.dataset.productInstallInitialized === 'true') return;
+      root.dataset.productInstallInitialized = 'true';
+
+      root.addEventListener('change', (event) => {
+        const value = event instanceof CustomEvent ? event.detail?.value : undefined;
+        if (!value) return;
+        root.querySelectorAll<HTMLElement>('[data-install-panel]').forEach((panel) => {
+          panel.classList.toggle('active', panel.dataset.installPanel === value);
+        });
+      });
+    });
+  }
+
+  function initProductCopyButtons() {
+    if (window.__productCopyRegistered) return;
+    window.__productCopyRegistered = true;
+
+    document.addEventListener('click', (event) => {
+      const target = event.target as HTMLElement | null;
+      const button = target?.closest<HTMLButtonElement>('[data-copy]');
+      if (!button) return;
+
+      const text = button.dataset.copy;
+      if (!text) return;
+
+      const original = button.innerHTML;
+      const feedback = button.dataset.copyFeedback || 'Copied!';
+      copyText(text).then((ok) => {
+        if (!ok) return;
+        button.textContent = feedback;
+        window.setTimeout(() => {
+          button.innerHTML = original;
+        }, 1500);
+      });
+    });
+  }
+
+  function initProductPage() {
+    initProductInstallTabs();
+    initProductCopyButtons();
+    initProductReleaseMeta();
+  }
+
+  document.addEventListener('astro:page-load', initProductPage);
+</script>

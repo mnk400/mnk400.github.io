@@ -14,7 +14,6 @@ interface Props {
   headScripts?: string[];
   entity?: { type?: string; name?: string; same_as?: string[] };
   schemaType?: string;
-  kind?: string;
 }
 
 const {
@@ -30,7 +29,6 @@ const {
   headScripts,
   entity,
   schemaType,
-  kind,
 } = Astro.props;
 
 // timeZone: 'UTC' so a frontmatter date like 2020-02-06 always displays as
@@ -55,7 +53,6 @@ const showHeader = !!title || showDate;
   headScripts={headScripts}
   entity={entity}
   schemaType={schemaType}
-  kind={kind}
   layoutKind="post"
   pageTitle={title}
 >

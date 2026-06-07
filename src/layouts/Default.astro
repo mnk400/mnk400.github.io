@@ -16,7 +16,6 @@ interface Props {
   headScripts?: string[];
   scripts?: string[];
   styles?: string[];
-  kind?: string;
   pageTitle?: string; // optional breadcrumb label override
   entity?: { type?: string; name?: string; same_as?: string[] };
   schemaType?: string;
@@ -31,7 +30,6 @@ const {
   headScripts = [],
   scripts = [],
   styles = [],
-  kind,
   pageTitle,
   entity,
   schemaType,
@@ -202,12 +200,6 @@ const ogTitle = title ? `${title} — Manik` : 'Manik';
         <slot />
       </main>
     </div>
-    {kind === 'readme' && (
-      <>
-        <script src="https://cdn.jsdelivr.net/npm/marked@15.0.7/marked.min.js" is:inline></script>
-        <script src="/assets/js/components/readme-renderer.js" is:inline></script>
-      </>
-    )}
     {scripts.map(src => <script src={src} is:inline></script>)}
 
     <!-- Custom element registration + delegated click handler for the

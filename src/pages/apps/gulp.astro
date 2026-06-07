@@ -1,0 +1,14 @@
+---
+import ProductPage from '../../components/ProductPage.astro';
+import { appProductItems } from '../../data/more/apps.ts';
+
+const product = appProductItems.find((item) => item.id === 'apps/gulp')!;
+---
+<ProductPage product={product}>
+  <p>
+    Gulp is a simple tool that helps you download images and videos from various
+    websites by providing an easy-to-use UI around the
+    <a href="https://github.com/mikf/gallery-dl" target="_blank" rel="noopener noreferrer">gallery-dl</a>
+    command-line tool.
+  </p>
+</ProductPage>
