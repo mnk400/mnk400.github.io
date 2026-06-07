@@ -23,14 +23,12 @@ const {
     {items.map((item, index) => {
       const titleId = `${idPrefix}-title-${index + 1}`;
       const detailsId = `${idPrefix}-details-${index + 1}`;
-      const isPorted = item.ported;
-      const CardTag = isPorted ? 'a' : 'div';
       const title = useShortTitle ? item.shortTitle ?? item.title : item.title;
 
       return (
-        <CardTag
-          class:list={['archive-index-card', 'reveal-card', { 'archive-index-card--pending': !isPorted }]}
-          href={isPorted ? item.url : undefined}
+        <a
+          class="archive-index-card reveal-card"
+          href={item.url}
           aria-labelledby={titleId}
           aria-describedby={detailsId}
         >
@@ -55,13 +53,11 @@ const {
                 </span>
               )}
             </div>
-            {isPorted && (
-              <span class="archive-index-card__arrow" aria-hidden="true">
-                <Icon name="arrow-up-right" />
-              </span>
-            )}
+            <span class="archive-index-card__arrow" aria-hidden="true">
+              <Icon name="arrow-up-right" />
+            </span>
           </div>
-        </CardTag>
+        </a>
       );
     })}
   </div>

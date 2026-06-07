@@ -84,14 +84,6 @@
     }
 }
 
-.archive-index-card--pending {
-    cursor: default;
-
-    .archive-index-card__title {
-        opacity: 0.72;
-    }
-}
-
 @media screen and (max-width: $breakpoint-mobile) {
     .archive-index-grid {
         grid-template-columns: 1fr;

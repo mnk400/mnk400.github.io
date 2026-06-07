@@ -1,8 +1,8 @@
 ---
-import { getPortedMoreRedirects } from '../../lib/more.ts';
+import { getMoreRedirects } from '../../lib/more.ts';
 
 export function getStaticPaths() {
-  return getPortedMoreRedirects()
+  return getMoreRedirects()
     .filter((redirect) => /^\/more\/[^/]+\/?$/.test(redirect.from))
     .map((redirect) => ({
       params: { slug: redirect.from.replace(/^\/more\//, '').replace(/\/$/, '') },

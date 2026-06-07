@@ -1,6 +1,5 @@
 ---
 import Post from '../../layouts/Post.astro';
-import Icon from '../../components/Icon.astro';
 import SearchPill from '../../components/SearchPill.astro';
 import SelectionSwitch from '../../components/SelectionSwitch.astro';
 import { getMoreCategory } from '../../data/categories.ts';
@@ -53,13 +52,13 @@ const rootOptions = [
               rootLabel
             ) : (
               <>
-                {group.rootHub?.ported ? (
+                {group.rootHub ? (
                   <a href={group.rootHub.url}>{rootLabel}</a>
                 ) : (
                   <span>{rootLabel}</span>
                 )}
                 <span class="more-section__path-sep">/</span>
-                {group.hub?.ported ? (
+                {group.hub ? (
                   <a href={group.hub.url}>{group.chip}</a>
                 ) : (
                   <span>{group.chip}</span>
@@ -74,15 +73,7 @@ const rootOptions = [
 
               return (
                 <span class="more-section__item" data-more-search={searchText}>
-                  {item.externalUrl ? (
-                    <a href={item.externalUrl} target="_blank" rel="noopener noreferrer">
-                      {linkText} <Icon name="arrow-up-right" />
-                    </a>
-                  ) : item.ported ? (
-                    <a href={item.url} title={item.description}>{linkText}</a>
-                  ) : (
-                    <span class="more-section__pending" title="Migration pending">{linkText}</span>
-                  )}
+                  <a href={item.url} title={item.description}>{linkText}</a>
                 </span>
               );
             })}
