@@ -1,10 +1,9 @@
 ---
-layout: post
 title: "Maximum Likelihood Estimation of Gumbel Distribution"
 description: "Mathematical derivation and implementation of Maximum Likelihood Estimation for Gumbel distribution parameters using Newton-Raphson"
 date: 2020-02-06
 edit: 2020-05-14
-use_math: true
+useMath: true
 ---
 
 <span class="note">This write up assumes basic knowledge of the estimation theory.</span>
@@ -90,6 +89,6 @@ $$\left[\left(\alpha^{(n e w)}-\alpha^{(o l d)}\right)^{2}+\left(\beta^{(n e w)}
 
 Following are the results of the above algorithm for a gumbel destibution generated using α = 2.3 and β = 4.0 ran multiple times and averaged.
  
-{% include zoomable-image.html src="/assets/images/posts/gumble-mle/EjvbGg5.png" alt="Gumbel MLE iteration results" width=756 height=164 %}
+<img src="/assets/images/posts/gumble-mle/EjvbGg5.png" alt="Gumbel MLE iteration results" data-zoomable width="756" height="164" loading="lazy">
 
 [Link to the code.](https://github.com/mnk400/gumbelMLE)

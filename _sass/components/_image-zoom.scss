@@ -2,7 +2,9 @@
 // IMAGE ZOOM
 // =============================================================================
 
-// Zoomable image cursor
+// Zoomable image cursor + frame. Applied to any `<img data-zoomable>` —
+// whether rendered by the ZoomableImage.astro component or hand-written
+// in markdown.
 [data-zoomable] {
     cursor: zoom-in;
     border-radius: var(--radius-md);

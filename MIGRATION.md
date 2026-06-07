@@ -24,6 +24,77 @@ Secondary motivator: persistent DOM across navigation (background video, music w
 
 ---
 
+## The component pattern (unified)
+
+Every component is a `.astro` file. Heavy logic that's shared across components, or any infrastructure that registers document-level handlers, lives in `src/lib/*.ts`.
+
+```
+src/components/Thing.astro      ← the API: typed props + template + thin <script>
+src/lib/thing.ts                ← (optional) heavy logic, shared state, document handlers
+```
+
+### The .astro file
+
+Renders the markup contract. Holds a co-located `<script>` block. The script is one of:
+- **Short and self-contained** — inline wiring that scans `[data-thing]` on `astro:page-load` and decorates (see `ExpandableSection.astro`, `SelectionSwitch.astro`).
+- **Imports a lib** — `import '../lib/thing.ts'` triggers the lib's side-effect registration (see `ZoomableImage.astro`).
+
+### The lib file (when needed)
+
+A `src/lib/*.ts` module that:
+- Exports the public API as functions (`getActiveTheme`, `openZoom`).
+- Has module-level side effects that register document handlers on first import.
+- Is imported by the `.astro` script. Vite/Astro **dedupes the module across all importers**, so the handlers register exactly once per page.
+
+### How markdown uses these components
+
+Markdown can't invoke Astro's JSX syntax (`<Thing prop={...}>` won't work in a `.md` file). What markdown **can** do is write the raw HTML that matches the component's contract — the same DOM the `.astro` template would have rendered. The component's script doesn't care where the matching markup came from:
+
+```astro
+{/* .astro callsite — typed props, build-time checked */}
+<ZoomableImage src="/cool.jpg" alt="Cool" width={3943} height={2958} />
+```
+
+```html
+<!-- markdown — write the contract directly -->
+<img src="/cool.jpg" alt="Cool" data-zoomable width="3943" height="2958" loading="lazy">
+```
+
+### One caveat: markdown-only pages
+
+If a page renders the .astro component anywhere, its script is bundled and the lib gets loaded. If a page only has markdown that hand-writes the contract markup (and never imports the .astro component), the lib never loads → the contract is dead markup.
+
+**Fix:** for components that markdown can author, `Default.astro` pre-imports the lib:
+
+```astro
+<!-- Default.astro -->
+<script>
+  import '../lib/image-zoom.ts';
+</script>
+```
+
+This is the single concession that makes markdown-only pages "just work". Only needed for libs that markdown can hit (currently `image-zoom`; in the future, whatever else).
+
+### Choosing the shape for a new component
+
+Decide what each piece looks like, in this order:
+
+1. **It's always a `.astro` file.** Never start with a custom element or a bare lib module.
+2. **Is the behavior heavy or shared?** If yes, extract a `src/lib/*.ts` module the .astro imports. Otherwise the .astro's inline `<script>` holds the wiring.
+3. **Will markdown ever author this?** If yes, ensure the `<script>` registers behavior via document-level handlers (not by querying the .astro instance's own subtree), and add the lib import to `Default.astro`.
+
+That's the whole rule. No custom-element vs .astro split. No bare `src/lib/` modules acting as components.
+
+### Concrete examples
+
+| Component | .astro file | Lib module | Why |
+|---|---|---|---|
+| `ExpandableSection` | template + 60-line script | none | Per-instance widget, short script, no shared state |
+| `SelectionSwitch` | template + 100-line script | none | Same as above, slightly heavier script still fits inline |
+| `ThemeSwitcher` | template + 25-line script | `lib/theme.ts` | Script wires `change` event to `setTheme()`. Heavy state lives in lib because `Default.astro` also imports it for pre-paint apply |
+| `ZoomableImage` | template + `import '../lib/image-zoom.ts'` | `lib/image-zoom.ts` (500 lines, singleton lightbox + document handlers) | Heavy infra, used in markdown too |
+| `Footer` / `MusicWidget` | template only, no script | none | Pure markup |
+
 ## The three-bucket rule
 
 Every file the migration touches falls into one of three buckets. Knowing which determines when to rewrite and when to delete.
@@ -55,9 +126,11 @@ App-level state that needs to be owned by Astro. Convert to TS modules under `sr
 
 Each widget gets lifted to a self-owning Astro component when an Astro page first needs it. The lifted component sets its own `data-*-initialized="true"` guard so the legacy `ui-components.js` (still loaded for non-ported pages) skips it. When all consumers of a given widget have been lifted, the corresponding code path in `ui-components.js` is deleted.
 
-**B3c — Page-specific scripts** (`lastfm.js`, `location-time.js`, `image-zoom.js`, individual game/tool JS)
+**B3c — Page-specific scripts** (`lastfm.js`, `location-time.js`, individual game/tool JS)
 
 These were always page-local in Astro's model. The minimal patch is correct: change `DOMContentLoaded` → `astro:page-load`, add an idempotency guard if the script registers anything that would stack on re-firing (e.g. `setInterval`). Don't restructure them. They get deleted as their owning page is ported under the bucket-1 rule.
+
+**Reclassified in Phase 2:** `image-zoom.js` started here but moved to B3b — it's used by every page with images (blog posts, archive paintings, future tool/product pages), so the cost of lifting once paid for itself immediately. Now lives as `src/lib/image-zoom.ts` + `src/components/ZoomableImage.astro`, following the unified component pattern (see "The component pattern" section). The `.astro` component is the typed API for callsites; the lib holds the singleton lightbox controller + document handlers. Markdown posts hand-write `<img data-zoomable>` and `Default.astro` pre-imports the lib so the handler is registered on every page. Legacy `assets/js/components/image-zoom.js` stays on disk for the design-system export per AGENTS.md.
 
 **Why this split:** the cost of lifting is per-widget, not per-codebase. If you only need a switcher today, you only lift the switcher. The hard rule is "no NEW consumers of legacy globals from Astro pages" — every page port either uses already-lifted components, or lifts what it needs in the same commit.
 
@@ -194,17 +267,16 @@ Deferred to Phase 7 (still): `transition:persist` decisions for the music widget
 
 **Done criteria:** four URLs working, `Post.astro` layout established, Header.astro covers both variants, client-side navigation between any two pages doesn't lose theme switcher / expandable / music-widget behavior, browser back-button still triggers the reverse-direction transition. **Additionally** (added mid-phase): all chrome rendered on the four URLs has been lifted to self-owning Astro components — `ThemeSwitcher`, `FontSwitcher`, `SettingsPanel`, `SelectionSwitch`, `ExpandableSection` — with no remaining inline `<script>initGlobal(...)</script>` template wiring.
 
-### Phase 2 — Content collections + blog
-- Move `_posts/*.md` → `src/content/posts/*.md`
-- Define `posts` collection in `src/content/config.ts` with a Zod schema
-- Strip `layout: post` from front matter as part of the move (Astro doesn't need it; the page route handles layout)
-- Build `src/pages/blog/[slug].astro` for individual posts with proper URL shape (`/YYYY/MM/DD/slug`)
-- Pagination via Astro's `paginate()` (replaces `jekyll-paginate`)
-- Wire `redirect_from` → `redirects` in `astro.config.mjs`
-- Replace the spike's hand-rolled `?raw` frontmatter parser in `src/pages/index.astro` with a real `getCollection('posts')` call
-- Delete `_posts/`, `_layouts/post.html` after the last post is verified
-
-**Done criteria:** all 6 posts render, archive index on `/` reads from collection, pagination works.
+### Phase 2 — Content collections + blog ✅ done
+- Moved `_posts/*.md` → `src/content/posts/*.md`
+- Defined `posts` collection in `src/content.config.ts` (Astro 5 location) with a Zod schema. Date optional in frontmatter — derived from filename when absent (Jekyll parity).
+- Stripped `layout: post` from each post; renamed `use_math: true` → `useMath: true` in gumble-mle
+- Built dynamic route `src/pages/[year]/[month]/[day]/[slug].astro` with `getStaticPaths()` parsing the filename
+- Replaced the spike's hand-rolled `?raw` parser in `src/pages/index.astro` with `getCollection('posts')`
+- De-Liquided post content during the move: replaced 11 `{% include zoomable-image.html %}` with plain `<img data-zoomable>`, 9 `{% highlight lang %}` blocks with fenced code blocks (Shiki highlights at build time, no runtime JS), and 4 `{% include selection-switch.html %}` with inline `<div data-selection-switch>` markup (the lifted SelectionSwitch script auto-initializes any matching node).
+- Added `timeZone: 'UTC'` to date formatter in `Post.astro` so frontmatter dates display as-written regardless of build-machine TZ
+- Skipped: pagination (only 6 posts, current archive on `/` shows all in one expandable; defer until count grows). `redirect_from` (no posts use it; relevant only for Phase 3's `_more/`).
+- Kept `_layouts/post.html` as Bucket 2 reference — still consumed by many unported `_more/`, `art/`, `more/`, `photos/` pages. Delete when its last consumer migrates (Phase 5).
 
 ### Phase 3 — `/more/` and category routing (the high-value port)
 This is the one that justifies the migration. If this phase doesn't feel meaningfully better than Liquid, stop and reconsider scope.

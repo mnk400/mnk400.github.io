@@ -206,6 +206,13 @@ const ogTitle = title ? `${title} — Manik` : 'Manik';
     )}
     {scripts.map(src => <script src={src} is:inline></script>)}
 
+    <!-- Custom element registration + delegated click handler for the
+         <zoomable-image> lightbox. Bundled module — runs once globally and
+         survives DOM swaps. -->
+    <script>
+      import '../lib/image-zoom.ts';
+    </script>
+
     <!-- Global page-chrome behaviors: scroll class toggle on <html> + touch
          hover visual feedback. Both registered once on document; survive DOM
          swaps because the listeners aren't on swapped elements. -->

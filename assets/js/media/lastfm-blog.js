@@ -199,12 +199,17 @@
       });
     }
 
-    // Resolution toggle
+    // Resolution toggle. SelectionSwitch (lifted into the Astro side) emits a
+    // 'change' CustomEvent on the container with detail.value — that replaced
+    // the legacy global initSwitch(id, cb) shim that lived in ui-components.js.
     if (controlsDiv) {
-      initSwitch("genre-drift-resolution", function (val) {
-        resolution = val;
-        render();
-      });
+      var resEl = document.getElementById("genre-drift-resolution");
+      if (resEl) {
+        resEl.addEventListener("change", function (e) {
+          resolution = e.detail.value;
+          render();
+        });
+      }
     }
 
     render();
@@ -385,11 +390,14 @@
       });
     }
 
-    // Resolution toggle
-    initSwitch("tier-resolution", function (val) {
-      resolution = val;
-      render();
-    });
+    // Resolution toggle (see genre-drift-resolution comment above).
+    var tierEl = document.getElementById("tier-resolution");
+    if (tierEl) {
+      tierEl.addEventListener("change", function (e) {
+        resolution = e.detail.value;
+        render();
+      });
+    }
 
     render();
     window.addEventListener("resize", debounce(render, 150));
@@ -580,11 +588,14 @@
       ctx.stroke();
     }
 
-    // Resolution toggle
-    initSwitch("discovery-resolution", function (val) {
-      resolution = val;
-      render();
-    });
+    // Resolution toggle (see genre-drift-resolution comment above).
+    var discEl = document.getElementById("discovery-resolution");
+    if (discEl) {
+      discEl.addEventListener("change", function (e) {
+        resolution = e.detail.value;
+        render();
+      });
+    }
 
     render();
     window.addEventListener("resize", debounce(render, 150));
@@ -614,11 +625,14 @@
     drawArtistLifecycle().then((r) => r && renders.push(r));
     drawDiscoveryRate().then((r) => r && renders.push(r));
 
-    // Data range toggle
-    initSwitch("data-range-toggle", function (val) {
-      useCutoff = val === "written";
-      renders.forEach(function (fn) { fn(); });
-    });
+    // Data range toggle (see genre-drift-resolution comment above).
+    var rangeEl = document.getElementById("data-range-toggle");
+    if (rangeEl) {
+      rangeEl.addEventListener("change", function (e) {
+        useCutoff = e.detail.value === "written";
+        renders.forEach(function (fn) { fn(); });
+      });
+    }
 
     // Re-render canvas charts when theme changes
     CanvasUtils.onThemeChange(function () {

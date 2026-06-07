@@ -89,7 +89,17 @@
             height: auto;
             padding: 0;
             display: block;
-            margin: 0 auto;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        // Raw <img> in markdown sits directly in .post__content (Astro's
+        // markdown parser doesn't wrap it in <p> like kramdown did). Give it
+        // explicit vertical breathing room. Images wrapped in <p> still get
+        // their spacing from <p>'s own block margin.
+        > img {
+            margin-top: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
         }
 
         > .img-curved-edges,

@@ -1,0 +1,29 @@
+// Shiki-highlighted code blocks. With `defaultColor: false`, each token's
+// inline style holds both `--shiki-light` and `--shiki-dark`; this file
+// picks the token color for the active theme, while the block background
+// is sourced from `--translucent-low` so it sits naturally on any theme.
+//
+// Light themes: linen, butter, blush, sky
+// Dark themes:  charcoal, denim, plum, moss, espresso
+
+.astro-code {
+    background-color: var(--translucent-low) !important;
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+}
+
+.astro-code,
+.astro-code span {
+    color: var(--shiki-light) !important;
+}
+
+:root[data-theme="charcoal"],
+:root[data-theme="denim"],
+:root[data-theme="plum"],
+:root[data-theme="moss"],
+:root[data-theme="espresso"] {
+    .astro-code,
+    .astro-code span {
+        color: var(--shiki-dark) !important;
+    }
+}

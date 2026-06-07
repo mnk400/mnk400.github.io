@@ -1,5 +1,4 @@
 ---
-layout: post
 title: "A Decade of Listening"
 description: "Analyzing a decade of Last.fm scrobbles"
 date: 2026-02-21
@@ -12,8 +11,10 @@ This is less of a rigorous analysis and more of a personal dig through the numbe
 
 <div class="lastfm-charts data-range">
   <span class="data-range__label">Show data through</span>
-  {% assign range_options = "written:Feb 2026,latest:Latest" | split: "," %}
-  {% include selection-switch.html id="data-range-toggle" size="small" options=range_options default_active="written" %}
+  <div class="selection-switch selection-switch--small" id="data-range-toggle" data-selection-switch>
+    <span id="written" class="switch-option active" data-value="written">Feb 2026</span>
+    <span id="latest" class="switch-option" data-value="latest">Latest</span>
+  </div>
 </div>
 
 ---
@@ -26,8 +27,10 @@ To a complete non-surprise to me, one genre has been steadily climbing since 201
 
 <div class="lastfm-charts" id="genre-drift-chart">
   <div class="chart-controls">
-    {% assign res_options = "quarterly:Quarterly,monthly:Monthly" | split: "," %}
-    {% include selection-switch.html id="genre-drift-resolution" size="small" options=res_options default_active="quarterly" %}
+    <div class="selection-switch selection-switch--small" id="genre-drift-resolution" data-selection-switch>
+      <span id="quarterly" class="switch-option active" data-value="quarterly">Quarterly</span>
+      <span id="monthly" class="switch-option" data-value="monthly">Monthly</span>
+    </div>
   </div>
   <div class="chart-container">
     <canvas></canvas>
@@ -51,8 +54,10 @@ I've never cared much about how "obscure or mainstream" an artist is, but I figu
 
 <div class="lastfm-charts" id="tier-chart">
   <div class="chart-controls">
-    {% assign tier_options = "quarterly:Quarterly,monthly:Monthly" | split: "," %}
-    {% include selection-switch.html id="tier-resolution" size="small" options=tier_options default_active="quarterly" %}
+    <div class="selection-switch selection-switch--small" id="tier-resolution" data-selection-switch>
+      <span id="tier-quarterly" class="switch-option active" data-value="quarterly">Quarterly</span>
+      <span id="tier-monthly" class="switch-option" data-value="monthly">Monthly</span>
+    </div>
   </div>
   <div class="chart-container">
     <canvas></canvas>
@@ -90,8 +95,10 @@ Am I still discovering new music, or have I mostly settled into what I love?
 
 <div class="lastfm-charts" id="discovery-chart">
   <div class="chart-controls">
-    {% assign disc_options = "quarterly:Quarterly,monthly:Monthly" | split: "," %}
-    {% include selection-switch.html id="discovery-resolution" size="small" options=disc_options default_active="quarterly" %}
+    <div class="selection-switch selection-switch--small" id="discovery-resolution" data-selection-switch>
+      <span id="discovery-quarterly" class="switch-option active" data-value="quarterly">Quarterly</span>
+      <span id="discovery-monthly" class="switch-option" data-value="monthly">Monthly</span>
+    </div>
   </div>
   <div class="chart-container">
     <canvas></canvas>

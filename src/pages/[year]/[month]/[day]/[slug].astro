@@ -1,0 +1,37 @@
+---
+import { getCollection, render } from 'astro:content';
+import Post from '../../../../layouts/Post.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  return posts.map((post) => {
+    const match = post.id.match(/^(\d{4})-(\d{2})-(\d{2})-(.+)$/);
+    if (!match) throw new Error(`Post id doesn't match YYYY-MM-DD-slug: ${post.id}`);
+    const [, year, month, day, slug] = match;
+    return {
+      params: { year, month, day, slug },
+      props: { post },
+    };
+  });
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+// Date from frontmatter, or derived from filename if absent (Jekyll parity).
+const date =
+  post.data.date ??
+  new Date(`${Astro.params.year}-${Astro.params.month}-${Astro.params.day}T00:00:00Z`);
+---
+<Post
+  title={post.data.title}
+  description={post.data.description}
+  image={post.data.image}
+  date={date}
+  edit={post.data.edit}
+  showDate
+  useMath={post.data.useMath}
+  scripts={post.data.scripts}
+>
+  <Content />
+</Post>
