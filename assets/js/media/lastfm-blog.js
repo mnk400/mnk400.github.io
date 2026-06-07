@@ -2,6 +2,47 @@
   const DATA_BASE = "https://manik.cc/pipelines/lastfm-stats/processed";
   const WRITTEN_DATE = "2026-02";  // cutoff: data up to this month
   var useCutoff = true;  // start with cutoff on
+  var cleanupFns = [];
+
+  function cleanupActiveRun() {
+    if (typeof window.__lastfmBlogCleanup === "function") {
+      window.__lastfmBlogCleanup();
+    }
+    window.__lastfmBlogCleanup = null;
+    cleanupFns = [];
+  }
+
+  function trackCleanup(fn) {
+    cleanupFns.push(fn);
+  }
+
+  function installRunCleanup() {
+    window.__lastfmBlogCleanup = function () {
+      cleanupFns.forEach(function (fn) { fn(); });
+      cleanupFns = [];
+    };
+  }
+
+  function onResize(handler) {
+    window.addEventListener("resize", handler);
+    trackCleanup(function () {
+      window.removeEventListener("resize", handler);
+    });
+  }
+
+  function onThemeChange(callback) {
+    var observer = new MutationObserver(function () {
+      CanvasUtils.invalidateCssCache();
+      callback();
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+    trackCleanup(function () {
+      observer.disconnect();
+    });
+  }
 
   function cutoffMonth(series, key) {
     if (!useCutoff) return series;
@@ -213,7 +254,7 @@
     }
 
     render();
-    window.addEventListener("resize", debounce(render, 150));
+    onResize(debounce(render, 150));
     return render;
   }
 
@@ -400,7 +441,7 @@
     }
 
     render();
-    window.addEventListener("resize", debounce(render, 150));
+    onResize(debounce(render, 150));
     return render;
   }
 
@@ -598,7 +639,7 @@
     }
 
     render();
-    window.addEventListener("resize", debounce(render, 150));
+    onResize(debounce(render, 150));
     return render;
   }
 
@@ -613,7 +654,15 @@
 
   // ── Init ──
 
-  document.addEventListener("DOMContentLoaded", function () {
+  function initLastfmBlog() {
+    if (!document.getElementById("scrobble-count")) {
+      cleanupActiveRun();
+      return;
+    }
+
+    cleanupActiveRun();
+    installRunCleanup();
+
     const renders = [];
 
     loadJSON("3am-analysis.json").then(function (amData) {
@@ -635,8 +684,13 @@
     }
 
     // Re-render canvas charts when theme changes
-    CanvasUtils.onThemeChange(function () {
+    onThemeChange(function () {
       renders.forEach(function (fn) { fn(); });
     });
-  });
+  }
+
+  if (!window.__lastfmBlogListenerRegistered) {
+    window.__lastfmBlogListenerRegistered = true;
+    document.addEventListener("astro:page-load", initLastfmBlog);
+  }
 })();

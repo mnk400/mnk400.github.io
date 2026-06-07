@@ -1,25 +1,24 @@
 # Personal Portfolio & Blog
 
-This is a Jekyll-based personal website that serves as a portfolio, blog, and showcase for various interactive projects. 
+This is an Astro-based personal website that serves as a portfolio, blog, and showcase for various interactive projects. The repository is mid-migration from Jekyll, so some legacy reference directories still exist while pages are ported.
 
 ## Development
 
-1. Install Ruby and Jekyll
+1. Install dependencies
 ```bash
-gem install bundler jekyll
+npm install
 ```
 
-2. Install dependencies
+2. Start the development server
 ```bash
-bundle install
+npm run dev
 ```
 
-3. Start the development server
+3. Build the static site
 ```bash
-bundle exec jekyll serve
+npm run build
 ```
 
 ## Credits
 
 Base template inspired by [getmicah](https://github.com/getmicah/getmicah.github.io) and [danishprakash](https://github.com/danishprakash/danishprakash.github.io).
-

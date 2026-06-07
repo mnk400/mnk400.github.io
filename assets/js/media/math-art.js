@@ -3,6 +3,10 @@ async function loadImages() {
     const gallery = document.getElementById('gallery');
     const loading = document.getElementById('loading');
     const errorMessage = document.getElementById('error-message');
+    if (!gallery || !loading || !errorMessage) return;
+    if (gallery.dataset.mathArtLoaded === 'true') return;
+    gallery.dataset.mathArtLoaded = 'true';
+    gallery.innerHTML = '';
     errorMessage.style.display = 'none';
 
     try {
@@ -37,4 +41,4 @@ async function loadImages() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', loadImages);
+document.addEventListener('astro:page-load', loadImages);

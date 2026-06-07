@@ -1,0 +1,63 @@
+---
+import Default from '../layouts/Default.astro';
+---
+<Default
+  title="little love"
+  description="A small playlist page"
+  pageTitle="little love"
+>
+  <div class="love-page">
+    <p>
+      Squishy,<br /><br />
+      <img src="/assets/images/pages/love/love.jpg" width="400" alt="" />
+
+      <br /><br />
+
+      Have you ever wondered, if
+      <br />
+      I could name every song that makes
+      <br />me think of you in some way?
+
+      <br /><br />
+
+      I am sure I missed a few, but here we go
+
+      <br /><br />
+
+      <iframe
+        style="border-radius:12px"
+        src="https://open.spotify.com/embed/playlist/0jQHjk1IQ0VubWuomHJfDI?utm_source=generator&theme=0"
+        width="400"
+        height="352"
+        frameborder="0"
+        allowfullscreen
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        loading="lazy"
+        title="Spotify playlist"
+      ></iframe>
+
+      <br /><br />
+      ,love
+    </p>
+  </div>
+</Default>
+
+<style>
+  .love-page {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .love-page p {
+    width: auto;
+    max-width: 100%;
+    font-family: Inter, var(--font-family);
+    font-size: 1em;
+  }
+
+  .love-page img,
+  .love-page iframe {
+    max-width: min(400px, 100%);
+  }
+</style>

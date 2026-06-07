@@ -130,6 +130,8 @@ Each widget gets lifted to a self-owning Astro component when an Astro page firs
 
 These were always page-local in Astro's model. The minimal patch is correct: change `DOMContentLoaded` → `astro:page-load`, add an idempotency guard if the script registers anything that would stack on re-firing (e.g. `setInterval`). Don't restructure them. They get deleted as their owning page is ported under the bucket-1 rule.
 
+This patch is a bridge, not the long-term pattern. If a page-specific script is substantially touched, shared by multiple Astro pages, or already doing enough work that typed data/contracts would help, move it toward the Astro-native shape instead: bundled TS in `src/lib/*.ts` or a page-local imported module, with explicit `init(...)`/cleanup APIs and no dependency on public `window.*` globals. Use the bridge only to preserve behavior during the migration without rewriting the feature.
+
 **Reclassified in Phase 2:** `image-zoom.js` started here but moved to B3b — it's used by every page with images (blog posts, archive paintings, future tool/product pages), so the cost of lifting once paid for itself immediately. Now lives as `src/lib/image-zoom.ts` + `src/components/ZoomableImage.astro`, following the unified component pattern (see "The component pattern" section). The `.astro` component is the typed API for callsites; the lib holds the singleton lightbox controller + document handlers. Markdown posts hand-write `<img data-zoomable>` and `Default.astro` pre-imports the lib so the handler is registered on every page. Legacy `assets/js/components/image-zoom.js` stays on disk for the design-system export per AGENTS.md.
 
 **Why this split:** the cost of lifting is per-widget, not per-codebase. If you only need a switcher today, you only lift the switcher. The hard rule is "no NEW consumers of legacy globals from Astro pages" — every page port either uses already-lifted components, or lifts what it needs in the same commit.
@@ -249,7 +251,7 @@ The wrapper is the only file in the codebase that knows which Iconify set we use
 
 **Done criteria:** all current Icon usages render unchanged; `_includes/icons/` and `_includes/icon.html` deleted; new icons added by name, no SVG files copied.
 
-### Phase 1 — Static pages + `<ClientRouter />` (in progress)
+### Phase 1 — Static pages + `<ClientRouter />` ✅ done
 This phase deliberately bundles the second-page port with client-router setup. We need a second URL to validate transitions against; doing both together avoids a separate retrofit later, and means every interactive port from Phase 4 onward is already tested against same-document navigation.
 
 Pages:
@@ -260,7 +262,7 @@ Pages:
 Client router setup (was Phase 7, moved here):
 - Add `<ClientRouter />` to `Default.astro`
 - Port `view-transitions.js`: direction detection (forward/back) and the breadcrumb-name swap logic move from `pageswap`/`pagereveal` (cross-document) to `astro:before-swap` / `astro:after-swap` hooks
-- Add the lifecycle-shim script in `Default.astro` that re-runs `ui-components.js`'s global init functions on `astro:page-load` (see Lifecycle rule above)
+- Lift the chrome widgets touched by these pages into self-owning Astro components instead of re-running `ui-components.js` globals
 - Verify SCSS view-transition rules in `_sass/base/_view-transitions.scss` still apply — they should, but Safari needs a click-through test
 
 Deferred to Phase 7 (still): `transition:persist` decisions for the music widget and any background video — those need real consumer components in place first.
@@ -277,19 +279,20 @@ Deferred to Phase 7 (still): `transition:persist` decisions for the music widget
 - Added `timeZone: 'UTC'` to date formatter in `Post.astro` so frontmatter dates display as-written regardless of build-machine TZ
 - Skipped: pagination (only 6 posts, current archive on `/` shows all in one expandable; defer until count grows). `redirect_from` (no posts use it; relevant only for Phase 3's `_more/`).
 - Kept `_layouts/post.html` as Bucket 2 reference — still consumed by many unported `_more/`, `art/`, `more/`, `photos/` pages. Delete when its last consumer migrates (Phase 5).
+- Patched migrated blog-only scripts that are now loaded by Astro routes to use `astro:page-load` with cleanup where they register global listeners.
 
 ### Phase 3 — `/more/` and category routing (the high-value port)
 This is the one that justifies the migration. If this phase doesn't feel meaningfully better than Liquid, stop and reconsider scope.
 
 - Move `_data/categories.yml` → `src/data/categories.ts` (typed)
-- Define `more` content collection with schema matching `_more/**/*.html` front matter
+- Define `more` metadata from `_more/**/*.html` front matter. These files are still Liquid/Jekyll HTML, so Phase 3 should parse front matter/paths as data, not try to render the body as Astro content.
 - Port `more/index.html` → `src/pages/more/index.astro`. Replace `assign | push | sort` with `Map.groupBy`.
 - Port `_more/archive/paintings/index.html` → `src/pages/archive/paintings/index.astro` using `getCollection('more')` filter
 - Update Header.astro's breadcrumb logic to use the typed categories module
 - Update StructuredData.astro's BreadcrumbList logic the same way
-- Delete `_includes/header.html`, `more/index.html`, the archive hub markup
+- Delete `more/index.html` and the archive hub markup after their Astro replacements land. Keep `_includes/header.html` until the last legacy Jekyll reference page/layout that includes it is gone.
 
-**Done criteria:** `/more/`, `/archive/paintings/`, breadcrumbs all work; `_includes/header.html` deleted.
+**Done criteria:** `/more/`, `/archive/paintings/`, breadcrumbs all work; old Bucket 1 hub files deleted; `_includes/header.html` remains only if legacy reference pages still consume it.
 
 ### Phase 4 — Tools and games (volume work)
 - Each `_more/<cat>/<slug>.html` → `src/pages/<cat>/<slug>.astro`
@@ -364,8 +367,8 @@ Astro's markdown loader treats `layout:` as a component import. Loading `_posts/
 ### SCSS deprecation noise
 Sass 1.83 warns about `@import`, `global-builtin`, `color-functions`, `mixed-decls` patterns in the existing tree. Silenced in `astro.config.mjs` for now. Cleanup is Phase 8, not blocking.
 
-### `_includes/icons/` consumed via `import.meta.glob`
-The icon set stays in place. The pattern in `src/components/Icon.astro` (`?raw` glob + class injection via string replace) preserves the exact same SVG output as the Jekyll `icon.html`, but with a build-time error if a name is wrong. Don't move the icons.
+### Icons are routed through `astro-icon`
+`src/components/Icon.astro` is the only wrapper that knows the Iconify set. Use `<Icon name="..." />` at callsites; do not add new SVG files or `import.meta.glob` icon loaders.
 
 ### CSS link tag in dev vs production
 In dev, Vite injects CSS via `<script type="module" src=".../main.scss">`. In prod, Astro emits a real `<link rel="stylesheet">`. Don't be alarmed by the missing `<link>` in dev `curl` output.

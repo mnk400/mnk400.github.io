@@ -2,14 +2,6 @@
 // HEADER & NAVIGATION
 // =============================================================================
 
-// Custom font for header name
-@font-face {
-    font-family: "OverTheRainbow";
-    src: url("/assets/data/fonts/Over_the_Rainbow/OvertheRainbow-Regular.ttf")
-        format("truetype");
-    font-display: swap;
-}
-
 header {
     display: flex;
     flex-direction: column;

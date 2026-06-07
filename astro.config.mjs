@@ -23,7 +23,7 @@ export default defineConfig({
         scss: {
           loadPaths: sassLoadPaths,
           quietDeps: true,
-          silenceDeprecations: ['legacy-js-api', 'import', 'global-builtin', 'color-functions', 'mixed-decls'],
+          silenceDeprecations: ['legacy-js-api', 'import', 'global-builtin', 'color-functions'],
         },
       },
     },
