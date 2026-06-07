@@ -1,0 +1,151 @@
+---
+import Post from '../../layouts/Post.astro';
+import Icon from '../../components/Icon.astro';
+import SearchPill from '../../components/SearchPill.astro';
+import SelectionSwitch from '../../components/SelectionSwitch.astro';
+import { getMoreCategory } from '../../data/categories.ts';
+import { getMoreGroups, getMoreRoots, getMoreSearchText } from '../../lib/more.ts';
+
+const groups = getMoreGroups();
+const roots = getMoreRoots();
+const rootOptions = [
+  { value: 'all', label: 'all' },
+  ...roots.map((root) => ({
+    value: root,
+    label: getMoreCategory(root)?.chip ?? root,
+  })),
+];
+---
+<Post
+  title="Collection of Random Stuff"
+  description="An ongoing list of random things and projects Manik has built."
+>
+  <p>
+    This page is an ongoing list of random things and projects I've built.
+  </p>
+
+  <div class="stack">
+    <SearchPill
+      id="more-search"
+      label="Search"
+      placeholder="search projects"
+      class="site-search--small"
+    />
+
+    <SelectionSwitch
+      id="more-chips"
+      options={rootOptions}
+      defaultActive="all"
+      size="small"
+    />
+  </div>
+
+  <div class="more-page">
+    {groups.map((group) => {
+      const groupSegments = group.path.split('/');
+      const rootCategory = getMoreCategory(group.root);
+      const rootLabel = rootCategory?.chip ?? group.root;
+
+      return (
+        <div class="more-section" data-more-category={group.root}>
+          <span class="more-section__label">
+            {groupSegments.length === 1 ? (
+              rootLabel
+            ) : (
+              <>
+                <span>{rootLabel}</span>
+                <span class="more-section__path-sep">/</span>
+                {group.hub?.ported ? (
+                  <a href={group.hub.url}>{group.chip}</a>
+                ) : (
+                  <span>{group.chip}</span>
+                )}
+              </>
+            )}
+          </span>
+          <span class="more-section__links">
+            {group.items.map((item, index) => {
+              const linkText = item.shortTitle ?? item.title;
+              const searchText = getMoreSearchText(item, group);
+
+              return (
+                <span class="more-section__item" data-more-search={searchText}>
+                  {item.externalUrl ? (
+                    <a href={item.externalUrl} target="_blank" rel="noopener noreferrer">
+                      {linkText} <Icon name="arrow-up-right" />
+                    </a>
+                  ) : item.ported ? (
+                    <a href={item.url} title={item.description}>{linkText}</a>
+                  ) : (
+                    <span class="more-section__pending" title="Migration pending">{linkText}</span>
+                  )}
+                </span>
+              );
+            })}
+          </span>
+        </div>
+      );
+    })}
+  </div>
+
+  <p class="more-empty" hidden>No matches.</p>
+</Post>
+
+<script>
+  function initMoreIndex() {
+    const search = document.getElementById('more-search');
+    const chips = document.getElementById('more-chips');
+    const page = document.querySelector<HTMLElement>('.more-page');
+    const empty = document.querySelector<HTMLElement>('.more-empty');
+
+    if (!page || page.dataset.moreIndexInitialized === 'true') return;
+    page.dataset.moreIndexInitialized = 'true';
+
+    const sections = Array.from(page.querySelectorAll<HTMLElement>('.more-section'));
+    let activeCategory = 'all';
+    let query = '';
+
+    function applyFilter() {
+      let visible = 0;
+
+      sections.forEach((section) => {
+        const matchesCategory =
+          activeCategory === 'all' ||
+          section.dataset.moreCategory === activeCategory;
+
+        const items = Array.from(section.querySelectorAll<HTMLElement>('.more-section__item'));
+        const visibleItems: HTMLElement[] = [];
+
+        items.forEach((item) => {
+          const matchesQuery = !query || (item.dataset.moreSearch ?? '').includes(query);
+          const show = matchesCategory && matchesQuery;
+          item.hidden = !show;
+          if (show) visibleItems.push(item);
+        });
+
+        items.forEach((item) => item.classList.remove('is-last-visible'));
+        visibleItems.at(-1)?.classList.add('is-last-visible');
+
+        const sectionVisible = visibleItems.length > 0;
+        section.hidden = !sectionVisible;
+        visible += visibleItems.length;
+      });
+
+      if (empty) empty.hidden = visible !== 0;
+    }
+
+    search?.addEventListener('search:change', (event) => {
+      query = event instanceof CustomEvent && event.detail?.query ? event.detail.query : '';
+      applyFilter();
+    });
+
+    chips?.addEventListener('change', (event) => {
+      activeCategory = event instanceof CustomEvent && event.detail?.value ? event.detail.value : 'all';
+      applyFilter();
+    });
+
+    applyFilter();
+  }
+
+  document.addEventListener('astro:page-load', initMoreIndex);
+</script>

@@ -1,0 +1,118 @@
+---
+import Icon from './Icon.astro';
+
+interface Props {
+  id?: string;
+  label?: string;
+  placeholder?: string;
+  target?: string;
+  class?: string;
+}
+
+const {
+  id = 'site-search',
+  label = 'Search',
+  placeholder = 'search',
+  target,
+  class: extraClass,
+} = Astro.props;
+---
+<div
+  class:list={['site-search', extraClass]}
+  id={id}
+  data-search-component
+  data-search-target={target}
+>
+  <button
+    class="site-search__trigger"
+    type="button"
+    aria-expanded="false"
+    aria-controls={`${id}-field`}
+  >
+    <Icon name="magnifying-glass" />
+    <span>{label}</span>
+  </button>
+  <label class="site-search__field" for={`${id}-field`}>
+    <Icon name="magnifying-glass" />
+    <input
+      id={`${id}-field`}
+      type="search"
+      placeholder={placeholder}
+      autocomplete="off"
+      aria-label={label}
+    />
+    <button class="site-search__clear" type="button" aria-label="Clear search" hidden>
+      <Icon name="x" />
+    </button>
+  </label>
+</div>
+
+<script>
+  function initSearch(container: HTMLElement) {
+    if (container.dataset.searchInitialized === 'true') return;
+
+    const trigger = container.querySelector<HTMLButtonElement>('.site-search__trigger');
+    const input = container.querySelector<HTMLInputElement>('.site-search__field input');
+    const clear = container.querySelector<HTMLButtonElement>('.site-search__clear');
+    if (!trigger || !input) return;
+
+    const getQuery = () => input.value.trim().toLowerCase();
+
+    function emitChange() {
+      const query = getQuery();
+      const detail = { query, value: query, input };
+      container.classList.toggle('has-query', query.length > 0);
+      if (clear) clear.hidden = query.length === 0;
+
+      container.dispatchEvent(new CustomEvent('change', { detail }));
+      container.dispatchEvent(new CustomEvent('search:change', { detail }));
+
+      if (container.dataset.searchTarget) {
+        const target = document.querySelector<HTMLElement>(container.dataset.searchTarget);
+        if (target) {
+          target.dataset.searchQuery = query;
+          target.dispatchEvent(new CustomEvent('site-search:change', {
+            detail: { ...detail, source: container },
+          }));
+        }
+      }
+    }
+
+    function setOpen(open: boolean, focusInput: boolean) {
+      container.classList.toggle('is-open', open);
+      trigger.setAttribute('aria-expanded', String(open));
+      if (open && focusInput) input.focus();
+    }
+
+    function setValue(value: string, shouldEmit: boolean) {
+      input.value = value || '';
+      container.classList.toggle('has-query', getQuery().length > 0);
+      if (clear) clear.hidden = getQuery().length === 0;
+      if (shouldEmit) emitChange();
+    }
+
+    trigger.addEventListener('click', () => setOpen(true, true));
+    input.addEventListener('input', emitChange);
+    input.addEventListener('focus', () => setOpen(true, false));
+    input.addEventListener('blur', () => {
+      if (!getQuery()) setOpen(false, false);
+    });
+    input.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape') return;
+      if (getQuery()) setValue('', true);
+      setOpen(false, false);
+    });
+    clear?.addEventListener('click', () => {
+      setValue('', true);
+      setOpen(true, true);
+    });
+
+    container.dataset.searchInitialized = 'true';
+  }
+
+  function initAllSearch() {
+    document.querySelectorAll<HTMLElement>('[data-search-component]').forEach(initSearch);
+  }
+
+  document.addEventListener('astro:page-load', initAllSearch);
+</script>

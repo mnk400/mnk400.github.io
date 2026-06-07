@@ -1,0 +1,46 @@
+---
+import Post from '../../../layouts/Post.astro';
+import ImageGallery from '../../../components/ImageGallery.astro';
+import { moreLeafItems, type MoreItem } from '../../../lib/more.ts';
+
+export function getStaticPaths() {
+  const paintings = moreLeafItems.filter((item) => item.groupPath === 'archive/paintings' && item.ported);
+  return paintings.map((painting) => ({
+    params: { artist: painting.slug },
+    props: { painting },
+  }));
+}
+
+interface Props {
+  painting: MoreItem;
+}
+
+const { painting } = Astro.props;
+---
+<Post
+  title={painting.title}
+  description={painting.description}
+  image={painting.image}
+  entity={painting.entity}
+>
+  <p>A small browser archive of {painting.title} paintings. {painting.description}</p>
+
+  <ImageGallery
+    source={`https://manik.cc/pipelines/paintings/${painting.slug}/manifest.json`}
+    galleryName={painting.slug}
+    loadingText="Loading paintings..."
+    summary
+    controls
+    sortOptions={['year-desc', 'year-asc', 'popularity-desc']}
+    defaultSort="popularity-desc"
+    filterOptions={['decade', 'meta:Series']}
+    captionMeta={['year', 'meta:Series']}
+    zoomMeta={['year', 'meta:Collection']}
+    search={{
+      id: `${painting.slug}-search`,
+      label: 'Search',
+      placeholder: 'search paintings',
+      class: 'site-search--small image-gallery__search',
+    }}
+  />
+</Post>

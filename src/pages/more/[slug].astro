@@ -1,0 +1,20 @@
+---
+import { getPortedMoreRedirects } from '../../lib/more.ts';
+
+export function getStaticPaths() {
+  return getPortedMoreRedirects()
+    .filter((redirect) => /^\/more\/[^/]+\/?$/.test(redirect.from))
+    .map((redirect) => ({
+      params: { slug: redirect.from.replace(/^\/more\//, '').replace(/\/$/, '') },
+      props: { to: redirect.to },
+    }));
+}
+
+interface Props {
+  to: string;
+}
+
+const { to } = Astro.props;
+
+return Astro.redirect(to, 301);
+---

@@ -281,18 +281,44 @@ Deferred to Phase 7 (still): `transition:persist` decisions for the music widget
 - Kept `_layouts/post.html` as Bucket 2 reference — still consumed by many unported `_more/`, `art/`, `more/`, `photos/` pages. Delete when its last consumer migrates (Phase 5).
 - Patched migrated blog-only scripts that are now loaded by Astro routes to use `astro:page-load` with cleanup where they register global listeners.
 
-### Phase 3 — `/more/` and category routing (the high-value port)
+### Phase 3 — `/more/` and category routing ✅ done
 This is the one that justifies the migration. If this phase doesn't feel meaningfully better than Liquid, stop and reconsider scope.
 
-- Move `_data/categories.yml` → `src/data/categories.ts` (typed)
-- Define `more` metadata from `_more/**/*.html` front matter. These files are still Liquid/Jekyll HTML, so Phase 3 should parse front matter/paths as data, not try to render the body as Astro content.
-- Port `more/index.html` → `src/pages/more/index.astro`. Replace `assign | push | sort` with `Map.groupBy`.
-- Port `_more/archive/paintings/index.html` → `src/pages/archive/paintings/index.astro` using `getCollection('more')` filter
-- Update Header.astro's breadcrumb logic to use the typed categories module
-- Update StructuredData.astro's BreadcrumbList logic the same way
-- Delete `more/index.html` and the archive hub markup after their Astro replacements land. Keep `_includes/header.html` until the last legacy Jekyll reference page/layout that includes it is gone.
+New shape:
 
-**Done criteria:** `/more/`, `/archive/paintings/`, breadcrumbs all work; old Bucket 1 hub files deleted; `_includes/header.html` remains only if legacy reference pages still consume it.
+- `src/data/categories.ts` owns typed category display metadata for Astro. Keep `_data/categories.yml` until the legacy Jekyll consumers are gone.
+- `src/data/more-items.ts` is only an aggregator for Astro-owned `/more` metadata. Real data lives in family files like `src/data/more/paintings.ts` and `src/data/more/things.ts`; one-off pages can use a small misc family until they grow.
+- `src/lib/more.ts` merges Astro-owned metadata with legacy `_more/**/*.html` front matter. Ported pages move their listing/routing metadata into the right `src/data/more/*.ts` family file; legacy front matter is parsed only for pages that have not moved yet.
+- `src/pages/more/index.astro` renders the index from typed metadata and small Astro components. It must not depend on Liquid includes or `site.more`.
+- Old `/more/<slug>` URLs are generated as redirects from the typed metadata's `redirect_from` values when `item.ported === true`.
+- Category hubs and families use dedicated Astro routes/components rather than generic `layout:` front matter. For repeated archive families, prefer dynamic routes like `src/pages/archive/paintings/[artist].astro` and `src/pages/archive/things/[thing].astro` plus typed gallery components over copied pages.
+
+What survives from Jekyll front matter:
+
+- SEO/card/listing metadata: `title`, `short_title`, `description`, `image`, `tags`, `order`, `years`, `works`, `entity`.
+- Routing compatibility: `redirect_from` until old links age out.
+- Product metadata: `kind`, `tagline`, `repo`, `branch`, `download`, `install`, `meta`, `features`, `hero_image`, `readme_images`.
+
+What should not become the Astro API:
+
+- `layout:` and `permalink:`. Astro file paths and explicit layout imports replace them.
+- `scripts:` / `styles:` / `headScripts:` as generic front matter. Those remain bridge-only for unported or transitional pages. New/ported pages import their Astro component, page-local module, or `src/lib/*.ts` directly.
+- Liquid includes/captures/`site.more`/`page.*`. Replace them with Astro components, slots, and typed helpers.
+- `disabled: true` as a broad visibility control. Existing values can be honored while parsing legacy metadata, but new data should use explicit `listed: false` or no generated route.
+
+Implementation slice:
+
+1. Lift `_data/categories.yml` → `src/data/categories.ts` (typed), without deleting the legacy YAML yet.
+2. Define `more` metadata from `src/data/more/*.ts` family files for ported pages, merged with `_more/**/*.html` front matter and paths for legacy-only pages.
+3. Port `more/index.html` → `src/pages/more/index.astro`. Replace `assign | push | sort` with helper functions / `Map`.
+4. While leaf pages are unported, render their index entries as pending text rather than live links to missing routes. Flip each entry to a link by moving its metadata into a `src/data/more/*.ts` family file and marking it ported by construction.
+5. Add the compatibility redirect route for old `/more/<slug>` URLs, but only emit redirects for `item.ported === true`.
+6. Port `_more/archive/paintings/index.html` → `src/pages/archive/paintings/index.astro`, and move the painting hub/items metadata into `src/data/more/paintings.ts`.
+7. Update Header.astro's breadcrumb logic to use the typed categories module.
+8. Update StructuredData.astro's BreadcrumbList logic the same way.
+9. Delete `more/index.html` and each ported `_more/**` source file after its Astro route/data replacement lands. Keep `_includes/header.html` until the last legacy Jekyll reference page/layout that includes it is gone.
+
+**Done criteria:** `/more/`, `/archive/paintings/`, `/archive/things/`, old `/more/<slug>` redirects, breadcrumbs all work; old Bucket 1 hub files and ported `_more/**` sources are deleted; `_includes/header.html` remains only if legacy reference pages still consume it.
 
 ### Phase 4 — Tools and games (volume work)
 - Each `_more/<cat>/<slug>.html` → `src/pages/<cat>/<slug>.astro`
@@ -300,12 +326,12 @@ This is the one that justifies the migration. If this phase doesn't feel meaning
 - Bucket 1: each game's JS file moves from `assets/js/games/` to a per-page co-located script or stays in `public/` if cleaner
 - **No structural rewrites**, but the lifecycle rule applies: if the original JS used `DOMContentLoaded`, change that single line to `astro:page-load` during the port. Game/tool internals stay untouched.
 
-**Done criteria:** every URL under `/games/`, `/cli-tools/`, `/fun-tools/`, `/image-tools/`, `/apps/`, `/music/`, `/archive/things/` works, including arriving via client-side navigation from another ported page.
+**Done criteria:** every URL under `/games/`, `/cli-tools/`, `/fun-tools/`, `/image-tools/`, `/apps/`, and `/music/` works, including arriving via client-side navigation from another ported page.
 
-### Phase 5 — Image gallery + archive pages
-- Port `_includes/image-gallery.html` → `src/components/ImageGallery.astro` with **typed props** (no more 18 data-attrs)
-- Refactor boundary in `assets/js/media/image-gallery.js`: instead of reading data-attrs, take a config object passed by the component init script. JS internals stay the same.
-- Port all painting pages (`_more/archive/paintings/*.html`). Consider a single `[artist].astro` dynamic route since they all share shape.
+### Phase 5 — Remaining image gallery + archive pages
+- Paintings moved into Phase 3 because they are the first high-value `/more/` family. Keep the same pattern for the remaining gallery/archive pages: typed Astro data, dedicated routes/components, then delete the matching Jekyll source.
+- Port any remaining `_includes/image-gallery.html` consumers to `src/components/ImageGallery.astro` with **typed props** (no more 18 data-attrs).
+- Refactor any remaining `assets/js/media/image-gallery.js` consumers toward `src/lib/image-gallery.ts`; new Astro consumers should not read DOM-level data attributes.
 - Port `/photos/` page
 - Delete `_includes/image-gallery.html`
 

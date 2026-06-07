@@ -1,0 +1,92 @@
+---
+import SearchPill from './SearchPill.astro';
+import type { ImageGalleryConfig } from '../lib/image-gallery.ts';
+
+interface Props extends ImageGalleryConfig {
+  description?: string;
+  summary?: boolean;
+  search?: {
+    id: string;
+    label?: string;
+    placeholder?: string;
+    class?: string;
+  };
+}
+
+const {
+  description,
+  summary = false,
+  search,
+  loadingText = 'Loading images...',
+  ...config
+} = Astro.props;
+
+const galleryId = `image-gallery-${config.galleryName}`;
+const statusId = `image-gallery-status-${config.galleryName}`;
+const gridId = `image-gallery-grid-${config.galleryName}`;
+const galleryConfig: ImageGalleryConfig = { ...config, loadingText };
+---
+<div
+  class={`image-gallery image-gallery--${config.galleryName} reveal`}
+  id={galleryId}
+  data-image-gallery
+>
+  {description && (
+    <>
+      <p>{description}</p>
+      <br />
+    </>
+  )}
+
+  <div
+    class="image-gallery__status"
+    id={statusId}
+    data-gallery-status
+    hidden
+  >
+    <p>{loadingText}</p>
+  </div>
+
+  {summary && (
+    <div
+      class="image-gallery__summary reveal__stage reveal__stage--1"
+      data-gallery-summary
+      hidden
+    />
+  )}
+
+  {config.controls && (
+    <div
+      class="image-gallery__controls reveal__stage reveal__stage--2 stack stack--sm"
+      data-gallery-controls-root
+      hidden
+    />
+  )}
+
+  {search && (
+    <div class="reveal__stage reveal__stage--3">
+      <SearchPill
+        id={search.id}
+        label={search.label}
+        placeholder={search.placeholder}
+        target={`#${galleryId}`}
+        class={search.class}
+      />
+    </div>
+  )}
+
+  <div
+    class="album-container image-gallery__grid reveal__stage reveal__stage--4"
+    id={gridId}
+    data-gallery-grid
+  />
+
+  <script type="application/json" data-image-gallery-config set:html={JSON.stringify(galleryConfig)} />
+</div>
+
+<script>
+  import { initImageGalleries } from '../lib/image-gallery.ts';
+  import '../lib/image-zoom.ts';
+
+  document.addEventListener('astro:page-load', () => initImageGalleries());
+</script>

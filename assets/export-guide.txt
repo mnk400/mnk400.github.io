@@ -707,10 +707,10 @@ for 500ms to animate the background-color change.
 --- view-transitions.js ---
 Path: /assets/js/core/view-transitions.js
 
-Coordinates cross-document View Transition state for this site's header and
-breadcrumb elements. Uses pageswap/pagereveal to detect home/subpage navigation,
-fold breadcrumb child snapshots into the header snapshot when needed, and set
-html[data-vt-direction="back"] for reverse animations.
+Coordinates View Transition state for this site's header and breadcrumb
+elements. Legacy Jekyll pages use pageswap/pagereveal; Astro pages use
+ClientRouter hooks and render nested breadcrumbs from route/category metadata,
+with only the root breadcrumb separator participating in a named transition.
 
 The CSS keeps the document root participating as the stable background layer and
 sets the view-transition overlay background to --background-main, so transparent

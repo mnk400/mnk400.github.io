@@ -1,0 +1,56 @@
+---
+import Icon from './Icon.astro';
+
+interface DropdownOption {
+  value: string;
+  label: string;
+}
+
+interface Props {
+  id: string;
+  options: DropdownOption[];
+  defaultActive?: string;
+  ariaLabel?: string;
+  class?: string;
+}
+
+const { id, options, defaultActive, ariaLabel, class: extraClass } = Astro.props;
+const activeValue = defaultActive ?? options[0]?.value;
+const classes = ['selection-dropdown', extraClass].filter(Boolean).join(' ');
+---
+<div
+  class={classes}
+  id={id}
+  data-selection-dropdown
+  aria-label={ariaLabel}
+>
+  <button
+    class="selection-dropdown__trigger"
+    type="button"
+    aria-haspopup="listbox"
+    aria-expanded="false"
+  >
+    <span class="selection-dropdown__trigger-text"></span>
+    <Icon name="caret-down" class="selection-dropdown__chevron" />
+  </button>
+  <div class="selection-dropdown__menu collapsed" role="listbox">
+    {options.map((opt) => (
+      <button
+        type="button"
+        class:list={['selection-dropdown__option', { active: opt.value === activeValue }]}
+        role="option"
+        aria-selected={opt.value === activeValue ? 'true' : 'false'}
+        data-value={opt.value}
+      >
+        <span class="selection-dropdown__option-label">{opt.label}</span>
+        <Icon name="check" class="selection-dropdown__option-check" />
+      </button>
+    ))}
+  </div>
+</div>
+
+<script>
+  import { initSelectionControls } from '../lib/selection-controls.ts';
+
+  document.addEventListener('astro:page-load', () => initSelectionControls());
+</script>

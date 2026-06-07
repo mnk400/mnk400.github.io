@@ -5,6 +5,7 @@ import Header from '../components/Header.astro';
 import StructuredData from '../components/StructuredData.astro';
 import { themes, defaultTheme } from '../lib/theme.ts';
 import { fonts, defaultFont } from '../lib/font.ts';
+import { getBreadcrumbs } from '../lib/breadcrumbs.ts';
 import '../styles/main.scss';
 
 interface Props {
@@ -40,6 +41,7 @@ const {
 const pathname = Astro.url.pathname;
 const origin = Astro.site!.origin;
 const canonical = `${origin}${pathname}`;
+const breadcrumbs = getBreadcrumbs(pathname, pageTitle ?? title);
 
 const socialImagePath = image ?? '/assets/images/previews/site-preview.jpg';
 const socialImageUrl = socialImagePath.includes('://')
@@ -179,6 +181,7 @@ const ogTitle = title ? `${title} — Manik` : 'Manik';
       description={description}
       layout={layoutKind}
       entity={entity}
+      breadcrumbs={breadcrumbs}
     />
 
     {useMath && (
@@ -193,7 +196,7 @@ const ogTitle = title ? `${title} — Manik` : 'Manik';
   </head>
   <body>
     <div class="wrapper">
-      <Header pathname={pathname} pageTitle={pageTitle} />
+      <Header pathname={pathname} pageTitle={pageTitle} breadcrumbs={breadcrumbs} />
       <main class="page-content">
         <slot />
       </main>

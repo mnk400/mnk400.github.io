@@ -1,0 +1,61 @@
+---
+import Post from '../../../layouts/Post.astro';
+import Icon from '../../../components/Icon.astro';
+import { getMoreGroups } from '../../../lib/more.ts';
+
+const group = getMoreGroups().find((entry) => entry.path === 'archive/things');
+const hub = group?.hub;
+const things = group?.items ?? [];
+---
+<Post
+  title={hub?.title ?? 'Archive of Things'}
+  description={hub?.description}
+  image={hub?.image}
+>
+  <p>
+    A small browser for objects, gear, and physical things I like, each archive is searchable and image-led.
+  </p>
+
+  {things.length > 0 ? (
+    <div class="archive-index-grid reveal-card-group">
+      {things.map((thing, index) => {
+        const titleId = `thing-title-${index + 1}`;
+        const detailsId = `thing-details-${index + 1}`;
+        const isPorted = thing.ported;
+        const CardTag = isPorted ? 'a' : 'div';
+
+        return (
+          <CardTag
+            class:list={['archive-index-card', 'reveal-card', { 'archive-index-card--pending': !isPorted }]}
+            href={isPorted ? thing.url : undefined}
+            aria-labelledby={titleId}
+            aria-describedby={detailsId}
+          >
+            <span class="reveal-card__media">
+              {thing.image && (
+                <img src={thing.image} alt="" loading="lazy" decoding="async" />
+              )}
+              <span class="reveal-card__overlay" id={detailsId}>
+                {thing.description && (
+                  <span class="reveal-card__body">{thing.description}</span>
+                )}
+              </span>
+            </span>
+            <div class="archive-index-card__caption">
+              <div class="archive-index-card__heading">
+                <span class="archive-index-card__title" id={titleId}>{thing.title}</span>
+              </div>
+              {isPorted && (
+                <span class="archive-index-card__arrow" aria-hidden="true">
+                  <Icon name="arrow-up-right" />
+                </span>
+              )}
+            </div>
+          </CardTag>
+        );
+      })}
+    </div>
+  ) : (
+    <p>No thing archives are live yet.</p>
+  )}
+</Post>

@@ -1,14 +1,21 @@
 ---
 import SettingsPanel from './SettingsPanel.astro';
 import Icon from './Icon.astro';
+import type { BreadcrumbItem } from '../lib/breadcrumbs.ts';
 
 interface Props {
   pathname: string;
   pageTitle?: string;
+  breadcrumbs?: BreadcrumbItem[];
 }
 
-const { pathname, pageTitle } = Astro.props;
+const { pathname, pageTitle, breadcrumbs = [] } = Astro.props;
 const isHome = pathname === '/' || pathname === '/index.html';
+const displayBreadcrumbs = breadcrumbs.length > 0
+  ? breadcrumbs
+  : pageTitle
+    ? [{ label: pageTitle, href: pathname, current: true }]
+    : [];
 ---
 <header>
   <div class="title-photo-container" id="titlePhotoContainer">
@@ -52,8 +59,16 @@ const isHome = pathname === '/' || pathname === '/index.html';
             <Icon name="arrow-down-left" />
           </button>
           <a href="/" class="breadcrumb-home">Manik</a>
-          <span class="breadcrumb-sep">/</span>
-          <span class="breadcrumb-current">{pageTitle}</span>
+          {displayBreadcrumbs.map((item) => (
+            <>
+              <span class:list={['breadcrumb-sep', { 'breadcrumb-root-sep': item === displayBreadcrumbs[0] }]}>/</span>
+              {item.current ? (
+                <span class="breadcrumb-current">{item.label}</span>
+              ) : (
+                <a href={item.href} class="breadcrumb-mid">{item.label}</a>
+              )}
+            </>
+          ))}
         </nav>
       )}
     </div>

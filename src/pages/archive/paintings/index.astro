@@ -1,0 +1,74 @@
+---
+import Post from '../../../layouts/Post.astro';
+import ExpandableSection from '../../../components/ExpandableSection.astro';
+import Icon from '../../../components/Icon.astro';
+import { getMoreGroups } from '../../../lib/more.ts';
+
+const group = getMoreGroups().find((entry) => entry.path === 'archive/paintings');
+const hub = group?.hub;
+const paintings = group?.items ?? [];
+---
+<Post
+  title={hub?.title ?? 'Archive of Paintings'}
+  description={hub?.description}
+  image={hub?.image}
+>
+  <p>
+    A small browser for public-domain paintings and artwork from artists I like, each archive is searchable, sortable, and filterable.
+  </p>
+
+  <ExpandableSection id="archive-motivation" title="Why I built this">
+    <p>
+      All of this art is public domain, but most archives that host it are either wiki-style with rough navigation, museum pages with a limited set of artwork, or buried under ads.
+    </p>
+    <p>
+      These pages are an attempt at a cleaner alternative. Started with Monet because nothing like it seemed to exist for him, then grew to cover a handful of other artists I like.
+    </p>
+  </ExpandableSection>
+
+  <div class="archive-index-grid reveal-card-group">
+    {paintings.map((painting, index) => {
+      const titleId = `painting-title-${index + 1}`;
+      const detailsId = `painting-details-${index + 1}`;
+      const isPorted = painting.ported;
+      const CardTag = isPorted ? 'a' : 'div';
+
+      return (
+        <CardTag
+          class:list={['archive-index-card', 'reveal-card', { 'archive-index-card--pending': !isPorted }]}
+          href={isPorted ? painting.url : undefined}
+          aria-labelledby={titleId}
+          aria-describedby={detailsId}
+        >
+          <span class="reveal-card__media">
+            {painting.image && (
+              <img src={painting.image} alt="" loading="lazy" decoding="async" />
+            )}
+            <span class="reveal-card__overlay" id={detailsId}>
+              {painting.description && (
+                <span class="reveal-card__body">{painting.description}</span>
+              )}
+            </span>
+          </span>
+          <div class="archive-index-card__caption">
+            <div class="archive-index-card__heading">
+              <span class="archive-index-card__title" id={titleId}>{painting.title}</span>
+              {(painting.years || painting.works) && (
+                <span class="archive-index-card__sub">
+                  {painting.years && <>active {painting.years}</>}
+                  {painting.years && painting.works && <> · </>}
+                  {painting.works && <>{painting.works} works</>}
+                </span>
+              )}
+            </div>
+            {isPorted && (
+              <span class="archive-index-card__arrow" aria-hidden="true">
+                <Icon name="arrow-up-right" />
+              </span>
+            )}
+          </div>
+        </CardTag>
+      );
+    })}
+  </div>
+</Post>

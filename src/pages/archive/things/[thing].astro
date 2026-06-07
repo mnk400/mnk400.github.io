@@ -1,0 +1,44 @@
+---
+import Post from '../../../layouts/Post.astro';
+import ImageGallery from '../../../components/ImageGallery.astro';
+import { thingGalleryItems, type ThingGalleryItemData } from '../../../data/more/things.ts';
+
+export function getStaticPaths() {
+  return thingGalleryItems
+    .filter((thing) => thing.listed !== false)
+    .map((thing) => ({
+      params: { thing: thing.id.split('/').at(-1) },
+      props: { thing },
+    }));
+}
+
+interface Props {
+  thing: ThingGalleryItemData;
+}
+
+const { thing } = Astro.props;
+---
+<Post
+  title={thing.title}
+  description={thing.description}
+  image={thing.image}
+  entity={thing.entity}
+>
+  {thing.description && <p>{thing.description}</p>}
+
+  <ImageGallery
+    source={thing.source}
+    galleryName={thing.galleryName}
+    loadingText="Loading images..."
+    captionTitle={thing.gallery.captionTitle}
+    captionBody={thing.gallery.captionBody}
+    captionMeta={thing.gallery.captionMeta}
+    zoomMeta={thing.gallery.zoomMeta}
+    search={{
+      id: `${thing.galleryName}-search`,
+      label: 'Search',
+      placeholder: 'search images',
+      class: 'site-search--small image-gallery__search',
+    }}
+  />
+</Post>
