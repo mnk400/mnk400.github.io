@@ -1,6 +1,8 @@
 import { archiveMoreItems } from './more/archive.ts';
 import { appMoreItems } from './more/apps.ts';
 import { cliToolMoreItems } from './more/cli-tools.ts';
+import { funToolMoreItems } from './more/fun-tools.ts';
+import { gameMoreItems } from './more/games.ts';
 import { paintingMoreItems } from './more/paintings.ts';
 import { thingMoreItems } from './more/things.ts';
 
@@ -10,6 +12,8 @@ export const astroMoreItems = [
   ...appMoreItems,
   ...archiveMoreItems,
   ...cliToolMoreItems,
+  ...funToolMoreItems,
+  ...gameMoreItems,
   ...paintingMoreItems,
   ...thingMoreItems,
 ];
