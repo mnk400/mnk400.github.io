@@ -31,10 +31,10 @@ const readmes = defineCollection({
     load: async ({ store, renderMarkdown, parseData, logger }) => {
       store.clear();
       for (const product of readmeProducts) {
-        const md = await fetchReadmeMarkdown(product);
+        let md = await fetchReadmeMarkdown(product);
         if (!md) {
-          logger.warn(`README skipped for ${product.id}`);
-          continue;
+          logger.warn(`README fallback used for ${product.id}`);
+          md = `Could not load README. [View it on GitHub](https://github.com/${product.repo}).`;
         }
         store.set({
           id: product.id,

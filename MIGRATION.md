@@ -323,7 +323,7 @@ Recommended order:
    - Add `src/data/more/apps.ts` and `src/data/more/cli-tools.ts` with product/readme fields.
    - Add a typed `ProductPage.astro` component rather than a generic front-matter layout.
    - Lift only the product behaviors needed now: copy buttons, release metadata, README rendering. Keep them component/lib owned, not `ui-components.js` globals.
-   - Bundle `marked` from npm for README rendering instead of adding a new CDN/global script dependency.
+   - Fetch README markdown at build time through the `readmes` content collection, rewrite GitHub-relative links/images in `src/lib/load-readme.ts`, and render with Astro's normal markdown pipeline. No runtime markdown parser.
 2. **Simple games/tools:** port `random-wiki`, `tictactoe`, `minesweeper`, `gameoflife`, and `colordle`.
    - Preserve markup/behavior; convert lifecycle hooks to `astro:page-load`.
    - Prefer co-located scripts once touched, especially for games.
@@ -349,7 +349,7 @@ Recommended order:
 
 - Audit `assets/js/core/ui-components.js`: for each `init*` function, identify whether all Astro consumers have moved to lifted components. Delete code paths that no longer have any consumer (Astro or legacy reference page).
 - Audit `assets/js/core/theme-manager.js`, `font-manager.js`, `theme-config.js`, `url-params.js`: if no Astro page loads them, decide their long-term status (probably handed to Phase 8's design-system export pipeline).
-- Audit `assets/js/components/image-zoom.js`, `readme-renderer.js`, `release-meta.js`: same exercise. Product pages now use `src/lib/product-readme.ts` and `src/lib/product-release.ts`; the legacy files remain only for design-system export / unported reference pages until final cleanup.
+- Audit `assets/js/components/image-zoom.js`, `readme-renderer.js`, `release-meta.js`: same exercise. Product pages now use build-time README loading in `src/lib/load-readme.ts` plus `src/lib/product-release.ts`; the legacy files remain only for design-system export / unported reference pages until final cleanup.
 - Final sweep: any `<script>` in a template that wires a global gets one last review. None should remain.
 
 **Done criteria:** every line of `assets/js/core/` and `assets/js/components/` has a justified consumer (Astro page, legacy reference page, or design-system export), or is deleted. No `window.*` writes from any Astro `.astro` file.
@@ -424,7 +424,6 @@ A one-time audit, sorted by verdict so future-you doesn't re-litigate.
 | `astro-icon` (+ an Iconify set) | hand-managed `_includes/icons/*.svg` | 0.5 | Tree-shaken icons via a single wrapper component. Kills the "add a new icon = copy an SVG file" friction. The wrapper hides the icon set from callsites, so switching sets later is a one-file change. |
 | Astro `<Image>` | hand-written `<img>` tags for static images | 5 | AVIF/WebP, responsive srcsets, inferred dimensions, blurry placeholders. Add `media.manik.cc` to `image.domains` for R2-hosted manifest images. |
 | Shiki (built-in) | Rouge syntax highlighting | 2 | Free with Astro markdown. Better output than Rouge, no runtime JS. |
-| Bundled `marked` (npm) | `marked@15.0.7` from jsdelivr CDN | 4 | Removes a runtime network hop on product/readme pages; version pinning that survives CDN outages. |
 | `@astrojs/sitemap` | `jekyll-sitemap` | 9 | Already planned. |
 | `@astrojs/partytown` | inline GA `<script>` in head | 7+ optional | Offloads GA to a worker. Real Core Web Vitals win if Phase 7 doesn't already solve it. |
 | `@astrojs/check` | nothing | any | TS checking in CI. Drop-in. |
@@ -433,6 +432,7 @@ A one-time audit, sorted by verdict so future-you doesn't re-litigate.
 - **medium-zoom / PhotoSwipe** — replacing `image-zoom.js` loses gallery prev/next nav, captions, meta lines, and touch behavior. 508 lines of custom code earn their keep.
 - **`<details>/<summary>`** — replacing `ExpandableSection` loses the max-height animation.
 - **color-thief in `color-palette.js`** — possible Phase 4 swap if rewriting that tool feels right; not blocking, and may lose tool-specific behavior.
+- **marked** — README product pages render at build time through Astro's markdown pipeline, so we don't need a runtime parser or a bundled replacement for the old CDN script.
 - **Pagefind** — current "search" is client-side filter, not full-text corpus search. Only adopt if expanding scope to real search.
 - **KaTeX + remark-math** — adopt **only** when a post actually needs math. Currently no post sets `use_math:`.
 

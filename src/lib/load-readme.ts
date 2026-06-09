@@ -44,7 +44,9 @@ function rewrite(md: string, product: ProductItemData): string {
       const w = width && !/\bwidth\s*=/.test(existing) ? ` width="${width}"` : '';
       const h = height && !/\bheight\s*=/.test(existing) ? ` height="${height}"` : '';
       const zoom = /\bdata-zoomable\b/.test(existing) ? '' : ' data-zoomable';
-      return `<img ${before}src="${rawBase}/${cleaned}"${after}${zoom}${w}${h}>`;
+      const selfClosing = /\/\s*$/.test(after);
+      const afterAttrs = selfClosing ? after.replace(/\s*\/\s*$/, '') : after;
+      return `<img ${before}src="${rawBase}/${cleaned}"${afterAttrs}${zoom}${w}${h}${selfClosing ? ' />' : '>'}`;
     })
     .replace(MD_LINK_RE, (_match, prefix: string, text: string, path: string) => {
       const cleaned = path.replace(/^\.\//, '');
@@ -56,9 +58,15 @@ export async function fetchReadmeMarkdown(product: ProductItemData): Promise<str
   if (!product.repo) return null;
   const branch = product.branch ?? 'main';
   const url = `https://raw.githubusercontent.com/${product.repo}/${branch}/README.md`;
-  const res = await fetch(url);
+  let res: Response;
+  try {
+    res = await fetch(url);
+  } catch (error) {
+    console.warn(`[readme] ${product.id}: ${url} -> ${error instanceof Error ? error.message : String(error)}`);
+    return null;
+  }
   if (!res.ok) {
-    console.warn(`[readme] ${product.id}: ${url} → ${res.status}`);
+    console.warn(`[readme] ${product.id}: ${url} -> ${res.status}`);
     return null;
   }
   return rewrite(await res.text(), product);
