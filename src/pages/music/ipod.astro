@@ -1,0 +1,395 @@
+---
+import Post from '../../layouts/Post.astro';
+import ExpandableSection from '../../components/ExpandableSection.astro';
+import Icon from '../../components/Icon.astro';
+---
+<Post
+  title="iPod"
+  description="Listen to my playlist on an iPod."
+  image="/assets/images/previews/ipod.png"
+>
+  <ExpandableSection id="ipod-explanation" title="<b>Learn more</b>">
+    <div class="ipod-explanation">
+      <h3>iPod Playlist</h3>
+      <p>
+        This interactive iPod is built using HTML, CSS, and JS to play some of
+        my favorite songs. It's designed to mimic the very first iPod classic.
+      </p>
+      <p>
+        To interact, use the buttons on the iPod as you would on a real iPod.
+        You can also use the keyboard: 'Up' and 'Down' arrows for navigation,
+        'Enter' to select or exit, and 'Space' for play/pause.
+      </p>
+      <p>The music is streamed from YouTube.</p>
+    </div>
+  </ExpandableSection>
+
+  <div class="ipod-container">
+    <div class="ipod-device small">
+      <div class="ipod-screen">
+        <div class="ipod-title-bar">
+          <div class="ipod-title">1/12</div>
+          <div class="ipod-play-pause-icon">
+            <Icon name="play" weight="fill" />
+          </div>
+          <div class="ipod-battery small"></div>
+        </div>
+        <div class="ipod-menu-options"></div>
+        <div id="now-playing" style="display: none">
+          <div class="song-title"></div>
+          <div class="artist-name"></div>
+          <div class="album-info"></div>
+          <div class="progress-container">
+            <div id="progress-bar"></div>
+          </div>
+          <div id="time-display">0:00 / 0:00</div>
+          <div class="ipod-press-play-message">Press Play</div>
+        </div>
+      </div>
+      <div class="ipod-outer-ring">
+        <svg viewBox="-150 5 350 350">
+          <path id="curve" d="m0,30 c16,-4 32,-4 48,0" />
+          <text class="ipod-menu-text">
+            <textPath xlink:href="#curve">menu</textPath>
+          </text>
+        </svg>
+        <div class="ipod-skip prev"></div>
+        <div class="ipod-skip next"></div>
+        <div class="ipod-play-pause"></div>
+        <div class="ipod-touch-wheel">
+          <div class="ipod-center-button"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Post>
+
+<script>
+  const PLAY_ICON_SVG = '<svg class="icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M240,128a15.74,15.74,0,0,1-7.6,13.51L88.32,229.65a16,16,0,0,1-16.2.3A15.86,15.86,0,0,1,64,216.13V39.87a15.86,15.86,0,0,1,8.12-13.82,16,16,0,0,1,16.2.3L232.4,114.49A15.74,15.74,0,0,1,240,128Z"/></svg>';
+  const PAUSE_ICON_SVG = '<svg class="icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M216,48V208a16,16,0,0,1-16,16H160a16,16,0,0,1-16-16V48a16,16,0,0,1,16-16h40A16,16,0,0,1,216,48ZM96,32H56A16,16,0,0,0,40,48V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V48A16,16,0,0,0,96,32Z"/></svg>';
+
+  interface Song { artist: string; album: string; year: string; id: string }
+
+  // Minimal subset of the YouTube Iframe API we rely on.
+  interface YTPlayerEvent { data: number; target: YTPlayer }
+  interface YTPlayer {
+    playVideo(): void;
+    pauseVideo(): void;
+    stopVideo(): void;
+    destroy(): void;
+    getCurrentTime(): number;
+    getDuration(): number;
+    getPlayerState(): number;
+  }
+  interface YTApi {
+    Player: new (id: string, opts: unknown) => YTPlayer;
+    PlayerState: { PLAYING: number; PAUSED: number; ENDED: number };
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const YT = () => (window as any).YT as YTApi;
+
+  function initIpod() {
+    const nextButton = document.querySelector<HTMLElement>('.ipod-skip.next');
+    const prevButton = document.querySelector<HTMLElement>('.ipod-skip.prev');
+    const centerButton = document.querySelector<HTMLElement>('.ipod-center-button');
+    const playPauseButton = document.querySelector<HTMLElement>('.ipod-play-pause');
+    const menuContainer = document.querySelector<HTMLElement>('.ipod-menu-options');
+    const nowPlayingContainer = document.getElementById('now-playing');
+    const titleElement = document.querySelector<HTMLElement>('.ipod-title-bar .ipod-title');
+
+    if (!nextButton || !prevButton || !centerButton || !playPauseButton ||
+      !menuContainer || !nowPlayingContainer || !titleElement) return;
+
+    let songs: Record<string, Song> = {};
+    let menuOptions: NodeListOf<HTMLElement> = menuContainer.querySelectorAll('.ipod-option');
+    let currentIndex = 0;
+    let allSongs: string[] = [];
+    let visibleStartIndex = 0;
+    const songsPerPage = 6;
+    let isPlaying = false;
+    let player: YTPlayer | null = null;
+    let currentSong: string | null = null;
+    let progressTimer: number | null = null;
+    let alive = true;
+
+    fetch('/assets/data/songs.json')
+      .then((r) => r.json())
+      .then((data: Record<string, Song>) => {
+        if (!alive) return;
+        songs = data;
+        populateMenuOptions(songs);
+      })
+      .catch((error) => console.error('Error loading songs data:', error));
+
+    function populateMenuOptions(songsData: Record<string, Song>) {
+      menuContainer!.innerHTML = '';
+      allSongs = Object.keys(songsData);
+      updateVisibleSongs();
+      if (menuOptions.length > 0) {
+        menuOptions[0].classList.add('selected');
+        currentIndex = 0;
+      }
+    }
+
+    function updateVisibleSongs() {
+      menuContainer!.innerHTML = '';
+      const endIndex = Math.min(visibleStartIndex + songsPerPage, allSongs.length);
+      for (let i = visibleStartIndex; i < endIndex; i++) {
+        const songName = allSongs[i];
+        const option = document.createElement('div');
+        option.className = 'ipod-option';
+        option.textContent = songName;
+        option.dataset.index = String(i);
+        menuContainer!.appendChild(option);
+      }
+      menuOptions = document.querySelectorAll('.ipod-menu-options .ipod-option');
+    }
+
+    function updateSelection(newIndex: number | null) {
+      menuOptions.forEach((option) => option.classList.remove('selected'));
+
+      let globalIndex: number;
+      if (typeof newIndex === 'number') {
+        globalIndex = visibleStartIndex + newIndex;
+        if (globalIndex < 0) globalIndex = allSongs.length - 1;
+        if (globalIndex >= allSongs.length) globalIndex = 0;
+
+        if (globalIndex < visibleStartIndex) {
+          visibleStartIndex = Math.max(0, globalIndex - (songsPerPage - 1));
+          updateVisibleSongs();
+          currentIndex = globalIndex - visibleStartIndex;
+        } else if (globalIndex >= visibleStartIndex + songsPerPage) {
+          visibleStartIndex = Math.min(allSongs.length - songsPerPage, globalIndex);
+          updateVisibleSongs();
+          currentIndex = globalIndex - visibleStartIndex;
+        } else {
+          currentIndex = globalIndex - visibleStartIndex;
+        }
+      } else {
+        if (currentIndex < 0) currentIndex = menuOptions.length - 1;
+        if (currentIndex >= menuOptions.length) currentIndex = 0;
+        globalIndex = visibleStartIndex + currentIndex;
+      }
+
+      if (menuOptions[currentIndex]) menuOptions[currentIndex].classList.add('selected');
+      if (allSongs.length > 0) titleElement!.textContent = `${globalIndex + 1}/${allSongs.length}`;
+    }
+
+    function createNowPlayingScreen(songName: string) {
+      menuContainer!.style.display = 'none';
+      const song = songs[songName];
+      currentSong = songName;
+
+      const currentSongIndex = allSongs.indexOf(songName);
+      if (currentSongIndex !== -1 && allSongs.length > 0) {
+        titleElement!.textContent = `${currentSongIndex + 1}/${allSongs.length}`;
+      }
+
+      (nowPlayingContainer!.querySelector('.song-title') as HTMLElement).textContent = songName;
+      (nowPlayingContainer!.querySelector('.artist-name') as HTMLElement).textContent = song.artist;
+      (nowPlayingContainer!.querySelector('.album-info') as HTMLElement).textContent = `${song.album} (${song.year})`;
+
+      const progressBar = document.getElementById('progress-bar');
+      if (progressBar) progressBar.style.width = '0%';
+      const timeDisplay = document.getElementById('time-display');
+      if (timeDisplay) timeDisplay.textContent = '0:00 / 0:00';
+
+      nowPlayingContainer!.style.display = 'block';
+
+      if (!YT()) {
+        const tag = document.createElement('script');
+        tag.src = 'https://www.youtube.com/iframe_api';
+        document.head.appendChild(tag);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (window as any).onYouTubeIframeAPIReady = () => createPlayer(song.id);
+      } else {
+        createPlayer(song.id);
+      }
+      isPlaying = true;
+    }
+
+    function createPlayer(videoId: string) {
+      const playerContainer = document.createElement('div');
+      playerContainer.id = 'youtube-player';
+      document.body.appendChild(playerContainer);
+
+      const playerOptions = {
+        height: '1',
+        width: '1',
+        videoId,
+        playerVars: {
+          autoplay: 1, controls: 0, showinfo: 0, rel: 0,
+          iv_load_policy: 3, fs: 0, modestbranding: 1,
+          disablekb: 1, playsinline: 1,
+        },
+        events: {
+          onReady: onPlayerReady,
+          onStateChange: onPlayerStateChange,
+        },
+      };
+
+      player = new (YT().Player)('youtube-player', playerOptions);
+    }
+
+    function onPlayerReady(event: YTPlayerEvent) {
+      event.target.playVideo();
+      const msg = document.querySelector<HTMLElement>('.ipod-press-play-message');
+      if (msg) msg.style.display = 'block';
+      updatePlayPauseIcon(false);
+      isPlaying = true;
+      updatePlayPauseIcon(true);
+      scheduleProgress();
+    }
+
+    function playNextSong() {
+      const currentSongIndex = allSongs.indexOf(currentSong || '');
+      const nextIndex = (currentSongIndex + 1) % allSongs.length;
+      const nextSongName = allSongs[nextIndex];
+
+      if (player) {
+        player.destroy();
+        player = null;
+        document.getElementById('youtube-player')?.remove();
+      }
+      createNowPlayingScreen(nextSongName);
+    }
+
+    function onPlayerStateChange(event: YTPlayerEvent) {
+      const states = YT().PlayerState;
+      const pressPlay = document.querySelector<HTMLElement>('.ipod-press-play-message');
+      if (event.data === states.PLAYING) {
+        isPlaying = true;
+        updatePlayPauseIcon(true);
+        if (pressPlay) pressPlay.style.display = 'none';
+      } else if (event.data === states.PAUSED) {
+        isPlaying = false;
+        updatePlayPauseIcon(false);
+        if (pressPlay) pressPlay.style.display = 'block';
+      } else if (event.data === states.ENDED) {
+        playNextSong();
+      }
+    }
+
+    function updatePlayPauseIcon(playing: boolean) {
+      const container = document.querySelector('.ipod-play-pause-icon');
+      if (container) container.innerHTML = playing ? PAUSE_ICON_SVG : PLAY_ICON_SVG;
+    }
+
+    function updateProgress() {
+      if (!alive) return;
+      if (player) {
+        const progressBar = document.getElementById('progress-bar');
+        const timeDisplay = document.getElementById('time-display');
+        if (progressBar && timeDisplay) {
+          const currentTime = player.getCurrentTime() || 0;
+          const duration = player.getDuration() || 0;
+          const progressPercent = (currentTime / duration) * 100;
+          progressBar.style.width = `${progressPercent}%`;
+          timeDisplay.textContent = `${formatTime(currentTime)} / ${formatTime(duration)}`;
+        }
+        if (nowPlayingContainer) {
+          const pressPlay = document.querySelector<HTMLElement>('.ipod-press-play-message');
+          if (pressPlay) {
+            pressPlay.style.display = player.getPlayerState() === YT().PlayerState.PLAYING
+              ? 'none' : 'block';
+          }
+        }
+      }
+      scheduleProgress();
+    }
+
+    function scheduleProgress() {
+      if (!alive) return;
+      progressTimer = window.setTimeout(updateProgress, 1000);
+    }
+
+    function formatTime(seconds: number) {
+      seconds = Math.floor(seconds);
+      const minutes = Math.floor(seconds / 60);
+      seconds = seconds % 60;
+      return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    }
+
+    function returnToMenu() {
+      if (player || isPlaying) {
+        if (player) {
+          player.stopVideo();
+          player.destroy();
+          player = null;
+        }
+        updatePlayPauseIcon(false);
+        if (nowPlayingContainer) {
+          const pressPlay = document.querySelector<HTMLElement>('.ipod-press-play-message');
+          if (pressPlay) pressPlay.style.display = 'none';
+          nowPlayingContainer.style.display = 'none';
+        }
+        menuContainer!.style.display = 'flex';
+        isPlaying = false;
+        currentSong = null;
+      }
+    }
+
+    nextButton.addEventListener('click', () => {
+      if (!isPlaying) updateSelection(currentIndex + 1);
+    });
+
+    prevButton.addEventListener('click', () => {
+      if (!isPlaying) updateSelection(currentIndex - 1);
+    });
+
+    centerButton.addEventListener('click', () => {
+      if (nowPlayingContainer.style.display === 'block') {
+        returnToMenu();
+      } else {
+        const selectedOption = menuOptions[currentIndex];
+        if (selectedOption?.textContent) createNowPlayingScreen(selectedOption.textContent);
+      }
+    });
+
+    playPauseButton.addEventListener('click', () => {
+      if (!player) return;
+      const states = YT().PlayerState;
+      const pressPlay = document.querySelector<HTMLElement>('.ipod-press-play-message');
+      const state = player.getPlayerState();
+      if (state === states.PLAYING) {
+        player.pauseVideo();
+        updatePlayPauseIcon(false);
+        if (pressPlay) pressPlay.style.display = 'block';
+      } else {
+        player.playVideo();
+        updatePlayPauseIcon(true);
+        if (pressPlay) pressPlay.style.display = 'none';
+      }
+    });
+
+    const menuTextEl = document.querySelector('textPath')?.parentElement;
+    const onMenuTextClick = () => {
+      if (nowPlayingContainer.style.display === 'block') returnToMenu();
+    };
+    menuTextEl?.addEventListener('click', onMenuTextClick);
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'ArrowDown') nextButton.click();
+      else if (event.key === 'ArrowUp') prevButton.click();
+      else if (event.key === 'Enter') centerButton.click();
+      else if (event.key === ' ') playPauseButton.click();
+    };
+    document.addEventListener('keydown', onKeyDown);
+
+    document.addEventListener('astro:before-swap', () => {
+      alive = false;
+      if (progressTimer !== null) clearTimeout(progressTimer);
+      document.removeEventListener('keydown', onKeyDown);
+      if (player) {
+        player.destroy();
+        player = null;
+        document.getElementById('youtube-player')?.remove();
+      }
+    }, { once: true });
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    if (!document.querySelector('.ipod-container')) return;
+    initIpod();
+  });
+</script>

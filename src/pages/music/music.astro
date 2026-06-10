@@ -1,0 +1,78 @@
+---
+import Post from '../../layouts/Post.astro';
+import MusicWidget from '../../components/MusicWidget.astro';
+import SelectionSwitch from '../../components/SelectionSwitch.astro';
+
+const viewOptions = [
+  { value: 'albums', label: 'Albums' },
+  { value: 'artists', label: 'Artists' },
+];
+
+const periodOptions = [
+  { value: '7day', label: 'Week' },
+  { value: '1month', label: 'Month' },
+  { value: '12month', label: 'Year' },
+  { value: 'overall', label: 'All Time' },
+];
+---
+<Post
+  title="Music"
+  description="Lists my top 9 albums on last.fm from past week."
+>
+  <div class="music-container stack">
+    <p>What music am I listening to, or what music have I listened to the most in the past?</p>
+
+    <div class="music-widget-section stack stack--sm">
+      <div class="music-widget-header">
+        <span class="pr" id="music-widget-label">Last listened to …</span>
+        <span class="music-widget-time-wrapper music-widget-time-wrapper--page">
+          <span class="music-widget-time-placeholder">…</span>
+          <span class="music-widget-time" id="music-widget-time"></span>
+        </span>
+      </div>
+      <MusicWidget external={true} />
+    </div>
+
+    <div class="view-controls stack stack--sm">
+      <h2>Top music from the past</h2>
+      <div class="field">
+        <SelectionSwitch
+          id="view-toggle"
+          options={viewOptions}
+          active="albums"
+          class="view-toggle"
+        />
+      </div>
+      <div class="field">
+        <SelectionSwitch
+          id="period-toggle"
+          options={periodOptions}
+          active="7day"
+          class="period-toggle"
+        />
+      </div>
+    </div>
+
+    <div id="album-grid" class="album-grid reveal-card-group"></div>
+  </div>
+
+  <template id="music-card-template">
+    <div class="album-item reveal-card">
+      <div class="reveal-card__media">
+        <img class="img-curved-edges" data-field="image">
+        <div class="reveal-card__overlay">
+          <div class="reveal-card__copy">
+            <p class="reveal-card__title" data-field="title"></p>
+            <p class="reveal-card__meta" data-field="subtitle"></p>
+          </div>
+          <span class="reveal-card__meta reveal-card__meta--bottom" data-field="playcount"></span>
+        </div>
+      </div>
+    </div>
+  </template>
+</Post>
+
+<script>
+  import { initMusicPage } from '../../lib/lastfm.ts';
+  document.addEventListener('astro:page-load', initMusicPage);
+</script>

@@ -34,3 +34,8 @@ const href = external ? 'https://www.last.fm/user/mnk_400' : '/music/music';
     <Icon name="link" class="music-widget-arrow" />
   </div>
 </a>
+
+<script>
+  import { initMusicWidget } from '../lib/lastfm.ts';
+  document.addEventListener('astro:page-load', initMusicWidget);
+</script>

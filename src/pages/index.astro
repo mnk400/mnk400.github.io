@@ -22,10 +22,7 @@ const posts = allPosts
   })
   .sort((a, b) => b.date.getTime() - a.date.getTime());
 ---
-<Default
-  description="Manik's personal website and blog"
-  scripts={['/assets/js/media/lastfm.js', '/assets/js/location-time.js']}
->
+<Default description="Manik's personal website and blog">
   <div class="home stack stack--md">
     <div class="home__intro stack stack--sm">
       <p>
@@ -82,3 +79,24 @@ const posts = allPosts
     <Footer />
   </div>
 </Default>
+
+<script>
+  function updateLocationTime() {
+    const el = document.getElementById('current-time-location');
+    if (!el) return;
+    const timeString = new Date().toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+      timeZone: 'America/Los_Angeles',
+    });
+    el.textContent = `${timeString} · Seattle, WA`;
+  }
+
+  let locationTimeInterval: number | null = null;
+  document.addEventListener('astro:page-load', () => {
+    updateLocationTime();
+    if (locationTimeInterval !== null) clearInterval(locationTimeInterval);
+    locationTimeInterval = window.setInterval(updateLocationTime, 60000);
+  });
+</script>
