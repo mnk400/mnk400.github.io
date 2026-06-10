@@ -31,7 +31,21 @@ const date =
   edit={post.data.edit}
   showDate
   useMath={post.data.useMath}
-  scripts={post.data.scripts}
 >
   <Content />
 </Post>
+
+<!-- Per-post JS modules. Conditional <script> blocks would still get hoisted
+     by Astro on every post page; a single wrapper with dynamic import() lets
+     Vite code-split each module into its own chunk that only loads on the
+     matching post. -->
+<script>
+  document.addEventListener('astro:page-load', () => {
+    const path = location.pathname;
+    if (path.includes('/math-art')) {
+      import('../../../../lib/posts/math-art.ts').then((m) => m.init());
+    } else if (path.includes('/listening-history')) {
+      import('../../../../lib/posts/listening-history.ts').then((m) => m.init());
+    }
+  });
+</script>

@@ -14,7 +14,6 @@ interface Props {
   image?: string;
   useMath?: boolean;
   headScripts?: string[];
-  scripts?: string[];
   styles?: string[];
   pageTitle?: string; // optional breadcrumb label override
   entity?: { type?: string; name?: string; same_as?: string[] };
@@ -28,7 +27,6 @@ const {
   image,
   useMath = false,
   headScripts = [],
-  scripts = [],
   styles = [],
   pageTitle,
   entity,
@@ -200,7 +198,6 @@ const ogTitle = title ? `${title} — Manik` : 'Manik';
         <slot />
       </main>
     </div>
-    {scripts.map(src => <script src={src} is:inline></script>)}
 
     <!-- Custom element registration + delegated click handler for the
          <zoomable-image> lightbox. Bundled module — runs once globally and

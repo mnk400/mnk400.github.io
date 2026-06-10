@@ -9,7 +9,6 @@ interface Props {
   edit?: Date | string;
   showDate?: boolean;
   useMath?: boolean;
-  scripts?: string[];
   styles?: string[];
   headScripts?: string[];
   entity?: { type?: string; name?: string; same_as?: string[] };
@@ -24,7 +23,6 @@ const {
   edit,
   showDate = false,
   useMath = false,
-  scripts,
   styles,
   headScripts,
   entity,
@@ -48,7 +46,6 @@ const showHeader = !!title || showDate;
   description={description}
   image={image}
   useMath={useMath}
-  scripts={scripts}
   styles={styles}
   headScripts={headScripts}
   entity={entity}
