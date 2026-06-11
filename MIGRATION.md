@@ -309,7 +309,7 @@ Implementation slice:
 
 **Done criteria:** `/more/`, `/archive/`, `/archive/paintings/`, `/archive/things/`, old `/more/<slug>` redirects, breadcrumbs all work; old Bucket 1 hub files and ported `_more/**` sources are deleted; `_includes/header.html` remains only if legacy reference pages still consume it.
 
-### Phase 4 — Tools and games (volume work)
+### Phase 4 — Tools and games (volume work) ✅ done
 - Each `_more/<cat>/<slug>.html` → `src/pages/<cat>/<slug>.astro`
 - Each port adds its typed `/more/` entry in the matching family file (`src/data/more/apps.ts`, `cli-tools.ts`, `games.ts`, etc.) and imports that family from `src/data/more-items.ts`.
 - Script references move from front matter `scripts: [...]` to explicit page-local `<script>` imports/tags in the `.astro` route. Do not add new `scripts:` prop consumers.
