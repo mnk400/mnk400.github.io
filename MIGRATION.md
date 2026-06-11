@@ -375,10 +375,17 @@ Recommended order:
 **Done criteria:** no sass deprecation warnings; design-system export still serves at `/style/export.css`.
 
 ### Phase 9 — SEO + OG image pipeline
+Split into 9A (sitemap + redirects) and 9B (OG image pipeline).
+
+#### Phase 9A — Sitemap + redirects ✅ done
+- Added `@astrojs/sitemap` integration in `astro.config.mjs`. Filter excludes `/more/<slug>/` redirect pages so Google only sees canonical URLs.
+- Replaced the static top-level `robots.txt` with `src/pages/robots.txt.ts`, which reads `Astro.site` so it round-trips through `SITE_URL` (current default `astro.manik.cc`; override at cutover via env).
+- Redirect emission already in place via `src/pages/more/[slug].astro` → `Astro.redirect(to, 301)`. Each output is an HTML page with `<meta http-equiv="refresh">`, `<link rel="canonical">`, and `<meta name="robots" content="noindex">`. Sanity-checked a few targets in `dist/more/<slug>/index.html`.
+
+#### Phase 9B — OG image pipeline
 - Port `scripts/generate_previews.rb` to Node. Options: `@vercel/og` (React/JSX), `satori` + `sharp`, or `@napi-rs/canvas`. Budget half a day.
-- Replace the Ruby generator step in the GH Actions workflow
-- `@astrojs/sitemap` integration (replaces `jekyll-sitemap`)
-- Validate all `redirect_from` → `redirects` mappings
+- Walk Astro routes (built pages + content collection entries), not Jekyll source paths.
+- Replace the Ruby generator step in the GH Actions workflow (only relevant at cutover — master still builds Jekyll until then).
 
 **Done criteria:** preview images generate at build time; sitemap correct; redirects round-trip.
 

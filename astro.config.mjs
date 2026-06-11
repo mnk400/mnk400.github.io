@@ -1,6 +1,7 @@
 import { defineConfig } from 'astro/config';
 import { fileURLToPath } from 'node:url';
 import icon from 'astro-icon';
+import sitemap from '@astrojs/sitemap';
 
 const sassLoadPaths = [
   fileURLToPath(new URL('./_sass', import.meta.url)),
@@ -8,7 +9,13 @@ const sassLoadPaths = [
 
 export default defineConfig({
   site: process.env.SITE_URL ?? 'https://astro.manik.cc',
-  integrations: [icon()],
+  integrations: [
+    icon(),
+    sitemap({
+      // /more/<slug>/ pages are 301 redirects to canonical URLs; keep /more/ itself.
+      filter: (page) => !/\/more\/[^/]+\/$/.test(page),
+    }),
+  ],
   markdown: {
     // Shiki emits both --shiki-light and --shiki-dark on each token so our
     // [data-theme] CSS can pick which one to render. See _sass/components/_code.scss.
