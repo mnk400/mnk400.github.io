@@ -9,7 +9,7 @@ const sassLoadPaths = [
 ];
 
 export default defineConfig({
-  site: process.env.SITE_URL ?? 'https://astro.manik.cc',
+  site: process.env.SITE_URL ?? 'https://fuckmanik.com',
   integrations: [
     icon(),
     sitemap({
