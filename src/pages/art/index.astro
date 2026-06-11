@@ -1,0 +1,18 @@
+---
+import Post from '../../layouts/Post.astro';
+import ImageGallery from '../../components/ImageGallery.astro';
+---
+<Post
+  title="Art"
+  description="Art I've made"
+>
+  <p>
+    Sometimes I make art too.
+  </p>
+
+  <ImageGallery
+    source="https://media.manik.cc/art/manifest.json"
+    galleryName="art"
+    showCaptions={false}
+  />
+</Post>

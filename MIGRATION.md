@@ -335,7 +335,7 @@ Recommended order:
 
 **Done criteria:** every URL under `/games/`, `/cli-tools/`, `/fun-tools/`, `/image-tools/`, `/apps/`, and `/music/` works, including arriving via client-side navigation from another ported page.
 
-### Phase 5 — Remaining image gallery + archive pages
+### Phase 5 — Remaining image gallery + archive pages ✅ done
 - Paintings moved into Phase 3 because they are the first high-value `/more/` family. Keep the same pattern for the remaining gallery/archive pages: typed Astro data, dedicated routes/components, then delete the matching Jekyll source.
 - Port any remaining `_includes/image-gallery.html` consumers to `src/components/ImageGallery.astro` with **typed props** (no more 18 data-attrs).
 - Refactor any remaining `assets/js/media/image-gallery.js` consumers toward `src/lib/image-gallery.ts`; new Astro consumers should not read DOM-level data attributes.
