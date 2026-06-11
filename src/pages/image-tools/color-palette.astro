@@ -1,0 +1,294 @@
+---
+import Post from '../../layouts/Post.astro';
+import ImageUpload from '../../components/ImageUpload.astro';
+---
+<Post
+  title="Color Palette Extractor"
+  description="Extract a color palette from any image"
+>
+  <p>Upload an image to extract its color palette.</p>
+  <p>
+    This tool uses K-means clustering to identify the dominant colors in your image.
+    All processing occurs locally in your browser - no images are uploaded to external servers.
+  </p>
+
+  <div class="palette-container stack">
+    <div class="stack">
+      <ImageUpload />
+
+      <div class="range-slider" data-range-slider>
+        <p class="range-value">Colors · <span id="colors-value">5</span></p>
+        <input type="range" id="colors-input" value="5" min="2" max="10" />
+      </div>
+
+      <div class="toolbar">
+        <button id="extract-btn" class="normal-btn">Extract Palette</button>
+      </div>
+    </div>
+
+    <div id="palette-output" class="palette-output"></div>
+
+    <div id="palette-actions" class="palette-actions" style="display: none;">
+      <button id="copy-all-btn" type="button" class="btn--text">copy all hex</button>
+    </div>
+
+    <template id="color-swatch-template">
+      <button class="color-swatch" type="button" data-color="" data-index="">
+        <span class="color-swatch__hex"></span>
+        <span class="color-swatch__feedback">Copied</span>
+      </button>
+    </template>
+  </div>
+</Post>
+
+<script>
+  import { copyText } from '../../lib/clipboard.ts';
+
+  interface Oklab { L: number; a: number; b: number; count?: number; originalRgb?: { r: number; g: number; b: number } }
+  interface RgbCount { r: number; g: number; b: number; count: number }
+
+  const rgbToHex = (r: number, g: number, b: number) =>
+    '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+
+  // Perceived luminance (Rec. 709): swatches above this get inverted text.
+  const isLight = (r: number, g: number, b: number) =>
+    0.2126 * r + 0.7152 * g + 0.0722 * b > 160;
+
+  // sRGB → Oklab (perceptually uniform). Done so k-means clusters by perceived
+  // similarity instead of raw RGB distance, which is wildly non-uniform.
+  function rgbToOklab(r: number, g: number, b: number): Oklab {
+    let rn = r / 255, gn = g / 255, bn = b / 255;
+    rn = rn > 0.04045 ? Math.pow((rn + 0.055) / 1.055, 2.4) : rn / 12.92;
+    gn = gn > 0.04045 ? Math.pow((gn + 0.055) / 1.055, 2.4) : gn / 12.92;
+    bn = bn > 0.04045 ? Math.pow((bn + 0.055) / 1.055, 2.4) : bn / 12.92;
+
+    const x = 0.4124 * rn + 0.3576 * gn + 0.1805 * bn;
+    const y = 0.2126 * rn + 0.7152 * gn + 0.0722 * bn;
+    const z = 0.0193 * rn + 0.1192 * gn + 0.9505 * bn;
+
+    const l = Math.cbrt(0.8189 * x + 0.3618 * y - 0.1288 * z);
+    const m = Math.cbrt(0.0329 * x + 0.9293 * y + 0.0361 * z);
+    const s = Math.cbrt(0.0482 * x + 0.2621 * y + 0.6671 * z);
+
+    return {
+      L: 0.2104 * l + 0.7936 * m - 0.0040 * s,
+      a: 1.9779 * l - 2.4285 * m + 0.4506 * s,
+      b: 0.0259 * l + 0.7827 * m - 0.8086 * s,
+    };
+  }
+
+  function oklabToRgb({ L, a, b: bVal }: Oklab) {
+    const l = L + 0.3963377774 * a + 0.2158037573 * bVal;
+    const m = L - 0.1055613458 * a - 0.0638541728 * bVal;
+    const s = L - 0.0894841775 * a - 1.2914855480 * bVal;
+    const l_ = l * l * l, m_ = m * m * m, s_ = s * s * s;
+
+    const x = 1.2270138511 * l_ - 0.5577999807 * m_ + 0.2812561490 * s_;
+    const y = -0.0405801784 * l_ + 1.1122568696 * m_ - 0.0716766787 * s_;
+    const z = -0.0763812845 * l_ - 0.4214819784 * m_ + 1.5861632204 * s_;
+
+    let r = 3.2404542 * x - 1.5371385 * y - 0.4985314 * z;
+    let g = -0.9692660 * x + 1.8760108 * y + 0.0415560 * z;
+    let bL = 0.0556434 * x - 0.2040259 * y + 1.0572252 * z;
+
+    r = r <= 0.0031308 ? 12.92 * r : 1.055 * Math.pow(r, 1 / 2.4) - 0.055;
+    g = g <= 0.0031308 ? 12.92 * g : 1.055 * Math.pow(g, 1 / 2.4) - 0.055;
+    bL = bL <= 0.0031308 ? 12.92 * bL : 1.055 * Math.pow(bL, 1 / 2.4) - 0.055;
+
+    return {
+      r: Math.max(0, Math.min(255, Math.round(r * 255))),
+      g: Math.max(0, Math.min(255, Math.round(g * 255))),
+      b: Math.max(0, Math.min(255, Math.round(bL * 255))),
+    };
+  }
+
+  // Lightness-weighted Euclidean distance in Oklab — knob lets us prefer
+  // hue similarity over brightness similarity when grouping.
+  function oklabDistance(p1: Oklab, p2: Oklab, lw: number) {
+    const dl = (p1.L - p2.L) * lw;
+    const da = p1.a - p2.a;
+    const db = p1.b - p2.b;
+    return Math.sqrt(dl * dl + da * da + db * db);
+  }
+
+  // K-means++ init + Lloyd's algorithm. Returns centroids sorted by cluster
+  // size so the dominant colors come first.
+  function kMeans(pixels: Oklab[], k: number, maxIterations = 20, lw = 0.5): Oklab[] {
+    if (pixels.length <= k) return pixels;
+
+    const centroids: Oklab[] = [pixels[Math.floor(Math.random() * pixels.length)]];
+    for (let i = 1; i < k; i++) {
+      const distances = pixels.map((p) =>
+        Math.min(...centroids.map((c) => oklabDistance(p, c, lw))),
+      );
+      const distanceSum = distances.reduce((sum, d) => sum + d * d, 0);
+      let random = Math.random() * distanceSum;
+      let index = 0;
+      for (let j = 0; j < distances.length; j++) {
+        random -= distances[j] * distances[j];
+        if (random <= 0) { index = j; break; }
+      }
+      centroids.push(pixels[index]);
+    }
+
+    let changed = true;
+    let iterations = 0;
+    while (changed && iterations < maxIterations) {
+      const clusters: Oklab[][] = Array.from({ length: k }, () => []);
+
+      for (const pixel of pixels) {
+        let minDist = Infinity;
+        let clusterIndex = 0;
+        for (let i = 0; i < centroids.length; i++) {
+          const d = oklabDistance(pixel, centroids[i], lw);
+          if (d < minDist) { minDist = d; clusterIndex = i; }
+        }
+        clusters[clusterIndex].push(pixel);
+      }
+
+      changed = false;
+      for (let i = 0; i < k; i++) {
+        if (clusters[i].length === 0) continue;
+        let sumL = 0, sumA = 0, sumB = 0;
+        for (const p of clusters[i]) { sumL += p.L; sumA += p.a; sumB += p.b; }
+        const next: Oklab = {
+          L: sumL / clusters[i].length,
+          a: sumA / clusters[i].length,
+          b: sumB / clusters[i].length,
+          count: clusters[i].length,
+        };
+        if (oklabDistance(next, centroids[i], lw) > 0.001) changed = true;
+        centroids[i] = next;
+      }
+      iterations++;
+    }
+
+    return centroids.sort((a, b) => (b.count ?? 0) - (a.count ?? 0));
+  }
+
+  function extractPalette(image: HTMLImageElement, numColors: number): RgbCount[] {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d')!;
+    canvas.width = image.naturalWidth;
+    canvas.height = image.naturalHeight;
+    ctx.drawImage(image, 0, 0);
+
+    const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+
+    // Down-sample for performance — k-means on 4 MP is too slow on main thread.
+    const totalPixels = pixels.length / 4;
+    const samplingFactor = Math.min(1, Math.max(0.05, 10000 / totalPixels));
+    const samplingStep = Math.max(1, Math.floor(1 / samplingFactor));
+
+    const oklabPixels: Oklab[] = [];
+    const seen = new Set<string>();
+    for (let i = 0; i < pixels.length; i += 4 * samplingStep) {
+      const r = pixels[i], g = pixels[i + 1], b = pixels[i + 2], a = pixels[i + 3];
+      if (a < 128) continue;
+      const key = `${r},${g},${b}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      const oklab = rgbToOklab(r, g, b);
+      oklab.originalRgb = { r, g, b };
+      oklabPixels.push(oklab);
+    }
+
+    const palette = kMeans(oklabPixels, numColors, 30, 0.325);
+    return palette.map((c) => {
+      const rgb = oklabToRgb(c);
+      return { r: rgb.r, g: rgb.g, b: rgb.b, count: c.count ?? 0 };
+    });
+  }
+
+  function initColorPalette() {
+    const upload = document.querySelector<HTMLElement>('[data-image-upload]');
+    const preview = upload?.querySelector<HTMLImageElement>('.image-upload__preview');
+    const colorsInput = document.getElementById('colors-input') as HTMLInputElement | null;
+    const colorsValue = document.getElementById('colors-value');
+    const extractBtn = document.getElementById('extract-btn') as HTMLButtonElement | null;
+    const paletteOutput = document.getElementById('palette-output');
+    const paletteActions = document.getElementById('palette-actions');
+    const copyAllBtn = document.getElementById('copy-all-btn') as HTMLButtonElement | null;
+    const swatchTemplate = document.getElementById('color-swatch-template') as HTMLTemplateElement | null;
+
+    if (!upload || !preview || !colorsInput || !extractBtn || !paletteOutput || !paletteActions || !copyAllBtn || !swatchTemplate) return;
+    if (paletteOutput.dataset.colorPaletteInitialized === 'true') return;
+    paletteOutput.dataset.colorPaletteInitialized = 'true';
+
+    let current: RgbCount[] = [];
+
+    colorsInput.addEventListener('input', () => {
+      if (colorsValue) colorsValue.textContent = colorsInput.value;
+    });
+
+    upload.addEventListener('image-upload:change', () => {
+      paletteOutput!.innerHTML = '';
+      paletteActions!.style.display = 'none';
+      current = [];
+    });
+
+    function copySwatch(swatch: HTMLElement, hex: string) {
+      void copyText(hex).then(() => {
+        swatch.classList.add('copied');
+        const timer = window.setTimeout(() => swatch.classList.remove('copied'), 900);
+        // Replace any pending timer so rapid re-clicks don't end too early.
+        const prev = Number(swatch.dataset.copyTimer);
+        if (prev) clearTimeout(prev);
+        swatch.dataset.copyTimer = String(timer);
+      });
+    }
+
+    function displayPalette(colors: RgbCount[]) {
+      paletteOutput!.innerHTML = '';
+      current = colors;
+
+      if (colors.length === 0) {
+        paletteActions!.style.display = 'none';
+        paletteOutput!.innerHTML = '<p>No colors could be extracted from this image.</p>';
+        return;
+      }
+
+      paletteActions!.style.display = 'flex';
+
+      colors.forEach((color, index) => {
+        const { r, g, b } = color;
+        const hex = rgbToHex(r, g, b);
+        const fragment = swatchTemplate!.content.cloneNode(true) as DocumentFragment;
+        const swatch = fragment.querySelector<HTMLElement>('.color-swatch')!;
+        swatch.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+        swatch.dataset.color = hex;
+        swatch.dataset.index = String(index);
+        swatch.querySelector('.color-swatch__hex')!.textContent = hex;
+        if (isLight(r, g, b)) swatch.classList.add('color-swatch--light');
+        swatch.addEventListener('click', () => copySwatch(swatch, hex));
+        paletteOutput!.appendChild(swatch);
+      });
+    }
+
+    extractBtn.addEventListener('click', () => {
+      if (!preview!.src || preview!.src === window.location.href) {
+        alert('Please select an image first!');
+        return;
+      }
+      try {
+        const palette = extractPalette(preview!, parseInt(colorsInput!.value));
+        displayPalette(palette);
+      } catch (error) {
+        console.error('Error processing image:', error);
+        alert('Error processing image. This might be due to CORS restrictions if the image is from another domain.');
+      }
+    });
+
+    copyAllBtn.addEventListener('click', () => {
+      if (!current.length) return;
+      const text = current.map((c) => rgbToHex(c.r, c.g, c.b)).join('\n');
+      const original = copyAllBtn!.textContent;
+      void copyText(text).then(() => {
+        copyAllBtn!.textContent = 'Copied';
+        setTimeout(() => { copyAllBtn!.textContent = original; }, 1500);
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', initColorPalette);
+</script>

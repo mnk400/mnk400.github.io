@@ -1,0 +1,208 @@
+---
+import Post from '../../layouts/Post.astro';
+import SelectionSwitch from '../../components/SelectionSwitch.astro';
+import ImageUpload from '../../components/ImageUpload.astro';
+
+const paletteOptions = [
+  { value: 'classic', label: 'Classic' },
+  { value: 'blocks', label: 'Blocks' },
+  { value: 'minimal', label: 'Minimal' },
+];
+
+const ditherOptions = [
+  { value: 'none', label: 'Smooth' },
+  { value: 'ordered', label: 'Ordered' },
+  { value: 'floyd', label: 'Floyd' },
+];
+---
+<Post
+  title="ASCII Art Converter"
+  description="Convert an image into a simple ASCII art"
+>
+  <p>Convert an image to ASCII art.</p>
+
+  <div class="ascii-container stack">
+    <div class="stack">
+      <ImageUpload />
+
+      <div class="range-slider" data-range-slider>
+        <p class="range-value">Characters · <span id="width-value">80</span></p>
+        <input type="range" id="width-input" value="80" min="15" max="150" />
+      </div>
+
+      <div class="field">
+        <span class="field__label">palette</span>
+        <SelectionSwitch
+          id="ascii-palette-toggle"
+          options={paletteOptions}
+          active="classic"
+          size="small"
+        />
+      </div>
+
+      <div class="field">
+        <span class="field__label">dither</span>
+        <SelectionSwitch
+          id="ascii-dither-toggle"
+          options={ditherOptions}
+          active="none"
+          size="small"
+        />
+      </div>
+
+      <div class="toolbar">
+        <button id="convert-btn" class="normal-btn">Convert to ASCII</button>
+        <button id="copy-btn" class="normal-btn" style="display: none;">Copy Text</button>
+        <button id="download-btn" class="normal-btn" style="display: none;">Download PNG</button>
+      </div>
+    </div>
+
+    <pre id="ascii-output"></pre>
+  </div>
+</Post>
+
+<script>
+  import { copyText } from '../../lib/clipboard.ts';
+  import {
+    ASCII_PALETTES,
+    calculateHeight,
+    calculateOptimalFontSize,
+    convertToAscii,
+    type AsciiPalette,
+    type DitherMode,
+  } from '../../lib/ascii-utils.ts';
+
+  function initPhotoAscii() {
+    const upload = document.querySelector<HTMLElement>('[data-image-upload]');
+    const preview = upload?.querySelector<HTMLImageElement>('.image-upload__preview');
+    const widthInput = document.getElementById('width-input') as HTMLInputElement | null;
+    const widthValue = document.getElementById('width-value');
+    const convertBtn = document.getElementById('convert-btn') as HTMLButtonElement | null;
+    const asciiOutput = document.getElementById('ascii-output') as HTMLElement | null;
+    const copyBtn = document.getElementById('copy-btn') as HTMLButtonElement | null;
+    const downloadBtn = document.getElementById('download-btn') as HTMLButtonElement | null;
+    const paletteToggle = document.getElementById('ascii-palette-toggle');
+    const ditherToggle = document.getElementById('ascii-dither-toggle');
+
+    if (!upload || !preview || !widthInput || !convertBtn || !asciiOutput || !copyBtn || !downloadBtn) return;
+    if (asciiOutput.dataset.photoAsciiInitialized === 'true') return;
+    asciiOutput.dataset.photoAsciiInitialized = 'true';
+
+    let palette: AsciiPalette = 'classic';
+    let dither: DitherMode = 'none';
+
+    function setActionVisibility(visible: boolean) {
+      const display = visible ? 'inline-block' : 'none';
+      copyBtn!.style.display = display;
+      downloadBtn!.style.display = display;
+    }
+
+    widthInput.addEventListener('input', () => {
+      if (widthValue) widthValue.textContent = widthInput.value;
+    });
+
+    function render(showMissingImageAlert: boolean) {
+      if (!preview!.src) {
+        if (showMissingImageAlert) alert('Please select an image first!');
+        return;
+      }
+
+      const width = parseInt(widthInput!.value);
+      const padLeft = parseFloat(getComputedStyle(asciiOutput!).paddingLeft);
+      const containerWidth = asciiOutput!.clientWidth - padLeft * 2;
+      const fontSize = calculateOptimalFontSize(containerWidth, width, asciiOutput!);
+
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d')!;
+      const height = calculateHeight(width, preview!.naturalWidth, preview!.naturalHeight);
+      canvas.width = width;
+      canvas.height = height;
+      ctx.drawImage(preview!, 0, 0, width, height);
+      const imageData = ctx.getImageData(0, 0, width, height);
+      const ascii = convertToAscii(imageData, width, height, {
+        characters: ASCII_PALETTES[palette],
+        dither,
+      });
+
+      asciiOutput!.style.fontSize = `${fontSize}px`;
+      asciiOutput!.style.width = '100%';
+      asciiOutput!.style.maxWidth = '525px';
+      asciiOutput!.textContent = ascii;
+      setActionVisibility(true);
+    }
+
+    upload.addEventListener('image-upload:change', () => {
+      asciiOutput!.textContent = '';
+      setActionVisibility(false);
+    });
+
+    convertBtn.addEventListener('click', () => render(true));
+
+    paletteToggle?.addEventListener('change', (e) => {
+      palette = (e as CustomEvent<{ value: string }>).detail.value as AsciiPalette;
+      if (asciiOutput!.textContent) render(false);
+    });
+
+    ditherToggle?.addEventListener('change', (e) => {
+      dither = (e as CustomEvent<{ value: string }>).detail.value as DitherMode;
+      if (asciiOutput!.textContent) render(false);
+    });
+
+    copyBtn.addEventListener('click', () => {
+      const text = asciiOutput!.textContent;
+      if (!text) return;
+      const original = copyBtn!.textContent;
+      void copyText(text).then(() => {
+        copyBtn!.textContent = 'Copied';
+        setTimeout(() => { copyBtn!.textContent = original; }, 1500);
+      });
+    });
+
+    downloadBtn.addEventListener('click', () => {
+      const text = asciiOutput!.textContent;
+      if (!text) {
+        alert('Please convert an image to ASCII first!');
+        return;
+      }
+
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d')!;
+      const fontSize = 12;
+      const fontFamily = 'Courier New, monospace';
+      ctx.font = `${fontSize}px ${fontFamily}`;
+
+      const lines = text.split('\n');
+      const maxLineLength = Math.max(...lines.map((line) => line.length));
+      const lineHeight = fontSize * 1.2;
+      const border = 20;
+      canvas.width = maxLineLength * fontSize * 0.6 + border * 2;
+      canvas.height = lines.length * lineHeight + border * 2;
+
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = 'black';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
+      ctx.fillStyle = 'black';
+      ctx.font = `${fontSize}px ${fontFamily}`;
+      ctx.textBaseline = 'top';
+      lines.forEach((line, i) => {
+        ctx.fillText(line, border, border + i * lineHeight);
+      });
+
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'ascii-art.png';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', initPhotoAscii);
+</script>

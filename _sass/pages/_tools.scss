@@ -129,6 +129,34 @@
         &:empty {
             aspect-ratio: 4 / 3;
         }
+
+        // Camera tool fills the viewport on fullscreen. Replaces the
+        // imperative style mutation the legacy tools used to do in JS.
+        &.is-fullscreen {
+            background-color: #000;
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+
+    #canvas-output.is-fullscreen {
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+    }
+
+    // Hide the fullscreen toggle on small screens — fullscreen API
+    // is unreliable on mobile and the button just clutters the toolbar.
+    #fullscreen-btn {
+        @media (max-width: 768px) {
+            display: none;
+        }
     }
 }
 

@@ -1,0 +1,58 @@
+---
+interface Props {
+  id?: string;
+  label?: string;
+  accept?: string;
+  class?: string;
+}
+
+const {
+  id = 'image-upload',
+  label = 'Select Image',
+  accept = 'image/*',
+  class: extraClass,
+} = Astro.props;
+
+const wrapperClass = ['image-upload', extraClass].filter(Boolean).join(' ');
+---
+<div id={id} class={wrapperClass} data-image-upload>
+  <button class="image-upload__selector" type="button">
+    <span>{label}</span>
+  </button>
+  <input class="image-upload__input" type="file" accept={accept} />
+  <img class="image-upload__preview" alt="" />
+</div>
+
+<script>
+  function initImageUpload(container: HTMLElement) {
+    if (container.dataset.imageUploadInitialized === 'true') return;
+    const selector = container.querySelector<HTMLButtonElement>('.image-upload__selector');
+    const input = container.querySelector<HTMLInputElement>('.image-upload__input');
+    const preview = container.querySelector<HTMLImageElement>('.image-upload__preview');
+    if (!selector || !input || !preview) return;
+
+    selector.addEventListener('click', () => input.click());
+
+    input.addEventListener('change', () => {
+      const file = input.files && input.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const dataUrl = event.target?.result as string;
+        preview.src = dataUrl;
+        preview.alt = file.name ?? '';
+        container.classList.add('image-upload--has-preview');
+        const detail = { file, dataUrl, image: preview };
+        container.dispatchEvent(new CustomEvent('image-upload:change', { detail }));
+        container.dispatchEvent(new CustomEvent('change', { detail }));
+      };
+      reader.readAsDataURL(file);
+    });
+
+    container.dataset.imageUploadInitialized = 'true';
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll<HTMLElement>('[data-image-upload]').forEach(initImageUpload);
+  });
+</script>

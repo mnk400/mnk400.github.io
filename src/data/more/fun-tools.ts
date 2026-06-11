@@ -16,4 +16,18 @@ export const funToolMoreItems: MoreItemData[] = [
     tags: ['archive', 'browser', 'history', 'wayback', 'tool'],
     redirectFrom: ['/more/historical-browser'],
   },
+  {
+    id: 'fun-tools/camera',
+    title: 'Live ASCII Camera',
+    description: 'Convert your camera feed into real-time ASCII art.',
+    tags: ['art', 'camera', 'ascii', 'webcam', 'tool'],
+    redirectFrom: ['/more/camera'],
+  },
+  {
+    id: 'fun-tools/circles',
+    title: 'Circle Camera',
+    description: 'Convert your camera feed into real-time circle art.',
+    tags: ['art', 'camera', 'webcam', 'canvas', 'tool'],
+    redirectFrom: ['/more/circles'],
+  },
 ];

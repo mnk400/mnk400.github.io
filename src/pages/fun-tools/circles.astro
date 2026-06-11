@@ -1,0 +1,147 @@
+---
+import Post from '../../layouts/Post.astro';
+---
+<Post
+  title="Circle Camera"
+  description="Convert your camera feed into real-time circle art"
+>
+  <p>See yourself in real-time as circles.</p>
+
+  <div class="ascii-container stack">
+    <video id="video" style="display: none;"></video>
+
+    <div class="stack">
+      <div class="range-slider" data-range-slider>
+        <p class="range-value">Resolution · <span id="resolution-value">40</span></p>
+        <input type="range" id="resolution-input" value="40" min="10" max="100" />
+      </div>
+
+      <div class="toolbar">
+        <button id="start-btn" class="normal-btn">Start Camera</button>
+        <button id="fullscreen-btn" class="normal-btn">Fullscreen</button>
+      </div>
+    </div>
+
+    <div class="canvas-container">
+      <canvas id="canvas-output"></canvas>
+    </div>
+  </div>
+</Post>
+
+<script>
+  import { createCameraManager } from '../../lib/camera-manager.ts';
+
+  function initCircleCamera() {
+    const video = document.getElementById('video') as HTMLVideoElement | null;
+    const canvas = document.getElementById('canvas-output') as HTMLCanvasElement | null;
+    const resolutionInput = document.getElementById('resolution-input') as HTMLInputElement | null;
+    const resolutionValue = document.getElementById('resolution-value');
+    const startBtn = document.getElementById('start-btn') as HTMLButtonElement | null;
+    const fullscreenBtn = document.getElementById('fullscreen-btn') as HTMLButtonElement | null;
+
+    if (!video || !canvas || !resolutionInput || !startBtn || !fullscreenBtn) return;
+    if (canvas.dataset.circleCameraInitialized === 'true') return;
+    canvas.dataset.circleCameraInitialized = 'true';
+
+    const ctx = canvas.getContext('2d')!;
+    const tempCanvas = document.createElement('canvas');
+    const tempCtx = tempCanvas.getContext('2d')!;
+
+    function readCss(name: string) {
+      return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    }
+
+    let fillStyle = readCss('--contrast-overlay-hover');
+    const themeObserver = new MutationObserver(() => {
+      fillStyle = readCss('--contrast-overlay-hover');
+    });
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    });
+
+    function updateCanvasSize() {
+      const containerWidth = canvas!.parentElement!.clientWidth;
+      canvas!.width = containerWidth;
+      canvas!.height = containerWidth; // square aspect
+    }
+
+    resolutionInput.addEventListener('input', () => {
+      if (resolutionValue) resolutionValue.textContent = resolutionInput.value;
+    });
+
+    function renderFrame(video: HTMLVideoElement) {
+      const resolution = parseInt(resolutionInput!.value);
+      ctx.clearRect(0, 0, canvas!.width, canvas!.height);
+
+      const cellWidth = canvas!.width / resolution;
+      const cellHeight = canvas!.height / resolution;
+
+      tempCanvas.width = resolution;
+      tempCanvas.height = Math.floor(resolution * (canvas!.height / canvas!.width));
+
+      tempCtx.translate(tempCanvas.width, 0);
+      tempCtx.scale(-1, 1);
+      tempCtx.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
+      tempCtx.setTransform(1, 0, 0, 1, 0, 0);
+
+      const pixels = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height).data;
+      ctx.fillStyle = fillStyle;
+
+      for (let y = 0; y < tempCanvas.height; y++) {
+        for (let x = 0; x < tempCanvas.width; x++) {
+          const idx = (y * tempCanvas.width + x) * 4;
+          const brightness = (pixels[idx] + pixels[idx + 1] + pixels[idx + 2]) / 3;
+          if (brightness === 0) continue;
+
+          const maxRadius = Math.min(cellWidth, cellHeight) / 2;
+          const radius = (brightness / 255) * maxRadius;
+          const centerX = x * cellWidth + cellWidth / 2;
+          const centerY = y * cellHeight + cellHeight / 2;
+
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+    }
+
+    const camera = createCameraManager({
+      video,
+      startBtn,
+      fullscreenBtn,
+      fullscreenTarget: canvas,
+      render: renderFrame,
+      onStart() {
+        updateCanvasSize();
+        canvas!.style.backgroundColor = 'transparent';
+      },
+      onStop() {
+        ctx.clearRect(0, 0, canvas!.width, canvas!.height);
+        canvas!.style.backgroundColor = readCss('--translucent-medium');
+      },
+      onEnterFullscreen() {
+        canvas!.classList.add('is-fullscreen');
+      },
+      onExitFullscreen() {
+        canvas!.classList.remove('is-fullscreen');
+        updateCanvasSize();
+        resolutionInput!.value = '40';
+        if (resolutionValue) resolutionValue.textContent = '40';
+      },
+    });
+
+    function onResize() {
+      if (!camera.isFullscreen()) updateCanvasSize();
+    }
+    window.addEventListener('resize', onResize);
+
+    document.addEventListener('astro:before-swap', () => {
+      camera.stop();
+      themeObserver.disconnect();
+      window.removeEventListener('resize', onResize);
+    }, { once: true });
+  }
+
+  document.addEventListener('astro:page-load', initCircleCamera);
+</script>

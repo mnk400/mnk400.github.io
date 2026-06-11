@@ -1,0 +1,111 @@
+---
+import Post from '../../layouts/Post.astro';
+---
+<Post
+  title="Live ASCII Camera"
+  description="Convert your camera feed into real-time ASCII art"
+>
+  <p>See yourself live in ASCII art.</p>
+
+  <div class="ascii-container stack">
+    <video id="video" style="display: none;"></video>
+
+    <div class="stack">
+      <div class="range-slider" data-range-slider>
+        <p class="range-value">Characters · <span id="width-value">80</span></p>
+        <input type="range" id="width-input" value="80" min="15" max="150" />
+      </div>
+
+      <div class="toolbar">
+        <button id="start-btn" class="normal-btn">Start Camera</button>
+        <button id="fullscreen-btn" class="normal-btn">Fullscreen</button>
+      </div>
+    </div>
+
+    <pre id="ascii-output"></pre>
+  </div>
+</Post>
+
+<script>
+  import { createCameraManager } from '../../lib/camera-manager.ts';
+  import { calculateHeight, calculateOptimalFontSize, convertToAscii } from '../../lib/ascii-utils.ts';
+
+  function initAsciiCamera() {
+    const video = document.getElementById('video') as HTMLVideoElement | null;
+    const widthInput = document.getElementById('width-input') as HTMLInputElement | null;
+    const widthValue = document.getElementById('width-value');
+    const startBtn = document.getElementById('start-btn') as HTMLButtonElement | null;
+    const fullscreenBtn = document.getElementById('fullscreen-btn') as HTMLButtonElement | null;
+    const asciiOutput = document.getElementById('ascii-output') as HTMLElement | null;
+
+    if (!video || !widthInput || !startBtn || !fullscreenBtn || !asciiOutput) return;
+    if (asciiOutput.dataset.asciiCameraInitialized === 'true') return;
+    asciiOutput.dataset.asciiCameraInitialized = 'true';
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d')!;
+
+    widthInput.addEventListener('input', () => {
+      if (widthValue) widthValue.textContent = widthInput.value;
+    });
+
+    function renderFrame(video: HTMLVideoElement) {
+      let width = parseInt(widthInput!.value);
+      const padLeft = parseFloat(getComputedStyle(asciiOutput!).paddingLeft);
+      const containerWidth = asciiOutput!.clientWidth - padLeft * 2;
+      let fontSize = calculateOptimalFontSize(containerWidth, width, asciiOutput!);
+
+      if (camera.isFullscreen()) {
+        // Fill the viewport: pick a width estimate, derive font size,
+        // then back-compute width if rounding leaves vertical slack.
+        const charAspectRatio = 0.5;
+        width = Math.floor(window.innerWidth / 7);
+        fontSize = Math.floor(window.innerHeight / (width * charAspectRatio));
+        if (fontSize * width * charAspectRatio < window.innerHeight) {
+          width = Math.floor(window.innerHeight / (fontSize * charAspectRatio));
+        }
+      }
+
+      const height = calculateHeight(width, video.videoWidth, video.videoHeight);
+      canvas.width = width;
+      canvas.height = height;
+
+      // Mirror horizontally so the preview reads as a selfie.
+      ctx.scale(-1, 1);
+      ctx.translate(-width, 0);
+      ctx.drawImage(video, 0, 0, width, height);
+      const imageData = ctx.getImageData(0, 0, width, height);
+      const ascii = convertToAscii(imageData, width, height);
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+      asciiOutput!.style.fontSize = `${fontSize}px`;
+      asciiOutput!.style.width = '100%';
+      asciiOutput!.textContent = ascii;
+    }
+
+    const camera = createCameraManager({
+      video,
+      startBtn,
+      fullscreenBtn,
+      fullscreenTarget: asciiOutput,
+      render: renderFrame,
+      onStop() {
+        asciiOutput!.textContent = '';
+      },
+      onEnterFullscreen() {
+        asciiOutput!.classList.add('is-fullscreen');
+      },
+      onExitFullscreen() {
+        asciiOutput!.classList.remove('is-fullscreen');
+        widthInput!.value = '125';
+        if (widthValue) widthValue.textContent = '125';
+      },
+    });
+
+    document.addEventListener('astro:before-swap', () => {
+      camera.stop();
+    }, { once: true });
+  }
+
+  document.addEventListener('astro:page-load', initAsciiCamera);
+</script>
