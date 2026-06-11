@@ -28,4 +28,12 @@ export const gameMoreItems: MoreItemData[] = [
     tags: ['game', 'puzzle'],
     redirectFrom: ['/more/minesweeper'],
   },
+  {
+    id: 'games/flappybird',
+    title: 'Flappy Bird',
+    description: 'A minimal flappy-bird clone.',
+    image: '/assets/images/previews/flappy.jpg',
+    tags: ['game', 'arcade', 'canvas'],
+    redirectFrom: ['/more/flappybird'],
+  },
 ];

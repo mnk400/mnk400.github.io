@@ -1,0 +1,253 @@
+---
+import Post from '../../layouts/Post.astro';
+import Icon from '../../components/Icon.astro';
+---
+<Post
+  title="Historical Browser"
+  description="Browse the internet from the past"
+  image="/assets/images/previews/browser.png"
+>
+  <p>This is an interactive browser that lets you visit websites from a set date in the past. The source for the data is wayback-machine.</p>
+
+  <div class="historical-browser">
+    <div class="historical-browser-bar">
+      <div class="historical-browser-nav" aria-label="Page navigation">
+        <button id="browser-home" class="browser-control-button" type="button" aria-label="Home">
+          <Icon name="house" />
+        </button>
+        <div class="historical-browser-history">
+          <button id="browser-back" class="browser-control-button browser-control-button--segment" type="button" aria-label="Back">
+            <Icon name="arrow-left" />
+          </button>
+          <button id="browser-forward" class="browser-control-button browser-control-button--segment" type="button" aria-label="Forward">
+            <Icon name="arrow-right" />
+          </button>
+        </div>
+      </div>
+
+      <form id="historical-browser-form" class="historical-browser-search">
+        <label class="historical-browser-search__field" for="url-input">
+          <Icon name="globe" />
+          <input
+            type="text"
+            id="url-input"
+            inputmode="url"
+            autocomplete="url"
+            placeholder="apple.com"
+          />
+        </label>
+        <button
+          id="go-button"
+          class="historical-browser-go-btn"
+          type="submit"
+          aria-label="Open archived page"
+        >
+          <Icon name="arrow-right" />
+        </button>
+      </form>
+    </div>
+
+    <div id="year-timeline" class="historical-browser-timeline" aria-label="Snapshot year"></div>
+
+    <div class="historical-browser-content">
+      <div id="browser-empty-state" class="historical-browser-empty">
+        <Icon name="clock-counter-clockwise" />
+        <div class="historical-browser-starters" aria-label="Starter sites">
+          <button type="button" class="historical-browser-starter" data-url="apple.com">apple.com</button>
+          <button type="button" class="historical-browser-starter" data-url="google.com">google.com</button>
+          <button type="button" class="historical-browser-starter" data-url="nytimes.com">nytimes.com</button>
+        </div>
+      </div>
+      <div id="browser-loading-state" class="historical-browser-loading" hidden>
+        Fetching snapshot...
+      </div>
+      <iframe id="historical-content-viewer" src="about:blank"></iframe>
+    </div>
+  </div>
+</Post>
+
+<script>
+  import { createSelectionSwitch } from '../../lib/selection-controls.ts';
+
+  function initHistoricalBrowser() {
+    const browserForm = document.getElementById('historical-browser-form') as HTMLFormElement | null;
+    const urlInput = document.getElementById('url-input') as HTMLInputElement | null;
+    const iframe = document.getElementById('historical-content-viewer') as HTMLIFrameElement | null;
+    const goButton = document.getElementById('go-button');
+    const timelineSlot = document.getElementById('year-timeline');
+    const emptyState = document.getElementById('browser-empty-state');
+    const loadingState = document.getElementById('browser-loading-state');
+    const homeButton = document.getElementById('browser-home') as HTMLButtonElement | null;
+    const backButton = document.getElementById('browser-back') as HTMLButtonElement | null;
+    const forwardButton = document.getElementById('browser-forward') as HTMLButtonElement | null;
+    const starterButtons = document.querySelectorAll<HTMLButtonElement>('.historical-browser-starter');
+
+    if (!browserForm || !urlInput || !iframe || !goButton || !timelineSlot) return;
+    if (timelineSlot.dataset.histBrowserInitialized === 'true') return;
+    timelineSlot.dataset.histBrowserInitialized = 'true';
+
+    const defaultYear = 2007;
+    let selectedYear = defaultYear;
+    let yearSwitch: HTMLElement | null = null;
+    let history: { url: string; year: number; waybackUrl: string }[] = [];
+    let cursor = -1;
+    let loading = false;
+
+    function buildYearSwitch() {
+      const currentYear = new Date().getFullYear();
+      const options: { value: string; label: string }[] = [];
+      for (let year = currentYear; year >= 1998; year--) {
+        options.push({ value: String(year), label: String(year) });
+      }
+
+      const switchWrap = createSelectionSwitch({
+        id: 'year-switch',
+        options,
+        active: String(selectedYear),
+        size: 'small',
+        ariaLabel: 'Snapshot year',
+      });
+
+      timelineSlot!.replaceChildren(switchWrap);
+      yearSwitch = switchWrap.querySelector<HTMLElement>('.selection-switch') ?? switchWrap;
+
+      yearSwitch.addEventListener('change', (event) => {
+        const value = (event as CustomEvent<{ value: string }>).detail.value;
+        setSelectedYear(Number(value));
+        if (cursor >= 0 && urlInput!.value.trim()) {
+          loadUrl(urlInput!.value, selectedYear);
+        }
+      });
+
+      centerSelectedYear();
+    }
+
+    function normalizeUrl(url: string) {
+      const t = url.trim();
+      return t.startsWith('http://') || t.startsWith('https://') ? t : `http://${t}`;
+    }
+
+    function getReadableUrl(url: string) {
+      return url.replace(/^https?:\/\//, '');
+    }
+
+    function getWaybackUrl(url: string, year: number) {
+      return `https://web.archive.org/web/${year}0101000000/${url}`;
+    }
+
+    function setLoading(isLoading: boolean) {
+      loading = isLoading;
+      if (loadingState) loadingState.hidden = !isLoading;
+      if (emptyState) emptyState.hidden = isLoading || cursor >= 0;
+    }
+
+    function centerSelectedYear() {
+      if (!yearSwitch) return;
+      const active = yearSwitch.querySelector<HTMLElement>('.switch-option.active');
+      if (!active) return;
+      requestAnimationFrame(() => {
+        yearSwitch!.scrollLeft =
+          active.offsetLeft - (yearSwitch!.clientWidth - active.offsetWidth) / 2;
+      });
+    }
+
+    function setSelectedYear(year: number) {
+      selectedYear = Number(year);
+      if (!yearSwitch) return;
+      const options = yearSwitch.querySelectorAll<HTMLElement>('.switch-option');
+      options.forEach((opt) => {
+        opt.classList.toggle('active', opt.dataset.value === String(selectedYear));
+      });
+      centerSelectedYear();
+    }
+
+    function updateNavButtons() {
+      if (backButton) backButton.disabled = cursor <= 0;
+      if (forwardButton) forwardButton.disabled = cursor >= history.length - 1;
+    }
+
+    function showHistoryItem(item: { url: string; year: number; waybackUrl: string }) {
+      urlInput!.value = getReadableUrl(item.url);
+      setSelectedYear(item.year);
+      setLoading(true);
+      updateNavButtons();
+      iframe!.src = item.waybackUrl;
+    }
+
+    function loadUrl(rawUrl: string, year: number) {
+      if (!rawUrl.trim()) return;
+      const url = normalizeUrl(rawUrl);
+      const waybackUrl = getWaybackUrl(url, year);
+      if (cursor < history.length - 1) history = history.slice(0, cursor + 1);
+      history.push({ url, year, waybackUrl });
+      cursor = history.length - 1;
+      showHistoryItem(history[cursor]);
+    }
+
+    function updateUrlBarFromIframe() {
+      if (loading) setLoading(false);
+      try {
+        const current = iframe!.src;
+        if (current === 'about:blank') return;
+        const prefix = 'https://web.archive.org/web/';
+        if (current.startsWith(prefix)) {
+          const parts = current.substring(prefix.length).split('/');
+          if (parts.length > 1) urlInput!.value = getReadableUrl(parts.slice(1).join('/'));
+        } else {
+          urlInput!.value = getReadableUrl(current);
+        }
+      } catch (e) {
+        console.warn('Could not read iframe URL (cross-origin):', e);
+      }
+    }
+
+    browserForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      loadUrl(urlInput.value, selectedYear);
+    });
+
+    starterButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        urlInput.value = button.dataset.url || '';
+        loadUrl(urlInput.value, selectedYear);
+      });
+    });
+
+    homeButton?.addEventListener('click', () => {
+      iframe.src = 'about:blank';
+      urlInput.value = '';
+      history = [];
+      cursor = -1;
+      setSelectedYear(defaultYear);
+      setLoading(false);
+      updateNavButtons();
+    });
+
+    backButton?.addEventListener('click', () => {
+      if (cursor > 0) {
+        cursor--;
+        showHistoryItem(history[cursor]);
+      }
+    });
+
+    forwardButton?.addEventListener('click', () => {
+      if (cursor < history.length - 1) {
+        cursor++;
+        showHistoryItem(history[cursor]);
+      }
+    });
+
+    iframe.addEventListener('load', updateUrlBarFromIframe);
+    window.addEventListener('resize', centerSelectedYear);
+
+    document.addEventListener('astro:before-swap', () => {
+      window.removeEventListener('resize', centerSelectedYear);
+    }, { once: true });
+
+    buildYearSwitch();
+    updateNavButtons();
+    setLoading(false);
+  }
+
+  document.addEventListener('astro:page-load', initHistoricalBrowser);
+</script>

@@ -1,0 +1,362 @@
+---
+import Post from '../../layouts/Post.astro';
+import SelectionSwitch from '../../components/SelectionSwitch.astro';
+
+const orientationOptions = [
+  { value: 'landscape', label: 'Landscape (3840×2160)' },
+  { value: 'portrait', label: 'Portrait (2160×3840)' },
+  { value: 'square', label: 'Square (2160×2160)' },
+];
+
+const linearDirectionOptions = [
+  { value: '0', label: 'Top to Bottom' },
+  { value: '90', label: 'Left to Right' },
+  { value: '45', label: 'Diagonal (↘)' },
+  { value: '135', label: 'Diagonal (↗)' },
+  { value: '180', label: 'Bottom to Top' },
+  { value: '270', label: 'Right to Left' },
+  { value: '225', label: 'Diagonal (↖)' },
+  { value: '315', label: 'Diagonal (↙)' },
+];
+
+const typeOptions = [
+  { value: 'linear', label: 'Linear' },
+  { value: 'radial', label: 'Radial' },
+];
+---
+<Post
+  title="Gradient Generator"
+  description="Create gradient images with custom colors and orientations."
+>
+  <p>Create beautiful gradient images with custom colors and orientations.</p>
+
+  <div class="gradient-container stack">
+    <div class="stack">
+      <div class="cluster cluster--lg">
+        <div class="field">
+          <span class="field__label">start color</span>
+          <div class="field__control">
+            <input type="color" id="color1" value="#C6A58F" />
+            <input type="text" id="color1-text" value="#C6A58F" placeholder="#C6A58F" />
+          </div>
+        </div>
+
+        <div class="field">
+          <span class="field__label">end color</span>
+          <div class="field__control">
+            <input type="color" id="color2" value="#7C95AF" />
+            <input type="text" id="color2-text" value="#7C95AF" placeholder="#7C95AF" />
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="field__label">orientation</span>
+        <SelectionSwitch
+          id="orientation-toggle"
+          options={orientationOptions}
+          active="landscape"
+          size="small"
+          class="orientation-toggle"
+        />
+      </div>
+
+      <div class="field">
+        <span class="field__label">gradient direction</span>
+        <SelectionSwitch
+          id="direction-toggle"
+          options={linearDirectionOptions}
+          active="0"
+          size="small"
+          class="direction-toggle"
+        />
+      </div>
+
+      <div class="field">
+        <span class="field__label">gradient type</span>
+        <SelectionSwitch
+          id="type-toggle"
+          options={typeOptions}
+          active="linear"
+          size="small"
+          class="type-toggle"
+        />
+      </div>
+
+      <div class="field" id="smoothness-control" style="display: none;">
+        <div class="range-slider" data-range-slider>
+          <p class="range-value"><span id="smoothness-value">50</span></p>
+          <input type="range" id="smoothness-input" value="50" min="0" max="100" />
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <button id="download-btn" class="normal-btn">Download</button>
+      </div>
+    </div>
+
+    <div class="preview-container">
+      <div id="gradient-preview" class="gradient-preview"></div>
+      <canvas id="gradient-canvas" style="display: none;"></canvas>
+    </div>
+
+    <div id="generation-status" class="status-message" style="display: none;">
+      <p>Generating...</p>
+    </div>
+  </div>
+</Post>
+
+<script>
+  import { initSelectionSwitch } from '../../lib/selection-controls.ts';
+
+  type Orientation = 'landscape' | 'portrait' | 'square';
+  type GradientType = 'linear' | 'radial';
+
+  const HEX_RE = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/;
+
+  function hexToRgb(hex: string) {
+    const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return m
+      ? { r: parseInt(m[1], 16), g: parseInt(m[2], 16), b: parseInt(m[3], 16) }
+      : null;
+  }
+
+  function rgbToHex(r: number, g: number, b: number) {
+    return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+  }
+
+  function interpolate(c1: string, c2: string, ratio: number) {
+    const a = hexToRgb(c1)!;
+    const b = hexToRgb(c2)!;
+    return rgbToHex(
+      Math.round(a.r + (b.r - a.r) * ratio),
+      Math.round(a.g + (b.g - a.g) * ratio),
+      Math.round(a.b + (b.b - a.b) * ratio),
+    );
+  }
+
+  const linearDirections = [
+    { value: '0', label: 'Top to Bottom' },
+    { value: '90', label: 'Left to Right' },
+    { value: '45', label: 'Diagonal (↘)' },
+    { value: '135', label: 'Diagonal (↗)' },
+    { value: '180', label: 'Bottom to Top' },
+    { value: '270', label: 'Right to Left' },
+    { value: '225', label: 'Diagonal (↖)' },
+    { value: '315', label: 'Diagonal (↙)' },
+  ];
+
+  const radialDirections = [
+    { value: 'center', label: 'Center' },
+    { value: 'top', label: 'Top' },
+    { value: 'bottom', label: 'Bottom' },
+    { value: 'left', label: 'Left' },
+    { value: 'right', label: 'Right' },
+    { value: 'top-left', label: 'Top Left' },
+    { value: 'top-right', label: 'Top Right' },
+    { value: 'bottom-left', label: 'Bottom Left' },
+    { value: 'bottom-right', label: 'Bottom Right' },
+  ];
+
+  function initGradient() {
+    const container = document.querySelector<HTMLElement>('.gradient-container');
+    if (!container) return;
+    if (container.dataset.gradientInitialized === 'true') return;
+    container.dataset.gradientInitialized = 'true';
+
+    const color1 = document.getElementById('color1') as HTMLInputElement;
+    const color1Text = document.getElementById('color1-text') as HTMLInputElement;
+    const color2 = document.getElementById('color2') as HTMLInputElement;
+    const color2Text = document.getElementById('color2-text') as HTMLInputElement;
+    const directionToggle = document.getElementById('direction-toggle') as HTMLElement;
+    const smoothnessInput = document.getElementById('smoothness-input') as HTMLInputElement;
+    const smoothnessValue = document.getElementById('smoothness-value');
+    const downloadBtn = document.getElementById('download-btn') as HTMLButtonElement;
+    const preview = document.getElementById('gradient-preview') as HTMLElement;
+    const exportCanvas = document.getElementById('gradient-canvas') as HTMLCanvasElement;
+    const exportCtx = exportCanvas.getContext('2d')!;
+
+    const previewCanvas = document.createElement('canvas');
+    const previewCtx = previewCanvas.getContext('2d')!;
+
+    let orientation: Orientation = 'landscape';
+    let direction = '0';
+    let gradientType: GradientType = 'linear';
+
+    function getPreviewDims() {
+      const max = 400;
+      switch (orientation) {
+        case 'portrait': return { width: Math.round(max * 9 / 16), height: max };
+        case 'square': return { width: max, height: max };
+        default: return { width: max, height: Math.round(max * 9 / 16) };
+      }
+    }
+
+    function getExportDims() {
+      switch (orientation) {
+        case 'portrait': return { width: 2160, height: 3840 };
+        case 'square': return { width: 2160, height: 2160 };
+        default: return { width: 3840, height: 2160 };
+      }
+    }
+
+    function renderToCanvas(
+      width: number,
+      height: number,
+      canvas: HTMLCanvasElement,
+      ctx: CanvasRenderingContext2D,
+    ) {
+      canvas.width = width;
+      canvas.height = height;
+
+      let gradient: CanvasGradient;
+
+      if (gradientType === 'linear') {
+        const cssAngle = parseFloat(direction);
+        const radians = cssAngle * Math.PI / 180;
+        const cx = width / 2;
+        const cy = height / 2;
+        let x1, y1, x2, y2;
+
+        if (cssAngle === 0) { x1 = cx; y1 = 0; x2 = cx; y2 = height; }
+        else if (cssAngle === 90) { x1 = 0; y1 = cy; x2 = width; y2 = cy; }
+        else if (cssAngle === 180) { x1 = cx; y1 = height; x2 = cx; y2 = 0; }
+        else if (cssAngle === 270) { x1 = width; y1 = cy; x2 = 0; y2 = cy; }
+        else {
+          const cos = Math.cos(radians);
+          const sin = Math.sin(radians);
+          const hw = width / 2;
+          const hh = height / 2;
+          const corners = [
+            { x: -hw, y: -hh }, { x: hw, y: -hh },
+            { x: hw, y: hh }, { x: -hw, y: hh },
+          ];
+          let maxDist = 0;
+          corners.forEach((c) => {
+            maxDist = Math.max(maxDist, Math.abs(c.x * cos + c.y * sin));
+          });
+          x1 = cx - cos * maxDist;
+          y1 = cy - sin * maxDist;
+          x2 = cx + cos * maxDist;
+          y2 = cy + sin * maxDist;
+        }
+        gradient = ctx.createLinearGradient(x1, y1, x2, y2);
+      } else {
+        let cx = width / 2;
+        let cy = height / 2;
+        if (direction.includes('top')) cy = 0;
+        if (direction.includes('bottom')) cy = height;
+        if (direction.includes('left')) cx = 0;
+        if (direction.includes('right')) cx = width;
+        const radius = Math.max(
+          ...[{ x: 0, y: 0 }, { x: width, y: 0 }, { x: width, y: height }, { x: 0, y: height }]
+            .map((c) => Math.hypot(c.x - cx, c.y - cy)),
+        );
+        gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
+      }
+
+      const smoothness = parseInt(smoothnessInput.value);
+      const steps = Math.max(2, Math.floor(smoothness / 10) + 2);
+      for (let i = 0; i < steps; i++) {
+        const ratio = i / (steps - 1);
+        gradient.addColorStop(ratio, interpolate(color1.value, color2.value, ratio));
+      }
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, width, height);
+    }
+
+    function updatePreview() {
+      const { width, height } = getPreviewDims();
+      renderToCanvas(width, height, previewCanvas, previewCtx);
+      const imageUrl = previewCanvas.toDataURL('image/png');
+      preview.style.background = 'none';
+      preview.innerHTML = `<img src="${imageUrl}" class="tool-preview-img" alt="Gradient Preview">`;
+    }
+
+    function rebuildDirectionOptions() {
+      const opts = gradientType === 'linear' ? linearDirections : radialDirections;
+      directionToggle.innerHTML = '';
+      opts.forEach((opt, i) => {
+        const span = document.createElement('span');
+        span.id = opt.value;
+        span.className = 'switch-option' + (i === 0 ? ' active' : '');
+        span.dataset.value = opt.value;
+        span.textContent = opt.label;
+        directionToggle.appendChild(span);
+      });
+      direction = opts[0].value;
+      // Reset init flag so initSelectionSwitch rebinds click handlers + chevrons.
+      delete directionToggle.dataset.switchInitialized;
+      initSelectionSwitch(directionToggle);
+    }
+
+    color1.addEventListener('input', () => {
+      color1Text.value = color1.value;
+      updatePreview();
+    });
+    color1Text.addEventListener('input', () => {
+      if (HEX_RE.test(color1Text.value)) {
+        color1.value = color1Text.value;
+        updatePreview();
+      }
+    });
+    color2.addEventListener('input', () => {
+      color2Text.value = color2.value;
+      updatePreview();
+    });
+    color2Text.addEventListener('input', () => {
+      if (HEX_RE.test(color2Text.value)) {
+        color2.value = color2Text.value;
+        updatePreview();
+      }
+    });
+
+    document.getElementById('orientation-toggle')?.addEventListener('change', (e) => {
+      orientation = (e as CustomEvent<{ value: string }>).detail.value as Orientation;
+      updatePreview();
+    });
+
+    directionToggle.addEventListener('change', (e) => {
+      direction = (e as CustomEvent<{ value: string }>).detail.value;
+      updatePreview();
+    });
+
+    document.getElementById('type-toggle')?.addEventListener('change', (e) => {
+      gradientType = (e as CustomEvent<{ value: string }>).detail.value as GradientType;
+      rebuildDirectionOptions();
+      updatePreview();
+    });
+
+    smoothnessInput.addEventListener('input', () => {
+      if (smoothnessValue) smoothnessValue.textContent = smoothnessInput.value;
+      const pct = ((Number(smoothnessInput.value) - Number(smoothnessInput.min)) /
+        (Number(smoothnessInput.max) - Number(smoothnessInput.min))) * 100;
+      smoothnessInput.style.setProperty('--value-percent', `${pct}%`);
+      updatePreview();
+    });
+    // Prime the slider fill on first render.
+    smoothnessInput.dispatchEvent(new Event('input'));
+
+    downloadBtn.addEventListener('click', () => {
+      const { width, height } = getExportDims();
+      renderToCanvas(width, height, exportCanvas, exportCtx);
+      exportCanvas.toBlob((blob) => {
+        if (!blob) return;
+        const ts = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+        const filename = `gradient-wallpaper-${orientation}-${ts}.png`;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 'image/png', 1.0);
+    });
+
+    updatePreview();
+  }
+
+  document.addEventListener('astro:page-load', initGradient);
+</script>

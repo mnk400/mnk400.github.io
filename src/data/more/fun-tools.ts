@@ -8,4 +8,12 @@ export const funToolMoreItems: MoreItemData[] = [
     tags: ['fun', 'wikipedia', 'random', 'reading'],
     redirectFrom: ['/more/random-wiki'],
   },
+  {
+    id: 'fun-tools/historical-browser',
+    title: 'Historical Browser',
+    description: 'Browse the internet from the past.',
+    image: '/assets/images/previews/browser.png',
+    tags: ['archive', 'browser', 'history', 'wayback', 'tool'],
+    redirectFrom: ['/more/historical-browser'],
+  },
 ];
