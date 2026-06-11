@@ -10,7 +10,6 @@ interface Props {
   showDate?: boolean;
   useMath?: boolean;
   styles?: string[];
-  headScripts?: string[];
   entity?: { type?: string; name?: string; same_as?: string[] };
   schemaType?: string;
 }
@@ -24,7 +23,6 @@ const {
   showDate = false,
   useMath = false,
   styles,
-  headScripts,
   entity,
   schemaType,
 } = Astro.props;
@@ -47,7 +45,6 @@ const showHeader = !!title || showDate;
   image={image}
   useMath={useMath}
   styles={styles}
-  headScripts={headScripts}
   entity={entity}
   schemaType={schemaType}
   layoutKind="post"

@@ -344,7 +344,7 @@ Recommended order:
 
 **Done criteria:** all archive pages and `/photos/` work; ImageGallery component has typed props; gallery JS doesn't read DOM-level data-attrs anymore.
 
-### Phase 6 — Retire remaining legacy paths (housekeeping)
+### Phase 6 — Retire remaining legacy paths (housekeeping) ✅ done
 **Reshaped after Phase 1.** Under the just-in-time lifting rule (see Bucket 3), most rewrites will have happened as part of the page phases that needed them. This phase is the cleanup pass, not a big lift:
 
 - Audit `assets/js/core/ui-components.js`: for each `init*` function, identify whether all Astro consumers have moved to lifted components. Delete code paths that no longer have any consumer (Astro or legacy reference page).
@@ -386,7 +386,7 @@ Recommended order:
 ### Phase 10 — Cutover
 - Final pass: every URL on Jekyll resolves on Astro
 - Cloudflare Pages: swap `fuckmanik.com` from master to astro branch
-- GH Pages: either retire and put manik.cc on Cloudflare Pages too, or update the workflow to build Astro and publish (Astro has GH Pages docs for this)
+- GH Pages: put manik.cc on Cloudflare Pages too, or update the workflow to build Astro and publish (Astro has GH Pages docs for this)
 - Merge `astro` → `master`, retire the branch
 - Delete remaining reference dirs: `_includes/`, `_layouts/`, `_sass/`, `_more/`, `_posts/`, `_data/categories.yml`, `assets/css/main.scss`
 

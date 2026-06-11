@@ -13,7 +13,6 @@ interface Props {
   description?: string;
   image?: string;
   useMath?: boolean;
-  headScripts?: string[];
   styles?: string[];
   pageTitle?: string; // optional breadcrumb label override
   entity?: { type?: string; name?: string; same_as?: string[] };
@@ -26,7 +25,6 @@ const {
   description = site.description,
   image,
   useMath = false,
-  headScripts = [],
   styles = [],
   pageTitle,
   entity,
@@ -157,8 +155,6 @@ const ogTitle = title ? `${title} — Manik` : 'Manik';
     {styles.map(href => (
       <link rel="stylesheet" type="text/css" href={href} />
     ))}
-
-    {headScripts.map(src => <script src={src} is:inline></script>)}
 
     <!-- Google Analytics -->
     <script async is:inline src="https://www.googletagmanager.com/gtag/js?id=G-WLJ3VCYPD9"></script>

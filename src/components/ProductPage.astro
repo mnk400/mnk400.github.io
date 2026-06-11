@@ -188,11 +188,7 @@ function installValue(entry: ProductInstall): string {
   import { initProductReleaseMeta } from '../lib/product-release.ts';
   import '../lib/image-zoom.ts';
 
-  declare global {
-    interface Window {
-      __productCopyRegistered?: boolean;
-    }
-  }
+  let copyRegistered = false;
 
   function initProductInstallTabs() {
     document.querySelectorAll<HTMLElement>('[data-product-install]').forEach((root) => {
@@ -210,8 +206,8 @@ function installValue(entry: ProductInstall): string {
   }
 
   function initProductCopyButtons() {
-    if (window.__productCopyRegistered) return;
-    window.__productCopyRegistered = true;
+    if (copyRegistered) return;
+    copyRegistered = true;
 
     document.addEventListener('click', (event) => {
       const target = event.target as HTMLElement | null;
