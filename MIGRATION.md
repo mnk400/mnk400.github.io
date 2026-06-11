@@ -354,17 +354,16 @@ Recommended order:
 
 **Done criteria:** every line of `assets/js/core/` and `assets/js/components/` has a justified consumer (Astro page, legacy reference page, or design-system export), or is deleted. No `window.*` writes from any Astro `.astro` file.
 
-### Phase 7 — `transition:persist` decisions
+### Phase 7 — `transition:persist` decisions ✅ done
 `<ClientRouter />` and the view-transition direction logic landed in Phase 1. This phase is about what survives across navigations.
 
-- Apply `transition:persist` to the music widget so audio doesn't restart on nav
-- If a background video gets added, persist it the same way
-- Header is intentionally **not** persisted — it changes between home and sub variants
-- Re-validate Safari behavior with persistent elements in place (different surface than Phase 1's transition test)
-- Delete `_sass/base/_view-transitions.scss`'s cross-document `@view-transition` declaration since same-document is now the default; keep the keyframes and per-name animations
-- Audit any remaining `DOMContentLoaded` references in code we own and convert them — Phase 1's lifecycle rule should have caught these already, but a final sweep is cheap
+- ~~Apply `transition:persist` to the music widget so audio doesn't restart on nav~~ — skipped. No audio element exists in the current site; the MusicWidget is a Last.fm "now playing" card whose home (`external=false → /music/music`) and music-page (`external=true → last.fm`) variants render different `href`s, so naive persist would freeze the first-rendered link. Done criterion is vacuously satisfied. Revisit if real audio gets added.
+- No background video exists. Revisit if one gets added.
+- Header is intentionally **not** persisted — it changes between home and sub variants.
+- Deleted the cross-document `@view-transition { navigation: auto; }` block in `_sass/base/_view-transitions.scss`. Same-document is the default under `<ClientRouter />`; the keyframes and per-name animations stay.
+- `DOMContentLoaded` sweep: zero references in our own code — Phase 1's lifecycle rule caught all of them.
 
-**Done criteria:** music keeps playing across navigations; no `DOMContentLoaded` left in our own code (Bucket 3 files excluded until Phase 6).
+**Done criteria:** music keeps playing across navigations (vacuously — no audio); no `DOMContentLoaded` left in our own code.
 
 ### Phase 8 — SCSS modernization (optional, can wait)
 - Migrate `_sass/` from `@import` to `@use`/`@forward`

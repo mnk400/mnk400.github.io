@@ -1,10 +1,6 @@
 // =============================================================================
-// VIEW TRANSITIONS (cross-document page navigation)
+// VIEW TRANSITIONS (same-document, driven by Astro's ClientRouter)
 // =============================================================================
-
-@view-transition {
-    navigation: auto;
-}
 
 .page-content {
     view-transition-name: page-content;
