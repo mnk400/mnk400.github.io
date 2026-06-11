@@ -2,6 +2,7 @@ import { defineConfig } from 'astro/config';
 import { fileURLToPath } from 'node:url';
 import icon from 'astro-icon';
 import sitemap from '@astrojs/sitemap';
+import ogImages from './src/integrations/og-images.ts';
 
 const sassLoadPaths = [
   fileURLToPath(new URL('./_sass', import.meta.url)),
@@ -15,6 +16,7 @@ export default defineConfig({
       // /more/<slug>/ pages are 301 redirects to canonical URLs; keep /more/ itself.
       filter: (page) => !/\/more\/[^/]+\/$/.test(page),
     }),
+    ogImages(),
   ],
   markdown: {
     // Shiki emits both --shiki-light and --shiki-dark on each token so our

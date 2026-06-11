@@ -374,7 +374,7 @@ Recommended order:
 
 **Done criteria:** no sass deprecation warnings; design-system export still serves at `/style/export.css`.
 
-### Phase 9 — SEO + OG image pipeline
+### Phase 9 — SEO + OG image pipeline ✅ done
 Split into 9A (sitemap + redirects) and 9B (OG image pipeline).
 
 #### Phase 9A — Sitemap + redirects ✅ done
@@ -382,12 +382,18 @@ Split into 9A (sitemap + redirects) and 9B (OG image pipeline).
 - Replaced the static top-level `robots.txt` with `src/pages/robots.txt.ts`, which reads `Astro.site` so it round-trips through `SITE_URL` (current default `astro.manik.cc`; override at cutover via env).
 - Redirect emission already in place via `src/pages/more/[slug].astro` → `Astro.redirect(to, 301)`. Each output is an HTML page with `<meta http-equiv="refresh">`, `<link rel="canonical">`, and `<meta name="robots" content="noindex">`. Sanity-checked a few targets in `dist/more/<slug>/index.html`.
 
-#### Phase 9B — OG image pipeline
-- Port `scripts/generate_previews.rb` to Node. Options: `@vercel/og` (React/JSX), `satori` + `sharp`, or `@napi-rs/canvas`. Budget half a day.
-- Walk Astro routes (built pages + content collection entries), not Jekyll source paths.
-- Replace the Ruby generator step in the GH Actions workflow (only relevant at cutover — master still builds Jekyll until then).
+#### Phase 9B — OG image pipeline ✅ done
+- Ported to Node via `satori` (SVG layout from JSX-as-object) + `sharp` (rasterize to PNG) + `@fontsource/inter` (bundled font).
+- Lives at `src/integrations/og-images.ts`, registered in `astro.config.mjs`. Runs in the `astro:build:done` hook so dev mode is unaffected.
+- `Default.astro` emits two new meta tags per page: `<meta property="og:image" content="${site}/og/<slug>.png">` (always) and `<meta name="x-og-source" content="<hero>">` (only when the page passes a local `image=` prop). The slug is derived from `Astro.url.pathname` (root → `home`, `/games/colordle/` → `games-colordle`, etc.).
+- Integration walks `dist/**/*.html`, skips redirect pages (`robots=noindex`), extracts title + x-og-source, and renders two card variants:
+  - **Plain card** — white background, gray "manik.cc" subtitle, dark title.
+  - **Hero card** — local hero image cover-fit at 1200×630, dark left-→-right gradient overlay, white title + translucent subtitle.
+- External hero URLs (e.g. gulp's GitHub raw heroImage) are intentionally skipped — page falls back to plain card. Move heroes to `assets/` if a card is wanted.
+- 48 cards generated on a clean build (~2.5s integration runtime).
+- Replace the Ruby generator step in the GH Actions workflow at cutover (Phase 10) — master still builds Jekyll until then, so leaving `scripts/generate_previews.rb` + the apt-get/ruby setup steps untouched.
 
-**Done criteria:** preview images generate at build time; sitemap correct; redirects round-trip.
+**Done criteria:** preview images generate at build time ✓; sitemap correct ✓; redirects round-trip ✓.
 
 ### Phase 10 — Cutover
 - Final pass: every URL on Jekyll resolves on Astro

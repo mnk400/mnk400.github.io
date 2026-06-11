@@ -37,10 +37,13 @@ const origin = Astro.site!.origin;
 const canonical = `${origin}${pathname}`;
 const breadcrumbs = getBreadcrumbs(pathname, pageTitle ?? title);
 
-const socialImagePath = image ?? '/assets/images/previews/site-preview.jpg';
-const socialImageUrl = socialImagePath.includes('://')
-  ? socialImagePath
-  : `${origin}${socialImagePath}`;
+// Build-time OG card: deterministic /og/<slug>.png url per page. The og-images
+// integration (see astro.config.mjs) walks dist/**/*.html post-build and renders
+// each card via satori + sharp, using the page title + the local hero image
+// emitted in the x-og-source meta below.
+const ogSlug = pathname.replace(/^\/|\/$/g, '').replace(/\//g, '-') || 'home';
+const heroIsLocal = image && !image.includes('://');
+const ogImageUrl = `${origin}/og/${ogSlug}.png`;
 
 const pageTitleFull = title ? `${title} — Manik` : 'Manik';
 const ogTitle = title ? `${title} — Manik` : 'Manik';
@@ -61,9 +64,10 @@ const ogTitle = title ? `${title} — Manik` : 'Manik';
     <meta property="og:url" content={canonical} />
     <meta property="og:title" content={ogTitle} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={socialImageUrl} />
+    <meta property="og:image" content={ogImageUrl} />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content={socialImageUrl} />
+    <meta name="twitter:image" content={ogImageUrl} />
+    {heroIsLocal && <meta name="x-og-source" content={image} />}
     <title>{pageTitleFull}</title>
 
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
@@ -168,7 +172,7 @@ const ogTitle = title ? `${title} — Manik` : 'Manik';
 
     <StructuredData
       url={pathname}
-      socialImageUrl={socialImageUrl}
+      socialImageUrl={ogImageUrl}
       schemaType={schemaType}
       title={title}
       description={description}
