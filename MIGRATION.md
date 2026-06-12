@@ -365,14 +365,18 @@ Recommended order:
 
 **Done criteria:** music keeps playing across navigations (vacuously — no audio); no `DOMContentLoaded` left in our own code.
 
-### Phase 8 — SCSS modernization (optional, can wait)
-- Migrate `_sass/` from `@import` to `@use`/`@forward`
-- Decide per component: scope styles inside `.astro`, or keep global
-- Remove the deprecation silencers in `astro.config.mjs`
-- Re-export `/style/export.css` as a build artifact (Astro endpoint or separate Vite entry)
-- Update `assets/export-guide.txt` to reference the new paths
+### Phase 8 — SCSS modernization + structural reorg ✅ done
+Bundled three structural changes that all touched "everything once":
+- **Assets relocation:** `git mv assets public/assets` + dropped the `public/assets → ../assets` symlink. No Astro source imported root `assets/`, so this was mechanical; the `assets/css/bw.css` Rouge stylesheet and the Ruby `scripts/generate_previews.rb` OG generator were both deleted as dead Jekyll-era artifacts.
+- **`_sass/` → `src/styles/partials/`:** killed the Jekyll-style leading-underscore dir at repo root and the `loadPaths` SCSS hack in `astro.config.mjs`. Now everything `main.scss` references is path-relative inside `src/styles/`.
+- **`@import` → `@use`:** every partial that consumes `$breakpoint-mobile`, `$max-content-width`, or a mixin now declares its own `@use "../base/{variables,mixins}" as *;`. `_variables.scss` uses `@use "sass:map"` and `map.has-key()`. `main.scss` uses `@use` for every partial. Removed the `silenceDeprecations: ['import', 'global-builtin', 'color-functions']` entries from `astro.config.mjs` — only `legacy-js-api` remains (unrelated to our partials; it's about how sass-loader speaks to Vite).
+- **Inter is self-hosted:** dropped the `@import url("https://rsms.me/inter/inter.css")` in `_typography.scss`. Bundled via `@fontsource/inter/{200,300,400,500,700}.css` imported in `Default.astro`. `@fontsource/inter` moved from devDeps to deps. Browsers download only the latin subset they need thanks to `unicode-range`.
 
-**Done criteria:** no sass deprecation warnings; design-system export still serves at `/style/export.css`.
+Deferred items still open in this phase:
+- `assets/export.scss` (Jekyll permalink-driven design-system export) does nothing under Astro. If we still want `/style/export.css`, port as an Astro endpoint.
+- `assets/export-guide.txt` references paths that have shifted (`assets/js/` is gone, `_sass/` is gone). Will need a refresh pass when/if the export is re-exposed.
+
+**Done criteria:** no sass deprecation warnings ✓; site builds clean ✓; OG cards still generate ✓.
 
 ### Phase 9 — SEO + OG image pipeline ✅ done
 Split into 9A (sitemap + redirects) and 9B (OG image pipeline).
@@ -391,7 +395,7 @@ Split into 9A (sitemap + redirects) and 9B (OG image pipeline).
   - **Hero card** — local hero image cover-fit at 1200×630, dark left-→-right gradient overlay, white title + translucent subtitle.
 - External hero URLs (e.g. gulp's GitHub raw heroImage) are intentionally skipped — page falls back to plain card. Move heroes to `assets/` if a card is wanted.
 - 48 cards generated on a clean build (~2.5s integration runtime).
-- Replace the Ruby generator step in the GH Actions workflow at cutover (Phase 10) — master still builds Jekyll until then, so leaving `scripts/generate_previews.rb` + the apt-get/ruby setup steps untouched.
+- Replace the Ruby generator step in the GH Actions workflow at cutover (Phase 10) — master still builds Jekyll, so the workflow there still needs the apt-get/ruby setup. The Ruby generator itself (`scripts/generate_previews.rb`) was deleted in Phase 8 since it's dead on the astro branch.
 
 **Done criteria:** preview images generate at build time ✓; sitemap correct ✓; redirects round-trip ✓.
 
@@ -400,7 +404,8 @@ Split into 9A (sitemap + redirects) and 9B (OG image pipeline).
 - Cloudflare Pages: swap `fuckmanik.com` from master to astro branch
 - GH Pages: put manik.cc on Cloudflare Pages too, or update the workflow to build Astro and publish (Astro has GH Pages docs for this)
 - Merge `astro` → `master`, retire the branch
-- Delete remaining reference dirs: `_includes/`, `_layouts/`, `_sass/`, `_more/`, `_posts/`, `_data/categories.yml`, `assets/css/main.scss`
+- Delete any Jekyll-reference scaffolding still lingering (most was cleared in Phase 6; `_sass/` was relocated in Phase 8)
+- Refresh `AGENTS.md` — it still describes the Jekyll layout (`_sass/`, `assets/js/`, `_data/categories.yml`, etc.)
 
 ---
 
@@ -410,7 +415,7 @@ Split into 9A (sitemap + redirects) and 9B (OG image pipeline).
 Astro's markdown loader treats `layout:` as a component import. Loading `_posts/*.md` via `import.meta.glob` exploded immediately on `_posts/2020-02-06-gumble-mle.md` because Astro tried to resolve a component called `post`. Workaround in the spike: read as `?raw` and parse front matter manually. **Real fix:** during Phase 2, strip `layout:` from posts when moving them to `src/content/posts/`.
 
 ### SCSS deprecation noise
-Sass 1.83 warns about `@import`, `global-builtin`, `color-functions`, `mixed-decls` patterns in the existing tree. Silenced in `astro.config.mjs` for now. Cleanup is Phase 8, not blocking.
+Resolved in Phase 8. The original silencers covered `@import`, `global-builtin`, `color-functions`, `mixed-decls`; we now only silence `legacy-js-api`, which is about how Vite's sass-loader API surfaces, not anything in our partials.
 
 ### Icons are routed through `astro-icon`
 `src/components/Icon.astro` is the only wrapper that knows the Iconify set. Use `<Icon name="..." />` at callsites; do not add new SVG files or `import.meta.glob` icon loaders.
@@ -421,8 +426,8 @@ In dev, Vite injects CSS via `<script type="module" src=".../main.scss">`. In pr
 ### Canonical / OG / schema URLs derive from `Astro.site`
 `src/data/site.ts` no longer carries a `url:` field. `Default.astro` and `StructuredData.astro` read `Astro.site!.origin` instead, which respects `astro.config.mjs`'s `site` (set to `https://astro.manik.cc` by default, overridable via `SITE_URL` env var). This is how the staging deployment doesn't claim to be the production Jekyll site to crawlers and social previews. Set `SITE_URL=https://manik.cc` in the Cloudflare prod build env at cutover.
 
-### Existing `assets/` is symlinked into `public/`
-This is the cheapest way to keep `/assets/*` URLs working while we migrate. As individual JS files move (Bucket 1 or Bucket 3), delete them from `assets/` and add to `public/assets/` directly if needed. Astro/Vite follows the symlink.
+### Assets live under `public/assets/`
+Phase 8 moved the root `assets/` into `public/assets/` and dropped the symlink. `/assets/*` URLs continue to resolve unchanged. Anything that needs to be served as-is goes in `public/`.
 
 ---
 

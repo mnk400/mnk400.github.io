@@ -1,12 +1,7 @@
 import { defineConfig } from 'astro/config';
-import { fileURLToPath } from 'node:url';
 import icon from 'astro-icon';
 import sitemap from '@astrojs/sitemap';
 import ogImages from './src/integrations/og-images.ts';
-
-const sassLoadPaths = [
-  fileURLToPath(new URL('./_sass', import.meta.url)),
-];
 
 export default defineConfig({
   site: process.env.SITE_URL ?? 'https://fuckmanik.com',
@@ -20,7 +15,7 @@ export default defineConfig({
   ],
   markdown: {
     // Shiki emits both --shiki-light and --shiki-dark on each token so our
-    // [data-theme] CSS can pick which one to render. See _sass/components/_code.scss.
+    // [data-theme] CSS can pick which one to render.
     shikiConfig: {
       themes: { light: 'min-light', dark: 'min-dark' },
       defaultColor: false,
@@ -30,9 +25,7 @@ export default defineConfig({
     css: {
       preprocessorOptions: {
         scss: {
-          loadPaths: sassLoadPaths,
           quietDeps: true,
-          silenceDeprecations: ['legacy-js-api', 'import', 'global-builtin', 'color-functions'],
         },
       },
     },

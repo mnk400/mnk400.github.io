@@ -1,3 +1,5 @@
+@use "sass:map";
+
 // =============================================================================
 // VARIABLES
 // =============================================================================
@@ -95,7 +97,7 @@ $themes: (
             --#{$name}: #{$value};
         }
 
-        @if not map-has-key($tokens, contrast-overlay) {
+        @if not map.has-key($tokens, contrast-overlay) {
             --contrast-overlay: rgba(255, 255, 255, 0.7);
             --contrast-overlay-hover: rgba(255, 255, 255, 0.5);
             --translucent-low: rgba(255, 255, 255, 0.03);

@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
+    "@fontsource/inter": "^5.2.8",
     "@iconify-json/ph": "^1.2.2",
     "astro": "^5.0.0",
     "astro-icon": "^1.1.5",
@@ -20,7 +21,6 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.9",
-    "@fontsource/inter": "^5.2.8",
     "satori": "^0.26.0",
     "sharp": "^0.35.0",
     "typescript": "^5.9.3"

@@ -1,9 +1,8 @@
 .DS_Store
-assets/images/previews/generated/
 admin/.env
 admin/node_modules
-.wranger
-admin/.wranger
+.wrangler
+admin/.wrangler
 
 # Astro
 node_modules

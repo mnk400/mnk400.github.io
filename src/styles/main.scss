@@ -1,40 +1,37 @@
 // Base styles
-@import "base/variables";
-@import "base/mixins";
-@import "base/reset";
-@import "base/typography";
-@import "base/view-transitions";
+@use "partials/base/variables" as *;
+@use "partials/base/mixins" as *;
+@use "partials/base/reset";
+@use "partials/base/typography";
+@use "partials/base/view-transitions";
 
 // Layout
-@import "layout/wrapper";
-@import "layout/header";
-@import "layout/footer";
+@use "partials/layout/wrapper";
+@use "partials/layout/header";
+@use "partials/layout/footer";
 
 // Components
-@import "components/buttons";
-@import "components/cards";
-@import "components/grids";
-@import "components/info-grid";
-@import "components/forms";
-@import "components/image-zoom";
-@import "components/icon";
+@use "partials/components/buttons";
+@use "partials/components/cards";
+@use "partials/components/grids";
+@use "partials/components/info-grid";
+@use "partials/components/forms";
+@use "partials/components/image-zoom";
+@use "partials/components/icon";
 
 // Pages
-@import "pages/post";
-@import "pages/home";
-@import "pages/games";
-@import "pages/music";
-@import "pages/tools";
-@import "pages/ipod";
-@import "pages/charts";
-@import "pages/product";
+@use "partials/pages/post";
+@use "partials/pages/home";
+@use "partials/pages/games";
+@use "partials/pages/music";
+@use "partials/pages/tools";
+@use "partials/pages/ipod";
+@use "partials/pages/charts";
+@use "partials/pages/product";
 
 // Utilities
-@import "utilities/helpers";
-@import "utilities/reveal";
-
-// Legacy
-@import url(/assets/css/bw.css);
+@use "partials/utilities/helpers";
+@use "partials/utilities/reveal";
 
 .me { width: 100%; }
 
