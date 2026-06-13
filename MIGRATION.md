@@ -466,7 +466,7 @@ A one-time audit, sorted by verdict so future-you doesn't re-litigate.
 - **Move blog URLs to `/blog/<slug>` or keep `/YYYY/MM/DD/<slug>`?** Keep current shape. `redirect_from` handles legacy URLs already.
 - **Adopter for React/Svelte/Vue?** None unless a specific tool/page demands it. Default = vanilla in `<script>` tags.
 - **GH Pages or fully Cloudflare?** Decide at Phase 10. Cloudflare-only is simpler ops.
-- **Admin panel (`admin/`)?** Excluded from build in current Jekyll setup; stays excluded. Lives on the home server, not the static site.
+- **Admin panel (`admin/`)?** Replaced by a Cloudflare Pages app on `admin.manik.cc`, hosted in the private `mnk400/admin-panel` repo. Reads/writes the R2 manifests directly via an R2 binding. Old `admin/` dir + `gallery-admin.yml` workflow removed.
 
 ---
 

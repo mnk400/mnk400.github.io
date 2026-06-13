@@ -70,10 +70,17 @@ const isHome = pathname === '/' || pathname === '/index.html';
 </header>
 
 <script>
+  import { navigate } from 'astro:transitions/client';
+
   // Photo reveal animation (used by the site-name in header AND any
   // [data-photo-reveal] link in page content).
   let photoRevealTimeout: number | null = null;
   let isTransitioning = false;
+  let hasClientRouteHistory = false;
+
+  document.addEventListener('astro:before-swap', () => {
+    hasClientRouteHistory = true;
+  });
 
   function triggerPhotoReveal(imagePath: string) {
     const container = document.getElementById('titlePhotoContainer');
@@ -124,22 +131,31 @@ const isHome = pathname === '/' || pathname === '/index.html';
   }
 
   function handleBackNavigation() {
+    if (hasClientRouteHistory) {
+      window.history.back();
+      return;
+    }
+
     const currentUrl = window.location.href;
-    const currentDomain = window.location.hostname;
     const referrer = document.referrer;
 
-    if (!referrer) { window.location.href = '/'; return; }
+    if (!referrer) {
+      navigate('/');
+      return;
+    }
 
     let referrerUrl: URL;
     try {
       referrerUrl = new URL(referrer);
     } catch {
-      window.location.href = '/';
+      navigate('/');
       return;
     }
 
-    if (referrerUrl.hostname !== currentDomain) { window.location.href = '/'; return; }
-    if (referrer === currentUrl) { window.location.href = '/'; return; }
+    if (referrerUrl.origin !== window.location.origin || referrer === currentUrl) {
+      navigate('/');
+      return;
+    }
 
     window.history.back();
   }

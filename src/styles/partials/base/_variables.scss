@@ -6,7 +6,7 @@
 
 // Color Schemes
 $themes: (
-    linen: (
+    "linen": (
         background-main: #f2f0ef,
         background-darker: #f8f5f3,
         text-color: #3b3b3b,
@@ -18,35 +18,35 @@ $themes: (
         translucent-high: rgba(0, 0, 0, 0.2),
         code-bg: #ebe9e8,
     ),
-    denim: (
+    "denim": (
         background-main: #2d3d5a,
         background-darker: #1f2a3f,
         text-color: #e8edf5,
         sec-text-color: #c6cfdc,
         code-bg: #1f2a3f,
     ),
-    charcoal: (
+    "charcoal": (
         background-main: #1a1a1a,
         background-darker: #2a2a2a,
         text-color: #d0d0d0,
         sec-text-color: #c2c2c2,
         code-bg: #212121,
     ),
-    plum: (
+    "plum": (
         background-main: #2a1a1d,
         background-darker: #3d1f24,
         text-color: #f5e8ea,
         sec-text-color: #e0d3d8,
         code-bg: #3d1f24,
     ),
-    moss: (
+    "moss": (
         background-main: #2a2f2a,
         background-darker: #1e231e,
         text-color: #f2faed,
         sec-text-color: #e0e6da,
         code-bg: #1e231e,
     ),
-    butter: (
+    "butter": (
         background-main: #F1D799,
         background-darker: #f5e2ae,
         text-color: #4a4235,
@@ -58,14 +58,14 @@ $themes: (
         translucent-high: rgba(0, 0, 0, 0.2),
         code-bg: #e6ca85,
     ),
-    espresso: (
+    "espresso": (
         background-main: #1f1410,
         background-darker: #160d0a,
         text-color: #f0e0d0,
         sec-text-color: #d4c0ac,
         code-bg: #160d0a,
     ),
-    blush: (
+    "blush": (
         background-main: #f1d9d3,
         background-darker: #f6e5e0,
         text-color: #4a2f35,
@@ -77,7 +77,7 @@ $themes: (
         translucent-high: rgba(0, 0, 0, 0.2),
         code-bg: #e8cdc6,
     ),
-    sky: (
+    "sky": (
         background-main: #d9eaf8,
         background-darker: #edf6fd,
         text-color: #284454,

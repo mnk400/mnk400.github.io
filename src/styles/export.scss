@@ -1,0 +1,25 @@
+// Public CSS export for projects that want manik.cc's reusable visual system.
+// Keep this narrower than the site bundle: no page-specific styles, no header,
+// no footer, no view transitions, and no JavaScript/runtime assumptions.
+
+// Base styles
+@use "partials/base/variables" as *;
+@use "partials/base/mixins" as *;
+@use "partials/base/reset";
+@use "partials/base/typography";
+
+// Layout
+@use "partials/layout/wrapper";
+
+// Components
+@use "partials/components/buttons";
+@use "partials/components/cards";
+@use "partials/components/grids";
+@use "partials/components/info-grid";
+@use "partials/components/forms";
+@use "partials/components/image-zoom";
+@use "partials/components/icon";
+
+// Utilities
+@use "partials/utilities/helpers";
+@use "partials/utilities/reveal";

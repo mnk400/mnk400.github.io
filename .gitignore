@@ -1,8 +1,5 @@
 .DS_Store
-admin/.env
-admin/node_modules
 .wrangler
-admin/.wrangler
 
 # Astro
 node_modules

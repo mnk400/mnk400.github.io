@@ -1,12 +1,12 @@
 ================================================================================
-MANIK.CC DESIGN SYSTEM — EXPORT & REUSE GUIDE
+MANIK.CC DESIGN SYSTEM — CSS EXPORT GUIDE
 ================================================================================
 
-This document describes every reusable component exported from manik.cc. Use it
-to build pages that share the same aesthetic without duplicating code. Import the
-stylesheet, pick the JS modules you need, and follow the patterns below.
+This guide documents the public CSS exported from manik.cc for reuse in other
+projects. The export is intentionally CSS-only.
 
 Source: https://manik.cc
+Stylesheet: https://manik.cc/style/export.css
 Repository: https://github.com/mnk400/mnk400.github.io
 
 
@@ -14,124 +14,107 @@ Repository: https://github.com/mnk400/mnk400.github.io
 1. QUICK START
 ================================================================================
 
-Minimal HTML boilerplate to get the full design system:
+Minimal page:
 
-    <!DOCTYPE html>
-    <html data-theme="linen">
+    <!doctype html>
+    <html lang="en" data-theme="linen">
     <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="theme-color" content="#f2f0ef">
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="theme-color" content="#f2f0ef">
 
-        <!-- Design system CSS (includes reset, typography, all components) -->
-        <link rel="stylesheet" href="https://manik.cc/style/export.css">
+      <link rel="stylesheet" href="https://manik.cc/style/export.css">
 
-        <!-- Fonts (required — the CSS references these) -->
-        <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap">
+      <!-- Optional, for closer font parity outside manik.cc. -->
+      <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 
-        <!-- Icons (optional — used by image-zoom close button and copy feedback) -->
-        <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web">
-
-        <!-- Prevent flash of wrong theme -->
-        <script>
-            (function() {
-                var valid = ['linen','charcoal','denim','plum','moss','butter','espresso','blush','sky'];
-                var t = localStorage.getItem('theme') || 'linen';
-                if (valid.indexOf(t) === -1) t = 'linen';
-                document.documentElement.setAttribute('data-theme', t);
-            })();
-        </script>
+      <!-- Optional, if your markup uses Phosphor icon classes. -->
+      <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2/src/regular/style.css">
+      <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2/src/bold/style.css">
     </head>
     <body>
-        <div class="wrapper">
-            <!-- Your content here -->
-        </div>
-
-        <!-- Core JS (order matters — theme-config must load before theme-manager,
-             and clipboard must load before ui-components if you use [data-copy]) -->
-        <script src="https://manik.cc/assets/js/core/theme-config.js"></script>
-        <script src="https://manik.cc/assets/js/core/theme-manager.js"></script>
-        <script src="https://manik.cc/assets/js/utils/clipboard.js"></script>
-        <script src="https://manik.cc/assets/js/core/ui-components.js"></script>
-        <script src="https://manik.cc/assets/js/components/image-zoom.js"></script>
-
-        <!-- Optional: GitHub latest-release metadata for [data-release-repo] -->
-        <script src="https://manik.cc/assets/js/components/release-meta.js"></script>
+      <div class="wrapper stack">
+        <h1>Hello</h1>
+        <p>Shared styling, local behavior.</p>
+        <a class="btn" href="/">Button link</a>
+      </div>
     </body>
     </html>
 
-
-================================================================================
-2. CSS — WHAT THE STYLESHEET INCLUDES
-================================================================================
-
-The single stylesheet at /style/export.css bundles these modules:
-
-    base/variables       Design tokens (themes, spacing, radius, shadows, etc.)
-    base/mixins          Reusable SCSS patterns (compiled into component styles)
-    base/reset           Meyer reset + HTML5 elements
-    base/typography      Font imports, heading scale, body text, links, code
-    components/buttons   Buttons, expandable toggles, selection switches, search pill
-    components/cards     Cards, image cards, color info cards
-    components/grids     Grid system (2–5 col, auto-fit, masonry, gap variants)
-    components/info-grid Reusable compact titled info card grids
-    components/forms     Text inputs, range sliders, color pickers, image upload
-    components/image-zoom  Zoom overlay, backdrop, close, prev/next, meta
-    layout/wrapper       Page wrapper, fullscreen, expandable content
-    utilities/helpers    Composition, flex, text, spacing, visibility, cursor, radius, transition
+No JavaScript files are exported. Components that need behavior should be wired
+by the consuming project.
 
 
 ================================================================================
-3. THEME SYSTEM
+2. WHAT THE STYLESHEET INCLUDES
 ================================================================================
 
-Nine themes: linen, charcoal, denim, plum, moss, butter, espresso, blush, sky.
+/style/export.css is generated from src/styles/export.scss and includes:
 
-Set via the data-theme attribute on <html>:
+    partials/base/variables        Theme tokens, spacing, radius, shadows, z-index
+    partials/base/mixins           Compile-time helpers used by component styles
+    partials/base/reset            Browser reset and basic element normalization
+    partials/base/typography       Typography, links, headings, code
+    partials/layout/wrapper        .wrapper layout container
+    partials/components/buttons    .btn, .normal-btn, selection switches, search pill
+    partials/components/cards      .card, .image-card, reveal card surfaces
+    partials/components/grids      grid helpers, masonry columns, album containers
+    partials/components/info-grid  .info-grid and .info-card
+    partials/components/forms      inputs, dropdowns, range sliders, image upload
+    partials/components/image-zoom Image zoom overlay classes
+    partials/components/icon       .icon sizing and alignment
+    partials/utilities/helpers     .stack, .cluster, .toolbar, .field, utilities
+    partials/utilities/reveal      reveal animation helper classes
+
+It does not include page-specific styles, site header/footer styles, view
+transition rules, or JavaScript.
+
+
+================================================================================
+3. THEMES
+================================================================================
+
+Set a theme with data-theme on the html element:
 
     <html data-theme="charcoal">
 
-Each theme defines these CSS custom properties:
+Available themes:
 
-    --background-main          Primary background
-    --background-darker        Secondary/deeper background
-    --text-color               Primary text color
-    --sec-text-color           Secondary/muted text
-    --contrast-overlay         High-contrast overlay (button backgrounds, interactive hover)
-    --contrast-overlay-hover   Overlay hover state
-    --translucent-low          Subtle backdrop (0.03–0.05 opacity)
-    --translucent-medium       Medium backdrop (0.07 opacity)
-    --translucent-high         Strong backdrop (0.2 opacity)
-    --code-bg                  Code block background
+    linen, charcoal, denim, plum, moss, butter, espresso, blush, sky
 
-Theme values:
+The default visual baseline is linen.
 
-    LINEN     background: #f2f0ef  text: #3b3b3b
-    CHARCOAL  background: #1a1a1a  text: #d0d0d0
-    DENIM     background: #2d3d5a  text: #e8edf5
-    PLUM      background: #2a1a1d  text: #f5e8ea
-    MOSS      background: #2a2f2a  text: #f2faed
-    BUTTER    background: #F1D799  text: #4a4235
-    ESPRESSO  background: #1f1410  text: #f0e0d0
-    BLUSH     background: #f1d9d3  text: #4a2f35
-    SKY       background: #d9eaf8  text: #284454
+Theme tokens:
 
-To add a theme toggle button:
+    --background-main
+    --background-darker
+    --text-color
+    --sec-text-color
+    --contrast-overlay
+    --contrast-overlay-hover
+    --translucent-low
+    --translucent-medium
+    --translucent-high
+    --code-bg
 
-    <button onclick="toggleTheme()" aria-label="Toggle theme">
-        <i class="ph-bold ph-moon theme-icon"></i>
-    </button>
+If your project wants persistent theme selection, own it locally:
 
-The theme-manager.js script handles localStorage persistence, meta theme-color
-updates, and icon cycling automatically.
+    <script>
+      (function () {
+        var themes = ['linen', 'charcoal', 'denim', 'plum', 'moss', 'butter', 'espresso', 'blush', 'sky'];
+        var stored = localStorage.getItem('theme');
+        var theme = themes.indexOf(stored) === -1 ? 'linen' : stored;
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
 
 
 ================================================================================
-4. DESIGN TOKENS — FULL REFERENCE
+4. DESIGN TOKENS
 ================================================================================
 
-SPACING
+Spacing:
+
     --spacing-2xs    2px
     --spacing-xs     5px
     --spacing-sm     8px
@@ -141,1071 +124,235 @@ SPACING
     --spacing-2xl    30px
     --spacing-3xl    60px
 
-BORDER RADIUS
+Radius:
+
     --radius-sm      4px
-    --radius-md      6px      (default for most components)
+    --radius-md      6px
     --radius-lg      8px
     --radius-xl      12px
-    --radius-pill    20px     (selection/search pills)
-    --radius-round   50%      (circles)
+    --radius-pill    20px
+    --radius-round   50%
 
-CONTROL SIZES
+Controls:
+
     --control-height-sm   30px
     --control-height-md   36px
 
-TRANSITIONS (all use cubic-bezier(0.4, 0, 0.2, 1))
-    --transition-fast      0.1s
-    --transition-medium    0.2s    (default for most interactions)
-    --transition-slow      0.3s
-    --transition-backdrop  0.4s
-    --transition-slowest   0.6s
+Transitions:
 
-SHADOWS
-    --shadow-sm    0 2px 4px rgba(0,0,0,0.1)
-    --shadow-md    0 4px 8px rgba(0,0,0,0.1)
-    --shadow-lg    0 8px 16px rgba(0,0,0,0.1)
+    --transition-fast
+    --transition-medium
+    --transition-slow
+    --transition-backdrop
+    --transition-slowest
 
-Z-INDEX SCALE
-    --z-dropdown   100
-    --z-sticky     200
-    --z-fixed      300
-    --z-modal      1000
-    --z-tooltip    1100
+Z-index:
 
-BREAKPOINTS (SCSS only, not custom properties)
-    $breakpoint-mobile: 600px
-    $max-content-width: 525px
+    --z-dropdown
+    --z-sticky
+    --z-fixed
+    --z-modal
+    --z-tooltip
 
 
 ================================================================================
-5. TYPOGRAPHY
+5. LAYOUT AND COMPOSITION
 ================================================================================
 
-Fonts:
-    Body:  -apple-system, "Inter", sans-serif  (weight 300)
-    Mono:  "IBM Plex Mono", ui-monospace, monospace
-    Bold:  weight 600
-    H1:    16pt, weight 800
-    H2:    14pt, weight 700
-    H3:    12pt, weight 700
-    Body:  12pt, weight 300, line-height 1.25em
+Use .wrapper to match the site content width:
 
-Links show a subtle underline on hover (text-decoration with --translucent-high color).
-Code gets --code-bg background with IBM Plex Mono at 11pt.
-Headings use balanced wrapping; body and post paragraphs use normal browser line wrapping.
+    <main class="wrapper">
+      ...
+    </main>
+
+Composition utilities:
+
+    .stack          Grid stack with default gap
+    .stack--sm      Smaller stack gap
+    .stack--lg      Larger stack gap
+    .cluster        Wrapping inline cluster
+    .cluster--sm    Smaller cluster gap
+    .cluster--lg    Larger cluster gap
+    .toolbar        Wrapping command row
+    .field          Label/control grid
+    .field__label   Muted field label
+    .field__control Inline control wrapper
+
+Common helpers:
+
+    .flex-center
+    .flex-between
+    .flex-start
+    .text-center
+    .text-left
+    .text-right
+    .full-width
+    .full-height
+    .hidden
+    .invisible
+    .opacity-0
+    .opacity-50
+    .cursor-pointer
+    .cursor-not-allowed
+    .rounded-sm
+    .rounded-md
+    .rounded-lg
+    .rounded-full
 
 
 ================================================================================
-6. COMPONENT CLASSES
+6. BUTTONS
 ================================================================================
 
---- BUTTONS ---
+Basic buttons:
 
-Base button (applies to <button> and .btn):
-    <button>Default Button</button>
-    <a href="#" class="btn">Link Button</a>
-
-Buttons suppress underline/italic hover styling so links styled as .btn keep
-button-like text treatment.
-
-Variants (add as modifier class):
-    .btn--dark-forced     Always dark background regardless of theme
-    .btn--small           Compact size (0.8em)
-    .btn--link-variant    Outlined link-style button
-    .btn--copy            Small copy-action button
-    .btn--outline         Translucent with outline border
-    .btn--text            Plain text button (no background/border) — for quiet utility actions
-
-Expandable toggle:
-    <button class="expandable-toggle" aria-expanded="false">
-        Section Title
-        <i class="ph-bold ph-plus toggle-icon"></i>
-    </button>
-    <div class="expandable-content collapsed">
-        Content here...
-    </div>
-
-    The JS in ui-components.js auto-initializes these on DOMContentLoaded.
-
-Selection switch (radio-like toggle group):
-    <div id="my-switch" class="selection-switch">
-        <button class="switch-option active" data-value="opt1">Option 1</button>
-        <button class="switch-option" data-value="opt2">Option 2</button>
-    </div>
-
-    Auto-initialized by ui-components.js on DOMContentLoaded — clicks toggle
-    .active and fire a bubbling 'change' CustomEvent with
-    { detail: { value, element } }.
-    The container id is required to register with window.switchManager (see §8).
-    Uses pill shape (border-radius: var(--radius-pill)). Long option sets
-    scroll horizontally instead of wrapping; each .switch-option is
-    flex: 0 0 auto. Horizontal overscroll is contained. Switches are
-    automatically wrapped in .selection-switch-wrap; when they overflow, the
-    wrapper shows edge fades and keyboard-safe chevron scroll buttons. The
-    component is spacing-neutral: wrap it in .stack, .field, .toolbar, or another
-    layout primitive to create outer spacing.
-
-Search pill:
-    <div id="project-search" class="site-search" data-search-component
-        data-search-target="#results">
-        <button class="site-search__trigger" type="button"
-            aria-expanded="false" aria-controls="project-search-field">
-            <i class="ph-bold ph-magnifying-glass" aria-hidden="true"></i>
-            <span>Search</span>
-        </button>
-        <label class="site-search__field" for="project-search-field">
-            <i class="ph-bold ph-magnifying-glass" aria-hidden="true"></i>
-            <input id="project-search-field" type="search"
-                placeholder="search" autocomplete="off" aria-label="Search">
-            <button class="site-search__clear" type="button"
-                aria-label="Clear search" hidden>
-                <i class="ph-bold ph-x" aria-hidden="true"></i>
-            </button>
-        </label>
-    </div>
-
-    The closed state is a selection-switch-style pill. Clicking opens an
-    URL-bar-like field with an animated width/scale transition and expands to
-    the full width of its parent. Add .site-search--small when placing it near
-    .selection-switch--small controls. The component fires 'search:change' and
-    'change' CustomEvents on itself with
-    { detail: { query, value, input } }. If data-search-target is present,
-    it also dispatches 'site-search:change' on that target with the same
-    detail plus source. The component is spacing-neutral.
-
-
---- COMPOSITION ---
-
-Use composition primitives for layout rhythm instead of adding margins to
-components. Shared components are spacing-neutral by default.
-
-Vertical stack:
-    <div class="stack">
-        <div>First item</div>
-        <div>Second item</div>
-    </div>
-
-    Variants: .stack--sm, .stack--lg. Direct h1, h2, h3, and p children
-    have their default margins/post-content padding neutralized so the stack
-    gap owns the vertical rhythm.
-
-Wrapping row / toolbar:
-    <div class="cluster">
-        <button class="btn">One</button>
-        <button class="btn">Two</button>
-    </div>
-
-    Variants: .cluster--sm, .cluster--lg.
-
-Field:
-    <div class="field">
-        <span class="field__label">Mode</span>
-        <div class="selection-switch">...</div>
-    </div>
-
-    Use .field__control for paired inputs that should share a row:
-        <div class="field__control">
-            <input type="color" value="#c6866d">
-            <input type="text" value="#c6866d">
-        </div>
-
-Compact action row:
-    <div class="toolbar">
-        <button class="btn">Apply</button>
-        <button class="btn--text">Reset</button>
-    </div>
-
-
---- CARDS ---
-
-Base card:
-    <div class="card">Content</div>
+    <button class="btn" type="button">Save</button>
+    <a class="btn" href="/download">Download</a>
+    <button class="normal-btn" type="button">Convert</button>
 
 Variants:
-    .card--interactive     Adds pointer cursor
-    .card--no-padding      Removes padding
-    .card--static          Keeps the base background on hover for non-links
 
-Image card (for photo layouts). Wrap the img in .image-ratio-box with an
-inline padding-bottom set to (height / width * 100)% so the layout reserves
-space before the image decodes — prevents masonry reflow on load:
-    <div class="image-card">
-        <div class="image-ratio-box" style="padding-bottom: 66.67%;">
-            <img src="photo.jpg" alt="Description">
-        </div>
-    </div>
-Add the .loaded class to .image-card once the image decodes to fade it in.
-.image-ratio-box clips images to the standard media radius. .image-card is
-width: 100% so cards fill masonry columns, including image-only cards with no
-caption text.
+    .btn--small
+    .btn--outline
+    .btn--text
+    .btn--copy
+    .btn--dark-forced
+    .btn--link-variant
 
-Optional image gallery card captions:
-    <div class="image-card image-gallery-card loaded">
-        <div class="image-ratio-box" style="padding-bottom: 66.67%;">
-            <img src="photo.jpg" alt="Description" data-zoomable>
-        </div>
-        <div class="image-gallery-card__caption">
-            <div class="image-gallery-card__title">Artwork title</div>
-            <div class="image-gallery-card__body">Optional description.</div>
-            <div class="image-gallery-card__meta">1889 · Museum name</div>
-        </div>
-    </div>
+Copy behavior is not exported. If you use data-copy, wire the click handler in
+your own project.
 
-Caption title, body, and meta use descending visual emphasis. Caption text is
-hidden on narrow mobile screens to keep dense galleries focused on the images.
 
-Reveal card (image with hover/focus overlay):
-    <a class="reveal-card" href="/detail">
-        <span class="reveal-card__media">
-            <img src="image.jpg" alt="">
-            <span class="reveal-card__overlay">
-                <span class="reveal-card__copy">
-                    <span class="reveal-card__title">Title</span>
-                    <span class="reveal-card__meta">Metadata</span>
-                </span>
-                <span class="reveal-card__body">Short supporting copy.</span>
-            </span>
-        </span>
-    </a>
+================================================================================
+7. FORM CONTROLS
+================================================================================
 
-.reveal-card__media is a clipped media surface with an overlay that fades in
-on desktop hover, keyboard focus, touch-hover, or when .is-revealed is added to
-.reveal-card. The image itself does not zoom or animate. Customize with CSS
-variables on .reveal-card:
-    --reveal-card-ratio        Aspect ratio, default 1
-    --reveal-card-padding      Overlay padding, default 0.8em
-    --reveal-card-title-size   Overlay title size, default 1.1em
-    --reveal-card-meta-size    Overlay metadata size, default 0.8em
-    --reveal-card-body-size    Overlay body size, default 0.9em
+Inputs:
 
-ui-components.js auto-initializes reveal cards on page load. For dynamically
-inserted cards, call initRevealCards(container). On touch devices, tapping the
-image reveals the overlay and keeps it visible; if the reveal-card is also a
-link, the first image tap reveals and the second image tap follows the link.
-Non-image link areas, such as a separate caption row, follow the link normally.
-Wrap related cards in .reveal-card-group to keep only one revealed card active.
+    <input type="text" placeholder="Name">
+    <input type="email" placeholder="Email">
+    <input type="url" placeholder="URL">
+    <select>...</select>
 
-Music album card composition:
-    <div class="album-item reveal-card">
-        <div class="reveal-card__media">
-            <img src="cover.jpg" alt="Album title">
-            <div class="reveal-card__overlay">
-                <div class="reveal-card__copy">
-                    <p class="reveal-card__title">Album title</p>
-                    <p class="reveal-card__meta">Artist</p>
-                </div>
-                <span class="reveal-card__meta reveal-card__meta--bottom">123 Plays</span>
-            </div>
-        </div>
+Range slider visual contract:
+
+    <div class="range-slider">
+      <p class="range-value">Size · <span>50</span></p>
+      <input type="range" min="0" max="100" value="50" style="--value-percent: 50%">
     </div>
 
-.album-item only supplies the music page's staggered fade-in state; the media
-surface and overlay behavior come from .reveal-card.
+Selection switch visual contract:
 
-Color info card:
-    <div class="color-info">
-        <div class="color-detail">
-            <div class="color-preview" style="background: #c6866d"></div>
-            <div class="color-values">
-                <div class="color-value">
-                    <span class="color-code">#c6866d</span>
-                    <button class="btn--copy" data-copy="#c6866d">Copy</button>
-                </div>
-            </div>
-        </div>
+    <div class="selection-switch" aria-label="View">
+      <button class="switch-option active" type="button">Grid</button>
+      <button class="switch-option" type="button">List</button>
     </div>
 
+Selection dropdown visual contract:
 
---- FORMS ---
-
-Text inputs (styled automatically):
-    <input type="text" placeholder="Enter text...">
-    <input type="email" placeholder="Email...">
-    <select><option>Choose...</option></select>
-
-Selection dropdown:
-    <div id="my-dropdown" class="selection-dropdown" data-selection-dropdown>
-        <button class="selection-dropdown__trigger" type="button"
-            aria-haspopup="listbox" aria-expanded="false">
-            <span class="selection-dropdown__trigger-text">All</span>
-            <i class="ph-bold ph-caret-down selection-dropdown__chevron"
-                aria-hidden="true"></i>
-        </button>
-        <div class="selection-dropdown__menu collapsed" role="listbox">
-            <button class="selection-dropdown__option active" type="button"
-                role="option" aria-selected="true" data-value="all">
-                <span class="selection-dropdown__option-label">All</span>
-                <i class="ph-bold ph-check selection-dropdown__option-check"
-                    aria-hidden="true"></i>
-            </button>
-            <button class="selection-dropdown__option" type="button"
-                role="option" aria-selected="false" data-value="one">
-                <span class="selection-dropdown__option-label">One</span>
-                <i class="ph-bold ph-check selection-dropdown__option-check"
-                    aria-hidden="true"></i>
-            </button>
-        </div>
+    <div class="selection-dropdown">
+      <button class="selection-dropdown__trigger" type="button" aria-expanded="false">
+        <span class="selection-dropdown__trigger-text">Latest first</span>
+      </button>
+      <div class="selection-dropdown__menu collapsed" role="listbox">
+        <button class="selection-dropdown__option active" type="button" role="option">Latest first</button>
+      </div>
     </div>
 
-    Auto-initialized by ui-components.js on DOMContentLoaded. Open/close
-    state lives on the trigger as aria-expanded; the menu uses the shared
-    .collapsed animation (same max-height + opacity slide as expandable
-    sections). Clicks update .active, update the trigger label, close the
-    menu, and fire a 'change' CustomEvent with { detail: { value, element } }.
-    The container id registers with window.dropdownManager. Closes on outside
-    click and Escape. The component is spacing-neutral.
-
-Range slider with fill tracking:
-    <input type="range" min="0" max="100" value="50"
-        style="--value-percent: 50%"
-        oninput="this.style.setProperty('--value-percent',
-            (this.value-this.min)/(this.max-this.min)*100+'%')">
-
-    The --value-percent CSS variable drives the gradient fill. Update it on
-    input events.
-
-    Auto-init alternative — wrap in [data-range-slider] and ui-components.js
-    will manage --value-percent and update the value label automatically:
-        <div class="range-slider" data-range-slider>
-            <p class="range-value"><span id="size-value">50</span></p>
-            <input id="size-input" type="range" min="0" max="100" value="50">
-        </div>
-    The label element id must be `<input-id-without-"-input">-value`.
-
-Color picker:
-    <input type="color" value="#c6866d">
-
-Image upload:
-    <div id="image-upload" class="image-upload" data-image-upload>
-        <button class="image-upload__selector" type="button">
-            <span>Select Image</span>
-        </button>
-        <input class="image-upload__input" type="file" accept="image/*">
-        <img class="image-upload__preview" alt="">
-    </div>
-
-    Auto-initialized by ui-components.js. Clicking the selector opens the file
-    picker. After a successful read, the wrapper gets .image-upload--has-preview,
-    the selector is hidden, the preview is shown, and the component fires
-    'image-upload:change' and 'change' CustomEvents with
-    { detail: { file, dataUrl, image } }.
+These are styles only. Open/close, active state, keyboard handling, and slider
+fill updates belong to the consuming project.
 
 
---- GRIDS ---
+================================================================================
+8. CARDS AND GRIDS
+================================================================================
 
-Base grid:
-    <div class="grid grid--3-col">
-        <div>Item</div>
-        <div>Item</div>
-        <div>Item</div>
-    </div>
+Basic card:
 
-Column variants:
-    .grid--2-col          2 equal columns
-    .grid--3-col          3 equal columns
-    .grid--4-col          4 equal columns
-    .grid--5-col          5 equal columns
-    .grid--auto-fit       Responsive, min 200px per item
-    .grid--auto-fill      Similar to auto-fit
+    <article class="card">
+      <h2>Title</h2>
+      <p>Description</p>
+    </article>
 
-Layout variants:
-    .grid--masonry        CSS columns masonry (2-column)
-    .grid--equal-rows     All rows same height
+Info grid:
 
-Gap variants:
-    .grid--gap-sm         Tight gap (5px)
-    .grid--gap-lg         Wide gap (20px)
-    .grid--no-gap         No gap
-
-Shared image gallery shell:
-    .image-gallery                  Outer gallery wrapper
-    .image-gallery__status          Loading/error text
-    .image-gallery__summary         Muted mono result count
-    .image-gallery__controls        Optional controls region
-    .image-gallery__control-group   Label + control stack
-    .image-gallery__control-label   Small muted label
-    .image-gallery__search          Optional shared search pill inside controls
-    .image-gallery__grid            Masonry grid container, usually paired with
-                                    .album-container
-
-Gallery controls compose the shared selection primitives: use .selection-switch
-for compact finite choices, .selection-dropdown for larger option sets, and
-.site-search.site-search--small for a compact search trigger that opens to the
-full gallery width.
-
-
---- INFO GRIDS ---
-
-Compact titled info cards for product features, blog facts, metadata, or notes:
     <div class="info-grid info-grid--cards">
-        <article class="info-card">
-            <span class="info-card__icon" aria-hidden="true">
-                <i class="ph-bold ph-clock-counter-clockwise"></i>
-            </span>
-            <h3 class="info-card__title">Download history</h3>
-            <p class="info-card__body">
-                Revisit past downloads and rerun them whenever you want.
-            </p>
-        </article>
+      <article class="info-card">
+        <span class="info-card__icon" aria-hidden="true">...</span>
+        <h3 class="info-card__title">Fast</h3>
+        <p class="info-card__body">Short explanation.</p>
+      </article>
     </div>
 
-Classes:
-    .info-grid          Base grid wrapper
-    .info-grid--cards   Two-column card grid; stacks to one column on mobile
-    .info-card          Quiet translucent card with subtle outline
-    .info-card--no-icon Removes the icon column for iconless items
-    .info-card__icon    Muted leading icon aligned with the title
-    .info-card__title   Compact item heading
-    .info-card__body    Muted supporting copy
+Image grid classes are included for projects that share album/gallery layouts:
 
-This pattern is best for product pages, blog callouts, tool summaries, and
-compact information lists. It intentionally uses lighter surfaces than .card so
-repeated items do not become visually heavy on narrow pages.
-
-
---- LAYOUT ---
-
-Page wrapper (centered, max-width 525px):
-    <div class="wrapper">Content</div>
-
-html and body both use --background-main as the page background. Keep both in
-sync so browser canvas and View Transition paints never expose a transparent
-body over a default background.
-
-Image patterns — two shapes for two intents, do not mix:
-
-  Shape-imposed (cards, gallery tiles, screenshot grids):
-    Container sets `aspect-ratio` (via CSS or inline) at width:100%; img inside
-    is width:100%, height:100%, object-fit:cover. The container reserves
-    layout space, paints the placeholder fill, and crops arbitrary sources to
-    the chosen shape. Examples: .reveal-card__media, .image-ratio-box.
-
-  Natural-aspect (in-flow blog post images, hero images that preserve source
-  shape):
-    Use {% include zoomable-image.html src= alt= width=N height=N %}. The
-    width/height attrs feed the browser the intrinsic ratio so it reserves
-    correct space pre-load. Base `img` CSS supplies `max-width: 100%`,
-    `height: auto`, and a translucent placeholder fill. For EXIF-rotated
-    camera images (orientation 5–8), swap width/height to match displayed
-    dims, not stored bytes.
-
-Fullscreen (for tools/games):
-    <body class="fullscreen">
-
-Expandable content (pairs with .expandable-toggle button):
-    <div class="expandable-section expandable-section--compact">
-        <button class="expandable-toggle" aria-expanded="false">Title</button>
-        <div class="expandable-content collapsed">
-            Collapsible content
-        </div>
-    </div>
-    Add .collapsed class to start closed. Open content has balanced padding on
-    all sides; avoid adding spacer elements for bottom breathing room. Add
-    .expandable-section--compact to the wrapper for dense list-style panels.
+    .album-container
+    .masonry-column
+    .image-card
+    .image-ratio-box
 
 
 ================================================================================
-7. UTILITY CLASSES
+9. IMAGE ZOOM STYLES
 ================================================================================
 
-LAYOUT
-    .flex-center          Center both axes
-    .flex-between         Space between, vertically centered
-    .flex-start           Align to start
+The CSS includes the overlay classes used by manik.cc's image zoom runtime:
 
-TEXT
-    .text-center          Center text
-    .text-left            Left-align
-    .text-right           Right-align
+    .image-zoom-backdrop
+    .image-zoom-clone
+    .image-zoom-controls
+    .image-zoom-meta
+    .image-zoom-caption
+    .image-zoom-detail
+    .image-zoom-nav
+    .image-zoom-control-button
 
-SIZING
-    .full-width           width: 100%
-    .full-height          height: 100%
-    .va-mid               vertical-align: middle
-
-SPACING (margin-bottom)
-    .mb-0                 0
-    .mb-sm                8px
-    .mb-md                10px
-    .mb-lg                15px
-    .mb-xl                20px
-
-SPACING (margin-top)
-    .mt-0  .mt-sm  .mt-md  .mt-lg  .mt-xl   (same scale)
-
-SPACING (padding)
-    .p-0  .p-sm  .p-md  .p-lg  .p-xl        (same scale)
-
-VISIBILITY
-    .hidden               display: none
-    .invisible            visibility: hidden
-    .opacity-0            opacity: 0
-    .opacity-50           opacity: 0.5
-
-CURSOR
-    .cursor-pointer       pointer
-    .cursor-not-allowed   not-allowed
-
-BORDER RADIUS
-    .rounded-sm           4px
-    .rounded-md           6px
-    .rounded-lg           8px
-    .rounded-full         50%
-
-TRANSITIONS
-    .transition-fast      0.1s
-    .transition-medium    0.2s
-    .transition-slow      0.3s
-
-BACKDROP
-    .backdrop-blur        backdrop-filter: blur(10px)
-    .translucent-bg       var(--translucent-medium) background
-    .translucent-bg-high  var(--translucent-high) background
+The JavaScript runtime is not exported. Astro projects can copy/import the
+source from src/lib/image-zoom.ts if they want the same behavior. Non-Astro
+projects should either implement their own runtime against these classes or use
+a dedicated lightbox library.
 
 
 ================================================================================
-8. JAVASCRIPT MODULES
+10. REVEAL HELPERS
 ================================================================================
 
-All scripts are vanilla JS with no dependencies. Load via <script> tags.
-Base URL: https://manik.cc/assets/js/
+Reveal classes are CSS-only animation helpers:
 
-
---- theme-config.js ---
-Path: /assets/js/core/theme-config.js
-
-Single source of truth for theme names and metadata. Must load before
-theme-manager.js and url-params.js.
-
-Exposes window.__themeConfig with:
-    .default          Default theme name ("linen")
-    .themes           Object mapping theme name -> { meta: "#hex" }
-    .names            Array of all valid theme names (computed getter)
-
-To add a new theme: add one entry to the themes object here, plus the
-CSS custom properties in _variables.scss and the switch option in header.html.
-
-
---- theme-manager.js ---
-Path: /assets/js/core/theme-manager.js
-
-Manages the theme system with localStorage persistence. Reads theme
-registry from window.__themeConfig (theme-config.js must load first).
-
-Globals exposed:
-    setTheme(theme, skipTransition)   Set theme by name
-    updateThemeColorMeta(theme)       Update <meta name="theme-color">
-
-Auto-initializes on DOMContentLoaded, reads localStorage("theme").
-
-Required HTML: <html data-theme="linen">
-
-Theme transition: Temporarily adds .theme-transition class to <html> and <body>
-for 500ms to animate the background-color change.
-
-
---- view-transitions.js ---
-Path: /assets/js/core/view-transitions.js
-
-Coordinates View Transition state for this site's header and breadcrumb
-elements. Legacy Jekyll pages use pageswap/pagereveal; Astro pages use
-ClientRouter hooks and render nested breadcrumbs from route/category metadata,
-with only the root breadcrumb separator participating in a named transition.
-
-The CSS keeps the document root participating as the stable background layer and
-sets the view-transition overlay background to --background-main, so transparent
-content fades do not expose the browser canvas during rapid history navigation.
-
-No page-level skip logic is included. For pages with very large DOM subtrees
-(e.g. galleries with thousands of items), rely on `content-visibility: auto` on
-the heavy children so the browser skips offscreen rendering — this also keeps
-the VT snapshot cheap on Safari.
-
-
---- ui-components.js ---
-Path: /assets/js/core/ui-components.js
-
-Provides seven reusable features (auto-initializes on DOMContentLoaded):
-
-1. Touch hover simulation
-   On touch devices, adds .touch-hover class on touchstart to interactive
-   elements (a, button, .btn, .switch-option, .selection-dropdown__trigger,
-   .selection-dropdown__option, .expandable-toggle). Removes after 150ms.
-   No setup needed — works automatically.
-
-2. Expandable sections
-   Auto-initializes all .expandable-toggle buttons. Toggles aria-expanded
-   and animates the adjacent .expandable-content with smooth max-height.
-   HTML pattern:
-       <button class="expandable-toggle" aria-expanded="false">
-           Title <i class="ph-bold ph-plus toggle-icon"></i>
-       </button>
-       <div class="expandable-content collapsed">Content</div>
-
-3. Copy-to-clipboard
-   Auto-initializes all [data-copy] elements. On click, copies the value
-   and shows feedback.
-   HTML pattern:
-       <button data-copy="text to copy" data-copy-feedback="Copied!">
-           <i class="ph-bold ph-copy"></i> Copy
-       </button>
-
-4. Selection switches
-   Auto-initializes all .selection-switch containers (see §6 for HTML).
-   Each switch with an id registers under window.switchManager:
-       window.switchManager['my-switch'].setActive('opt2')
-       window.switchManager['my-switch'].getActive()        // -> 'opt2'
-   Convenience helper for change handling:
-       window.initSwitch('my-switch', (value, element) => { ... })
-   Or listen to the bubbling 'change' CustomEvent directly on the container or
-   an ancestor. window.buildSwitch(...) returns the auto-created wrapper.
-
-5. Selection dropdowns
-   Auto-initializes all [data-selection-dropdown] containers (see §6 for HTML).
-   Each dropdown with an id registers under window.dropdownManager:
-       window.dropdownManager['my-dropdown'].setActive('one')
-       window.dropdownManager['my-dropdown'].getActive()    // -> 'one'
-   Convenience helper for change handling:
-       window.initDropdown('my-dropdown', (value, element) => { ... })
-   Or listen to the 'change' CustomEvent directly on the container.
-
-6. Range sliders
-   Auto-initializes all [data-range-slider] containers (see §6 for HTML).
-   Updates the --value-percent CSS variable on input and syncs the value
-   label. Idempotent — safe to wrap a slider that's also driven manually.
-
-7. Image uploads
-   Auto-initializes all [data-image-upload] containers (see §6 for HTML).
-   Each upload with an id registers under window.imageUploadManager:
-       window.imageUploadManager['image-upload'].hasImage()
-       window.imageUploadManager['image-upload'].getImage()
-       window.imageUploadManager['image-upload'].getFile()
-   Listen for 'image-upload:change' to receive { file, dataUrl, image }.
-
-8. Search pills
-   Auto-initializes all [data-search-component] containers (see §6 for HTML).
-   Each search component with an id registers under window.searchManager:
-       window.searchManager['project-search'].open()
-       window.searchManager['project-search'].setValue('monet')
-       window.searchManager['project-search'].getValue()    // -> 'monet'
-   Listen for 'search:change' on the component, or provide data-search-target
-   and listen for 'site-search:change' on the target.
-
-Note: This file also contains site-specific functions (triggerPhotoReveal,
-toggleHeaderVisibility) that are only used on manik.cc. The default reveal
-photo is /assets/images/site/me.jpg. These helpers are harmless to load but
-not relevant for external use.
-
-
---- image-zoom.js ---
-Path: /assets/js/components/image-zoom.js
-
-Self-contained image lightbox. Add data-zoomable to any <img> and it works.
-Zoomable images have the standard media radius and a subtle inset edge. The
-lightbox image is transparent and shadowless.
-
-    <img src="photo.jpg" alt="Description" data-zoomable>
-    <img src="thumb.jpg" alt="Description" data-zoomable data-full-src="full.jpg">
-
-To enable prev/next navigation across a set, wrap the images in a container
-with a data-gallery attribute. Optional per-image data-title and data-meta
-attributes render a caption + detail line below the zoomed image.
-
-    <div data-gallery="my-album">
-        <img src="1.jpg" data-zoomable data-full-src="1-full.jpg"
-             data-title="On the pier" data-meta="Canon AE-1 · Portra 400">
-        <img src="2.jpg" data-zoomable data-full-src="2-full.jpg">
+    <div class="reveal">
+      <div class="reveal__stage reveal__stage--1">First</div>
+      <div class="reveal__stage reveal__stage--2">Second</div>
     </div>
 
-Features:
-    - Smooth zoom animation from original position to viewport center
-    - Optional data-full-src: zoomed image loads from this URL instead of the
-      thumbnail src (useful for thumbnail grids)
-    - Prev/next controls + ArrowLeft/ArrowRight keys when inside a
-      [data-gallery] container with multiple [data-zoomable] siblings.
-      Horizontal swipe gestures also work on touch devices.
-    - Sibling order follows DOM order by default. If each image has a
-      data-gallery-index attribute (numeric), navigation uses that order
-      instead — useful for masonry layouts where the DOM order is
-      column-by-column but the intended order is the manifest/author order.
-    - Optional data-title / data-meta render a caption + monospace detail
-      line below the image; both are hidden when empty
-    - Respects natural image dimensions (won't upscale beyond original)
-    - Keyboard ESC to close, click backdrop button to close
-    - Caption/detail metadata sits above the zoomed image; a compact control
-      cluster is fixed near the viewport bottom with optional image count,
-      prev/next controls, and close button (Phosphor icons)
-    - GPU-accelerated transitions
+Use .is-ready on the root when your project is ready to reveal async content:
 
-API (exposed on window.ImageZoom):
-    ImageZoom.init()       Re-initialize event listeners
-    ImageZoom.open(img)    Programmatically zoom an image element
-    ImageZoom.close()      Close the current zoom
-
-Requires: image-zoom styles from export.css (included automatically).
-Optional: Phosphor Icons for the close/chevron icons.
-Auto-initializes — no setup needed beyond loading the script.
-
-
---- release-meta.js ---
-Path: /assets/js/components/release-meta.js
-
-Fetches the latest GitHub release for each element with data-release-repo,
-caches the slim response in localStorage for six hours, and fills child
-elements for the version and relative update date.
-
-    <span data-release-repo="owner/repo" hidden>
-        <span class="product__release-version"></span>
-        <span class="product__release-date"></span>
-    </span>
-
-Expected child classes:
-    .product__release-version   Receives tag_name, e.g. v1.2.3
-    .product__release-date      Receives text like "updated 3 days ago"
-
-The container is unhidden after release data is rendered. Fetch failures are
-silent, so the metadata can be treated as progressive enhancement.
-
-
---- canvas-utils.js ---
-Path: /assets/js/utils/canvas-utils.js
-
-Shared helpers for canvas-based components. Exposes a global CanvasUtils
-namespace.
-
-Globals exposed (all on window.CanvasUtils):
-    CanvasUtils.css(prop)              Read a CSS custom property (cached)
-    CanvasUtils.invalidateCssCache()   Clear the CSS variable cache
-    CanvasUtils.dpr()                  Return window.devicePixelRatio (or 1)
-    CanvasUtils.setupCanvas(canvas, w, h)
-        DPR-aware canvas setup. Sets physical size, CSS size, and scales
-        the 2D context. Returns the CanvasRenderingContext2D.
-    CanvasUtils.debounce(fn, wait)     Standard debounce (preserves context/args)
-    CanvasUtils.onThemeChange(callback)
-        MutationObserver wrapper that fires callback whenever the data-theme
-        attribute on <html> changes. Also invalidates the CSS cache
-        automatically before calling the callback.
-
-Load before any script that uses it:
-    <script src="/assets/js/utils/canvas-utils.js"></script>
-
-Typical usage in a canvas component:
-    var css = CanvasUtils.css;
-    var setupCanvas = CanvasUtils.setupCanvas;
-
-    function render() {
-        var ctx = setupCanvas(canvas, W, H);
-        ctx.fillStyle = css('--text-color');
-        // ...
-    }
-
-    CanvasUtils.onThemeChange(render);
-    window.addEventListener('resize', CanvasUtils.debounce(render, 150));
-
-
---- ascii-utils.js ---
-Path: /assets/js/utils/ascii-utils.js
-
-Converts images to ASCII art.
-
-    convertToAscii(imageData, width, height, options)
-        Takes ImageData, returns ASCII string.
-        Options may be omitted, a character string, or an object:
-            { characters: "@%#*+=-:.", dither: "ordered" }
-        Supported dither modes: none, ordered, floyd.
-
-    calculateHeight(width, sourceWidth, sourceHeight)
-        Calculate character height maintaining aspect ratio.
-        Accounts for characters being ~2x taller than wide.
-
-    calculateOptimalFontSize(containerWidth, charCount)
-        px font size that fits `charCount` monospace chars across `containerWidth`.
-
-Preset character ramps are available as ASCII_PALETTES:
-    classic   @%#*+=-:.
-    blocks    █▓▒░
-    minimal   #-.
-
-Available as globals (no module export).
-
-
---- clipboard.js ---
-Path: /assets/js/utils/clipboard.js
-
-Promise-based clipboard wrapper with a non-secure-context fallback that uses
-a hidden <textarea> + document.execCommand('copy'). Required by the [data-copy]
-auto-handler in ui-components.js — load it before ui-components.js.
-
-    Clipboard.copy(text)
-        Returns Promise<boolean> — true on success, false if both the modern
-        and legacy paths failed.
-
-
---- color-utils.js ---
-Path: /assets/js/utils/color-utils.js
-
-Color-space helpers for image / palette / gradient tooling.
-
-    ColorUtils.rgbToHex(r, g, b)        -> "#RRGGBB" (uppercase)
-    ColorUtils.hexToRgb(hex)            -> { r, g, b } | null
-    ColorUtils.rgbToHsl(r, g, b)        -> "hsl(h, s%, l%)" string
-
-
---- device-detect.js ---
-Path: /assets/js/utils/device-detect.js
-
-Single mobile heuristic combining UA regex, viewport width (≤768px), and
-multi-touch capability.
-
-    DeviceDetect.isMobileDevice()       -> boolean
-
-
---- camera-manager.js ---
-Path: /assets/js/components/camera-manager.js
-
-Encapsulates the getUserMedia + rAF + fullscreen lifecycle for camera tools.
-Caller supplies a render(video) callback plus optional hooks.
-
-    const cam = CameraManager.create({
-        video, startBtn, fullscreenBtn, fullscreenTarget,
-        render(video) { /* draw a frame */ },
-        onStart()           { /* after stream acquired */ },
-        onStop()            { /* clear output / restore styles */ },
-        onEnterFullscreen() { /* style the fullscreen target */ },
-        onExitFullscreen()  { /* restore styles, reset inputs */ },
-    });
-    cam.isRunning();        // boolean
-    cam.isFullscreen();     // boolean — useful inside render()
+    document.querySelector('.reveal').classList.add('is-ready');
 
 
 ================================================================================
-9. AESTHETIC GUIDELINES
+11. ICONS
 ================================================================================
 
-Follow these principles to maintain visual consistency with manik.cc:
+The export styles a generic .icon class, but it does not ship icon assets.
+Use your own inline SVGs or load Phosphor/Iconify/etc. in the consuming project.
 
-SURFACES
-    - Use translucent backgrounds with backdrop-filter: blur(10px)
-    - Default surface: var(--translucent-medium) background + blur
-    - Add outline: 1px solid var(--translucent-medium) for definition
-    - This is the "glassmorphism" look that defines the aesthetic
+Example with Phosphor web classes:
 
-SPACING
-    - Use the spacing scale, not arbitrary values
-    - Default gap between elements: var(--spacing-md) = 10px
-    - Generous padding on containers: var(--spacing-lg) = 15px
-    - Page padding: var(--spacing-2xl) = 30px on desktop, var(--spacing-xl) on mobile
-
-TYPOGRAPHY
-    - Body weight 300 (light). This is important — most text is light weight.
-    - Bold text uses weight 600, not 700
-    - Headings use 700–800 weight
-    - Font sizes in pt, not px or rem (12pt body, 16pt h1, 14pt h2, 12pt h3)
-    - Line height 1.25em for body text
-
-COLORS
-    - Never hardcode colors. Always use CSS custom properties.
-    - Primary text: var(--text-color)
-    - Muted text: var(--sec-text-color)
-    - Buttons/interactive: var(--contrast-overlay) background with var(--background-main) text
-
-TRANSITIONS
-    - Always animate state changes
-    - Use --transition-medium (0.2s) as default
-    - Use --transition-fast (0.1s) for tiny elements (thumbs, small toggles)
-    - Use --transition-slow (0.3s) for larger reveals
-    - Use --transition-slowest (0.6s) for ambient/atmospheric fades (e.g. sticky-header backdrop)
-    - Easing: cubic-bezier(0.4, 0, 0.2, 1) — already baked into the variables
-
-HOVER STATES
-    - On touch devices, hover doesn't exist. The CSS uses @media (any-hover: hover)
-      and the .touch-hover class as a fallback (handled by ui-components.js).
-    - Default hover: slightly reduce background opacity or shift color
-    - Buttons: contrast-overlay-hover (lighter than resting state)
-    - Cards: translucent-low -> translucent-high on hover
-
-BORDER RADIUS
-    - Default: var(--radius-md) = 6px
-    - Slightly rounded, never sharp corners, never overly rounded
-    - Selection/search pills use var(--radius-pill)
-    - Circles: var(--radius-round) = 50%
-
-LAYOUT
-    - Content max-width: 525px, centered
-    - Mobile breakpoint: 600px
-    - Use .wrapper for standard pages
-    - Use .fullscreen for immersive tools/games
-
-ICONS
-    - Phosphor Icons (https://phosphoricons.com)
-    - Use ph-bold weight: <i class="ph-bold ph-icon-name"></i>
-    - Common: ph-moon, ph-sun, ph-drop, ph-heart, ph-x, ph-plus,
-              ph-copy, ph-check, ph-caret-left, ph-arrow-square-out
-
-DO
-    - Use CSS custom properties for all colors
-    - Use the spacing scale for all margins/padding/gaps
-    - Use translucent surfaces with blur for floating elements
-    - Keep text light (weight 300) for body copy
-    - Animate transitions between states
-    - Support all nine themes
-
-DON'T
-    - Hardcode color values (no raw hex in component styles)
-    - Use shadows heavier than --shadow-lg
-    - Use border-radius larger than --radius-xl except for pills
-    - Use font weights other than 300, 400, 600, 700, 800
-    - Skip transition animations on interactive elements
-    - Forget the mobile breakpoint at 600px
+    <i class="ph-bold ph-arrow-up-right icon" aria-hidden="true"></i>
 
 
 ================================================================================
-10. COPY-PASTE PATTERNS
+12. VERSIONING NOTES
 ================================================================================
 
-These are ready-to-use HTML patterns that work with the exported CSS and JS.
+This export is a visual CSS contract, not a full component runtime. The stable
+public URL is:
 
---- Theme toggle button ---
+    https://manik.cc/style/export.css
 
-    <button onclick="toggleTheme()" aria-label="Toggle theme"
-        style="position:fixed; top:20px; right:20px; z-index:300;
-               width:40px; height:40px; border-radius:50%;
-               display:flex; align-items:center; justify-content:center;">
-        <i class="ph-bold ph-moon theme-icon"></i>
-    </button>
+The guide is available at:
 
+    https://manik.cc/assets/export-guide.txt
 
---- Expandable section ---
-
-    <button class="expandable-toggle" aria-expanded="false">
-        Section Title
-        <i class="ph-bold ph-plus toggle-icon"></i>
-    </button>
-    <div class="expandable-content collapsed">
-        <p>This content is collapsible.</p>
-    </div>
-
-
---- Zoomable image ---
-
-    <img src="photo.jpg" alt="Description" data-zoomable>
-
-
---- Card grid ---
-
-    <div class="grid grid--3-col">
-        <div class="card">Card 1</div>
-        <div class="card">Card 2</div>
-        <div class="card">Card 3</div>
-    </div>
-
-
---- Form with range slider ---
-
-    <div class="stack">
-        <div class="field">
-            <span class="field__label">Intensity</span>
-            <div class="range-slider" data-range-slider>
-                <p class="range-value"><span id="intensity-value">50</span></p>
-                <input id="intensity-input" type="range" min="0" max="100"
-                    value="50">
-            </div>
-        </div>
-        <div class="field">
-            <span class="field__label">Color</span>
-            <div class="field__control">
-                <input type="color" value="#c6866d">
-                <input type="text" value="#c6866d">
-            </div>
-        </div>
-        <div class="toolbar">
-            <button class="btn">Apply</button>
-        </div>
-    </div>
-
-
---- Copy button ---
-
-    <button class="btn--copy" data-copy="text to copy"
-        data-copy-feedback="Copied!">
-        <i class="ph-bold ph-copy"></i> Copy
-    </button>
-
-
---- Selection switch ---
-
-    <div class="selection-switch">
-        <button class="switch-option active" data-value="a">Option A</button>
-        <button class="switch-option" data-value="b">Option B</button>
-        <button class="switch-option" data-value="c">Option C</button>
-    </div>
-
-    ui-components.js automatically wraps the switch in .selection-switch-wrap
-    when initialized so long option sets can show edge fades and scroll
-    chevrons.
-
-
---- Translucent surface (custom element) ---
-
-    <div style="background-color: var(--translucent-medium);
-                backdrop-filter: blur(10px);
-                border-radius: var(--radius-md);
-                outline: 1px solid var(--translucent-medium);
-                padding: var(--spacing-lg);">
-        Glassmorphism container
-    </div>
-
-    Or simply use the .card class which does the same thing.
-
-
---- Photo masonry ---
-
-Shared gallery shell:
-    <div class="image-gallery">
-        <div class="image-gallery__status">Loading images...</div>
-        <div class="image-gallery__summary">24 works</div>
-        <div class="album-container" data-gallery="my-album">
-            <!-- masonry columns / image cards -->
-        </div>
-    </div>
-
-Pinterest-style masonry album container:
-    <div class="album-container" data-gallery="my-album">
-        <div class="masonry-column">
-            <div class="image-card">
-                <div class="image-ratio-box" style="padding-bottom: 66.67%;">
-                    <img src="photo1.jpg" alt="" data-zoomable>
-                </div>
-            </div>
-        </div>
-        <div class="masonry-column">
-            <div class="image-card">
-                <div class="image-ratio-box" style="padding-bottom: 125%;">
-                    <img src="photo2.jpg" alt="" data-zoomable>
-                </div>
-            </div>
-        </div>
-    </div>
-
-The masonry columns use flex: 1 1 0 and min-width: 0, while .album-container
-is width: 100%; this prevents image-only cards from collapsing when the
-gallery sits inside another grid/flex shell.
-
-Legacy CSS column masonry variant:
-    <div class="grid grid--masonry">
-        <div class="image-card">
-            <div class="image-ratio-box" style="padding-bottom: 66.67%;">
-                <img src="photo1.jpg" alt="" data-zoomable>
-            </div>
-        </div>
-        <div class="image-card">
-            <div class="image-ratio-box" style="padding-bottom: 125%;">
-                <img src="photo2.jpg" alt="" data-zoomable>
-            </div>
-        </div>
-    </div>
-
-
-================================================================================
-END OF GUIDE
-================================================================================
+If a future project needs portable behavior, prefer a narrow ESM module for that
+single behavior instead of reviving broad global scripts.
