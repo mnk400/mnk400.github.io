@@ -1,4 +1,4 @@
-const DATA_BASE = 'https://manik.cc/pipelines/lastfm-stats/processed';
+const DATA_BASE = 'https://mnk400.github.io/pipelines/lastfm-stats/processed';
 const WRITTEN_DATE = '2026-02';
 
 let useCutoff = true;

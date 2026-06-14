@@ -27,7 +27,7 @@ export const paintingGalleryItems = [
     years: '1858 - 1926',
     works: '2,000+',
     order: 1,
-    source: 'https://manik.cc/pipelines/paintings/monet/manifest.json',
+    source: 'https://mnk400.github.io/pipelines/paintings/monet/manifest.json',
     description: 'An Impressionist I adore who painted the same lily pond a hundred times over.',
     entity: {
       same_as: ['https://en.wikipedia.org/wiki/Claude_Monet'],
@@ -43,7 +43,7 @@ export const paintingGalleryItems = [
     years: '1864 - 1895',
     works: '150+',
     order: 2,
-    source: 'https://manik.cc/pipelines/paintings/morisot/manifest.json',
+    source: 'https://mnk400.github.io/pipelines/paintings/morisot/manifest.json',
     description: 'A founding Impressionist with a soft touch for women, family, and everyday scenes.',
     entity: {
       same_as: ['https://en.wikipedia.org/wiki/Berthe_Morisot'],
@@ -59,7 +59,7 @@ export const paintingGalleryItems = [
     years: '1855 - 1903',
     works: '750+',
     order: 3,
-    source: 'https://manik.cc/pipelines/paintings/pissarro/manifest.json',
+    source: 'https://mnk400.github.io/pipelines/paintings/pissarro/manifest.json',
     description: 'Landscape painter and the quiet mentor to half the Impressionist movement.',
     entity: {
       same_as: ['https://en.wikipedia.org/wiki/Camille_Pissarro'],
@@ -75,7 +75,7 @@ export const paintingGalleryItems = [
     years: '1902 - 1915',
     works: '25+',
     order: 4,
-    source: 'https://manik.cc/pipelines/paintings/mcnicoll/manifest.json',
+    source: 'https://mnk400.github.io/pipelines/paintings/mcnicoll/manifest.json',
     description: 'Canadian Impressionist with beautiful, almost modern sunlit scenes of people.',
     entity: {
       same_as: ['https://en.wikipedia.org/wiki/Helen_McNicoll'],
@@ -91,7 +91,7 @@ export const paintingGalleryItems = [
     years: '1881 - 1909',
     works: '80+',
     order: 5,
-    source: 'https://manik.cc/pipelines/paintings/remington/manifest.json',
+    source: 'https://mnk400.github.io/pipelines/paintings/remington/manifest.json',
     description: 'Painted the Old West in its last days: cowboys, cavalry, dust, and horses.',
     entity: {
       same_as: ['https://en.wikipedia.org/wiki/Frederic_Remington'],
@@ -107,7 +107,7 @@ export const paintingGalleryItems = [
     years: '1881 - 1901',
     works: '200+',
     order: 6,
-    source: 'https://manik.cc/pipelines/paintings/toulouse-lautrec/manifest.json',
+    source: 'https://mnk400.github.io/pipelines/paintings/toulouse-lautrec/manifest.json',
     description: 'Post-Impressionist chronicler of Paris nightlife and people of all kinds.',
     entity: {
       same_as: ['https://en.wikipedia.org/wiki/Henri_de_Toulouse-Lautrec'],
@@ -123,7 +123,7 @@ export const paintingGalleryItems = [
     years: '1860 - 1899',
     works: '800+',
     order: 7,
-    source: 'https://manik.cc/pipelines/paintings/sisley/manifest.json',
+    source: 'https://mnk400.github.io/pipelines/paintings/sisley/manifest.json',
     description: 'Impressionist landscape painter with rivers, snow, small towns, and quiet weather.',
     entity: {
       same_as: ['https://en.wikipedia.org/wiki/Alfred_Sisley'],
@@ -139,7 +139,7 @@ export const paintingGalleryItems = [
     years: '1876 - 1903',
     works: '80+',
     order: 8,
-    source: 'https://manik.cc/pipelines/paintings/weeks/manifest.json',
+    source: 'https://mnk400.github.io/pipelines/paintings/weeks/manifest.json',
     description: 'American painter of markets, courtyards, caravans, and luminous travel scenes.',
     entity: {
       same_as: ['https://en.wikipedia.org/wiki/Edwin_Lord_Weeks'],
@@ -155,7 +155,7 @@ export const paintingGalleryItems = [
     years: '1880 - 1920',
     works: '300+',
     order: 9,
-    source: 'https://manik.cc/pipelines/paintings/zorn/manifest.json',
+    source: 'https://mnk400.github.io/pipelines/paintings/zorn/manifest.json',
     description: 'Swedish painter best known for people portraits, in very fluid watercolor and oil.',
     entity: {
       same_as: ['https://en.wikipedia.org/wiki/Anders_Zorn'],
@@ -171,7 +171,7 @@ export const paintingGalleryItems = [
     years: '1902 - 1915',
     works: '60+',
     order: 10,
-    source: 'https://manik.cc/pipelines/paintings/yoshida/manifest.json',
+    source: 'https://mnk400.github.io/pipelines/paintings/yoshida/manifest.json',
     description: 'Japanese woodblock artist of gentle colors and beautiful landscapes.',
     entity: {
       same_as: ['https://en.wikipedia.org/wiki/Hiroshi_Yoshida'],
@@ -187,7 +187,7 @@ export const paintingGalleryItems = [
     years: '1884 - 1916',
     works: '100+',
     order: 11,
-    source: 'https://manik.cc/pipelines/paintings/hammershoi/manifest.json',
+    source: 'https://mnk400.github.io/pipelines/paintings/hammershoi/manifest.json',
     description: 'Danish painter of quiet interiors, gray light, turned backs, and still rooms.',
     entity: {
       same_as: ['https://en.wikipedia.org/wiki/Vilhelm_Hammersh%C3%B8i'],
@@ -203,7 +203,7 @@ export const paintingGalleryItems = [
     years: '1650 - 1672',
     works: '35+',
     order: 12,
-    source: 'https://manik.cc/pipelines/paintings/vermeer/manifest.json',
+    source: 'https://mnk400.github.io/pipelines/paintings/vermeer/manifest.json',
     description: 'Dutch master of luminous rooms, suspended gestures, letters, music, and pearl light.',
     entity: {
       same_as: ['https://en.wikipedia.org/wiki/Johannes_Vermeer'],
@@ -219,7 +219,7 @@ export const paintingGalleryItems = [
     years: '1897 - 1920',
     works: '70+',
     order: 13,
-    source: 'https://manik.cc/pipelines/paintings/gwen-john/manifest.json',
+    source: 'https://mnk400.github.io/pipelines/paintings/gwen-john/manifest.json',
     description: 'Welsh painter of quiet interiors, solitary women, pale rooms, and devotional stillness.',
     entity: {
       same_as: ['https://en.wikipedia.org/wiki/Gwen_John'],
