@@ -59,7 +59,5 @@ This codebase exports a reusable design system consumed by other projects. The e
 
 ## Deployment
 
-Push to master branch auto-deploys to both targets:
-
-- **manik.cc** — served via GitHub Pages
-- **fuckmanik.com** — served via Cloudflare Pages (project: `mnk400-github-io`)
+Push to `main` auto-deploys to Cloudflare Pages (project: `mnk400-github-io`).
+Custom domains on the project: `manik.cc` (canonical), plus any aliases.

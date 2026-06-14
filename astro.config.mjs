@@ -4,7 +4,7 @@ import sitemap from '@astrojs/sitemap';
 import ogImages from './src/integrations/og-images.ts';
 
 export default defineConfig({
-  site: process.env.SITE_URL ?? 'https://fuckmanik.com',
+  site: process.env.SITE_URL ?? 'https://manik.cc',
   integrations: [
     icon(),
     sitemap({
