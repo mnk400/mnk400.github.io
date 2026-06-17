@@ -108,6 +108,12 @@
     line-height: 1;
 }
 
+.image-gallery__sentinel {
+    width: 100%;
+    height: 1px;
+    pointer-events: none;
+}
+
 // Photo album container - Pinterest-style masonry
 .album-container {
     display: flex;

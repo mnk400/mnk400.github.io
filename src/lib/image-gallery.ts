@@ -53,6 +53,7 @@ export interface ImageGalleryConfig {
   captionMeta?: string[];
   zoomTitle?: string[];
   zoomMeta?: string[];
+  pageSize?: number;
 }
 
 interface GalleryState {
@@ -61,7 +62,18 @@ interface GalleryState {
   sort: string;
   filters: Record<string, string>;
   query: string;
+  pageSize: number;
 }
+
+interface RenderColumns {
+  leftCol: HTMLElement;
+  rightCol: HTMLElement;
+  leftHeight: number;
+  rightHeight: number;
+  renderedCount: number;
+}
+
+const DEFAULT_PAGE_SIZE = 100;
 
 interface RenderOptions {
   showCaptions: boolean;
@@ -72,9 +84,7 @@ interface RenderOptions {
   zoomMetaFields: string[];
 }
 
-interface GalleryRoot extends HTMLElement {
-  imageGalleryImageObserver?: IntersectionObserver | null;
-}
+type GalleryRoot = HTMLElement;
 
 const SORT_LABELS: Record<string, string> = {
   'year-desc': 'Latest first',
@@ -335,10 +345,6 @@ function setupControls(
 
 function setLoaded(card: HTMLElement, img: HTMLImageElement) {
   const markLoaded = () => {
-    if (img.naturalWidth > 0 && img.naturalHeight > 0) {
-      const ratioBox = img.closest<HTMLElement>('.image-ratio-box');
-      if (ratioBox) ratioBox.style.aspectRatio = `${img.naturalWidth} / ${img.naturalHeight}`;
-    }
     card.classList.add('loaded');
   };
   if (img.complete && img.naturalWidth > 0) {
@@ -347,35 +353,6 @@ function setLoaded(card: HTMLElement, img: HTMLImageElement) {
   }
   img.addEventListener('load', markLoaded, { once: true });
   img.addEventListener('error', markLoaded, { once: true });
-}
-
-function loadImage(img: HTMLImageElement) {
-  if (!img.dataset.src || img.getAttribute('src')) return;
-  img.src = img.dataset.src;
-}
-
-function observeImage(img: HTMLImageElement, observer: IntersectionObserver | null) {
-  if (observer) {
-    observer.observe(img);
-    return;
-  }
-
-  loadImage(img);
-}
-
-function createImageObserver(): IntersectionObserver | null {
-  if (!('IntersectionObserver' in window)) return null;
-
-  return new IntersectionObserver(
-    (entries, observer) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        observer.unobserve(entry.target);
-        loadImage(entry.target as HTMLImageElement);
-      });
-    },
-    { rootMargin: '800px 0px' },
-  );
 }
 
 function createCard(item: GalleryItem, options: RenderOptions & { galleryIndex: number }): HTMLElement {
@@ -387,7 +364,7 @@ function createCard(item: GalleryItem, options: RenderOptions & { galleryIndex: 
   ratioBox.style.aspectRatio = `${item.width || 1} / ${item.height || 1}`;
 
   const img = document.createElement('img');
-  img.dataset.src = item.thumb;
+  img.src = item.thumb;
   img.alt = item.alt;
   img.loading = 'lazy';
   img.decoding = 'async';
@@ -438,20 +415,43 @@ function createCard(item: GalleryItem, options: RenderOptions & { galleryIndex: 
   return card;
 }
 
-function renderMasonry(
-  root: GalleryRoot,
+function appendCardsToColumns(
+  cols: RenderColumns,
+  items: GalleryItem[],
+  fromIdx: number,
+  toIdx: number,
+  options: RenderOptions,
+) {
+  for (let i = fromIdx; i < toIdx; i += 1) {
+    const item = items[i];
+    if (!item.thumb) {
+      cols.renderedCount = i + 1;
+      continue;
+    }
+    const card = createCard(item, { ...options, galleryIndex: i });
+    const aspectRatio = item.width && item.height ? item.width / item.height : 1;
+    const estimatedHeight = 300 / aspectRatio;
+
+    if (cols.leftHeight <= cols.rightHeight) {
+      cols.leftCol.appendChild(card);
+      cols.leftHeight += estimatedHeight;
+    } else {
+      cols.rightCol.appendChild(card);
+      cols.rightHeight += estimatedHeight;
+    }
+    cols.renderedCount = i + 1;
+  }
+}
+
+function renderInitialPage(
   grid: HTMLElement,
   items: GalleryItem[],
   galleryName: string,
   options: RenderOptions,
-) {
-  if (root.imageGalleryImageObserver) root.imageGalleryImageObserver.disconnect();
-
+  pageSize: number,
+): RenderColumns {
   grid.innerHTML = '';
   grid.setAttribute('data-gallery', galleryName || 'image-gallery');
-
-  const imageObserver = createImageObserver();
-  root.imageGalleryImageObserver = imageObserver;
 
   const leftCol = document.createElement('div');
   const rightCol = document.createElement('div');
@@ -459,37 +459,30 @@ function renderMasonry(
   rightCol.className = 'masonry-column';
   grid.append(leftCol, rightCol);
 
-  let leftHeight = 0;
-  let rightHeight = 0;
-  let imageCount = 0;
+  const cols: RenderColumns = {
+    leftCol,
+    rightCol,
+    leftHeight: 0,
+    rightHeight: 0,
+    renderedCount: 0,
+  };
 
-  items.forEach((item, displayIndex) => {
-    if (!item.thumb) return;
+  const end = Math.min(pageSize, items.length);
+  appendCardsToColumns(cols, items, 0, end, options);
+  return cols;
+}
 
-    const card = createCard(item, {
-      ...options,
-      galleryIndex: displayIndex,
-    });
-    const aspectRatio = item.width && item.height ? item.width / item.height : 1;
-    const estimatedHeight = 300 / aspectRatio;
-
-    if (leftHeight <= rightHeight) {
-      leftCol.appendChild(card);
-      leftHeight += estimatedHeight;
-    } else {
-      rightCol.appendChild(card);
-      rightHeight += estimatedHeight;
-    }
-
-    const img = card.querySelector<HTMLImageElement>('img');
-    if (!img) return;
-    if (imageCount < 12) {
-      loadImage(img);
-    } else {
-      observeImage(img, imageObserver);
-    }
-    imageCount += 1;
-  });
+function appendNextPage(
+  cols: RenderColumns,
+  items: GalleryItem[],
+  options: RenderOptions,
+  pageSize: number,
+): boolean {
+  const start = cols.renderedCount;
+  if (start >= items.length) return false;
+  const end = Math.min(items.length, start + pageSize);
+  appendCardsToColumns(cols, items, start, end, options);
+  return cols.renderedCount < items.length;
 }
 
 function readConfig(root: GalleryRoot): ImageGalleryConfig | null {
@@ -511,6 +504,8 @@ export async function loadImageGallery(root: GalleryRoot, config: ImageGalleryCo
   const grid = root.querySelector<HTMLElement>('[data-gallery-grid]');
   const status = root.querySelector<HTMLElement>('[data-gallery-status]');
   const summary = root.querySelector<HTMLElement>('[data-gallery-summary]');
+  const sentinel = root.querySelector<HTMLElement>('[data-gallery-sentinel]');
+  const pageSize = config.pageSize && config.pageSize > 0 ? config.pageSize : DEFAULT_PAGE_SIZE;
 
   if (!source || !grid) return;
 
@@ -534,25 +529,53 @@ export async function loadImageGallery(root: GalleryRoot, config: ImageGalleryCo
       sort: config.defaultSort || config.sortOptions?.[0] || 'manifest',
       filters: {},
       query: root.dataset.searchQuery || '',
+      pageSize,
     };
     state.filterOptions.forEach((option) => {
       state.filters[option] = 'all';
     });
 
+    const renderOptions: RenderOptions = {
+      showCaptions,
+      captionTitleFields,
+      captionBodyFields,
+      captionMetaFields,
+      zoomTitleFields,
+      zoomMetaFields,
+    };
+
+    let cols: RenderColumns | null = null;
+    let visibleItemsRef: GalleryItem[] = [];
+    let sentinelObserver: IntersectionObserver | null = null;
+
+    const teardownSentinel = () => {
+      if (sentinelObserver) {
+        sentinelObserver.disconnect();
+        sentinelObserver = null;
+      }
+    };
+
+    const setupSentinel = () => {
+      teardownSentinel();
+      if (!sentinel) return;
+      if (!cols || cols.renderedCount >= visibleItemsRef.length) return;
+      sentinelObserver = new IntersectionObserver((entries) => {
+        if (!entries.some((entry) => entry.isIntersecting)) return;
+        const moreRemaining = appendNextPage(cols!, visibleItemsRef, renderOptions, state.pageSize);
+        if (!moreRemaining) teardownSentinel();
+      }, { rootMargin: '800px 0px' });
+      sentinelObserver.observe(sentinel);
+    };
+
     const applyState = () => {
       const visibleItems = getVisibleItems(items, state);
+      visibleItemsRef = visibleItems;
       if (summary) {
         summary.hidden = false;
         summary.textContent = formatSummary(visibleItems.length, items.length);
       }
-      renderMasonry(root, grid, visibleItems, galleryName, {
-        showCaptions,
-        captionTitleFields,
-        captionBodyFields,
-        captionMetaFields,
-        zoomTitleFields,
-        zoomMetaFields,
-      });
+      cols = renderInitialPage(grid, visibleItems, galleryName, renderOptions, state.pageSize);
+      setupSentinel();
       return visibleItems;
     };
 

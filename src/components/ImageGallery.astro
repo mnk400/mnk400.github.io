@@ -81,6 +81,8 @@ const galleryConfig: ImageGalleryConfig = { ...config, loadingText };
     data-gallery-grid
   />
 
+  <div class="image-gallery__sentinel" data-gallery-sentinel aria-hidden="true" />
+
   <script type="application/json" data-image-gallery-config is:inline set:html={JSON.stringify(galleryConfig)} />
 </div>
 
