@@ -2,6 +2,7 @@ import { defineConfig } from 'astro/config';
 import icon from 'astro-icon';
 import sitemap from '@astrojs/sitemap';
 import ogImages from './src/integrations/og-images.ts';
+import redirects from './src/integrations/redirects.ts';
 
 export default defineConfig({
   site: process.env.SITE_URL ?? 'https://manik.cc',
@@ -12,6 +13,7 @@ export default defineConfig({
       filter: (page) => !/\/more\/[^/]+\/$/.test(page),
     }),
     ogImages(),
+    redirects(),
   ],
   markdown: {
     // Shiki emits both --shiki-light and --shiki-dark on each token so our

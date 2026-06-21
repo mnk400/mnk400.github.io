@@ -130,4 +130,4 @@ Wilco almost exclusively shows up in the early morning slot. I can't fully expla
 
 Ten years of data and the main takeaway is that I slowly turned into an indiehead who really needs to listen to more genre's again. Could be worse. If anything, going through all of this has me wanting to fix that last part.
 
-<sup>See my recent scrobbles on the [music page](/more/music) or listen to some music on the [iPod](/more/ipod).</sup>
+<sup>See my recent scrobbles on the [music page](/music/music/) or listen to some music on the [iPod](/music/ipod/).</sup>
