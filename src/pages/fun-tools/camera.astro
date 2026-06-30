@@ -30,6 +30,24 @@ const modeOptions = cameraModes.map((m) => ({ value: m.id, label: m.label }));
         />
       </div>
 
+      {cameraModes.map((mode) => (
+        mode.controls?.length ? (
+          <div class="mode-controls" data-mode={mode.id} hidden={mode.id !== modeOptions[0].value}>
+            {mode.controls.map((control) => (
+              <div class="field">
+                <span class="field__label">{control.label}</span>
+                <SelectionSwitch
+                  id={`${mode.id}-${control.id}`}
+                  options={control.options}
+                  active={control.default}
+                  size="small"
+                />
+              </div>
+            ))}
+          </div>
+        ) : null
+      ))}
+
       <div class="toolbar">
         <button id="start-btn" class="normal-btn">Start Camera</button>
         <button id="fullscreen-btn" class="normal-btn">Fullscreen</button>
@@ -63,6 +81,26 @@ const modeOptions = cameraModes.map((m) => ({ value: m.id, label: m.label }));
     const ctx = canvas.getContext('2d')!;
     let activeMode: CameraMode = cameraModes[0];
 
+    // Per-mode sub-option state, seeded from each mode's declared defaults.
+    // The server pre-renders one SelectionSwitch per control; we just track
+    // its value and hand the active mode's slice to render() each frame.
+    const optionState: Record<string, Record<string, string>> = {};
+    for (const mode of cameraModes) {
+      optionState[mode.id] = {};
+      for (const control of mode.controls ?? []) {
+        optionState[mode.id][control.id] = control.default;
+        document.getElementById(`${mode.id}-${control.id}`)?.addEventListener('change', (e) => {
+          optionState[mode.id][control.id] = (e as CustomEvent<{ value: string }>).detail.value;
+        });
+      }
+    }
+
+    function showModeControls(id: string) {
+      document.querySelectorAll<HTMLElement>('.mode-controls').forEach((el) => {
+        el.hidden = el.dataset.mode !== id;
+      });
+    }
+
     function cssSize() {
       if (camera.isFullscreen()) return { w: window.innerWidth, h: window.innerHeight };
       const w = canvas!.parentElement!.clientWidth;
@@ -91,6 +129,7 @@ const modeOptions = cameraModes.map((m) => ({ value: m.id, label: m.label }));
         height: h,
         detail: parseInt(detailInput!.value),
         fullscreen: camera.isFullscreen(),
+        options: optionState[activeMode.id] ?? {},
       });
     }
 
@@ -101,6 +140,7 @@ const modeOptions = cameraModes.map((m) => ({ value: m.id, label: m.label }));
     modeToggle?.addEventListener('change', (e) => {
       const id = (e as CustomEvent<{ value: string }>).detail.value;
       activeMode = cameraModes.find((m) => m.id === id) ?? activeMode;
+      showModeControls(activeMode.id);
       if (!camera.isRunning()) {
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.clearRect(0, 0, canvas!.width, canvas!.height);

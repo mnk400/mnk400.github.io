@@ -2,7 +2,12 @@
 // Drawn one fillText per row (monospace, uniform advance) so a full frame is
 // ~rows draw calls, not cols×rows — cheap enough for the RAF loop.
 
-import { convertToAscii } from '../ascii-utils.ts';
+import {
+  ASCII_PALETTES,
+  convertToAscii,
+  type AsciiPalette,
+  type DitherMode,
+} from '../ascii-utils.ts';
 import { sampleFrame } from './sampler.ts';
 import type { CameraMode, RenderContext } from './types.ts';
 
@@ -30,7 +35,29 @@ function textColor(): string {
 export const asciiMode: CameraMode = {
   id: 'ascii',
   label: 'ASCII',
-  render({ ctx, video, width, height, detail }: RenderContext) {
+  controls: [
+    {
+      id: 'dither',
+      label: 'dither',
+      default: 'none',
+      options: [
+        { value: 'none', label: 'Smooth' },
+        { value: 'ordered', label: 'Ordered' },
+        { value: 'floyd', label: 'Floyd' },
+      ],
+    },
+    {
+      id: 'palette',
+      label: 'palette',
+      default: 'classic',
+      options: [
+        { value: 'classic', label: 'Classic' },
+        { value: 'blocks', label: 'Blocks' },
+        { value: 'minimal', label: 'Minimal' },
+      ],
+    },
+  ],
+  render({ ctx, video, width, height, detail, options }: RenderContext) {
     if (!video.videoWidth) return;
 
     // Fill the box: font size makes `cols` chars span the full width, then
@@ -42,8 +69,16 @@ export const asciiMode: CameraMode = {
     const rows = Math.max(1, Math.round(height / fontSize));
     const lineHeight = height / rows;
 
+    const palette = (options.palette as AsciiPalette) in ASCII_PALETTES
+      ? (options.palette as AsciiPalette)
+      : 'classic';
+    const dither = (options.dither as DitherMode) || 'none';
+
     const imageData = sampleFrame(video, cols, rows);
-    const lines = convertToAscii(imageData, cols, rows).split('\n');
+    const lines = convertToAscii(imageData, cols, rows, {
+      characters: ASCII_PALETTES[palette],
+      dither,
+    }).split('\n');
 
     ctx.font = `${fontSize}px ${FONT}`;
     ctx.textBaseline = 'top';

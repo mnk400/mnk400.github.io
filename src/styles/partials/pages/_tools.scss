@@ -126,6 +126,17 @@
         }
     }
 
+    // Per-mode sub-options (e.g. ASCII dither/palette). Only the active mode's
+    // block is shown; display:grid would otherwise defeat the hidden attribute.
+    .mode-controls {
+        display: grid;
+        gap: var(--spacing-sm);
+
+        &[hidden] {
+            display: none;
+        }
+    }
+
     // Static photo → ASCII converter still renders selectable text into <pre>.
     #ascii-output {
         white-space: pre;
