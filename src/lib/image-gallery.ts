@@ -74,6 +74,7 @@ interface RenderColumns {
 }
 
 const DEFAULT_PAGE_SIZE = 100;
+const FALLBACK_ASPECT_RATIO = '1 / 1';
 
 interface RenderOptions {
   showCaptions: boolean;
@@ -343,8 +344,16 @@ function setupControls(
   });
 }
 
-function setLoaded(card: HTMLElement, img: HTMLImageElement) {
+function setRatioFromNaturalSize(ratioBox: HTMLElement, img: HTMLImageElement): boolean {
+  if (img.naturalWidth <= 0 || img.naturalHeight <= 0) return false;
+  ratioBox.style.aspectRatio = `${img.naturalWidth} / ${img.naturalHeight}`;
+  delete ratioBox.dataset.ratioPending;
+  return true;
+}
+
+function setLoaded(card: HTMLElement, img: HTMLImageElement, ratioBox: HTMLElement) {
   const markLoaded = () => {
+    setRatioFromNaturalSize(ratioBox, img);
     card.classList.add('loaded');
   };
   if (img.complete && img.naturalWidth > 0) {
@@ -361,11 +370,20 @@ function createCard(item: GalleryItem, options: RenderOptions & { galleryIndex: 
 
   const ratioBox = document.createElement('div');
   ratioBox.className = 'image-ratio-box';
-  ratioBox.style.aspectRatio = `${item.width || 1} / ${item.height || 1}`;
+  if (item.width && item.height) {
+    ratioBox.style.aspectRatio = `${item.width} / ${item.height}`;
+  } else {
+    ratioBox.style.aspectRatio = FALLBACK_ASPECT_RATIO;
+    ratioBox.dataset.ratioPending = 'true';
+  }
 
   const img = document.createElement('img');
   img.src = item.thumb;
   img.alt = item.alt;
+  if (item.width && item.height) {
+    img.width = item.width;
+    img.height = item.height;
+  }
   img.loading = 'lazy';
   img.decoding = 'async';
   img.setAttribute('data-zoomable', '');
@@ -410,7 +428,7 @@ function createCard(item: GalleryItem, options: RenderOptions & { galleryIndex: 
 
     card.appendChild(caption);
   }
-  setLoaded(card, img);
+  setLoaded(card, img, ratioBox);
 
   return card;
 }

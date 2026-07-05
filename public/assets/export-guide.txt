@@ -291,6 +291,10 @@ Image grid classes are included for projects that share album/gallery layouts:
     .image-card
     .image-ratio-box
 
+Use an `aspect-ratio` on `.image-ratio-box` to reserve gallery item height. The
+image fills that ratio box with `object-fit: contain`, so thumbnails are not
+cropped when the source image ratio differs from the reserved ratio.
+
 
 ================================================================================
 9. IMAGE ZOOM STYLES

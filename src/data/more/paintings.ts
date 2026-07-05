@@ -225,6 +225,21 @@ export const paintingGalleryItems = [
       same_as: ['https://en.wikipedia.org/wiki/Gwen_John'],
     },
   },
+  {
+    id: 'archive/paintings/sargent',
+    title: 'John Singer Sargent',
+    shortTitle: 'Sargent',
+    tags: paintingTags,
+    image: '/assets/images/previews/paintings/gwen-john.jpg',
+    years: '1870 - 1926',
+    works: '70+',
+    order: 14,
+    source: 'https://mnk400.github.io/pipelines/paintings/sargent/manifest.json',
+    description: 'American expatriate who painted about a billion portraits.',
+    entity: {
+      same_as: ['https://en.wikipedia.org/wiki/John_Singer_Sargent'],
+    },
+  } 
 ] satisfies PaintingGalleryItemData[];
 
 export const paintingMoreItems = [
