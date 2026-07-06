@@ -28,7 +28,7 @@ export const thingGalleryItems = [
     title: 'Cameras',
     shortTitle: 'Cameras',
     tags: [...thingTags, 'cameras', 'photography'],
-    image: '/assets/images/previews/photo.jpg',
+    image: '/assets/images/previews/cameras.jpg',
     order: 1,
     description: 'A browsable archive of cameras I have owned or used.',
     source: 'https://media.manik.cc/cameras/manifest.json',
