@@ -1,0 +1,29 @@
+version: 2
+updates:
+  # JavaScript / Astro dependencies (package.json + package-lock.json)
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "deps"
+    groups:
+      # Bundle routine patch/minor bumps into one PR to cut noise.
+      # (Security fixes and major bumps are still opened individually.)
+      npm-minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+
+  # Keep the actions used in .github/workflows up to date too
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "ci"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
