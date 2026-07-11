@@ -140,6 +140,11 @@ $themes: (
     // Motion tokens (shared by view transitions + reveal)
     --motion-slide-offset: 8px;
 
+    // Typographic tracking. Size-specific: small UI labels want a hair of
+    // positive tracking for legibility; large display text tightens instead
+    // (applied per-heading). Expressed in em so it scales with the type.
+    --tracking-label: 0.02em;
+
     // Shadows
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
     --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.1);

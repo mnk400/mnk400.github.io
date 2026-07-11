@@ -28,6 +28,7 @@
     &__title {
         font-size: 2.4em;
         line-height: 1.1;
+        letter-spacing: -0.021em; // tighten tracking as the display size grows
     }
 
     &__tagline {
@@ -64,7 +65,7 @@
         color: var(--sec-text-color);
         font-size: 0.85em;
         text-transform: lowercase;
-        letter-spacing: 0.5px;
+        letter-spacing: var(--tracking-label);
     }
 
     &__install-panel {

@@ -26,8 +26,10 @@
     padding: 0;
     border: 0;
     border-radius: 0;
-    background-color: var(--background-main);
-    backdrop-filter: none;
+    // Dim-to-focus: a scrim + blur pushes the page back rather than replacing
+    // it, so the lightbox reads as a layer floating above the page.
+    background-color: color-mix(in srgb, var(--background-main) 82%, transparent);
+    backdrop-filter: blur(24px) saturate(120%);
     z-index: var(--z-modal);
     opacity: 0;
     transition: opacity var(--transition-medium);
@@ -39,7 +41,7 @@
     }
 
     @include hover-interactive {
-        background-color: var(--background-main);
+        background-color: color-mix(in srgb, var(--background-main) 82%, transparent);
         color: transparent;
         font-style: normal;
         text-decoration: none;
@@ -48,7 +50,7 @@
     &:focus,
     &:active,
     &.touch-hover {
-        background-color: var(--background-main);
+        background-color: color-mix(in srgb, var(--background-main) 82%, transparent);
         color: transparent;
         outline: none;
     }

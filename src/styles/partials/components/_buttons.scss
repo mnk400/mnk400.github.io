@@ -81,7 +81,7 @@ button,
         backdrop-filter: none;
         color: var(--sec-text-color);
         font-size: 0.85em;
-        letter-spacing: 0.3px;
+        letter-spacing: var(--tracking-label);
         border-radius: 0;
 
         @include hover-interactive {
@@ -187,12 +187,23 @@ input[type="file"]::file-selector-button {
             scale: 0.96;
         }
 
+        &:focus-visible {
+            outline: 2px solid var(--text-color);
+            outline-offset: 2px;
+        }
+
         @include hover-state-dark;
 
         &.active {
             background-color: var(--contrast-overlay);
             color: var(--background-main);
             outline: none;
+        }
+
+        // Keep the keyboard focus ring even on the active option.
+        &.active:focus-visible {
+            outline: 2px solid var(--text-color);
+            outline-offset: 2px;
         }
     }
 

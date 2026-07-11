@@ -171,7 +171,8 @@ function handleBackdropClick(e: MouseEvent) {
   if (e.target !== backdrop) return;
   e.preventDefault();
   e.stopPropagation();
-  requestAnimationFrame(closeZoom);
+  // Respond on the tap — no extra frame of latency before the close begins.
+  closeZoom();
 }
 
 function createOverlay(multi: boolean) {

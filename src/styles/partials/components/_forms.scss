@@ -87,7 +87,10 @@ select {
     max-height: 240px;
     margin-top: var(--spacing-md);
     padding: var(--spacing-xs);
-    @include translucent-surface(var(--translucent-low), 10px);
+    // This menu opens on top of another translucent surface (settings panel /
+    // card). A low-alpha surface on a low-alpha surface washes out, so make the
+    // upper layer near-solid with a thicker blur to read as clearly in front.
+    @include translucent-surface(color-mix(in srgb, var(--background-main) 92%, transparent), 16px);
     @include expanding-collapsible;
     overflow-y: auto;
 
@@ -218,7 +221,7 @@ input[type="color"] {
     color: var(--sec-text-color);
     font-size: 0.85em;
     font-weight: 300;
-    letter-spacing: 0.3px;
+    letter-spacing: var(--tracking-label);
     line-height: 1;
     text-transform: lowercase;
     font-variant-numeric: tabular-nums;

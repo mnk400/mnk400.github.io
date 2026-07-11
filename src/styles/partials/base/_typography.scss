@@ -7,15 +7,17 @@
 
 // Base typography
 * {
-    font-family: var(--font-family, -apple-system, "SF Pro Display", "Inter", sans-serif);
+    font-family: var(--font-family, -apple-system, "SF Pro Display", "Inter Variable", "Inter", sans-serif);
 }
 
 body {
     color: var(--text-color);
-    font-family: var(--font-family, -apple-system, "SF Pro Display", "Inter", sans-serif);
+    font-family: var(--font-family, -apple-system, "SF Pro Display", "Inter Variable", "Inter", sans-serif);
     font-size: calc(1em * var(--font-size-scale, 1));
     font-weight: 200;
     word-wrap: break-word;
+    // Let Inter Variable / SF pick the optical master for the rendered size.
+    font-optical-sizing: auto;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
@@ -28,6 +30,7 @@ h1 {
     font-weight: 500;
     margin-top: var(--spacing-md);
     margin-bottom: var(--spacing-sm);
+    letter-spacing: -0.015em; // large text reads too loose at default tracking
     text-wrap: balance;
 }
 
@@ -36,6 +39,7 @@ h2 {
     color: var(--text-color);
     font-weight: 500;
     margin-bottom: var(--spacing-md);
+    letter-spacing: -0.01em;
     text-wrap: balance;
 }
 
@@ -52,16 +56,15 @@ h3 {
 p {
     font-size: 12pt;
     font-weight: 200;
-    line-height: 1.25em;
+    line-height: 1.5; // body copy wants looser leading than headings
 
     // In post content
     .post__content & {
         font-size: 11.5pt;
         font-weight: 200;
-        line-height: 16pt;
+        line-height: 1.6; // unitless so leading tracks the font-size scale
         text-align: left;
         word-wrap: break-word;
-        letter-spacing: 0.2px;
         color: var(--sec-text-color);
     }
 }

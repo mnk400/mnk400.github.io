@@ -12,7 +12,7 @@
     font-size: 0.85em;
     font-weight: 300;
     color: var(--sec-text-color);
-    letter-spacing: 0.3px;
+    letter-spacing: var(--tracking-label);
     margin: var(--spacing-xl) 0 var(--spacing-sm);
 }
 
@@ -83,7 +83,7 @@
     h2 {
         font-weight: 400;
         font-size: 1.4em;
-        letter-spacing: 0.3px;
+        letter-spacing: -0.01em; // heading size — tighten, not the small-label +track
         margin: 0 0 var(--spacing-xs);
     }
 
@@ -106,7 +106,7 @@
     font-size: 0.85em;
     font-weight: 300;
     color: var(--sec-text-color);
-    letter-spacing: 0.3px;
+    letter-spacing: var(--tracking-label);
     margin: var(--spacing-xl) 0 var(--spacing-sm);
 }
 
@@ -136,7 +136,7 @@
         transform: translate(-50%, -50%);
         font-size: 1.3em;
         font-weight: 300;
-        line-height: 100;
+        line-height: 1;
     }
 
     @include hover-interactive {
@@ -212,7 +212,7 @@
     font-size: 0.85em;
     font-weight: 300;
     color: var(--sec-text-color);
-    letter-spacing: 0.3px;
+    letter-spacing: var(--tracking-label);
     margin: var(--spacing-xl) 0 var(--spacing-sm);
 }
 
@@ -278,7 +278,7 @@
     font-size: 0.85em;
     font-weight: 300;
     color: var(--sec-text-color);
-    letter-spacing: 0.3px;
+    letter-spacing: var(--tracking-label);
 }
 
 @each $state in (win, lose) {
@@ -295,7 +295,7 @@
     font-size: 0.85em;
     font-weight: 300;
     color: var(--sec-text-color);
-    letter-spacing: 0.3px;
+    letter-spacing: var(--tracking-label);
     margin-bottom: var(--spacing-sm);
 }
 
@@ -418,6 +418,7 @@
                         font-size: 2rem;
                         font-weight: 500;
                         color: var(--text-color);
+                        font-variant-numeric: tabular-nums;
                     }
 
                     .stat-label {

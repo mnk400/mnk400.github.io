@@ -35,6 +35,7 @@
         font-weight: 500;
         text-align: left;
         line-height: 1.1em;
+        letter-spacing: -0.02em; // tighten tracking as the display size grows
         text-wrap: balance;
     }
 

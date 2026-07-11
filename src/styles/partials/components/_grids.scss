@@ -176,7 +176,7 @@
         font-size: 0.75em;
         font-weight: 400;
         text-align: center;
-        letter-spacing: 0.3px;
+        letter-spacing: var(--tracking-label);
         background: rgba(0, 0, 0, 0.35);
         color: white;
         backdrop-filter: blur(4px);
@@ -195,7 +195,7 @@
         justify-content: center;
         font-size: 0.85em;
         font-weight: 500;
-        letter-spacing: 0.3px;
+        letter-spacing: var(--tracking-label);
         color: white;
         background: rgba(0, 0, 0, 0.55);
         backdrop-filter: blur(4px);

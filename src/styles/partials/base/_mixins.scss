@@ -81,7 +81,7 @@
 
 // System font stack
 @mixin system-font {
-    font-family: var(--font-family, -apple-system, "SF Pro Display", "inter", sans-serif);
+    font-family: var(--font-family, -apple-system, "SF Pro Display", "Inter Variable", "Inter", sans-serif);
 }
 
 // Monospace font

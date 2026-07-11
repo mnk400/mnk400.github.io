@@ -233,6 +233,10 @@
         background-color: var(--contrast-overlay);
         color: var(--background-main);
     }
+
+    &:not(:disabled):active {
+        scale: 0.96;
+    }
 }
 
 .historical-browser-go-btn {

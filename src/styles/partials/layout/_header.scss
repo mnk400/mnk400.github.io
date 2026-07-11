@@ -99,8 +99,8 @@ header:has(.header-breadcrumb) {
         height: calc(100% + 120px);
         background: linear-gradient(
             to bottom,
-            var(--background-main) 0%,
-            color-mix(in srgb, var(--background-main) 92%, transparent) 12.5%,
+            color-mix(in srgb, var(--background-main) 88%, transparent) 0%,
+            color-mix(in srgb, var(--background-main) 82%, transparent) 12.5%,
             color-mix(in srgb, var(--background-main) 80%, transparent) 25%,
             color-mix(in srgb, var(--background-main) 66%, transparent) 37.5%,
             color-mix(in srgb, var(--background-main) 50%, transparent) 50%,
@@ -122,6 +122,11 @@ header:has(.header-breadcrumb) {
 
 :root.is-scrolled header:has(.header-breadcrumb)::before {
     opacity: 1;
+    // Frost the content scrolling under the sticky header so it reads as a
+    // glass material, not just a solid fade. Vibrancy (the mostly-solid top
+    // gradient stop above) keeps the breadcrumb legible over it.
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
 }
 
 .header-left {
@@ -199,6 +204,11 @@ header:has(.header-breadcrumb) {
     > .menu-trigger {
         @include button-as-text;
         font-weight: inherit !important; // override global `button { font-weight: 300 !important }`
+        transition: scale var(--transition-fast);
+
+        &:active {
+            scale: 0.96;
+        }
     }
 }
 
@@ -242,6 +252,11 @@ header:has(.header-breadcrumb) {
     align-self: center; // baseline doesn't work for icon-only buttons; center inside the breadcrumb flex row
     display: inline-flex;
     align-items: center;
+    transition: scale var(--transition-fast);
+
+    &:active {
+        scale: 0.94;
+    }
 }
 
 .breadcrumb-home {
