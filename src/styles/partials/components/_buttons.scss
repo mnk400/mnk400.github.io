@@ -16,7 +16,7 @@ button,
     font-size: 1em;
     font-weight: 300 !important;
     cursor: pointer;
-    transition: background-color var(--transition-medium), scale var(--transition-fast);
+    transition: background-color var(--transition-medium), scale var(--transition-press);
     backdrop-filter: blur(10px);
     @include system-font;
     text-decoration: none !important;
@@ -178,7 +178,7 @@ input[type="file"]::file-selector-button {
         background-color: var(--translucent-low);
         color: var(--text-color);
         cursor: pointer;
-        transition: background-color var(--transition-medium), color var(--transition-medium), scale var(--transition-fast);
+        transition: background-color var(--transition-medium), color var(--transition-medium), scale var(--transition-press);
 
         display: inline-block;
         @include soft-outline;
@@ -244,7 +244,7 @@ input[type="file"]::file-selector-button {
     justify-content: center;
     opacity: 0;
     pointer-events: none;
-    transition: opacity var(--transition-medium), scale var(--transition-fast);
+    transition: opacity var(--transition-medium), scale var(--transition-press);
     z-index: 2;
     @include soft-outline;
 
@@ -386,6 +386,7 @@ input[type="file"]::file-selector-button {
         background: transparent;
         border: 0;
         outline: none;
+        --focus-ring-color: transparent;
         color: var(--text-color);
         font-size: 0.9em;
         @include system-font;

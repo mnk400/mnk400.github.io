@@ -1,8 +1,17 @@
 import { getMoreCategory } from '../data/categories.ts';
 
+// Category crumbs only link when the category has a central index page
+// (e.g. /archive/ exists but /games/ doesn't). Derived from the filesystem
+// at build time so it can never drift from the actual routes.
+const indexPages = import.meta.glob('../pages/**/index.astro');
+
+function categoryHasIndexPage(prefix: string): boolean {
+  return `../pages/${prefix}/index.astro` in indexPages;
+}
+
 export interface BreadcrumbItem {
   label: string;
-  href: string;
+  href?: string;
   current?: boolean;
 }
 
@@ -30,7 +39,8 @@ export function getBreadcrumbs(pathname: string, pageTitle?: string): Breadcrumb
     if (!category) return;
     categoryCrumbs.push({
       label: category.label,
-      href: `/${prefix}/`,
+      // Only link categories that actually have a central page
+      ...(categoryHasIndexPage(prefix) ? { href: `/${prefix}/` } : {}),
     });
   });
 
@@ -43,7 +53,7 @@ export function getBreadcrumbs(pathname: string, pageTitle?: string): Breadcrumb
   }
 
   const lastCategory = categoryCrumbs.at(-1);
-  if (lastCategory && normalizePath(lastCategory.href) === path) {
+  if (lastCategory?.href && normalizePath(lastCategory.href) === path) {
     lastCategory.current = true;
     return categoryCrumbs;
   }

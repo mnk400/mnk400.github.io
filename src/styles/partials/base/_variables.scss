@@ -129,9 +129,13 @@ $themes: (
     // Control Sizes
     --control-height-sm: 30px;
     --control-height-md: 36px;
+    --control-thumb-size: 12px;
 
     // Transitions
     --transition-fast: 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+    // Press feedback only (:active scale), quicker ease-out so presses feel
+    // tactile; everything else keeps the standard curve above.
+    --transition-press: 0.1s cubic-bezier(0.2, 0, 0, 1);
     --transition-medium: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-slow: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-backdrop: 0.4s cubic-bezier(0.4, 0, 0.2, 1);

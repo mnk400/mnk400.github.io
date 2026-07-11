@@ -72,6 +72,8 @@
     width: 30px;
     height: 30px;
     flex-shrink: 0;
+    border-radius: var(--radius-sm);
+    @include soft-outline(var(--translucent-medium));
 }
 
 .music-widget-art-placeholder {

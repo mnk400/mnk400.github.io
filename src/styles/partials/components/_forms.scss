@@ -9,17 +9,17 @@ input[type="text"],
 input[type="email"],
 input[type="url"],
 select {
-    padding: 9px var(--spacing-md);
+    padding: var(--spacing-sm) var(--spacing-md);
     background-color: var(--translucent-low);
-    border: var(--translucent-medium);
+    border: none;
     border-radius: var(--radius-md);
     color: var(--text-color);
     @include system-font;
     transition: background-color var(--transition-medium);
     @include soft-outline;
+    --focus-ring-color: transparent;
 
     &:focus {
-        outline: none;
         background-color: var(--translucent-high);
     }
 
@@ -160,8 +160,8 @@ input[type="range"] {
     &::-webkit-slider-thumb {
         -webkit-appearance: none;
         appearance: none;
-        width: 12px;
-        height: 12px;
+        width: var(--control-thumb-size);
+        height: var(--control-thumb-size);
         background: var(--text-color);
         border: none;
         border-radius: 50%;
@@ -170,8 +170,8 @@ input[type="range"] {
     }
 
     &::-moz-range-thumb {
-        width: 12px;
-        height: 12px;
+        width: var(--control-thumb-size);
+        height: var(--control-thumb-size);
         background: var(--text-color);
         border: none;
         border-radius: 50%;

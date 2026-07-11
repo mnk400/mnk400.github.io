@@ -114,6 +114,15 @@
     }
 }
 
+// Expand a small control's tap target without moving it visually
+// symmetric padding grows the hit area, negative margin gives it back
+// to the layout. Don't use inside overflow:hidden containers (the
+// extended area gets clipped).
+@mixin tap-target-expand($size: var(--spacing-md)) {
+    padding: $size;
+    margin: calc(#{$size} * -1);
+}
+
 // Visually hidden but accessible
 @mixin visually-hidden {
     position: absolute;

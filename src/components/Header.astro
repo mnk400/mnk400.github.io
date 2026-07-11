@@ -44,12 +44,12 @@ const isHome = pathname === '/' || pathname === '/index.html';
             <a href="https://linkedin.com/in/manik-kumar" target="_blank">linkedin</a>
             <a href="mailto:me@manik.cc">email</a>
             <span class="menu-sep">/</span>
-            <button type="button" class="menu-trigger" data-settings-trigger><span class="settings-toggle-text">settings</span></button>
+            <button type="button" class="menu-trigger" data-settings-trigger aria-expanded="false" aria-controls="settingsPanel"><span class="settings-toggle-slot"><span class="settings-toggle-text">settings</span></span></button>
           </div>
         </div>
       ) : (
         <nav class="header-breadcrumb">
-          <button type="button" class="breadcrumb-back" data-back-nav>
+          <button type="button" class="breadcrumb-back" data-back-nav aria-label="Go back">
             <Icon name="arrow-down-left" />
           </button>
           <a href="/" class="breadcrumb-home">Manik</a>
@@ -58,8 +58,10 @@ const isHome = pathname === '/' || pathname === '/index.html';
               <span class:list={['breadcrumb-sep', { 'breadcrumb-root-sep': item === breadcrumbs[0] }]}>/</span>
               {item.current ? (
                 <span class="breadcrumb-current">{item.label}</span>
-              ) : (
+              ) : item.href ? (
                 <a href={item.href} class="breadcrumb-mid">{item.label}</a>
+              ) : (
+                <span class="breadcrumb-mid">{item.label}</span>
               )}
             </>
           ))}
@@ -207,6 +209,9 @@ const isHome = pathname === '/' || pathname === '/index.html';
     if (menu) menu.classList.toggle('is-open', isOpen);
     document.querySelectorAll('.settings-toggle-text').forEach(el => {
       el.textContent = isOpen ? 'close' : 'settings';
+    });
+    document.querySelectorAll('[data-settings-trigger]').forEach(el => {
+      el.setAttribute('aria-expanded', String(isOpen));
     });
   });
 </script>

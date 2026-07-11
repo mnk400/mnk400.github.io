@@ -198,16 +198,3 @@
 .rounded-full {
     border-radius: var(--radius-round);
 }
-
-// Transition utilities
-.transition-fast {
-    transition: all var(--transition-fast);
-}
-
-.transition-medium {
-    transition: all var(--transition-medium);
-}
-
-.transition-slow {
-    transition: all var(--transition-slow);
-}

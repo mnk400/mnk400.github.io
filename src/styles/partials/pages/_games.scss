@@ -152,10 +152,10 @@
     }
 
     &.winning-cell {
-        background-color: color-mix(in srgb, var(--game-ttt-win) 50%, transparent) !important;
+        background-color: color-mix(in srgb, var(--game-ttt-win) 50%, transparent);
 
         &::before {
-            color: white !important;
+            color: var(--text-color);
         }
     }
 }
@@ -435,6 +435,19 @@
         gap: var(--spacing-md);
         justify-content: center;
         flex-wrap: wrap;
+    }
+}
+
+// Reduced motion, game feedback stays instant instead of animated
+@media (prefers-reduced-motion: reduce) {
+    #flappyCanvas,
+    #game-over,
+    #start-screen,
+    .ttt-cell,
+    .gol-cell,
+    .ms-cell,
+    .colordle-container .hex-cell {
+        transition: none;
     }
 }
 
