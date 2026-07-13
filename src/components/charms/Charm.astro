@@ -1,0 +1,58 @@
+---
+// Charm, a small decorative element pinned to a corner of a positioned host.
+//
+// The host must be `position: relative`. The charm absolutely positions itself
+// to one of the host's corners, then applies an outward nudge (`x`/`y`) and a
+// resting `rotate`. All instance values ride in as CSS custom properties so no
+// per-instance numbers leak into SCSS; charm-specific look lives in a
+// `.charm--<name>` partial under `styles/partials/charms/`.
+//
+// Content is an open slot: emoji, <img>, inline SVG, or a text badge.
+
+interface Props {
+  anchor?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
+  x?: string; // outward horizontal nudge, e.g. '0.3em'
+  y?: string; // outward vertical nudge, e.g. '-0.55em'
+  rotate?: number; // resting tilt in degrees
+  class?: string; // charm modifier, e.g. 'charm--flower'
+}
+
+const { anchor = 'top-right', x = '0', y = '0', rotate = 0, class: className = '' } = Astro.props;
+
+const anchorClass = {
+  'top-right': 'charm--tr',
+  'top-left': 'charm--tl',
+  'bottom-right': 'charm--br',
+  'bottom-left': 'charm--bl',
+}[anchor];
+
+const style = `--charm-x:${x};--charm-y:${y};--charm-rotate:${rotate}deg;`;
+---
+
+<span class:list={['charm', anchorClass, className]} style={style} aria-hidden="true">
+  <slot />
+</span>
+
+<script>
+  // Opt-in click pulse for charms using the `.charm-fx__body` contract (see
+  // styles/partials/charms/_motion). Bundled once for the whole site; wires
+  // every such charm on the page and re-runs after view transitions.
+  function wireCharmPulse() {
+    document.querySelectorAll<HTMLElement>('.charm-fx__body').forEach((body) => {
+      const charm = body.closest<HTMLElement>('.charm');
+      if (!charm || charm.dataset.pulseInit === 'true') return;
+      charm.dataset.pulseInit = 'true';
+
+      charm.addEventListener('click', () => {
+        body.classList.remove('is-pulsing');
+        void body.offsetWidth; // reflow so the animation retriggers on rapid clicks
+        body.classList.add('is-pulsing');
+      });
+      body.addEventListener('animationend', (e) => {
+        if (e.animationName === 'charm-pulse') body.classList.remove('is-pulsing');
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', wireCharmPulse);
+</script>

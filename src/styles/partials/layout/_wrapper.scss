@@ -54,6 +54,7 @@ body {
 
 // Expandable content
 .expandable-section {
+    position: relative; // host for a corner badge charm
     margin-bottom: var(--spacing-md);
 }
 

@@ -136,9 +136,9 @@ header:has(.header-breadcrumb) {
 }
 
 .site-name-lockup {
+    position: relative; // host for the flower charm
     display: inline-flex;
     align-items: center;
-    gap: var(--spacing-xs);
     align-self: flex-start;
     line-height: 1;
 }
@@ -156,13 +156,6 @@ header:has(.header-breadcrumb) {
         text-decoration: none;
         font-style: normal;
     }
-}
-
-.site-name-flower {
-    width: auto;
-    height: 1.45em;
-    flex: 0 0 auto;
-    object-fit: contain;
 }
 
 .site-name-menu {

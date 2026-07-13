@@ -1,0 +1,38 @@
+// =============================================================================
+// CHARM · count — a little tally badge (e.g. post count on Archive)
+// =============================================================================
+//
+// A small filled pill pinned to a host's top-right corner. The green is chosen
+// to sit softly on every theme canvas (light, dark, and the green/pink ones),
+// so it's a deliberate theme-independent value, swap via --charm-count-bg.
+// Wears the shared entrance-pop + click-pulse (see charms/_motion).
+
+@use "motion" as *;
+
+.charm--count {
+    --charm-count-bg: #7cae86;
+    --charm-count-fg: #ffffff;
+    --charm-count-outline: #b3d6b8;
+
+    font-size: 0.75rem; // em basis for both the corner nudge and the pill
+
+    @include charm-motion;
+
+    .charm-fx__body {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        min-width: 2.15em;
+        height: 1.5em;
+        padding: 0 0.5em;
+        border-radius: var(--radius-pill);
+        background-color: var(--charm-count-bg);
+        color: var(--charm-count-fg);
+        outline: 2px solid var(--charm-count-outline);
+        font-weight: 500;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: 0.01em;
+        line-height: 1;
+    }
+}

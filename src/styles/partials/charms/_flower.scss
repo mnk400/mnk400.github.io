@@ -1,0 +1,26 @@
+// =============================================================================
+// CHARM · flower — the site-name bloom
+// =============================================================================
+//
+// Pinned to the top-right shoulder of "Manik" (see Header.astro). Resting tilt
+// comes from the Charm `rotate` prop; hovering the flower perks it up, rotates
+// toward upright and scales up, like cuelume's star.
+
+.charm--flower {
+    pointer-events: auto; // catch hover on the flower itself, not just "Manik"
+
+    img {
+        display: block;
+        width: auto;
+        height: 1em;
+        object-fit: contain;
+        background-color: transparent;
+    }
+}
+
+@media (any-hover: hover) {
+    .charm--flower:hover {
+        --charm-rotate-hover: 10deg;
+        --charm-scale: 1.4;
+    }
+}

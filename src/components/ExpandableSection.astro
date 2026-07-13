@@ -12,6 +12,7 @@ const { id, title, expanded = false, class: extraClass } = Astro.props;
 const wrapperClass = ['expandable-section', extraClass].filter(Boolean).join(' ');
 ---
 <div class={wrapperClass} id={id} data-expandable-section>
+  <slot name="badge" />
   <button class="expandable-toggle" aria-expanded={expanded ? 'true' : 'false'}>
     <span class="toggle-text" set:html={title} />
     <span class="toggle-icon"><Icon name="plus" /></span>

@@ -78,6 +78,7 @@
 
 // Shared image gallery shell
 .image-gallery {
+    position: relative;
     display: grid;
     gap: var(--spacing-md);
     margin-top: var(--spacing-lg);

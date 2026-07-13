@@ -19,6 +19,12 @@
 @use "partials/components/image-zoom";
 @use "partials/components/icon";
 
+// Charms
+@use "partials/charms/charm";
+@use "partials/charms/flower";
+@use "partials/charms/count";
+@use "partials/charms/canister";
+
 // Pages
 @use "partials/pages/post";
 @use "partials/pages/home";

@@ -4,6 +4,17 @@
 
 .page-content {
     view-transition-name: page-content;
+
+    // Charm gutter. Charms can sit a few px past the content column (e.g. the
+    // Archive count badge). This element carries the transition name, and a
+    // view-transition snapshot clips to its border box, so without room that
+    // overflow gets cropped mid-transition. Widen the box outward into the
+    // wrapper's side padding; the matching negative margin cancels it, so the
+    // *content* keeps its exact width and position while the captured box gains
+    // a gutter on each side.
+    --content-gutter: var(--spacing-lg);
+    padding-inline: var(--content-gutter);
+    margin-inline: calc(-1 * var(--content-gutter));
 }
 
 html {

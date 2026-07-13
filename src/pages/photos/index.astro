@@ -1,6 +1,7 @@
 ---
 import Post from '../../layouts/Post.astro';
 import ImageGallery from '../../components/ImageGallery.astro';
+import Charm from '../../components/charms/Charm.astro';
 ---
 <Post
   title="Photos"
@@ -16,5 +17,11 @@ import ImageGallery from '../../components/ImageGallery.astro';
     source="https://media.manik.cc/photos/manifest.json"
     galleryName="photos"
     showCaptions={false}
-  />
+  >
+    <Charm slot="charm" anchor="top-right" x="1em" y="-1.1em" rotate={-10} class="charm--canister">
+      <span class="charm-fx">
+        <img class="charm-fx__body" src="/assets/images/site/film_canister.png" alt="" decoding="async" />
+      </span>
+    </Charm>
+  </ImageGallery>
 </Post>

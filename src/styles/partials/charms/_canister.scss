@@ -1,0 +1,41 @@
+// =============================================================================
+// CHARM · canister — a painted 35mm film canister
+// =============================================================================
+//
+// A little still-life object that straddles the top-right corner of the photo
+// gallery. Wears the shared entrance-pop + click-pulse (see charms/_motion).
+
+@use "motion" as *;
+
+.charm--canister {
+    --charm-canister-outline: #f2cd82;
+
+    @include charm-motion;
+
+    // Ease the object in a touch on narrow screens, where it otherwise crowds
+    // the right edge
+    @media (max-width: 768px) {
+        --charm-scale: 0.9;
+    }
+
+    $o: 1px; // outline thickness
+
+    .charm-fx__body {
+        display: block;
+        width: auto;
+        height: 3.25em;
+        object-fit: contain;
+        background-color: transparent;
+        // Die-cut sticker outline tracing the alpha silhouette; a plain outline
+        // would only box the transparent PNG's rectangle.
+        filter:
+            drop-shadow($o 0 0 var(--charm-canister-outline))
+            drop-shadow(-$o 0 0 var(--charm-canister-outline))
+            drop-shadow(0 $o 0 var(--charm-canister-outline))
+            drop-shadow(0 (-$o) 0 var(--charm-canister-outline))
+            drop-shadow($o $o 0 var(--charm-canister-outline))
+            drop-shadow(-$o $o 0 var(--charm-canister-outline))
+            drop-shadow($o (-$o) 0 var(--charm-canister-outline))
+            drop-shadow(-$o (-$o) 0 var(--charm-canister-outline));
+    }
+}

@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import Default from '../layouts/Default.astro';
 import ExpandableSection from '../components/ExpandableSection.astro';
+import Charm from '../components/charms/Charm.astro';
 import MusicWidget from '../components/MusicWidget.astro';
 import Footer from '../components/Footer.astro';
 
@@ -54,6 +55,9 @@ const posts = allPosts
     </div>
 
     <ExpandableSection id="blog-archive" class="expandable-section--compact" title="<b>Archive</b>">
+      <Charm slot="badge" anchor="top-right" x="0.5em" y="-0.8em" rotate={8} class="charm--count">
+        <span class="charm-fx"><span class="charm-fx__body">{posts.length}</span></span>
+      </Charm>
       <div class="archive">
         <ul>
           {posts.map(post => (

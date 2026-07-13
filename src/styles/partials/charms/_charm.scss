@@ -1,0 +1,39 @@
+// =============================================================================
+// CHARM — base positioning primitive for decorative corner charms
+// =============================================================================
+//
+// A charm pins to a corner of its `position: relative` host and applies an
+// outward nudge + resting rotation, all fed in via inline custom properties
+// (see components/charms/Charm.astro). Hover/state animation is layered on top
+// through `--charm-rotate-hover` and `--charm-scale` so a stylesheet rule can
+// override them without fighting the inline resting values.
+
+.charm {
+    --charm-x: 0;
+    --charm-y: 0;
+    --charm-rotate: 0deg;
+    --charm-rotate-hover: 0deg;
+    --charm-scale: 1;
+
+    position: absolute;
+    z-index: 1;
+    display: inline-flex;
+    line-height: 1;
+    pointer-events: none;
+    transform:
+        translate(var(--charm-x), var(--charm-y))
+        rotate(calc(var(--charm-rotate) + var(--charm-rotate-hover)))
+        scale(var(--charm-scale));
+    transform-origin: center;
+    transition: transform var(--transition-medium);
+    will-change: transform;
+
+    &--tr { top: 0; right: 0; }
+    &--tl { top: 0; left: 0; }
+    &--br { bottom: 0; right: 0; }
+    &--bl { bottom: 0; left: 0; }
+
+    @media (prefers-reduced-motion: reduce) {
+        transition: none;
+    }
+}

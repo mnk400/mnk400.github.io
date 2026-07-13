@@ -1,0 +1,49 @@
+// =============================================================================
+// CHARM · motion — shared entrance pop + click pulse
+// =============================================================================
+//
+// Opt-in motion for charms, layered over the base positioning primitive. A
+// charm gets both effects by wrapping its visual in the two-element contract:
+//
+//   <span class="charm-fx">          ← entrance layer (pops in on load)
+//     <span class="charm-fx__body">  ← pulse layer + the actual visual
+//
+// The two one-shot animations sit on separate elements on purpose, so the
+// `animation` property is never shared: toggling the click pulse can't replay
+// the entrance. Charm.astro's script wires the click → `.is-pulsing`. Drop it
+// into a `.charm--<name>` rule with `@include charm-motion;`.
+
+@mixin charm-motion {
+    pointer-events: auto;
+    cursor: pointer;
+
+    .charm-fx {
+        display: inline-flex;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+        .charm-fx {
+            animation: charm-pop-in 440ms ease-out 150ms both;
+        }
+
+        .charm-fx__body.is-pulsing {
+            animation: charm-pulse 440ms ease-out;
+        }
+    }
+}
+
+// Quick pop: Grow → to overshoot → dip → settle
+@keyframes charm-pop-in {
+    0%   { opacity: 0; transform: translateY(-8px) scale(0.7); }
+    35%  { opacity: 1; transform: translateY(1px) scale(1.05); }
+    70%  { transform: translateY(0) scale(0.99); }
+    100% { opacity: 1; transform: none; }
+}
+
+// Quick pulse: Slight overshoot + settle, like a flicked physical object
+@keyframes charm-pulse {
+    0%   { transform: scale(1); }
+    35%  { transform: scale(1.18); }
+    70%  { transform: scale(0.96); }
+    100% { transform: scale(1); }
+}
