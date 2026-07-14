@@ -66,7 +66,8 @@
 // Standard hover state (subtle)
 @mixin hover-state-subtle {
     @include hover-interactive {
-        background-color: var(--translucent-medium);
+        background-color: var(--translucent-medium-high);
+        color: var(--text-color);
     }
 }
 

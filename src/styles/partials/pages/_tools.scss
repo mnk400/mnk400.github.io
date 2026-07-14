@@ -229,10 +229,7 @@
     backdrop-filter: none;
     @include soft-outline;
 
-    @include hover-interactive {
-        background-color: var(--contrast-overlay);
-        color: var(--background-main);
-    }
+    @include hover-state-subtle;
 }
 
 .historical-browser-go-btn {

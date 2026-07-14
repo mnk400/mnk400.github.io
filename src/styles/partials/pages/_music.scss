@@ -64,7 +64,14 @@
     line-height: 1em;
     border-radius: var(--radius-lg);
 
-    @include hover-state-dark;
+    @include hover-state-subtle;
+
+    // The album art is its own charm, clicking it pulses instead of following
+    // the link, no need to show widget bar's hover state
+    &:has(.music-widget-art-wrapper:hover) {
+        background-color: var(--translucent-low);
+        color: inherit;
+    }
 }
 
 .music-widget-art-wrapper {
@@ -74,6 +81,27 @@
     flex-shrink: 0;
     border-radius: var(--radius-sm);
     @include soft-outline(var(--translucent-medium));
+
+    // The album art is a hidden charm: hover blows the thumbnail up into a
+    // peek-sized cover, click gives it a physical pulse.
+    cursor: pointer;
+    transform-origin: left center;
+    transition: transform var(--transition-medium);
+    will-change: transform;
+    z-index: 1;
+
+    @media (any-hover: hover) and (prefers-reduced-motion: no-preference) {
+        &:hover {
+            transform: translateX(calc(-1 * var(--spacing-md) - 5.5px)) rotate(-1.5deg) scale(1.75);
+            z-index: 3;
+        }
+    }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .music-widget-art.is-pulsing {
+        animation: charm-pulse 440ms ease-out;
+    }
 }
 
 .music-widget-art-placeholder {
@@ -179,9 +207,7 @@
         @include translucent-surface;
         transition: background-color var(--transition-medium);
 
-        @include hover-interactive {
-            background-color: var(--translucent-medium);
-        }
+        @include hover-state-subtle;
 
         .music-artist-name {
             font-size: 1em;

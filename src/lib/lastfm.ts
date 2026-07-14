@@ -43,6 +43,8 @@ export async function initMusicWidget() {
   const widget = document.getElementById('music-widget');
   if (!widget) return;
 
+  wireArtCharm(widget);
+
   try {
     const track = await fetchRecentTrack();
     if (!track) return;
@@ -99,6 +101,27 @@ export async function initMusicWidget() {
   } catch (error) {
     console.error('Error fetching music widget:', error);
   }
+}
+
+// The album art in the widget doubles as a hidden charm. Hover-grow is pure CSS
+// (see _music.scss); the click pulse needs JS to retrigger the one-shot each
+// time. Clicking the art plays the pulse instead of following the widget link.
+function wireArtCharm(widget: HTMLElement) {
+  const wrapper = widget.querySelector<HTMLElement>('.music-widget-art-wrapper');
+  const art = widget.querySelector<HTMLElement>('.music-widget-art');
+  if (!wrapper || !art || wrapper.dataset.charmInit === 'true') return;
+  wrapper.dataset.charmInit = 'true';
+
+  wrapper.addEventListener('click', (event) => {
+    event.preventDefault(); // pulse the charm rather than open the link
+    event.stopPropagation();
+    art.classList.remove('is-pulsing');
+    void art.offsetWidth; // reflow so rapid clicks retrigger the animation
+    art.classList.add('is-pulsing');
+  });
+  art.addEventListener('animationend', (event) => {
+    if (event.animationName === 'charm-pulse') art.classList.remove('is-pulsing');
+  });
 }
 
 function fetchArtistImage(artistName: string): Promise<string> {
