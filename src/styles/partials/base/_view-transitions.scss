@@ -18,7 +18,11 @@
 }
 
 html {
-    view-transition-name: root;
+    // Chromium's UA stylesheet gives :root a `view-transition-name: root`,
+    // which creates a full-viewport snapshot group. Dia appears to sample that
+    // native root layer for browser chrome color mid-navigation, so opt the
+    // document root out while keeping our named content/header transitions.
+    view-transition-name: none;
 }
 
 ::view-transition {
@@ -133,15 +137,6 @@ html[data-vt-direction="back"] {
 ::view-transition-new(nav-home),
 ::view-transition-new(nav-sep) {
     animation: vt-fade-in var(--transition-medium) both;
-}
-
-// -----------------------------------------------------------------------------
-// Root group: no animation (keeps background stable)
-// -----------------------------------------------------------------------------
-
-::view-transition-old(root),
-::view-transition-new(root) {
-    animation: none;
 }
 
 // -----------------------------------------------------------------------------
