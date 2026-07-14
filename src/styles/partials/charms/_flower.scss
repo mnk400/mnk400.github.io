@@ -4,15 +4,18 @@
 //
 // Pinned to the top-right shoulder of "Manik" (see Header.astro). Resting tilt
 // comes from the Charm `rotate` prop; hovering the flower perks it up, rotates
-// toward upright and scales up, like cuelume's star.
+// toward upright and scales up. Wears the shared
+// click-pulse but skips the entrance pop (see charms/_motion).
+
+@use "motion" as *;
 
 .charm--flower {
-    pointer-events: auto; // catch hover on the flower itself, not just "Manik"
+    @include charm-motion($pop: false); // pointer-events:auto (hover the flower, not just "Manik") + click pulse
 
     img {
         display: block;
         width: auto;
-        height: 1em;
+        height: 1.2em;
         object-fit: contain;
         background-color: transparent;
     }

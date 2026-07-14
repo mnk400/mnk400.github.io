@@ -1,0 +1,33 @@
+// =============================================================================
+// CHARM · jacket — a painted denim jacket
+// =============================================================================
+//
+// A little jacket charm. Wears the shared entrance-pop + click-pulse 
+// (see charms/_motion).
+
+@use "motion" as *;
+
+.charm--jacket {
+    --charm-jacket-outline: #a6c1dc; // a lighter shade of the jacket's denim
+
+    @include charm-motion;
+
+    $o: 1.5px; // outline thickness
+
+    .charm-fx__body {
+        display: block;
+        width: auto;
+        height: 3.4rem;
+        object-fit: contain;
+        background-color: transparent;
+        filter:
+            drop-shadow($o 0 0 var(--charm-jacket-outline))
+            drop-shadow(-$o 0 0 var(--charm-jacket-outline))
+            drop-shadow(0 $o 0 var(--charm-jacket-outline))
+            drop-shadow(0 (-$o) 0 var(--charm-jacket-outline))
+            drop-shadow($o $o 0 var(--charm-jacket-outline))
+            drop-shadow(-$o $o 0 var(--charm-jacket-outline))
+            drop-shadow($o (-$o) 0 var(--charm-jacket-outline))
+            drop-shadow(-$o (-$o) 0 var(--charm-jacket-outline));
+    }
+}

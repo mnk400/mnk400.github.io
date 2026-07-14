@@ -1,0 +1,45 @@
+// =============================================================================
+// CHARM · heart — a plump little valentine
+// =============================================================================
+//
+// Sibling to the count badge: a soft filled shape with a lighter halo tracing
+// its outline. The heart is drawn as inline SVG so the halo can follow the
+// curves. Wears the shared entrance-pop + click-pulse (see charms/_motion).
+
+@use "motion" as *;
+
+.charm--heart {
+    // Darker fill, lighter outline (like the count badge). The outline keeps
+    // real chroma rather than a washed-out pink so its outer edge still reads
+    // against a light canvas — a too-pale outline blurs into the background.
+    --charm-heart-fill: #d16a64;
+    --charm-heart-outline: #eba49d;
+
+    font-size: 0.75rem; // em basis for the corner nudge, matching the badge
+
+    @include charm-motion;
+
+    .charm-fx__body {
+        display: block;
+        width: auto;
+        height: 1.75em;
+    }
+
+    svg {
+        display: block;
+        height: 100%;
+        width: auto;
+        overflow: visible; // let the halo spill past the viewBox edges
+    }
+
+    path {
+        fill: var(--charm-heart-fill);
+        stroke: var(--charm-heart-outline);
+        // paint-order: stroke draws the stroke behind the fill, so only its
+        // outer half shows. Double the width so the visible band matches the
+        // count badge's 2px outline (viewBox ~21px tall → ~2px visible).
+        stroke-width: 5.5;
+        stroke-linejoin: round;
+        paint-order: stroke;
+    }
+}

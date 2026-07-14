@@ -11,9 +11,10 @@
 // The two one-shot animations sit on separate elements on purpose, so the
 // `animation` property is never shared: toggling the click pulse can't replay
 // the entrance. Charm.astro's script wires the click → `.is-pulsing`. Drop it
-// into a `.charm--<name>` rule with `@include charm-motion;`.
+// into a `.charm--<name>` rule with `@include charm-motion;`. Pass
+// `$pop: false` for pulse-only charms that shouldn't animate in on load.
 
-@mixin charm-motion {
+@mixin charm-motion($pop: true) {
     pointer-events: auto;
     cursor: pointer;
 
@@ -22,8 +23,10 @@
     }
 
     @media (prefers-reduced-motion: no-preference) {
-        .charm-fx {
-            animation: charm-pop-in 440ms ease-out 150ms both;
+        @if $pop {
+            .charm-fx {
+                animation: charm-pop-in 440ms ease-out 150ms both;
+            }
         }
 
         .charm-fx__body.is-pulsing {

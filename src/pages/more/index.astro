@@ -4,6 +4,7 @@ import SearchPill from '../../components/SearchPill.astro';
 import SelectionSwitch from '../../components/SelectionSwitch.astro';
 import { getMoreCategory } from '../../data/categories.ts';
 import { getMoreGroups, getMoreRoots, getMoreSearchText } from '../../lib/more.ts';
+import Charm from '../../components/charms/Charm.astro';
 
 const groups = getMoreGroups();
 const roots = getMoreRoots();
@@ -19,8 +20,14 @@ const rootOptions = [
   title="Collection of Random Stuff"
   description="An ongoing list of random things and projects Manik has built."
 >
+  <Charm slot="header-charm" anchor="top-right" x="-1em" y="0.4em" rotate={-6} class="charm--jacket">
+    <span class="charm-fx">
+      <img class="charm-fx__body" src="/assets/images/site/jacket.png" alt="" decoding="async" />
+    </span>
+  </Charm>
+
   <p>
-    This page is an ongoing list of random things and projects I've built.
+    This page is an ongoing list of random things and projects.
   </p>
 
   <div class="stack">

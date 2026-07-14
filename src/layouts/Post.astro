@@ -60,6 +60,7 @@ const showHeader = !!title || showDate;
             {edit && <> Edited on {formatDate(edit)}.</>}
           </p>
         )}
+        <slot name="header-charm" />
       </header>
     )}
     <div class="post__content">
