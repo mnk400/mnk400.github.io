@@ -38,11 +38,24 @@ header {
 .title-photo-container {
     @extend .header-reveal;
     width: 200px;
+    padding-inline: 28px;
+    margin-inline-start: -28px;
+
+    &.revealed {
+        padding-top: var(--spacing-md);
+        padding-bottom: var(--spacing-lg);
+        margin-top: calc(var(--spacing-2xl) * -0.6 - var(--spacing-md));
+    }
 
     .title-photo {
-        width: 150px;
+        width: 120px;
         display: block;
-        border-radius: var(--radius-md);
+        box-sizing: border-box;
+        border-radius: var(--radius-lg);
+        border: 5px solid var(--photo-outline, var(--translucent-medium));
+        background-color: var(--photo-outline, var(--translucent-low));
+        transform: rotate(var(--photo-tilt, 0deg));
+        transition: transform var(--transition-medium);
     }
 }
 

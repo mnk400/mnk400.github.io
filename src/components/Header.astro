@@ -89,6 +89,13 @@ const isHome = pathname === '/' || pathname === '/index.html';
     hasClientRouteHistory = true;
   });
 
+  // Each reveal photo has its own hand-picked outline colour,
+  const PHOTO_OUTLINES: Record<string, string> = {
+    '/assets/images/site/me.jpg': '#c0ccc8',
+    '/assets/images/site/kindle.png': '#8b8c84',
+    '/assets/images/site/paws.jpg': '#734444',
+  };
+
   function triggerPhotoReveal(imagePath: string) {
     const container = document.getElementById('titlePhotoContainer');
     if (!container || isTransitioning) return;
@@ -101,6 +108,10 @@ const isHome = pathname === '/' || pathname === '/index.html';
     }
 
     const revealWithImage = () => {
+      // Quirky charm touch: land the photo at a random tilt each pop.
+      const tilt = (Math.random() * 8 - 4).toFixed(2);
+      img.style.setProperty('--photo-tilt', `${tilt}deg`);
+      img.style.setProperty('--photo-outline', PHOTO_OUTLINES[imagePath] ?? 'var(--translucent-medium)');
       container.classList.add('revealed');
       photoRevealTimeout = window.setTimeout(() => {
         container.classList.remove('revealed');
