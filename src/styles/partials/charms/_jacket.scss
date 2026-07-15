@@ -12,12 +12,12 @@
 
     @include charm-motion;
 
-    $o: 1.5px; // outline thickness
+    $o: 1.2px; // outline thickness
 
     .charm-fx__body {
         display: block;
         width: auto;
-        height: 3.4rem;
+        height: 3.6rem;
         object-fit: contain;
         background-color: transparent;
         filter:

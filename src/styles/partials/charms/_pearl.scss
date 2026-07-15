@@ -1,0 +1,34 @@
+// =============================================================================
+// CHARM · pearl — Vermeer's Girl with a Pearl Earring cutout
+// =============================================================================
+//
+// A die-cut of the painting, for the paintings archive (and wherever else it
+// earns a spot). Wears the shared entrance-pop + click-pulse (see
+// charms/_motion).
+
+@use "motion" as *;
+
+.charm--pearl {
+    --charm-pearl-outline: #e6d7b8;
+
+    @include charm-motion;
+
+    $o: 1px; // outline thickness
+
+    .charm-fx__body {
+        display: block;
+        width: auto;
+        height: 5rem;
+        object-fit: contain;
+        background-color: transparent;
+        filter:
+            drop-shadow($o 0 0 var(--charm-pearl-outline))
+            drop-shadow(-$o 0 0 var(--charm-pearl-outline))
+            drop-shadow(0 $o 0 var(--charm-pearl-outline))
+            drop-shadow(0 (-$o) 0 var(--charm-pearl-outline))
+            drop-shadow($o $o 0 var(--charm-pearl-outline))
+            drop-shadow(-$o $o 0 var(--charm-pearl-outline))
+            drop-shadow($o (-$o) 0 var(--charm-pearl-outline))
+            drop-shadow(-$o (-$o) 0 var(--charm-pearl-outline));
+    }
+}

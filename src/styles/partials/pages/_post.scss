@@ -166,6 +166,12 @@
     }
 }
 
+// Narrow the paintings-hub intro so it wraps clear of the pearl charm pinned
+// to the header's top-right corner (see archive/paintings/index.astro).
+.paintings-hub__intro {
+    padding-right: 4em;
+}
+
 .more-page {
     display: grid;
     gap: var(--spacing-sm);

@@ -3,6 +3,7 @@ import Post from '../../../layouts/Post.astro';
 import ArchiveIndex from '../../../components/ArchiveIndex.astro';
 import ExpandableSection from '../../../components/ExpandableSection.astro';
 import { getMoreGroups } from '../../../lib/more.ts';
+import Charm from '../../../components/charms/Charm.astro';
 
 const group = getMoreGroups().find((entry) => entry.path === 'archive/paintings');
 const hub = group?.hub;
@@ -13,7 +14,13 @@ const paintings = group?.items ?? [];
   description={hub?.description}
   image={hub?.image}
 >
-  <p>
+  <Charm slot="header-charm" anchor="top-right" x="-0.4em" y="-0.2em" rotate={6} class="charm--pearl">
+    <span class="charm-fx">
+      <img class="charm-fx__body" src="/assets/images/site/pearl.png" alt="" decoding="async" />
+    </span>
+  </Charm>
+
+  <p class="paintings-hub__intro">
     A small browser for public-domain paintings and artwork from artists I like, each archive is searchable, sortable, and filterable.
   </p>
 
