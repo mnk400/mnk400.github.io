@@ -215,10 +215,10 @@ const ogTitle = title ? `${title} — Manik` : 'Manik';
          hover visual feedback. Both registered once on document; survive DOM
          swaps because the listeners aren't on swapped elements. -->
     <script>
-      // Scroll class on <html>: CSS toggles header state when scrollY > 30.
+      // Scroll class on <html>: CSS toggles header state when scrollY > 20.
       let ticking = false;
       function updateScrollClass() {
-        document.documentElement.classList.toggle('is-scrolled', window.scrollY > 30);
+        document.documentElement.classList.toggle('is-scrolled', window.scrollY > 20);
         ticking = false;
       }
       window.addEventListener('scroll', () => {
