@@ -7,40 +7,6 @@
 // =============================================================================
 // MUSIC WIDGET
 // =============================================================================
-.music-widget-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    font-size: 0.8em;
-    color: var(--sec-text-color);
-}
-
-.music-widget-time-wrapper {
-    opacity: 0.8;
-    font-size: 0.9em;
-}
-
-.music-widget-time-placeholder {
-    color: var(--sec-text-color);
-    opacity: 0.7;
-}
-
-.music-widget-time-wrapper.loaded {
-    .music-widget-time-placeholder {
-        display: none;
-    }
-
-    .music-widget-time {
-        opacity: 1;
-    }
-}
-
-.music-widget-time {
-    opacity: 0;
-    transition: opacity var(--transition-slow);
-    font-variant-numeric: tabular-nums;
-}
-
 .music-widget {
     text-decoration: none;
     color: inherit;
@@ -134,6 +100,7 @@
     flex-direction: row;
     align-items: baseline;
     gap: 0;
+    flex: 1 1 auto;
     min-width: 0;
     overflow: hidden;
 
@@ -186,10 +153,55 @@
     opacity: 80%;
 }
 
-.music-widget-arrow {
+.music-widget-status {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-xs);
     margin-left: auto;
     flex-shrink: 0;
+    font-size: 0.8em;
+    color: var(--sec-text-color);
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity var(--transition-slow);
+
+    &.loaded {
+        opacity: 1;
+    }
+}
+
+.music-widget-status:not(.is-live) .music-widget-status-label:not(:empty)::after {
+    content: " ·";
+}
+
+.music-widget-status-time {
+    font-variant-numeric: tabular-nums;
+}
+
+.music-widget-status-icon {
+    display: none;
+    font-size: 1.15em;
+    align-self: baseline;
+    // The ∿ glyph's ink sits ~0.065em below the lowercase optical center, so
+    // baseline-align it with the label and nudge it up to read as centered.
+    transform: translateY(-0.065em);
+
+    .music-widget-status.is-live & {
+        display: inline-block;
+    }
+}
+
+.music-widget-arrow {
+    margin-left: var(--spacing-sm);
+    flex-shrink: 0;
     font-size: 0.9em;
+}
+
+// Long titles keep the pill compact by dropping the "last" word
+@media (max-width: 420px) {
+    .music-widget-status:not(.is-live) .music-widget-status-label {
+        display: none;
+    }
 }
 
 // =============================================================================

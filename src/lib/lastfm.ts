@@ -31,6 +31,14 @@ function imageOf(images: LastfmImage[]): string {
   return images.find((img) => img.size === 'large')?.['#text'] || PLACEHOLDER;
 }
 
+// Compact relative time for the widget status meta: "now" / "12m ago" / "3h ago".
+function relativeTime(timestampMs: number): string {
+  const diffMins = Math.round((Date.now() - timestampMs) / 60000);
+  if (diffMins < 1) return 'now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+  return `${Math.round(diffMins / 60)}h ago`;
+}
+
 async function fetchRecentTrack(): Promise<LastfmTrack | undefined> {
   const response = await fetch(
     `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${USERNAME}&api_key=${API_KEY}&format=json&limit=1`,
@@ -55,6 +63,8 @@ export async function initMusicWidget() {
     const labelEl = document.getElementById('music-widget-label');
     const timeEl = document.getElementById('music-widget-time');
 
+    const statusEl = document.getElementById('music-widget-status');
+
     const isNowPlaying = track['@attr']?.nowplaying === 'true';
 
     if (artEl) artEl.src = imageOf(track.image);
@@ -62,28 +72,20 @@ export async function initMusicWidget() {
     if (artistEl) artistEl.textContent = track.artist['#text'];
 
     if (labelEl) {
-      labelEl.textContent = isNowPlaying ? 'Now playing …' : 'Last listened to …';
+      labelEl.textContent = isNowPlaying ? 'now playing' : 'last';
     }
 
     if (timeEl) {
-      const timeWrapper = timeEl.closest('.music-widget-time-wrapper');
       if (isNowPlaying) {
         timeEl.textContent = '';
       } else if (track.date?.uts) {
-        const playedAt = new Date(parseInt(track.date.uts) * 1000);
-        const diffMs = Date.now() - playedAt.getTime();
-        const diffMins = Math.round(diffMs / 60000);
-        const diffHours = Math.round(diffMs / 3600000);
-
-        if (diffMins < 1) {
-          timeEl.textContent = 'just now';
-        } else if (diffMins < 60) {
-          timeEl.textContent = `${diffMins} minute${diffMins === 1 ? '' : 's'} ago`;
-        } else {
-          timeEl.textContent = `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
-        }
+        timeEl.textContent = relativeTime(parseInt(track.date.uts) * 1000);
       }
-      if (timeWrapper) timeWrapper.classList.add('loaded');
+    }
+
+    if (statusEl) {
+      statusEl.classList.toggle('is-live', isNowPlaying);
+      statusEl.classList.add('loaded');
     }
 
     const infoEl = document.querySelector('.music-widget-info');

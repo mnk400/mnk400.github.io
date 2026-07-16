@@ -28,10 +28,15 @@ const href = external ? 'https://www.last.fm/user/mnk_400' : '/music/music';
     <div class="music-widget-info">
       <span class="music-widget-info-placeholder">Loading track…</span>
       <span id="music-widget-track" class="music-widget-track"></span>
-      <span class="music-widget-separator"> - </span>
+      <span class="music-widget-separator"> — </span>
       <span id="music-widget-artist" class="music-widget-artist"></span>
     </div>
-    <Icon name="link" class="music-widget-arrow" />
+    <div class="music-widget-status" id="music-widget-status">
+      <span class="music-widget-status-icon" aria-hidden="true">∿</span>
+      <span class="music-widget-status-label" id="music-widget-label"></span>
+      <span class="music-widget-status-time" id="music-widget-time"></span>
+    </div>
+    <Icon name={external ? 'arrow-up-right' : 'arrow-right'} class="music-widget-arrow" />
   </div>
 </a>
 
