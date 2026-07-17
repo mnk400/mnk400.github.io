@@ -26,9 +26,12 @@
     // Block padding is pinned to 5px (not --spacing-sm) so the 30px album-art
     // charm lands the bar at 40px total, matching the Archive expandable
     // toggle — the source-of-truth height for full-width bars on the home page.
-    // Inline padding uses --spacing-lg on both sides to match the toggle and
-    // the rest of the bar/pill/card family site-wide.
-    padding: 5px var(--spacing-lg);
+    // Right inset is --spacing-lg (15px) so the arrow glyph lines up with the
+    // toggle's. The left uses --spacing-md (10px) — matching the bar's 10px
+    // corner radius — so the solid album-art square nestles into the corner
+    // and reads as optically aligned with the toggle's text, rather than
+    // floating in like it does at a matching 15px.
+    padding: 5px var(--spacing-lg) 5px var(--spacing-md);
     @include translucent-surface(var(--translucent-low), 10px);
     transition: background-color var(--transition-medium);
     line-height: 1em;
@@ -62,9 +65,9 @@
 
     @media (any-hover: hover) and (prefers-reduced-motion: no-preference) {
         &:hover {
-            // Peek 5.5px past the bar's left edge: pull left by the inline
-            // padding (--spacing-lg) plus the peek amount.
-            transform: translateX(calc(-1 * var(--spacing-lg) - 5.5px)) rotate(-1.5deg) scale(1.75);
+            // Peek 5.5px past the bar's left edge: pull left by the left
+            // padding (--spacing-md) plus the peek amount.
+            transform: translateX(calc(-1 * var(--spacing-md) - 5.5px)) rotate(-1.5deg) scale(1.75);
             z-index: 3;
         }
     }
