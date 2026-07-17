@@ -23,15 +23,12 @@
     align-items: center;
     text-align: left;
     gap: var(--spacing-lg);
-    // Block padding is pinned to 5px (not --spacing-sm) so the 30px album-art
-    // charm lands the bar at 40px total, matching the Archive expandable
-    // toggle — the source-of-truth height for full-width bars on the home page.
-    // Right inset is --spacing-lg (15px) so the arrow glyph lines up with the
-    // toggle's. The left uses --spacing-md (10px) — matching the bar's 10px
-    // corner radius — so the solid album-art square nestles into the corner
-    // and reads as optically aligned with the toggle's text, rather than
-    // floating in like it does at a matching 15px.
-    padding: 5px var(--spacing-lg) 5px var(--spacing-md);
+    // The 24px album-art charm sits in an even --spacing-sm (8px) well on the
+    // top, bottom, and left, which also lands the bar at 40px total — matching
+    // the Archive expandable toggle, the source-of-truth height for full-width
+    // bars on the home page. Right inset is --spacing-lg (15px) so the arrow
+    // glyph lines up with the toggle's.
+    padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-sm);
     @include translucent-surface(var(--translucent-low), 10px);
     transition: background-color var(--transition-medium);
     line-height: 1em;
@@ -49,8 +46,8 @@
 
 .music-widget-art-wrapper {
     position: relative;
-    width: 30px;
-    height: 30px;
+    width: 24px;
+    height: 24px;
     flex-shrink: 0;
     border-radius: var(--radius-sm);
     @include soft-outline(var(--translucent-medium));
@@ -66,8 +63,8 @@
     @media (any-hover: hover) and (prefers-reduced-motion: no-preference) {
         &:hover {
             // Peek 5.5px past the bar's left edge: pull left by the left
-            // padding (--spacing-md) plus the peek amount.
-            transform: translateX(calc(-1 * var(--spacing-md) - 5.5px)) rotate(-1.5deg) scale(1.75);
+            // padding (--spacing-sm) plus the peek amount.
+            transform: translateX(calc(-1 * var(--spacing-sm) - 5.5px)) rotate(-1.5deg) scale(1.75);
             z-index: 3;
         }
     }
@@ -89,8 +86,8 @@
 .music-widget .music-widget-art {
     display: block;
     position: relative;
-    width: 30px;
-    height: 30px;
+    width: 24px;
+    height: 24px;
     margin: 0;
     padding: 0;
     object-fit: cover;
