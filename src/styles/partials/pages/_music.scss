@@ -23,8 +23,10 @@
     align-items: center;
     text-align: left;
     gap: var(--spacing-lg);
-    padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm)
-        var(--spacing-md);
+    // Block padding is pinned to 5px (not --spacing-sm) so the 30px album-art
+    // charm lands the bar at 40px total, matching the Archive expandable
+    // toggle — the source-of-truth height for full-width bars on the home page.
+    padding: 5px var(--spacing-lg) 5px var(--spacing-md);
     @include translucent-surface(var(--translucent-low), 10px);
     transition: background-color var(--transition-medium);
     line-height: 1em;
