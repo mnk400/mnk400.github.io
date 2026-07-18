@@ -15,7 +15,7 @@
     "@astrojs/sitemap": "^3.7.3",
     "@fontsource/inter": "^5.2.8",
     "@iconify-json/ph": "^1.2.2",
-    "astro": "^6.4.6",
+    "astro": "^7.1.1",
     "astro-icon": "^1.1.5",
     "sass": "^1.101.0"
   },
