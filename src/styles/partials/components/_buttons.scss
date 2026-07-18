@@ -95,6 +95,32 @@ button,
     }
 }
 
+// Standard buttons sit on the `md` control tier (36px), one step below the
+// full-width bars. min-height + centered content (rather than tuned padding)
+// keeps them on-height regardless of icon/label size, so a single-line button
+// always lands at 36px.
+.btn,
+.normal-btn {
+    box-sizing: border-box;
+    min-height: var(--control-height-md);
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn--small,
+.btn--copy,
+.btn--text {
+    min-height: 0;
+}
+
+.btn--link-variant {
+    min-height: 0;
+    display: flex;
+    justify-content: space-between;
+}
+
 .btn:active,
 .normal-btn:active {
     scale: 0.96;
@@ -125,6 +151,8 @@ input[type="file"]::file-selector-button {
 .expandable-toggle {
     box-sizing: border-box;
     width: 100%;
+    min-height: var(--control-height-lg);
+    line-height: 1;
     padding: var(--spacing-md) var(--spacing-lg);
     background-color: var(--translucent-low);
     backdrop-filter: blur(10px);
@@ -155,7 +183,7 @@ input[type="file"]::file-selector-button {
 // Selection switch component
 .selection-switch {
     display: flex;
-    gap: var(--spacing-md);
+    gap: var(--spacing-sm);
     flex-wrap: nowrap;
     overflow-x: auto;
     overflow-y: hidden;
@@ -172,7 +200,14 @@ input[type="file"]::file-selector-button {
 
     .switch-option {
         flex: 0 0 auto;
-        padding: var(--spacing-sm) var(--spacing-lg);
+        box-sizing: border-box;
+        min-height: var(--control-height-xs);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1;
+        font-size: 0.85em;
+        padding: var(--spacing-xs) var(--spacing-md);
         border: none;
         border-radius: var(--radius-pill);
         background-color: var(--translucent-low);
@@ -180,7 +215,6 @@ input[type="file"]::file-selector-button {
         cursor: pointer;
         transition: background-color var(--transition-medium), color var(--transition-medium), scale var(--transition-press);
 
-        display: inline-block;
         @include soft-outline;
 
         &:active {
@@ -193,15 +227,6 @@ input[type="file"]::file-selector-button {
             background-color: var(--contrast-overlay);
             color: var(--background-main);
             outline: none;
-        }
-    }
-
-    &--small {
-        gap: var(--spacing-sm);
-
-        .switch-option {
-            font-size: 0.85em;
-            padding: var(--spacing-xs) var(--spacing-md);
         }
     }
 }

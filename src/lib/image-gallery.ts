@@ -298,7 +298,6 @@ function setupControls(
       ariaLabel: `Sort ${galleryLabel(galleryName)}`,
       options: sortOptions,
       active: state.sort,
-      size: 'small',
     });
     sortSwitch.addEventListener('change', (event) => {
       state.sort = (event as CustomEvent).detail.value;
@@ -333,7 +332,7 @@ function setupControls(
       active: state.filters[option] || 'all',
     };
     const control = option === 'decade'
-      ? createSelectionSwitch({ ...controlConfig, size: 'small' })
+      ? createSelectionSwitch(controlConfig)
       : createSelectionDropdown(controlConfig);
 
     control.addEventListener('change', (event) => {

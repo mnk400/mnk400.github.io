@@ -26,7 +26,6 @@ const modeOptions = cameraModes.map((m) => ({ value: m.id, label: m.label }));
           id="camera-mode-toggle"
           options={modeOptions}
           active={modeOptions[0].value}
-          size="small"
         />
       </div>
 
@@ -40,7 +39,6 @@ const modeOptions = cameraModes.map((m) => ({ value: m.id, label: m.label }));
                   id={`${mode.id}-${control.id}`}
                   options={control.options}
                   active={control.default}
-                  size="small"
                 />
               </div>
             ))}

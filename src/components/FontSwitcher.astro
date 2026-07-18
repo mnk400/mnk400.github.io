@@ -5,7 +5,7 @@ import { fonts, defaultFont } from '../lib/font.ts';
 const options = fonts.map(f => ({ value: f.name, label: f.label }));
 const SWITCH_ID = 'fontSwitch';
 ---
-<SelectionSwitch id={SWITCH_ID} options={options} active={defaultFont} size="small" />
+<SelectionSwitch id={SWITCH_ID} options={options} active={defaultFont} />
 
 <script>
   import { setFont, applyFont, getActiveFont } from '../lib/font.ts';

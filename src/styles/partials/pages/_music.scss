@@ -22,13 +22,12 @@
     display: flex;
     align-items: center;
     text-align: left;
-    gap: var(--spacing-lg);
-    padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm)
-        var(--spacing-md);
+    gap: var(--spacing-md);
+    padding: 7px var(--spacing-lg) 7px var(--spacing-md);
     @include translucent-surface(var(--translucent-low), 10px);
     transition: background-color var(--transition-medium);
     line-height: 1em;
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-md);
 
     @include hover-state-subtle;
 
@@ -42,8 +41,8 @@
 
 .music-widget-art-wrapper {
     position: relative;
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
     flex-shrink: 0;
     border-radius: var(--radius-sm);
     @include soft-outline(var(--translucent-medium));
@@ -80,8 +79,8 @@
 .music-widget .music-widget-art {
     display: block;
     position: relative;
-    width: 30px;
-    height: 30px;
+    width: 28px;
+    height: 28px;
     margin: 0;
     padding: 0;
     object-fit: cover;
@@ -215,6 +214,11 @@
     gap: var(--spacing-sm);
 
     .music-artist-item {
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        min-height: var(--control-height-lg);
+        line-height: 1;
         padding: var(--spacing-md);
         @include translucent-surface;
         transition: background-color var(--transition-medium);

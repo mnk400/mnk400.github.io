@@ -124,6 +124,7 @@ $themes: (
     --spacing-3xl: 60px;
 
     // Border Radius
+    --radius-xs: 4px;
     --radius-sm: 6px;
     --radius-md: 8px;
     --radius-lg: 10px;
@@ -131,9 +132,10 @@ $themes: (
     --radius-pill: 20px;
     --radius-round: 50%;
 
-    // Control Sizes
+    --control-height-xs: 24px;
     --control-height-sm: 30px;
     --control-height-md: 36px;
+    --control-height-lg: 42px;
     --control-thumb-size: 12px;
 
     // Transitions

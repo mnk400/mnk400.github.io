@@ -7,7 +7,6 @@ interface SwitchConfig {
   id?: string;
   options: SelectionOption[];
   active?: string;
-  size?: 'small' | 'default';
   ariaLabel?: string;
   className?: string;
 }
@@ -122,11 +121,7 @@ export function initSelectionSwitch(container: HTMLElement) {
 
 export function createSelectionSwitch(config: SwitchConfig): HTMLElement {
   const el = document.createElement('div');
-  el.className = [
-    'selection-switch',
-    config.size === 'small' && 'selection-switch--small',
-    config.className,
-  ].filter(Boolean).join(' ');
+  el.className = ['selection-switch', config.className].filter(Boolean).join(' ');
   if (config.id) el.id = config.id;
   if (config.ariaLabel) el.setAttribute('aria-label', config.ariaLabel);
   el.dataset.selectionSwitch = '';

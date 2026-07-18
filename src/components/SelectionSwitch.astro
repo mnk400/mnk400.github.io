@@ -8,18 +8,13 @@ interface Props {
   id: string;
   options: SwitchOption[];
   active?: string;
-  size?: 'small' | 'default';
   class?: string;
 }
 
-const { id, options, active, size = 'default', class: extraClass } = Astro.props;
+const { id, options, active, class: extraClass } = Astro.props;
 const activeValue = active ?? options[0]?.value;
 
-const classes = [
-  'selection-switch',
-  size === 'small' && 'selection-switch--small',
-  extraClass,
-].filter(Boolean).join(' ');
+const classes = ['selection-switch', extraClass].filter(Boolean).join(' ');
 ---
 <div class={classes} id={id} data-selection-switch>
   {options.map(opt => (

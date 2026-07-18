@@ -66,7 +66,6 @@ function installValue(entry: ProductInstall): string {
             <>
               <SelectionSwitch
                 id={installSwitchId}
-                size="small"
                 options={install.map((entry) => ({ value: installValue(entry), label: entry.label }))}
                 active={installValue(install[0])}
               />

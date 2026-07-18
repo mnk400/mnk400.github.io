@@ -5,7 +5,7 @@ import { themes, defaultTheme } from '../lib/theme.ts';
 const options = themes.map(t => ({ value: t.name, label: t.label }));
 const SWITCH_ID = 'themeSwitch';
 ---
-<SelectionSwitch id={SWITCH_ID} options={options} active={defaultTheme} size="small" />
+<SelectionSwitch id={SWITCH_ID} options={options} active={defaultTheme} />
 
 <script>
   import { setTheme, applyTheme, getActiveTheme } from '../lib/theme.ts';
