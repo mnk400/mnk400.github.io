@@ -125,7 +125,9 @@ input[type="file"]::file-selector-button {
 .expandable-toggle {
     box-sizing: border-box;
     width: 100%;
-    padding: var(--spacing-md) var(--spacing-lg);
+    // Prototype: --spacing-md (10px) all round, matching the music widget's
+    // left/right insets so the two home bars share the same horizontal padding.
+    padding: var(--spacing-md);
     background-color: var(--translucent-low);
     backdrop-filter: blur(10px);
     border: none;
