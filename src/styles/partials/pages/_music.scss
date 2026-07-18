@@ -23,14 +23,15 @@
     align-items: center;
     text-align: left;
     gap: var(--spacing-lg);
-    // Block padding is 4.5px (not --spacing-sm) so the 30px album-art charm
-    // lands this bar at the same 39px height as the .expandable-toggle bar,
-    // which is the source of truth for full-width bars: 30 + 4.5*2 = 39.
-    padding: 4.5px var(--spacing-lg) 4.5px var(--spacing-md);
+    // 6px block + left padding gives the 27px album-art charm an even 6px well
+    // on all exposed sides, and lands this bar at the same 39px height as the
+    // .expandable-toggle bar — the source of truth for full-width bars:
+    // 27 + 6*2 = 39. Right padding stays --spacing-lg for the arrow.
+    padding: 6px var(--spacing-lg) 6px 6px;
     @include translucent-surface(var(--translucent-low), 10px);
     transition: background-color var(--transition-medium);
     line-height: 1em;
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-md);
 
     @include hover-state-subtle;
 
@@ -44,8 +45,8 @@
 
 .music-widget-art-wrapper {
     position: relative;
-    width: 30px;
-    height: 30px;
+    width: 27px;
+    height: 27px;
     flex-shrink: 0;
     border-radius: var(--radius-sm);
     @include soft-outline(var(--translucent-medium));
@@ -60,7 +61,7 @@
 
     @media (any-hover: hover) and (prefers-reduced-motion: no-preference) {
         &:hover {
-            transform: translateX(calc(-1 * var(--spacing-md) - 5.5px)) rotate(-1.5deg) scale(1.75);
+            transform: translateX(calc(-6px - 5.5px)) rotate(-1.5deg) scale(1.75);
             z-index: 3;
         }
     }
@@ -82,8 +83,8 @@
 .music-widget .music-widget-art {
     display: block;
     position: relative;
-    width: 30px;
-    height: 30px;
+    width: 27px;
+    height: 27px;
     margin: 0;
     padding: 0;
     object-fit: cover;
