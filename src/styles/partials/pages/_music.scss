@@ -23,8 +23,10 @@
     align-items: center;
     text-align: left;
     gap: var(--spacing-lg);
-    padding: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm)
-        var(--spacing-md);
+    // Block padding is 4.5px (not --spacing-sm) so the 30px album-art charm
+    // lands this bar at the same 39px height as the .expandable-toggle bar,
+    // which is the source of truth for full-width bars: 30 + 4.5*2 = 39.
+    padding: 4.5px var(--spacing-lg) 4.5px var(--spacing-md);
     @include translucent-surface(var(--translucent-low), 10px);
     transition: background-color var(--transition-medium);
     line-height: 1em;
