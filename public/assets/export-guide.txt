@@ -291,6 +291,20 @@ Image grid classes are included for projects that share album/gallery layouts:
     .image-card
     .image-ratio-box
 
+Async galleries can add .is-deep-link-pending to .image-gallery while resolving
+a selected item. Direct .reveal__stage children remain concealed until the
+lightbox is ready, preventing staged grid/control content from flashing first.
+The pending rule also settles opacity and transform; once .is-ready is present,
+removing it reveals the same final state without replaying entrance transitions.
+
+The manik.cc gallery runtime lives in `src/lib/image-gallery/`, split by
+responsibility: `data.ts` normalizes and queries manifests, `view.ts` owns
+cards, controls, masonry pagination, and rendered-image lookup, and `route.ts`
+owns the `?image=` URL and Back/Forward synchronization. `index.ts` is the
+public lifecycle coordinator between those modules and the zoom viewer. The
+route installs one capture-phase owner because a page has only one `image`
+query value; no layout script or global handler registry is needed.
+
 Use an `aspect-ratio` on `.image-ratio-box` to reserve gallery item height. The
 image fills that ratio box with `object-fit: contain`, so thumbnails are not
 cropped when the source image ratio differs from the reserved ratio.
@@ -302,19 +316,55 @@ cropped when the source image ratio differs from the reserved ratio.
 
 The CSS includes the overlay classes used by manik.cc's image zoom runtime:
 
+    .image-zoom-overlay
+    .image-zoom-overlay--closing-direct
     .image-zoom-backdrop
     .image-zoom-clone
+    .image-zoom-clone--direct
+    .image-zoom-clone--settled
     .image-zoom-controls
     .image-zoom-meta
     .image-zoom-caption
     .image-zoom-detail
     .image-zoom-nav
     .image-zoom-control-button
+    .image-zoom-share
 
-The JavaScript runtime is not exported. Astro projects can copy/import the
-source from src/lib/image-zoom.ts if they want the same behavior. Non-Astro
-projects should either implement their own runtime against these classes or use
-a dedicated lightbox library.
+For a directly opened image, `.image-zoom-overlay--closing-direct` is the sole
+visual closing state. Its descendant rules fade/scale the clone, fade controls,
+and delay the backdrop fade; JavaScript only adds the class and schedules final
+teardown.
+
+Direct opens focus the dialog container itself. The first Tab moves into the
+first enabled viewer control (Shift+Tab moves to the last), keeping focus
+contained without showing a synthetic focus ring on the close button.
+
+After entrance motion completes, apply `.image-zoom-clone--settled`. CSS then
+owns the available viewport box and `object-fit: contain` keeps the bitmap
+centered through browser resizing without JavaScript resize listeners. Before
+navigation or dismissal, freeze the rendered bitmap's current presentation
+rectangle and remove the settled class so spatial motion starts without a jump.
+
+The JavaScript runtime is not exported. Astro projects can copy
+`src/lib/image-zoom/` plus `ImageZoomTemplate.astro` if they want the same
+behavior, but should import only `image-zoom/index.ts`. Non-Astro projects should
+either supply equivalent template markup, implement their own runtime against
+these classes, or use a dedicated lightbox library.
+`image-zoom/index.ts` is the public controller; `view.ts` and `motion.ts` are
+private implementation modules. The runtime
+exports openZoom(img), closeZoom(),
+and openZoomGallery(items, initialIndex, options). Data-backed gallery items use
+stable IDs plus thumb/full sources and optional title, metadata, dimensions, and
+origin elements. This allows navigation across items that are not mounted in
+the DOM. Direct sessions cross-fade without inventing a thumbnail origin;
+pointer-opened sessions return to their source. The runtime also provides dialog
+semantics, focus containment/restoration, scroll locking, keyboard activation,
+reduced-motion transitions, and an optional copy-link control for data-backed
+sessions. Keep mutable viewer state in one session object, invalidate it on
+teardown, and verify session identity after asynchronous image decoding or frame
+yields. Model lifecycle as `opening`, `open`, `navigating`, or `closing`; closing
+may interrupt motion and must begin from the current presentation rectangle.
+Session-owned AbortSignals should remove interaction listeners together.
 
 
 ================================================================================

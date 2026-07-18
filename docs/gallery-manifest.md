@@ -78,7 +78,7 @@ These are the only fields `image-gallery.js` should need to read to render sorti
 
 | Field        | Type           | Notes                                                                              |
 | ------------ | -------------- | ---------------------------------------------------------------------------------- |
-| `id`         | string         | Stable identifier. Used for dedup/keys; not displayed.                             |
+| `id`         | string         | Stable identifier. Used for deep links, dedup, and keys; not displayed.             |
 | `title`      | string         | Shown in captions when `show_captions` is enabled.                                 |
 | `description` | string        | Optional per-image note.                                                           |
 | `year`       | string         | Free-form ("1872", "c. 1870"). 4-digit year is regex-extracted for decade filter.  |
@@ -106,6 +106,29 @@ These are the only fields `image-gallery.js` should need to read to render sorti
 - If `thumb`/`full` is absolute (`https://…`) or a data URL, used as-is.
 - If relative, prepended with `base_url`.
 - Either approach is fine, pick whichever fits the source.
+
+## Image deep links
+
+Gallery pages use the stable item `id` in an `image` query parameter:
+
+```text
+/photos/?image=beach-001.jpg
+/archive/paintings/monet/?image=w-1182
+```
+
+IDs must remain stable when a manifest is regenerated. They should not encode
+the item's current array position, sort order, or filtered position. The gallery
+loads the manifest, resolves the ID against the complete item collection, and
+opens the lightbox without requiring the target card to be rendered first.
+Opening a card pushes one modal history entry; lightbox navigation replaces its
+ID so browser Back closes the viewer instead of replaying every visited image.
+When a page is entered through an image URL, its async gallery reveal stages
+settle without animation behind the viewer. Dismissal removes only the modal
+entry and uncovers that static gallery; it must not trigger an Astro page swap.
+The runtime keeps manifest normalization/querying, DOM rendering/pagination,
+query-history routing, and lifecycle/zoom coordination in separate modules.
+This keeps the manifest contract reusable without requiring gallery DOM or
+page-router bookkeeping.
 
 ## Namespaces (off-limits to the renderer)
 

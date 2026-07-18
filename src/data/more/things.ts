@@ -1,4 +1,4 @@
-import type { ImageGalleryConfig } from '../../lib/image-gallery.ts';
+import type { ImageGalleryConfig } from '../../lib/image-gallery/index.ts';
 import type { MoreItemData } from './types.ts';
 
 export interface ThingGalleryItemData extends MoreItemData {

@@ -2,6 +2,7 @@
 import { ClientRouter } from 'astro:transitions';
 import { site } from '../data/site.ts';
 import Header from '../components/Header.astro';
+import ImageZoomTemplate from '../components/ImageZoomTemplate.astro';
 import StructuredData from '../components/StructuredData.astro';
 import { themes, defaultTheme } from '../lib/theme.ts';
 import { fonts, defaultFont } from '../lib/font.ts';
@@ -115,6 +116,13 @@ const ogTitle = title ? `${title} — Manik` : 'Manik';
       })();
     </script>
 
+    <!-- Gallery modal history must see query-only popstate events before
+         ClientRouter treats them as page navigations. The module is shared
+         with ImageGallery, so this only installs its listener once. -->
+    <script>
+      import '../lib/image-gallery/route.ts';
+    </script>
+
     <ClientRouter />
 
     <!-- View transition direction + breadcrumb-name swap on home↔sub navs.
@@ -204,11 +212,13 @@ const ogTitle = title ? `${title} — Manik` : 'Manik';
       </main>
     </div>
 
+    <ImageZoomTemplate />
+
     <!-- Custom element registration + delegated click handler for the
          <zoomable-image> lightbox. Bundled module — runs once globally and
          survives DOM swaps. -->
     <script>
-      import '../lib/image-zoom.ts';
+      import '../lib/image-zoom/index.ts';
     </script>
 
     <!-- Global page-chrome behaviors: scroll class toggle on <html> + touch

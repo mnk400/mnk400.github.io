@@ -3,8 +3,7 @@
 //   <ZoomableImage src="/cool.jpg" alt="Cool" width={3943} height={2958} />
 // From markdown (raw HTML, no Astro JSX available):
 //   <img src="/cool.jpg" alt="Cool" data-zoomable width="3943" height="2958" loading="lazy">
-// Both render an <img data-zoomable>; the singleton handler in image-zoom.ts
-// decorates it on click.
+// Both render an <img data-zoomable>; Default.astro owns the singleton handler.
 
 interface Props {
   src: string;
@@ -45,11 +44,3 @@ const {
   data-meta={meta}
   data-full-src={fullSrc}
 />
-
-<script>
-  // Import the lib so its document-level click handler is registered when
-  // this component is on the page. Default.astro also imports it so that
-  // markdown posts that hand-write <img data-zoomable> work even when this
-  // component isn't rendered anywhere on the page.
-  import '../lib/image-zoom.ts';
-</script>

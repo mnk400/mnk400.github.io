@@ -1,4 +1,4 @@
-import { loadImageGallery } from '../image-gallery.ts';
+import { loadImageGallery } from '../image-gallery/index.ts';
 
 const API_URL = 'https://pi-images.eepy.pink/';
 const FALLBACK_MANIFEST = 'https://media.manik.cc/rpi-sample-art/manifest.json';

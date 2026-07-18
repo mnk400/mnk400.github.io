@@ -1,6 +1,6 @@
 ---
 import SearchPill from './SearchPill.astro';
-import type { ImageGalleryConfig } from '../lib/image-gallery.ts';
+import type { ImageGalleryConfig } from '../lib/image-gallery/index.ts';
 
 interface Props extends ImageGalleryConfig {
   description?: string;
@@ -31,6 +31,16 @@ const galleryConfig: ImageGalleryConfig = { ...config, loadingText };
   id={galleryId}
   data-image-gallery
 >
+  <script is:inline>
+    (() => {
+      const root = document.currentScript?.parentElement;
+      if (root && new URLSearchParams(window.location.search).get('image')) {
+        root.classList.add('is-deep-link-pending');
+        root.setAttribute('aria-busy', 'true');
+      }
+    })();
+  </script>
+
   <slot name="charm" />
 
   {description && (
@@ -44,6 +54,8 @@ const galleryConfig: ImageGalleryConfig = { ...config, loadingText };
     class="image-gallery__status"
     id={statusId}
     data-gallery-status
+    role="status"
+    aria-live="polite"
     hidden
   >
     <p>{loadingText}</p>
@@ -89,8 +101,7 @@ const galleryConfig: ImageGalleryConfig = { ...config, loadingText };
 </div>
 
 <script>
-  import { initImageGalleries } from '../lib/image-gallery.ts';
-  import '../lib/image-zoom.ts';
+  import { initImageGalleries } from '../lib/image-gallery/index.ts';
 
   document.addEventListener('astro:page-load', () => initImageGalleries());
 </script>

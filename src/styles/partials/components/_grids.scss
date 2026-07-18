@@ -84,6 +84,16 @@
     margin-top: var(--spacing-lg);
 }
 
+// A direct image URL resolves against an async manifest. Keep staged gallery
+// content concealed until the target thumbnail is decoded and the opaque
+// lightbox is in place, preventing a one-frame grid/control flash.
+.image-gallery.is-deep-link-pending > .reveal__stage {
+    visibility: hidden;
+    opacity: 1;
+    transform: none;
+    transition: none;
+}
+
 .image-gallery__status,
 .image-gallery__summary {
     color: var(--sec-text-color);

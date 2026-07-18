@@ -96,17 +96,6 @@ a {
     text-decoration: none;
 }
 
-// Keyboard focus, one themed ring for every palette, replacing the UA
-// default. Only shows for keyboard interaction (:focus-visible), never on
-// click/tap. !important is deliberate: decorative hairline `outline`s and
-// `outline: none` resets must never be able to swallow the focus indicator.
-// Elements with their own focus affordance (text inputs highlight their
-// background) opt out via `--focus-ring-color: transparent`.
-:focus-visible {
-    outline: 2px solid var(--focus-ring-color, var(--contrast-overlay)) !important;
-    outline-offset: 2px;
-}
-
 // HTML5 display-role reset for older browsers
 article,
 aside,

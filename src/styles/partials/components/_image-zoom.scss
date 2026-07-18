@@ -4,6 +4,29 @@
 // IMAGE ZOOM
 // =============================================================================
 
+.image-zoom-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal);
+    isolation: isolate;
+    --image-zoom-horizontal-padding: 60px;
+    --image-zoom-control-strip-height: 44px;
+    --image-zoom-direct-scale: 0.985;
+    --image-zoom-direct-image-duration: 200ms;
+    --image-zoom-direct-opacity-duration: 180ms;
+    --image-zoom-direct-controls-duration: 120ms;
+    --image-zoom-direct-backdrop-duration: 160ms;
+    --image-zoom-direct-backdrop-delay: 50ms;
+
+    &--has-meta {
+        --image-zoom-control-strip-height: 69px;
+    }
+
+    @media (hover: none) {
+        --image-zoom-horizontal-padding: 20px;
+    }
+}
+
 // Zoomable image cursor + frame. Applied to any `<img data-zoomable>` —
 // whether rendered by the ZoomableImage.astro component or hand-written
 // in markdown.
@@ -61,7 +84,8 @@
                 left var(--transition-slow),
                 width var(--transition-slow),
                 height var(--transition-slow),
-                transform var(--transition-slow);
+                transform var(--transition-slow),
+                opacity var(--transition-medium);
     cursor: default;
     border-radius: 0 !important;
     background-color: transparent;
@@ -76,6 +100,57 @@
 
     &.zoomed {
         box-shadow: none;
+    }
+
+    &.image-zoom-clone--direct {
+        opacity: 0;
+        transform: scale(var(--image-zoom-direct-scale)) translateZ(0);
+
+        &.zoomed {
+            opacity: 1;
+            transform: scale(1) translateZ(0);
+        }
+    }
+
+    // Once entrance motion settles, CSS owns the available viewport box.
+    // `object-fit` keeps the bitmap centered and responsive without resize JS.
+    &.image-zoom-clone--settled {
+        top: 30px !important;
+        left: var(--image-zoom-horizontal-padding) !important;
+        width: calc(100vw - var(--image-zoom-horizontal-padding) - var(--image-zoom-horizontal-padding)) !important;
+        height: calc(100vh - var(--image-zoom-control-strip-height) - 60px) !important;
+        height: calc(100dvh - var(--image-zoom-control-strip-height) - 60px) !important;
+        max-width: none;
+        max-height: none;
+        transform: translateZ(0) !important;
+        transition: none !important;
+    }
+}
+
+.image-zoom-clone.image-zoom-clone--direct,
+.image-zoom-overlay.image-zoom-overlay--closing-direct .image-zoom-clone {
+    transition:
+        opacity var(--image-zoom-direct-opacity-duration) cubic-bezier(0.4, 0, 0.2, 1),
+        transform var(--image-zoom-direct-image-duration) cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: opacity, transform;
+}
+
+.image-zoom-overlay.image-zoom-overlay--closing-direct {
+    .image-zoom-clone {
+        opacity: 0;
+        transform: scale(var(--image-zoom-direct-scale)) translateZ(0);
+    }
+
+    .image-zoom-controls {
+        opacity: 0;
+        transition: opacity var(--image-zoom-direct-controls-duration) cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: opacity;
+    }
+
+    .image-zoom-backdrop {
+        opacity: 0;
+        transition: opacity var(--image-zoom-direct-backdrop-duration) cubic-bezier(0.4, 0, 0.2, 1) var(--image-zoom-direct-backdrop-delay);
+        will-change: opacity;
     }
 }
 
@@ -214,5 +289,26 @@
             background-color: transparent;
             color: var(--sec-text-color);
         }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .image-zoom-overlay {
+        --image-zoom-direct-scale: 1;
+        --image-zoom-direct-image-duration: 120ms;
+        --image-zoom-direct-opacity-duration: 120ms;
+        --image-zoom-direct-controls-duration: 120ms;
+        --image-zoom-direct-backdrop-duration: 120ms;
+        --image-zoom-direct-backdrop-delay: 0ms;
+    }
+
+    .image-zoom-backdrop,
+    .image-zoom-controls,
+    .image-zoom-clone {
+        transition-duration: 160ms;
+    }
+
+    .image-zoom-clone {
+        transform: none !important;
     }
 }
