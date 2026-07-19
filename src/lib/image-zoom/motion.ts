@@ -92,16 +92,12 @@ export function computeZoomTarget(
   const viewportWidth = window.innerWidth;
   const viewportHeight = window.innerHeight;
   const horizontalPadding = isTouchDevice() ? 20 : 60;
-  const minVerticalPadding = 30;
-  const stripBottomMargin = 20;
-  const navHeight = 24;
-  const metaHeight = item.title || item.meta ? 20 : 0;
-  const stripGap = metaHeight ? 5 : 0;
-  const stripTop = viewportHeight - stripBottomMargin - navHeight - metaHeight - stripGap;
+  const topStrip = 52; // --image-zoom-top-strip
+  const bottomStrip = item.title || item.meta ? 56 : 32; // --image-zoom-control-strip-height
   const maxWidth = Math.max(1, viewportWidth - horizontalPadding * 2);
-  const maxHeight = Math.max(1, stripTop - minVerticalPadding * 2);
+  const maxHeight = Math.max(1, viewportHeight - topStrip - bottomStrip);
   return fitRect(naturalWidth / naturalHeight, {
-    top: minVerticalPadding,
+    top: topStrip,
     left: horizontalPadding,
     width: maxWidth,
     height: maxHeight,

@@ -10,7 +10,8 @@
     z-index: var(--z-modal);
     isolation: isolate;
     --image-zoom-horizontal-padding: 60px;
-    --image-zoom-control-strip-height: 44px;
+    --image-zoom-top-strip: 52px;
+    --image-zoom-control-strip-height: 32px;
     --image-zoom-direct-scale: 0.985;
     --image-zoom-direct-image-duration: 200ms;
     --image-zoom-direct-opacity-duration: 180ms;
@@ -19,7 +20,7 @@
     --image-zoom-direct-backdrop-delay: 50ms;
 
     &--has-meta {
-        --image-zoom-control-strip-height: 69px;
+        --image-zoom-control-strip-height: 56px;
     }
 
     @media (hover: none) {
@@ -115,11 +116,11 @@
     // Once entrance motion settles, CSS owns the available viewport box.
     // `object-fit` keeps the bitmap centered and responsive without resize JS.
     &.image-zoom-clone--settled {
-        top: 30px !important;
+        top: var(--image-zoom-top-strip) !important;
         left: var(--image-zoom-horizontal-padding) !important;
         width: calc(100vw - var(--image-zoom-horizontal-padding) - var(--image-zoom-horizontal-padding)) !important;
-        height: calc(100vh - var(--image-zoom-control-strip-height) - 60px) !important;
-        height: calc(100dvh - var(--image-zoom-control-strip-height) - 60px) !important;
+        height: calc(100vh - var(--image-zoom-top-strip) - var(--image-zoom-control-strip-height)) !important;
+        height: calc(100dvh - var(--image-zoom-top-strip) - var(--image-zoom-control-strip-height)) !important;
         max-width: none;
         max-height: none;
         transform: translateZ(0) !important;
@@ -154,26 +155,90 @@
     }
 }
 
-// Two-line cluster anchored to viewport bottom-center.
-// Top row: caption · camera detail (meta — varies per image, may wrap on mobile).
-// Bottom row: ← → · 1/23 · ✕ (controls — fixed width so they don't shift).
+// Full-viewport chrome layer. Fades in as a whole via `.active`, and the focus
+// trap walks the buttons inside it. `pointer-events: none` lets backdrop clicks
+// pass through everywhere except the actual controls. Three clusters are
+// positioned within: edge nav, top-right utility corner, bottom caption.
 .image-zoom-controls {
     position: fixed;
-    bottom: var(--spacing-xl);
-    left: 50%;
-    transform: translateX(-50%);
+    inset: 0;
     z-index: calc(var(--z-modal) + 2);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--spacing-xs);
-    max-width: calc(100vw - var(--spacing-xl) * 2);
+    pointer-events: none;
     opacity: 0;
     transition: opacity var(--transition-slow);
 
     &.active {
         opacity: 1;
     }
+
+    button {
+        pointer-events: auto;
+    }
+}
+
+.image-zoom-edge {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 88px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-size: 1.6em;
+    line-height: 1;
+    color: var(--sec-text-color);
+    transition: color var(--transition-medium);
+
+    &--prev { left: 8px; }
+    &--next { right: 8px; }
+
+    @include hover-interactive {
+        background-color: transparent;
+        color: var(--text-color);
+    }
+
+    &:focus { outline: none; }
+
+    &[hidden] { display: none; }
+
+    &:disabled {
+        color: var(--sec-text-color);
+        cursor: default;
+        opacity: 0.35;
+
+        @include hover-interactive {
+            color: var(--sec-text-color);
+        }
+    }
+
+    @media (hover: none) {
+        display: none;
+    }
+}
+
+.image-zoom-corner {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.image-zoom-infobar {
+    position: absolute;
+    left: 50%;
+    bottom: var(--spacing-xl);
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    max-width: calc(100vw - var(--spacing-xl) * 2);
 }
 
 // Single-line meta row. We deliberately don't use flex-wrap here — wrap
@@ -196,12 +261,6 @@
     &.is-fading {
         opacity: 0;
     }
-}
-
-.image-zoom-nav {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
 }
 
 .image-zoom-caption {
@@ -259,7 +318,9 @@
     cursor: pointer;
     font-size: 1em;
     line-height: 1;
-    color: var(--text-color);
+    // Quiet at rest, brighten on hover — matches the edge nav so all the
+    // zoom chrome (counter, arrows, close, share) reads as one system.
+    color: var(--sec-text-color);
     transition:
         color var(--transition-medium),
         opacity var(--transition-medium);
@@ -273,7 +334,7 @@
 
     @include hover-interactive {
         background-color: transparent;
-        color: var(--sec-text-color);
+        color: var(--text-color);
     }
 
     &:focus {

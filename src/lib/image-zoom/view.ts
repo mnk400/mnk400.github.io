@@ -56,11 +56,8 @@ export function createZoomView(options: ZoomViewOptions): ZoomView {
   const shareLinkIcon = fragment.querySelector<HTMLElement>('[data-zoom-share-link]')!;
   const shareCheckIcon = fragment.querySelector<HTMLElement>('[data-zoom-share-check]')!;
 
-  [previous, next, counter, fragment.querySelector('[data-zoom-counter-separator]')]
-    .forEach((element) => { if (element) (element as HTMLElement).hidden = !options.multi; });
-  [shareButton, fragment.querySelector('[data-zoom-share-separator]')]
-    .forEach((element) => { if (element) (element as HTMLElement).hidden = !options.share; });
-  fragment.querySelector<HTMLElement>('[data-zoom-close-separator]')!.hidden = !(options.multi || options.share);
+  [previous, next, counter].forEach((element) => { element.hidden = !options.multi; });
+  shareButton.hidden = !options.share;
 
   backdrop.classList.toggle('active', options.direct);
   overlay.addEventListener('click', options.onOverlayClick, { signal: options.signal });

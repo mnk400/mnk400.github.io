@@ -18,30 +18,33 @@ import Icon from './Icon.astro';
     />
 
     <div class="image-zoom-controls" data-zoom-controls>
-      <div class="image-zoom-meta" data-zoom-meta>
-        <span class="image-zoom-caption" data-zoom-caption />
-        <span class="image-zoom-sep image-zoom-sep--meta" aria-hidden="true" data-zoom-meta-separator>·</span>
-        <span class="image-zoom-detail" data-zoom-detail />
-      </div>
+      <!-- Edge navigation. Hidden on touch (swipe handles it) and when the
+           gallery has a single image. -->
+      <button type="button" class="image-zoom-edge image-zoom-edge--prev" aria-label="Previous image" data-zoom-previous>
+        <Icon name="caret-left" />
+      </button>
+      <button type="button" class="image-zoom-edge image-zoom-edge--next" aria-label="Next image" data-zoom-next>
+        <Icon name="caret-right" />
+      </button>
 
-      <div class="image-zoom-nav">
-        <button type="button" class="image-zoom-control-button image-zoom-nav-button image-zoom-nav-button--prev" aria-label="Previous image" data-zoom-previous>
-          <Icon name="caret-left" />
-        </button>
-        <button type="button" class="image-zoom-control-button image-zoom-nav-button image-zoom-nav-button--next" aria-label="Next image" data-zoom-next>
-          <Icon name="caret-right" />
-        </button>
-        <span class="image-zoom-sep image-zoom-sep--counter" aria-hidden="true" data-zoom-counter-separator>·</span>
+      <div class="image-zoom-corner">
         <span class="image-zoom-counter" data-zoom-counter />
-        <span class="image-zoom-sep image-zoom-sep--share" aria-hidden="true" data-zoom-share-separator>·</span>
         <button type="button" class="image-zoom-control-button image-zoom-share" aria-label="Copy link to image" data-zoom-share>
           <span data-zoom-share-link><Icon name="link" /></span>
           <span data-zoom-share-check hidden><Icon name="check" /></span>
         </button>
-        <span class="image-zoom-sep image-zoom-sep--close" aria-hidden="true" data-zoom-close-separator>·</span>
         <button type="button" class="image-zoom-control-button image-zoom-close" aria-label="Close zoomed image" data-zoom-close>
           <Icon name="x" />
         </button>
+      </div>
+
+      <!-- Bottom-center info, no controls: caption · detail. -->
+      <div class="image-zoom-infobar">
+        <div class="image-zoom-meta" data-zoom-meta>
+          <span class="image-zoom-caption" data-zoom-caption />
+          <span class="image-zoom-sep image-zoom-sep--meta" aria-hidden="true" data-zoom-meta-separator>·</span>
+          <span class="image-zoom-detail" data-zoom-detail />
+        </div>
       </div>
     </div>
   </div>

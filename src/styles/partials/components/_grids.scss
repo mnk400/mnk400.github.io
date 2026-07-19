@@ -82,6 +82,10 @@
     display: grid;
     gap: var(--spacing-md);
     margin-top: var(--spacing-lg);
+
+    &:focus {
+        outline: none;
+    }
 }
 
 // A direct image URL resolves against an async manifest. Keep staged gallery
