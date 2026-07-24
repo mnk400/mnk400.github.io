@@ -29,6 +29,20 @@ const legacyPostRedirects: Array<{ from: string; to: string }> = [
   { from: '/2025/03/04/ricoh-recipe.html', to: '/2025/02/07/ricoh-recipe/' },
 ];
 
+// Older URLs Google still knows about (from pre-migration slugs and the old
+// Jekyll /blog/ pagination) that aren't covered by the /more/ redirectFrom map.
+// Left un-redirected they 404 and leak whatever link equity they still hold.
+const legacyRedirects: Array<{ from: string; to: string }> = [
+  { from: '/more/gradient-images', to: '/image-tools/gradient-generator/' },
+  { from: '/more/live-ascii', to: '/image-tools/ascii/' },
+  { from: '/more/math-art', to: '/2024/05/05/math-art/' },
+  { from: '/more/browser', to: '/fun-tools/historical-browser/' },
+  { from: '/more/13ft', to: '/more/' },
+  { from: '/projects', to: '/more/' },
+  { from: '/blog', to: '/archive/' },
+  { from: '/blog/*', to: '/archive/' }, // old paginated index: /blog/page2/, etc.
+];
+
 export default function redirects(): AstroIntegration {
   return {
     name: 'redirects',
@@ -39,8 +53,12 @@ export default function redirects(): AstroIntegration {
           `${withTrailingSlash(from)} ${withTrailingSlash(to)} 301`,
         ]);
 
-        const postRedirects = [...(await getPostHtmlRedirects()), ...legacyPostRedirects];
-        for (const { from, to } of postRedirects) {
+        const extraRedirects = [
+          ...(await getPostHtmlRedirects()),
+          ...legacyPostRedirects,
+          ...legacyRedirects,
+        ];
+        for (const { from, to } of extraRedirects) {
           rules.push(`${from} ${to} 301`);
         }
 
