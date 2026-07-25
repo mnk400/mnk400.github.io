@@ -6,28 +6,12 @@
 // (see charms/_motion).
 
 @use "motion" as *;
+@use "outline" as *;
 
 .charm--jacket {
     --charm-jacket-outline: #a6c1dc; // a lighter shade of the jacket's denim
 
     @include charm-motion;
 
-    $o: 1.2px; // outline thickness
-
-    .charm-fx__body {
-        display: block;
-        width: auto;
-        height: 3.6rem;
-        object-fit: contain;
-        background-color: transparent;
-        filter:
-            drop-shadow($o 0 0 var(--charm-jacket-outline))
-            drop-shadow(-$o 0 0 var(--charm-jacket-outline))
-            drop-shadow(0 $o 0 var(--charm-jacket-outline))
-            drop-shadow(0 (-$o) 0 var(--charm-jacket-outline))
-            drop-shadow($o $o 0 var(--charm-jacket-outline))
-            drop-shadow(-$o $o 0 var(--charm-jacket-outline))
-            drop-shadow($o (-$o) 0 var(--charm-jacket-outline))
-            drop-shadow(-$o (-$o) 0 var(--charm-jacket-outline));
-    }
+    @include charm-image-body(var(--charm-jacket-outline), 1.2px);
 }

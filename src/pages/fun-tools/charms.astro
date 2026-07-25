@@ -1,0 +1,164 @@
+---
+import Default from '../../layouts/Default.astro';
+import Charm from '../../components/charms/Charm.astro';
+import { CHARMS, type CharmType } from '../../components/charms/charms';
+
+const charmTypes = Object.keys(CHARMS) as CharmType[];
+
+// Easter egg: the count charm here tallies the charms themselves.
+const charmCount = charmTypes.length;
+---
+
+<Default title="Charms" description="Every charm on the site, scattered about.">
+  <h1>Charms</h1>
+  <p>Every decorative charm on the site, tipped out onto the page. Give one a poke.</p>
+
+  <div class="charm-scatter" aria-hidden="true">
+    {charmTypes.map((type) => (
+      <span class="charm-scatter__item">
+        <Charm
+          type={type}
+          anchor="top-left"
+          value={type === 'count' ? charmCount : undefined}
+        />
+      </span>
+    ))}
+  </div>
+</Default>
+
+<style>
+  .charm-scatter {
+    position: relative;
+    width: 100%;
+    height: clamp(17rem, 34vw, 23rem);
+    margin: 1.5rem 0 2rem;
+    overflow: visible;
+    /* Hidden until the script places the charms, so the pre-placement stack
+       (all centered) never flashes. Revealed via .is-ready. */
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+
+  .charm-scatter.is-ready {
+    opacity: 1;
+  }
+
+  /* Positioned by the script (left/top in %). */
+  .charm-scatter__item {
+    position: absolute;
+  }
+
+  /* Pin the charm to the item's point and center it there via --charm-center-*
+     (the base transform reads those; see charms/_charm). */
+  .charm-scatter :global(.charm) {
+    --charm-base-height: 3.4rem;
+    --charm-center-x: -50%;
+    --charm-center-y: -50%;
+    top: 50%;
+    left: 50%;
+    right: auto;
+    bottom: auto;
+  }
+</style>
+
+<script>
+  // Fresh scatter every page load: positions look random but are seeded from a
+  // jittered grid (even spread, no side heavier), then a short relax pass using
+  // each charm's real measured size pushes apart any pair that would overlap.
+  function shuffle<T>(arr: T[]): T[] {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function placeCharms() {
+    const stage = document.querySelector<HTMLElement>('.charm-scatter');
+    if (!stage) return;
+    const items = [...stage.querySelectorAll<HTMLElement>('.charm-scatter__item')];
+    if (!items.length) return;
+
+    const W = stage.clientWidth;
+    const H = stage.clientHeight;
+    const n = items.length;
+
+    // Grid shape: a bit wider than tall matches the stage; drop to 2 columns on
+    // narrow screens so the charms don't crowd.
+    const cols = W < 460 ? 2 : 3;
+    const rows = Math.ceil(n / cols);
+    const cellW = W / cols;
+    const cellH = H / rows;
+
+    // Give every charm a fresh tilt up front, so the footprint measurements
+    // below trigger a single reflow rather than one per charm.
+    const charms = items.map((item) => item.querySelector<HTMLElement>('.charm'));
+    charms.forEach((charm) => {
+      const deg = (Math.random() * 2 - 1) * 13;
+      charm?.style.setProperty('--charm-rotate', `${deg}deg`);
+    });
+
+    // Measure each footprint (the rect includes the tilt, so the collision
+    // radius accounts for it) and seed one point per shuffled cell, jittered.
+    const cells = shuffle([...Array(cols * rows).keys()]).slice(0, n);
+    const pts = items.map((item, i) => {
+      const rect = (charms[i] ?? item).getBoundingClientRect();
+      const cell = cells[i];
+      const col = cell % cols;
+      const row = Math.floor(cell / cols);
+      const jx = (Math.random() * 2 - 1) * cellW * 0.28;
+      const jy = (Math.random() * 2 - 1) * cellH * 0.28;
+      return {
+        item,
+        r: 0.5 * Math.max(rect.width, rect.height) + 5,
+        x: (col + 0.5) * cellW + jx,
+        y: (row + 0.5) * cellH + jy,
+      };
+    });
+
+    const clamp = (p: { x: number; y: number; r: number }) => {
+      p.x = Math.max(p.r, Math.min(W - p.r, p.x));
+      p.y = Math.max(p.r, Math.min(H - p.r, p.y));
+    };
+    pts.forEach(clamp);
+
+    // Relax: separate any overlapping pair, keep everyone inside the stage.
+    for (let iter = 0; iter < 40; iter++) {
+      let moved = false;
+      for (let i = 0; i < n; i++) {
+        for (let j = i + 1; j < n; j++) {
+          const a = pts[i];
+          const b = pts[j];
+          let dx = b.x - a.x;
+          let dy = b.y - a.y;
+          let d = Math.hypot(dx, dy);
+          const min = a.r + b.r;
+          if (d < min) {
+            if (d === 0) {
+              dx = Math.random() - 0.5;
+              dy = Math.random() - 0.5;
+              d = Math.hypot(dx, dy) || 1;
+            }
+            const push = (min - d) / 2 / d;
+            a.x -= dx * push;
+            a.y -= dy * push;
+            b.x += dx * push;
+            b.y += dy * push;
+            moved = true;
+          }
+        }
+      }
+      pts.forEach(clamp);
+      if (!moved) break;
+    }
+
+    pts.forEach((p) => {
+      p.item.style.left = `${(p.x / W) * 100}%`;
+      p.item.style.top = `${(p.y / H) * 100}%`;
+    });
+
+    stage.classList.add('is-ready');
+  }
+
+  document.addEventListener('astro:page-load', placeCharms);
+</script>

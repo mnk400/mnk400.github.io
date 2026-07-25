@@ -13,7 +13,12 @@
     --charm-y: 0;
     --charm-rotate: 0deg;
     --charm-rotate-hover: 0deg;
-    --charm-scale: 1;
+    --charm-center-x: 0;
+    --charm-center-y: 0;
+    --charm-base-height: 3rem; // shared reference footprint; per-charm defaults scale off it
+    --charm-size: 1; // size multiplier (registry default, overridden by the `size` prop)
+    --charm-h: calc(var(--charm-base-height) * var(--charm-size)); // the charm's real rendered height — partials size off this
+    --charm-scale: 1; // interactive/responsive multiplier only (hover, breakpoints)
 
     position: absolute;
     z-index: 1;
@@ -21,6 +26,7 @@
     line-height: 1;
     pointer-events: none;
     transform:
+        translate(var(--charm-center-x), var(--charm-center-y))
         translate(var(--charm-x), var(--charm-y))
         rotate(calc(var(--charm-rotate) + var(--charm-rotate-hover)))
         scale(var(--charm-scale));

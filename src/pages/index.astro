@@ -61,9 +61,7 @@ const posts = allPosts
     </div>
 
     <ExpandableSection id="blog-archive" class="expandable-section--compact" title="<b>Archive</b>">
-      <Charm slot="badge" anchor="top-right" x="0.5em" y="-0.8em" rotate={8} class="charm--count">
-        <span class="charm-fx"><span class="charm-fx__body">{posts.length}</span></span>
-      </Charm>
+      <Charm type="count" value={posts.length} slot="badge" anchor="top-right" x="0.5em" y="-0.8em" rotate={8} size={0.375} />
       <div class="archive">
         <ul>
           {posts.map(post => (

@@ -18,10 +18,6 @@ import Charm from '../../components/charms/Charm.astro';
     galleryName="photos"
     showCaptions={false}
   >
-    <Charm slot="charm" anchor="top-right" x="1em" y="-1.1em" rotate={-10} class="charm--canister">
-      <span class="charm-fx">
-        <img class="charm-fx__body" src="/assets/images/site/film_canister.png" alt="" decoding="async" />
-      </span>
-    </Charm>
+    <Charm type="canister" slot="charm" anchor="top-right" x="1em" y="-1.1em" rotate={-10} size={1.1} />
   </ImageGallery>
 </Post>

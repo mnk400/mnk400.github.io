@@ -22,7 +22,7 @@
     .charm-fx__body {
         display: block;
         width: auto;
-        height: 1.75em;
+        height: var(--charm-h);
     }
 
     svg {
@@ -36,9 +36,9 @@
         fill: var(--charm-heart-fill);
         stroke: var(--charm-heart-outline);
         // paint-order: stroke draws the stroke behind the fill, so only its
-        // outer half shows. Double the width so the visible band matches the
-        // count badge's 2px outline (viewBox ~21px tall → ~2px visible).
-        stroke-width: 5.5;
+        // outer half shows — the visible halo is ~half this width. Kept thin to
+        // sit alongside the die-cut outlines on the other charms.
+        stroke-width: 2;
         stroke-linejoin: round;
         paint-order: stroke;
     }

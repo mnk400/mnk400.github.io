@@ -8,17 +8,12 @@
 // click-pulse but skips the entrance pop (see charms/_motion).
 
 @use "motion" as *;
+@use "outline" as *;
 
 .charm--flower {
     @include charm-motion($pop: false); // pointer-events:auto (hover the flower, not just "Manik") + click pulse
 
-    img {
-        display: block;
-        width: auto;
-        height: 1.2em;
-        object-fit: contain;
-        background-color: transparent;
-    }
+    @include charm-image-body;
 }
 
 @media (any-hover: hover) {

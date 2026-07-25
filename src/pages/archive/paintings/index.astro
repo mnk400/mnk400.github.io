@@ -14,11 +14,7 @@ const paintings = group?.items ?? [];
   description={hub?.description}
   image={hub?.image}
 >
-  <Charm slot="header-charm" anchor="top-right" x="-0.4em" y="-0.2em" rotate={6} class="charm--pearl">
-    <span class="charm-fx">
-      <img class="charm-fx__body" src="/assets/images/site/pearl.png" alt="" decoding="async" />
-    </span>
-  </Charm>
+  <Charm type="pearl" slot="header-charm" anchor="top-right" x="-0.4em" y="-0.2em" rotate={6} size={1.65} />
 
   <p class="paintings-hub__intro">
     A small browser for public-domain paintings and artwork from artists I like, each archive is searchable, sortable, and filterable.

@@ -4,20 +4,37 @@
 // The host must be `position: relative`. The charm absolutely positions itself
 // to one of the host's corners, then applies an outward nudge (`x`/`y`) and a
 // resting `rotate`. All instance values ride in as CSS custom properties so no
-// per-instance numbers leak into SCSS; charm-specific look lives in a
-// `.charm--<name>` partial under `styles/partials/charms/`.
+// per-instance numbers leak into SCSS.
 //
-// Content is an open slot: emoji, <img>, inline SVG, or a text badge.
+// Pass `type` to render a registered charm's body from the registry (see
+// charms.ts) — the charm-specific look lives in a `.charm--<type>` partial
+// under `styles/partials/charms/`. Text charms (e.g. `count`) take their
+// content via `value`. As an escape hatch for one-offs, omit `type` and pass
+// your own markup as children plus a `class` modifier.
+
+import { CHARMS, type CharmType } from './charms';
 
 interface Props {
+  type?: CharmType;
   anchor?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';
   x?: string; // outward horizontal nudge, e.g. '0.3em'
   y?: string; // outward vertical nudge, e.g. '-0.55em'
   rotate?: number; // resting tilt in degrees
-  class?: string; // charm modifier, e.g. 'charm--flower'
+  size?: number; // size multiplier over the charm's natural size (1 = default)
+  value?: string | number; // content for text charms (e.g. count)
+  class?: string; // charm modifier when not using `type` (e.g. 'charm--flower')
 }
 
-const { anchor = 'top-right', x = '0', y = '0', rotate = 0, class: className = '' } = Astro.props;
+const {
+  type,
+  anchor = 'top-right',
+  x = '0',
+  y = '0',
+  rotate = 0,
+  size,
+  value,
+  class: className = '',
+} = Astro.props;
 
 const anchorClass = {
   'top-right': 'charm--tr',
@@ -26,11 +43,34 @@ const anchorClass = {
   'bottom-left': 'charm--bl',
 }[anchor];
 
-const style = `--charm-x:${x};--charm-y:${y};--charm-rotate:${rotate}deg;`;
+const def = type ? CHARMS[type] : null;
+const typeClass = type ? `charm--${type}` : className;
+
+const effectiveSize = size ?? def?.size;
+
+const style =
+  `--charm-x:${x};--charm-y:${y};--charm-rotate:${rotate}deg;` +
+  (effectiveSize !== undefined ? `--charm-size:${effectiveSize};` : '');
 ---
 
-<span class:list={['charm', anchorClass, className]} style={style} aria-hidden="true">
-  <slot />
+<span class:list={['charm', anchorClass, typeClass]} style={style} aria-hidden="true">
+  {def ? (
+    <span class="charm-fx">
+      {def.kind === 'image' && (
+        <img
+          class="charm-fx__body"
+          src={def.src}
+          alt=""
+          decoding={def.decoding ?? 'async'}
+          fetchpriority={def.fetchpriority}
+        />
+      )}
+      {def.kind === 'svg' && <span class="charm-fx__body" set:html={def.markup} />}
+      {def.kind === 'text' && <span class="charm-fx__body">{value ?? def.sample}</span>}
+    </span>
+  ) : (
+    <slot />
+  )}
 </span>
 
 <script>

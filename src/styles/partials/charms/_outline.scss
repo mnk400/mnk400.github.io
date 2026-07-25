@@ -1,0 +1,35 @@
+// =============================================================================
+// CHARM · outline — shared die-cut sticker edge
+// =============================================================================
+//
+// Traces a transparent PNG's alpha silhouette with a ring of drop-shadows, so
+// the outline follows the artwork instead of boxing the image's rectangle
+// (which a plain `outline`/`border` would). Shared by the image charms; pass
+// the charm's outline color and, optionally, a thicker edge via `$o`.
+
+@mixin die-cut-outline($color, $o: 1px) {
+    filter:
+        drop-shadow($o 0 0 $color)
+        drop-shadow(-$o 0 0 $color)
+        drop-shadow(0 $o 0 $color)
+        drop-shadow(0 (-$o) 0 $color)
+        drop-shadow($o $o 0 $color)
+        drop-shadow(-$o $o 0 $color)
+        drop-shadow($o (-$o) 0 $color)
+        drop-shadow(-$o (-$o) 0 $color);
+}
+
+// The shared image-charm body: a transparent PNG sized to --charm-h, optionally
+// wearing the die-cut outline in the given color.
+@mixin charm-image-body($outline: null, $o: 1px) {
+    .charm-fx__body {
+        display: block;
+        width: auto;
+        height: var(--charm-h);
+        object-fit: contain;
+        background-color: transparent;
+        @if $outline != null {
+            @include die-cut-outline($outline, $o);
+        }
+    }
+}
