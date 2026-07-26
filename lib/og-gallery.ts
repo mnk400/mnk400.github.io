@@ -14,6 +14,7 @@ interface GalleryItem {
   id: string;
   title?: string;
   thumb?: string;
+  full?: string;
   description?: string;
   meta?: Record<string, string>;
 }
@@ -31,6 +32,13 @@ const BOTS =
 // Pulls the embedded gallery config: <script ... data-image-gallery-config>{...}</script>
 // Captures up to </script> (which JSON can't contain) so nested braces are safe.
 const CONFIG_RE = /data-image-gallery-config[^>]*>([\s\S]*?)<\/script>/;
+
+// Basename of an image path, extension stripped — used as a title fallback
+// for untitled items (e.g. "full/dscf5881.jpg" -> "dscf5881").
+function filenameTitle(path: string): string {
+  const base = path.split(/[?#]/)[0].split('/').pop() ?? '';
+  return base.replace(/\.[^.]+$/, '') || base;
+}
 
 // Mirrors src/lib/image-gallery/data.ts `resolveUrl`: absolute/data URLs pass
 // through; relative paths are concatenated onto base_url (one slash between).
@@ -83,7 +91,8 @@ export const onRequest: PagesFunction = async (ctx) => {
   // string concatenation, not URL relative resolution.
   const baseUrl = config.baseUrl || manifest.base_url || '';
   const image = resolveUrl(item.thumb, baseUrl);
-  const title = item.title || manifest.name || 'Manik';
+  const title =
+    item.title || filenameTitle(item.full || item.thumb || item.id) || manifest.name || 'Manik';
   const description =
     item.description || item.meta?.Camera || `Photo from ${manifest.name ?? 'the gallery'}`;
 
