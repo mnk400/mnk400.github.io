@@ -230,16 +230,31 @@ export const paintingGalleryItems = [
     title: 'John Singer Sargent',
     shortTitle: 'Sargent',
     tags: paintingTags,
-    image: '/assets/images/previews/paintings/gwen-john.jpg',
+    image: '/assets/images/previews/paintings/sargent.jpg',
     years: '1870 - 1926',
-    works: '70+',
+    works: '650+',
     order: 14,
     source: 'https://mnk400.github.io/pipelines/paintings/sargent/manifest.json',
     description: 'American expatriate who painted about a billion portraits.',
     entity: {
       same_as: ['https://en.wikipedia.org/wiki/John_Singer_Sargent'],
     },
-  } 
+  },
+  {
+    id: 'archive/paintings/kroyer',
+    title: 'Peder Severin Kr\u00f8yer',
+    shortTitle: 'Kr\u00f8yer',
+    tags: paintingTags,
+    image: '/assets/images/previews/paintings/kroyer.jpg',
+    years: '1866 - 1909',
+    works: '250+',
+    order: 15,
+    source: 'https://mnk400.github.io/pipelines/paintings/kroyer/manifest.json',
+    description: 'Danish painter of the Skagen colony, blue summer evenings, beaches, and lamplit gatherings.',
+    entity: {
+      same_as: ['https://en.wikipedia.org/wiki/Peder_Severin_Kr%C3%B8yer'],
+    },
+  },
 ] satisfies PaintingGalleryItemData[];
 
 export const paintingMoreItems = [

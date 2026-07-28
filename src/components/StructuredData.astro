@@ -1,5 +1,6 @@
 ---
 import { site } from '../data/site.ts';
+import type { BreadcrumbItem } from '../lib/breadcrumbs.ts';
 
 interface EntityProps {
   type?: string;
@@ -15,7 +16,7 @@ interface Props {
   description?: string;
   layout?: string;
   entity?: EntityProps;
-  breadcrumbs?: { label: string; href: string }[];
+  breadcrumbs?: BreadcrumbItem[];
 }
 
 const {
@@ -69,11 +70,14 @@ if (url !== '/' && breadcrumbs && breadcrumbs.length > 0) {
     '@type': 'BreadcrumbList',
     itemListElement: [
       { '@type': 'ListItem', position: 1, name: 'Manik', item: `${origin}/` },
+      // Crumbs without an href are unlinked categories (no central index page).
+      // Schema.org allows a name-only ListItem; emitting `item` anyway would
+      // serialize the undefined href into the URL.
       ...breadcrumbs.map((c, i) => ({
         '@type': 'ListItem',
         position: i + 2,
         name: c.label,
-        item: `${origin}${c.href}`,
+        ...(c.href ? { item: `${origin}${c.href}` } : {}),
       })),
     ],
   };

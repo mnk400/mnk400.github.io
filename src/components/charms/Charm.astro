@@ -12,7 +12,7 @@
 // content via `value`. As an escape hatch for one-offs, omit `type` and pass
 // your own markup as children plus a `class` modifier.
 
-import { CHARMS, type CharmType } from './charms';
+import { CHARMS, type CharmDef, type CharmType } from './charms';
 
 interface Props {
   type?: CharmType;
@@ -43,7 +43,10 @@ const anchorClass = {
   'bottom-left': 'charm--bl',
 }[anchor];
 
-const def = type ? CHARMS[type] : null;
+// Widened to CharmDef on purpose: CHARMS uses `satisfies`, so each entry keeps
+// its literal type and only `flower` carries decoding/fetchpriority. Reading
+// those off the raw union fails on the entries that omit them.
+const def: CharmDef | null = type ? CHARMS[type] : null;
 const typeClass = type ? `charm--${type}` : className;
 
 const effectiveSize = size ?? def?.size;

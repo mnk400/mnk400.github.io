@@ -1,7 +1,5 @@
 import type { AstroIntegration } from 'astro';
 import satori from 'satori';
-// sharp's package.json exports map doesn't surface its types under nodenext resolution.
-// @ts-expect-error -- runtime types come from sharp/lib/index.d.ts which resolves fine via JSDoc inference.
 import sharp from 'sharp';
 import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
