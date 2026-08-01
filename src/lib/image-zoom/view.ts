@@ -1,3 +1,4 @@
+import type { PaletteColor } from '../color-palette.ts';
 import type { ZoomGalleryItem } from './index.ts';
 
 export interface ZoomView {
@@ -12,6 +13,7 @@ export interface ZoomView {
   shareLinkIcon: HTMLElement | null;
   shareCheckIcon: HTMLElement | null;
   counter: HTMLElement | null;
+  palette: HTMLElement;
   caption: HTMLElement;
   detail: HTMLElement;
   metaSeparator: HTMLElement;
@@ -37,6 +39,23 @@ function bindClick(button: HTMLButtonElement, callback: () => void, signal: Abor
   }, { signal });
 }
 
+// Delegated, because the dots are rebuilt on every navigation.
+function bindPalettePulse(palette: HTMLElement, signal: AbortSignal) {
+  palette.addEventListener('click', (event) => {
+    const swatch = (event.target as HTMLElement).closest<HTMLElement>('.image-zoom-palette__swatch');
+    if (!swatch) return;
+    swatch.classList.remove('is-pulsing');
+    void swatch.offsetWidth; // reflow, so rapid clicks retrigger
+    swatch.classList.add('is-pulsing');
+  }, { signal });
+
+  palette.addEventListener('animationend', (event) => {
+    if (event.animationName === 'charm-pulse') {
+      (event.target as HTMLElement).classList.remove('is-pulsing');
+    }
+  }, { signal });
+}
+
 export function createZoomView(options: ZoomViewOptions): ZoomView {
   const template = document.querySelector<HTMLTemplateElement>('#image-zoom-template');
   if (!template) throw new Error('Image zoom template is missing');
@@ -52,6 +71,7 @@ export function createZoomView(options: ZoomViewOptions): ZoomView {
   const previous = fragment.querySelector<HTMLButtonElement>('[data-zoom-previous]')!;
   const next = fragment.querySelector<HTMLButtonElement>('[data-zoom-next]')!;
   const counter = fragment.querySelector<HTMLElement>('[data-zoom-counter]')!;
+  const palette = fragment.querySelector<HTMLElement>('[data-zoom-palette]')!;
   const shareButton = fragment.querySelector<HTMLButtonElement>('[data-zoom-share]')!;
   const shareLinkIcon = fragment.querySelector<HTMLElement>('[data-zoom-share-link]')!;
   const shareCheckIcon = fragment.querySelector<HTMLElement>('[data-zoom-share-check]')!;
@@ -73,6 +93,7 @@ export function createZoomView(options: ZoomViewOptions): ZoomView {
     bindClick(next, options.onNext, options.signal);
   }
   if (options.share) bindClick(shareButton, options.onShare, options.signal);
+  bindPalettePulse(palette, options.signal);
 
   document.body.appendChild(fragment);
   return {
@@ -87,6 +108,7 @@ export function createZoomView(options: ZoomViewOptions): ZoomView {
     shareLinkIcon: options.share ? shareLinkIcon : null,
     shareCheckIcon: options.share ? shareCheckIcon : null,
     counter: options.multi ? counter : null,
+    palette,
     caption,
     detail,
     metaSeparator,
@@ -103,6 +125,21 @@ export function updateZoomMeta(view: ZoomView, item: ZoomGalleryItem) {
   view.detail.style.display = detail ? '' : 'none';
   view.metaSeparator.style.display = title && detail ? '' : 'none';
   view.metaLine.classList.toggle('is-empty', !title && !detail);
+}
+
+export function updateZoomPalette(view: ZoomView, colors: PaletteColor[]) {
+  view.palette.replaceChildren();
+  view.palette.hidden = colors.length === 0;
+
+  for (const color of colors) {
+    const dot = document.createElement('span');
+    dot.className = 'image-zoom-palette__dot';
+    const swatch = document.createElement('span');
+    swatch.className = 'image-zoom-palette__swatch';
+    swatch.style.backgroundColor = color.hex;
+    dot.appendChild(swatch);
+    view.palette.appendChild(dot);
+  }
 }
 
 export function updateZoomNavigation(view: ZoomView, index: number, total: number) {

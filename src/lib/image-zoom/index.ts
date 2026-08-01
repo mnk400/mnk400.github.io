@@ -16,12 +16,15 @@ import {
   waitForAnimationFrame,
   type ZoomRect,
 } from './motion.ts';
+import { extractPalette, type PaletteColor } from '../color-palette.ts';
+import { allowPixelReads } from '../images.ts';
 import {
   createZoomView,
   resetZoomShareFeedback,
   setZoomShareFeedback,
   updateZoomMeta,
   updateZoomNavigation,
+  updateZoomPalette,
   type ZoomView,
 } from './view.ts';
 
@@ -77,6 +80,61 @@ let activeSession: ZoomSession | null = null;
 const SWIPE_THRESHOLD = 50;
 const SETTLED_IMAGE_CLASS = 'image-zoom-clone--settled';
 
+const PALETTE_DOTS = 4;
+// Cost scales with the square of this.
+const PALETTE_SAMPLE_SIZE = 64;
+const PALETTE_CACHE_LIMIT = 120;
+
+// Keyed by thumbnail URL, item ids are only unique within one manifest.
+// Persists across sessions so re-visiting an image doesn't re-cluster it.
+const paletteCache = new Map<string, PaletteColor[]>();
+
+/**
+ * Always the thumbnail, never the zoom clone: the clone swaps to `fullSrc`
+ * mid-flight, so its palette would depend on network timing.
+ */
+function paletteSource(item: ZoomGalleryItem): Promise<HTMLImageElement | null> {
+  const element = item.element;
+  if (element?.isConnected && element.complete && element.naturalWidth) {
+    return Promise.resolve(element);
+  }
+  if (!item.thumbSrc) return Promise.resolve(null);
+
+  const loader = new Image();
+  allowPixelReads(loader, item.thumbSrc);
+  loader.src = item.thumbSrc;
+  return loader.decode().then(() => loader).catch(() => null);
+}
+
+async function applyPalette(session: ZoomSession) {
+  const view = session.view;
+  const item = currentItem(session);
+  if (!view || !item?.thumbSrc) return;
+
+  const cached = paletteCache.get(item.thumbSrc);
+  if (cached) {
+    updateZoomPalette(view, cached);
+    return;
+  }
+
+  const source = await paletteSource(item);
+  // The decode above yields, so the session may have moved on or ended.
+  if (!source || activeSession !== session || currentItem(session) !== item) return;
+
+  const colors = extractPalette(source, {
+    count: PALETTE_DOTS,
+    sampleSize: PALETTE_SAMPLE_SIZE,
+  });
+  if (colors.length === 0) return;
+
+  if (paletteCache.size >= PALETTE_CACHE_LIMIT) {
+    const oldest = paletteCache.keys().next();
+    if (!oldest.done) paletteCache.delete(oldest.value);
+  }
+  paletteCache.set(item.thumbSrc, colors);
+  updateZoomPalette(view, colors);
+}
+
 function setSessionTimer(session: ZoomSession, callback: () => void, delay: number): number {
   return window.setTimeout(() => {
     if (activeSession === session) callback();
@@ -103,6 +161,9 @@ function finishMotion(session: ZoomSession, phase: 'opening' | 'navigating') {
   if (activeSession !== session || session.phase !== phase) return;
   settleClone(session);
   session.phase = 'open';
+  // Past the next paint: `settleClone` just relaid out the clone, and
+  // extraction is synchronous once its source is decoded.
+  requestSessionFrame(session, () => setSessionTimer(session, () => void applyPalette(session), 0));
 }
 
 function itemForImage(img: HTMLImageElement): ZoomGalleryItem {
@@ -347,6 +408,8 @@ async function navigate(session: ZoomSession, direction: number) {
   session.phase = 'navigating';
   freezeCloneAtPresentation(session);
   session.view?.metaLine.classList.add('is-fading');
+  // Drop the outgoing dots now, or they linger over the incoming image.
+  if (session.view) updateZoomPalette(session.view, []);
   const oldItem = currentItem(session);
   const newItem = session.items[newIndex];
   if (!newItem) {

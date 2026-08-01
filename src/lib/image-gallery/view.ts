@@ -1,3 +1,4 @@
+import { allowPixelReads } from '../images.ts';
 import {
   createSelectionDropdown,
   createSelectionSwitch,
@@ -83,6 +84,7 @@ function createCard(item: GalleryItem, index: number, options: RenderOptions): H
   }
 
   const image = document.createElement('img');
+  allowPixelReads(image, item.thumb);
   image.src = item.thumb;
   image.alt = item.alt;
   image.loading = 'lazy';

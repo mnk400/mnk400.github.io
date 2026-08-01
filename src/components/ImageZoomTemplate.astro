@@ -27,6 +27,9 @@ import Icon from './Icon.astro';
         <Icon name="caret-right" />
       </button>
 
+      <!-- Decorative: the palette is derived from the image itself. Populated by JS. -->
+      <span class="image-zoom-palette" data-zoom-palette aria-hidden="true" hidden />
+
       <div class="image-zoom-corner">
         <span class="image-zoom-counter" data-zoom-counter />
         <button type="button" class="image-zoom-control-button image-zoom-share" aria-label="Copy link to image" data-zoom-share>

@@ -1,3 +1,4 @@
+import { allowPixelReads } from '../images.ts';
 import type { ZoomGalleryItem } from './index.ts';
 
 export type ZoomRect = {
@@ -36,6 +37,7 @@ export function setZoomRect(element: HTMLElement, rect: ZoomRect) {
 export async function preloadImage(src: string): Promise<void> {
   if (!src) return;
   const loader = new Image();
+  allowPixelReads(loader, src);
   loader.src = src;
   try {
     await loader.decode();
@@ -44,6 +46,7 @@ export async function preloadImage(src: string): Promise<void> {
 
 export function createZoomImage(item: ZoomGalleryItem, initialRect?: ZoomRect): HTMLImageElement {
   const image = document.createElement('img');
+  allowPixelReads(image, item.thumbSrc);
   image.src = item.thumbSrc;
   image.alt = item.alt || '';
   image.className = 'image-zoom-clone';
@@ -67,6 +70,7 @@ export function upgradeImageSource(
   const fullSrc = item.fullSrc;
   if (!fullSrc || fullSrc === image.src) return;
   const loader = new Image();
+  allowPixelReads(loader, fullSrc);
   loader.src = fullSrc;
   loader.decode().then(() => {
     if (shouldApply() && image.isConnected) image.src = fullSrc;
