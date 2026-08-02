@@ -1,3 +1,5 @@
+import { pageSignal, untilSwap } from './lifecycle.ts';
+
 export interface SelectionOption {
   value: string;
   label: string;
@@ -96,9 +98,13 @@ function setupSwitchOverflow(container: HTMLElement) {
   };
 
   container.addEventListener('scroll', schedule, { passive: true });
-  window.addEventListener('resize', schedule);
+  // `resize` and the observer outlive the swapped-away container unless bound
+  // to the page lifecycle — see src/lib/lifecycle.ts.
+  window.addEventListener('resize', schedule, { signal: pageSignal() });
   if (typeof ResizeObserver !== 'undefined') {
-    new ResizeObserver(schedule).observe(container);
+    const observer = new ResizeObserver(schedule);
+    observer.observe(container);
+    untilSwap(() => observer.disconnect());
   }
   schedule();
 }
@@ -143,6 +149,12 @@ export function createSelectionSwitch(config: SwitchConfig): HTMLElement {
 
 export function initSelectionDropdown(container: HTMLElement) {
   if (container.dataset.dropdownInitialized === 'true') return;
+  // Claim the element before the structural bail-out below, matching
+  // initSelectionSwitch. Markup is static per page, so a dropdown that fails
+  // the check will fail it identically on every astro:page-load; retrying just
+  // re-runs the query work forever. A post-swap element is a new node and so
+  // still gets initialized.
+  container.dataset.dropdownInitialized = 'true';
 
   const trigger = container.querySelector<HTMLButtonElement>('.selection-dropdown__trigger');
   const triggerText = container.querySelector<HTMLElement>('.selection-dropdown__trigger-text');
@@ -188,15 +200,17 @@ export function initSelectionDropdown(container: HTMLElement) {
     });
   });
 
+  // Document-scoped, so these must drop on swap or each navigation leaves
+  // another pair behind holding a detached `container`.
+  const signal = pageSignal();
+
   document.addEventListener('click', (event) => {
     if (!container.contains(event.target as Node)) setOpen(false);
-  });
+  }, { signal });
 
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') setOpen(false);
-  });
-
-  container.dataset.dropdownInitialized = 'true';
+  }, { signal });
 }
 
 export function createSelectionDropdown(config: DropdownConfig): HTMLElement {

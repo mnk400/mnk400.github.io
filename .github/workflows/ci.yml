@@ -1,0 +1,44 @@
+name: CI
+
+# Guards the two things that could previously ship broken: type errors (astro
+# build does NOT typecheck, so `check` has to run separately) and build breaks.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Newer pushes supersede in-flight runs on the same ref.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Typechecks .astro and src/**/*.ts. Must stay at 0 errors.
+      - name: Typecheck site
+        run: npm run check
+
+      # functions/ and lib/ are excluded from the root tsconfig, so they need
+      # their own pass or Cloudflare Functions ship unchecked.
+      - name: Typecheck Cloudflare Functions
+        run: npx tsc -p functions/tsconfig.json
+
+      - name: Build site
+        run: npm run build
