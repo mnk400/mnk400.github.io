@@ -4,8 +4,8 @@
 // Charm.astro renders a charm's body from its entry here, so a call site only
 // has to say `<Charm type="jacket" ... />`. Adding a charm means one entry
 // below plus a matching `.charm--<type>` partial under
-// styles/partials/charms/. The gallery at /charms maps over CHARMS, so every
-// registered charm shows up there automatically.
+// styles/partials/charms/. The collection at /archive/things/charms maps over
+// CHARMS, so every registered charm shows up there automatically.
 
 // `size` is the charm's default height multiplier over --charm-base-height
 // A `size` prop on <Charm> overrides it per placement.

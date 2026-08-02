@@ -23,10 +23,4 @@ export const funToolMoreItems: MoreItemData[] = [
     tags: ['art', 'camera', 'ascii', 'circles', 'webcam', 'canvas', 'tool'],
     redirectFrom: ['/more/camera', '/more/circles', '/fun-tools/circles'],
   },
-  {
-    id: 'fun-tools/charms',
-    title: 'Charms',
-    description: 'Every decorative charm on the site, tipped out onto the page.',
-    tags: ['charms', 'decoration', 'fun', 'easter egg', 'scatter'],
-  },
 ];

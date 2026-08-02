@@ -1,0 +1,38 @@
+@use "../base/mixins" as *;
+
+// =============================================================================
+// CHARMS COLLECTION — /archive/things/charms
+// =============================================================================
+
+.charm-collection {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+    margin: var(--spacing-lg) 0 0;
+    // The global `ul` rule aligns items on the baseline, which here would size
+    // rows off each charm's baseline and stagger the columns.
+    align-items: start;
+}
+
+// Scoped under the list to out-specify `.post__content li`, which pads list
+// items asymmetrically and would shift the drift area off-centre.
+.charm-collection .charm-collection__case {
+    @include translucent-surface;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 3;
+    padding: 0;
+    overflow: hidden; // the charm drifts against these edges
+
+    .charm {
+        --charm-base-height: 3.6rem;
+        position: static;
+    }
+}
+
+// Drift rides on this wrapper, never on .charm: the charm owns its own
+// transform chain, and `translate`/`rotate` here stay clear of it.
+.charm-collection__float {
+    display: inline-flex;
+    will-change: translate, rotate;
+}

@@ -42,7 +42,24 @@ export const thingGalleryItems = [
   },
 ] satisfies ThingGalleryItemData[];
 
+// Things that live under the archive but aren't manifest-backed galleries, so
+// they get their own static page instead of riding the [thing] route. Listed
+// here so the index card, /more search, and redirects still come for free.
+export const thingStaticItems = [
+  {
+    id: 'archive/things/charms',
+    title: 'Charms',
+    shortTitle: 'Charms',
+    tags: [...thingTags, 'charms', 'decoration', 'fun', 'easter egg'],
+    image: '/assets/images/previews/charms.jpg',
+    order: 2,
+    description: 'Every decorative charm on the site, tipped out into a case.',
+    redirectFrom: ['/fun-tools/charms'],
+  },
+] satisfies MoreItemData[];
+
 export const thingMoreItems = [
   thingHubItem,
   ...thingGalleryItems,
+  ...thingStaticItems,
 ] satisfies MoreItemData[];
