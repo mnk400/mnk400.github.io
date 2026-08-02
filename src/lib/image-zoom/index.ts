@@ -17,7 +17,6 @@ import {
   type ZoomRect,
 } from './motion.ts';
 import { extractPalette, type PaletteColor } from '../color-palette.ts';
-import { allowPixelReads } from '../images.ts';
 import {
   createZoomView,
   resetZoomShareFeedback,
@@ -89,50 +88,23 @@ const PALETTE_CACHE_LIMIT = 120;
 // Persists across sessions so re-visiting an image doesn't re-cluster it.
 const paletteCache = new Map<string, PaletteColor[]>();
 
-/**
- * Always the thumbnail, never the zoom clone: the clone swaps to `fullSrc`
- * mid-flight, so its palette would depend on network timing.
- */
-function paletteSource(item: ZoomGalleryItem): Promise<HTMLImageElement | null> {
-  const element = item.element;
-  if (element?.isConnected && element.complete && element.naturalWidth) {
-    return Promise.resolve(element);
-  }
-  if (!item.thumbSrc) return Promise.resolve(null);
-
-  const loader = new Image();
-  allowPixelReads(loader, item.thumbSrc);
-  loader.src = item.thumbSrc;
-  return loader.decode().then(() => loader).catch(() => null);
-}
-
-async function applyPalette(session: ZoomSession) {
-  const view = session.view;
-  const item = currentItem(session);
-  if (!view || !item?.thumbSrc) return;
-
+function paletteForImage(item: ZoomGalleryItem, image: HTMLImageElement): PaletteColor[] {
   const cached = paletteCache.get(item.thumbSrc);
-  if (cached) {
-    updateZoomPalette(view, cached);
-    return;
-  }
+  if (cached) return cached;
 
-  const source = await paletteSource(item);
-  // The decode above yields, so the session may have moved on or ended.
-  if (!source || activeSession !== session || currentItem(session) !== item) return;
-
-  const colors = extractPalette(source, {
+  // The clone is still showing the decoded thumbnail here; extraction happens
+  // before upgradeImageSource can replace it with the full-resolution image.
+  const colors = extractPalette(image, {
     count: PALETTE_DOTS,
     sampleSize: PALETTE_SAMPLE_SIZE,
   });
-  if (colors.length === 0) return;
 
   if (paletteCache.size >= PALETTE_CACHE_LIMIT) {
     const oldest = paletteCache.keys().next();
     if (!oldest.done) paletteCache.delete(oldest.value);
   }
   paletteCache.set(item.thumbSrc, colors);
-  updateZoomPalette(view, colors);
+  return colors;
 }
 
 function setSessionTimer(session: ZoomSession, callback: () => void, delay: number): number {
@@ -161,9 +133,6 @@ function finishMotion(session: ZoomSession, phase: 'opening' | 'navigating') {
   if (activeSession !== session || session.phase !== phase) return;
   settleClone(session);
   session.phase = 'open';
-  // Past the next paint: `settleClone` just relaid out the clone, and
-  // extraction is synchronous once its source is decoded.
-  requestSessionFrame(session, () => setSessionTimer(session, () => void applyPalette(session), 0));
 }
 
 function itemForImage(img: HTMLImageElement): ZoomGalleryItem {
@@ -360,6 +329,7 @@ export async function openZoomGallery(
   const clone = await createClone(session, selected, originalRect);
   if (!clone || activeSession !== session) return false;
   session.clonedImage = clone;
+  updateZoomPalette(session.view, paletteForImage(selected, clone));
   const target = computeZoomTarget(selected, clone, originalRect);
   upgradeCloneToFull(session, clone, selected);
 
@@ -408,8 +378,6 @@ async function navigate(session: ZoomSession, direction: number) {
   session.phase = 'navigating';
   freezeCloneAtPresentation(session);
   session.view?.metaLine.classList.add('is-fading');
-  // Drop the outgoing dots now, or they linger over the incoming image.
-  if (session.view) updateZoomPalette(session.view, []);
   const oldItem = currentItem(session);
   const newItem = session.items[newIndex];
   if (!newItem) {
@@ -423,6 +391,7 @@ async function navigate(session: ZoomSession, direction: number) {
     newClone.remove();
     return;
   }
+  const palette = paletteForImage(newItem, newClone);
   const target = computeZoomTarget(newItem, newClone);
   upgradeCloneToFull(session, newClone, newItem);
   setZoomRect(newClone, target);
@@ -472,6 +441,7 @@ async function navigate(session: ZoomSession, direction: number) {
     if (session.view) {
       updateZoomNavigation(session.view, session.currentIndex, session.items.length);
       updateZoomMeta(session.view, newItem);
+      updateZoomPalette(session.view, palette);
       session.view.metaLine.classList.remove('is-fading');
     }
   }, transitionDuration() / 2);

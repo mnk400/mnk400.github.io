@@ -39,7 +39,6 @@ function bindClick(button: HTMLButtonElement, callback: () => void, signal: Abor
   }, { signal });
 }
 
-// Delegated, because the dots are rebuilt on every navigation.
 function bindPalettePulse(palette: HTMLElement, signal: AbortSignal) {
   palette.addEventListener('click', (event) => {
     const swatch = (event.target as HTMLElement).closest<HTMLElement>('.image-zoom-palette__swatch');
@@ -128,18 +127,27 @@ export function updateZoomMeta(view: ZoomView, item: ZoomGalleryItem) {
 }
 
 export function updateZoomPalette(view: ZoomView, colors: PaletteColor[]) {
-  view.palette.replaceChildren();
   view.palette.hidden = colors.length === 0;
-
-  for (const color of colors) {
-    const dot = document.createElement('span');
-    dot.className = 'image-zoom-palette__dot';
-    const swatch = document.createElement('span');
-    swatch.className = 'image-zoom-palette__swatch';
-    swatch.style.backgroundColor = color.hex;
-    dot.appendChild(swatch);
-    view.palette.appendChild(dot);
+  if (colors.length === 0) {
+    view.palette.replaceChildren();
+    return;
   }
+
+  const dots = Array.from(view.palette.querySelectorAll<HTMLElement>(':scope > .image-zoom-palette__dot'));
+  colors.forEach((color, index) => {
+    let dot = dots[index];
+    if (!dot) {
+      dot = document.createElement('span');
+      dot.className = 'image-zoom-palette__dot';
+      const swatch = document.createElement('span');
+      swatch.className = 'image-zoom-palette__swatch';
+      dot.appendChild(swatch);
+      view.palette.appendChild(dot);
+    }
+    const swatch = dot.querySelector<HTMLElement>('.image-zoom-palette__swatch');
+    if (swatch) swatch.style.backgroundColor = color.hex;
+  });
+  dots.slice(colors.length).forEach((dot) => dot.remove());
 }
 
 export function updateZoomNavigation(view: ZoomView, index: number, total: number) {

@@ -323,6 +323,9 @@ The CSS includes the overlay classes used by manik.cc's image zoom runtime:
     .image-zoom-clone--direct
     .image-zoom-clone--settled
     .image-zoom-controls
+    .image-zoom-palette
+    .image-zoom-palette__dot
+    .image-zoom-palette__swatch
     .image-zoom-meta
     .image-zoom-caption
     .image-zoom-detail
@@ -344,6 +347,12 @@ owns the available viewport box and `object-fit: contain` keeps the bitmap
 centered through browser resizing without JavaScript resize listeners. Before
 navigation or dismissal, freeze the rendered bitmap's current presentation
 rectangle and remove the settled class so spatial motion starts without a jump.
+
+Populate `.image-zoom-palette` before activating `.image-zoom-controls`, so its
+initial appearance shares the controls' opacity transition instead of arriving
+later. Keep the dot elements mounted during gallery navigation and update their
+swatch background colors in place; the CSS color transition avoids exposing the
+page background or requiring temporary overlapping palette layers.
 
 The JavaScript runtime is not exported. Astro projects can copy
 `src/lib/image-zoom/` plus `ImageZoomTemplate.astro` if they want the same
