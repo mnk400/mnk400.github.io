@@ -1,0 +1,46 @@
+---
+interface Props {
+  id: string;
+  /** Caption before the value; omitted renders the number alone. */
+  label?: string;
+  value: number | string;
+  min: number | string;
+  max: number | string;
+  step?: number | string;
+}
+
+const { id, label, value, min, max, step } = Astro.props;
+const span = Number(max) - Number(min);
+const initialPercent = span > 0 ? ((Number(value) - Number(min)) / span) * 100 : 0;
+---
+<div class="range-slider" data-range-slider style={`--value-percent: ${initialPercent}%`}>
+  <p class="range-value">{label ? `${label} · ` : ''}<span data-range-output>{value}</span></p>
+  <input type="range" id={id} value={value} min={min} max={max} step={step} />
+</div>
+
+<script>
+  // CSS can't read an input's value, so the filled width has to be pushed from here
+  function sync(host: HTMLElement, input: HTMLInputElement) {
+    const min = Number(input.min || 0);
+    const max = Number(input.max || 100);
+    const span = max - min;
+    const percent = span > 0 ? ((Number(input.value) - min) / span) * 100 : 0;
+    host.style.setProperty('--value-percent', `${percent}%`);
+
+    const output = host.querySelector('[data-range-output]');
+    if (output) output.textContent = input.value;
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll<HTMLElement>('[data-range-slider]').forEach((host) => {
+      const input = host.querySelector<HTMLInputElement>('input[type="range"]');
+      if (!input || host.dataset.rangeInitialized === 'true') return;
+      host.dataset.rangeInitialized = 'true';
+
+      // Element-scoped, so it dies with the node on swap (see src/lib/lifecycle.ts).
+      // Pages that set .value programmatically dispatch 'input' to re-run this.
+      input.addEventListener('input', () => sync(host, input));
+      sync(host, input);
+    });
+  });
+</script>

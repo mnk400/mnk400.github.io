@@ -1,6 +1,7 @@
 ---
 import Post from '../../layouts/Post.astro';
 import ImageUpload from '../../components/ImageUpload.astro';
+import RangeSlider from '../../components/RangeSlider.astro';
 ---
 <Post
   title="Color Palette Extractor"
@@ -16,10 +17,13 @@ import ImageUpload from '../../components/ImageUpload.astro';
     <div class="stack">
       <ImageUpload />
 
-      <div class="range-slider" data-range-slider>
-        <p class="range-value">Colors · <span id="colors-value">5</span></p>
-        <input type="range" id="colors-input" value="5" min="2" max="10" />
-      </div>
+      <RangeSlider
+        id="colors-input"
+        label="Colors"
+        value={5}
+        min={2}
+        max={10}
+      />
 
       <div class="toolbar">
         <button id="extract-btn" class="normal-btn">Extract Palette</button>
@@ -52,7 +56,6 @@ import ImageUpload from '../../components/ImageUpload.astro';
     const upload = document.querySelector<HTMLElement>('[data-image-upload]');
     const preview = upload?.querySelector<HTMLImageElement>('.image-upload__preview');
     const colorsInput = document.getElementById('colors-input') as HTMLInputElement | null;
-    const colorsValue = document.getElementById('colors-value');
     const extractBtn = document.getElementById('extract-btn') as HTMLButtonElement | null;
     const paletteOutput = document.getElementById('palette-output');
     const paletteActions = document.getElementById('palette-actions');
@@ -64,10 +67,6 @@ import ImageUpload from '../../components/ImageUpload.astro';
     paletteOutput.dataset.colorPaletteInitialized = 'true';
 
     let current: PaletteColor[] = [];
-
-    colorsInput.addEventListener('input', () => {
-      if (colorsValue) colorsValue.textContent = colorsInput.value;
-    });
 
     upload.addEventListener('image-upload:change', () => {
       paletteOutput!.innerHTML = '';

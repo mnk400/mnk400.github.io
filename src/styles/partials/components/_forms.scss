@@ -3,6 +3,12 @@
 // =============================================================================
 // FORMS & INPUTS
 // =============================================================================
+//
+// TODO: split the rest of this file the way one partial per owner (see docs/style-dna.md)
+//   _input.scss              base text/select/color -> decides if we should create new components 
+//   _selection-dropdown.scss SelectionDropdown.astro
+//   _image-upload.scss       ImageUpload.astro
+// Keep the new @use lines in main.scss
 
 // Base input styles
 input[type="text"],
@@ -138,53 +144,6 @@ select {
     white-space: nowrap;
 }
 
-// Range inputs
-input[type="range"] {
-    display: block;
-    width: 100%;
-    margin: 0;
-    -webkit-appearance: none;
-    appearance: none;
-    height: 18px;
-    background:
-        linear-gradient(
-            to right,
-            var(--text-color) var(--value-percent, 0%),
-            var(--translucent-medium) var(--value-percent, 0%)
-        ) center/100% 2px no-repeat;
-    background-color: transparent;
-    border: none;
-    outline: none;
-    cursor: pointer;
-
-    &::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        appearance: none;
-        width: var(--control-thumb-size);
-        height: var(--control-thumb-size);
-        background: var(--text-color);
-        border: none;
-        border-radius: 50%;
-        cursor: pointer;
-        transition: transform var(--transition-fast);
-    }
-
-    &::-moz-range-thumb {
-        width: var(--control-thumb-size);
-        height: var(--control-thumb-size);
-        background: var(--text-color);
-        border: none;
-        border-radius: 50%;
-        cursor: pointer;
-        transition: transform var(--transition-fast);
-    }
-
-    &:hover::-webkit-slider-thumb { transform: scale(1.2); }
-    &:hover::-moz-range-thumb { transform: scale(1.2); }
-    &:active::-webkit-slider-thumb { transform: scale(1.4); }
-    &:active::-moz-range-thumb { transform: scale(1.4); }
-}
-
 // Color inputs
 input[type="color"] {
     width: 50px;
@@ -207,21 +166,6 @@ input[type="color"] {
         border: none;
         border-radius: var(--radius-md);
     }
-}
-
-.range-slider {
-    display: grid;
-    gap: var(--spacing-xs);
-}
-
-.range-value {
-    color: var(--sec-text-color);
-    font-size: 0.85em;
-    font-weight: 300;
-    letter-spacing: 0.3px;
-    line-height: 1;
-    text-transform: lowercase;
-    font-variant-numeric: tabular-nums;
 }
 
 // Image upload

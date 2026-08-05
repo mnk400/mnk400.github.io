@@ -1,0 +1,136 @@
+@use "../base/mixins" as *;
+
+// =============================================================================
+// RANGE SLIDER (src/components/RangeSlider.astro)
+// =============================================================================
+
+// Registered so the fill can transition: an unregistered custom property is an
+// unparsed token stream and jumps straight to its new value.
+@property --value-percent {
+    syntax: '<percentage>';
+    inherits: true;
+    initial-value: 0%;
+}
+
+.range-slider {
+    --range-track-height: var(--control-height-sm);
+    --range-tick-step: 10%;
+    --range-tick-offset: calc(var(--range-tick-step) / 2);
+    --range-fill-transition: var(--transition-press);
+
+    display: grid;
+    gap: var(--spacing-xs);
+    transition: --value-percent var(--range-fill-transition);
+
+    &::before,
+    &::after {
+        content: '';
+        pointer-events: none;
+        z-index: 1;
+        background-image:
+            repeating-linear-gradient(
+                to right,
+                transparent 0 var(--range-tick-offset),
+                var(--range-tick-color) var(--range-tick-offset) calc(var(--range-tick-offset) + 1px),
+                transparent calc(var(--range-tick-offset) + 1px) var(--range-tick-step)
+            );
+        background-repeat: no-repeat;
+        background-size: 100% 6px;
+        background-position: center;
+    }
+
+    &::before {
+        --range-tick-color: var(--background-main);
+        clip-path: inset(0 calc(100% - var(--value-percent)) 0 0);
+    }
+
+    &::after {
+        --range-tick-color: var(--translucent-high);
+        clip-path: inset(0 0 0 var(--value-percent));
+    }
+
+    > input[type="range"],
+    &::before,
+    &::after {
+        grid-column: 1;
+        grid-row: 2;
+    }
+
+    > input[type="range"] {
+        display: block;
+        width: 100%;
+        height: var(--range-track-height);
+        margin: 0;
+        padding: 0;
+        -webkit-appearance: none;
+        appearance: none;
+        background-color: var(--translucent-low);
+        background-image:
+            linear-gradient(
+                to right,
+                var(--contrast-overlay) var(--value-percent),
+                transparent var(--value-percent)
+            );
+        border: none;
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition: background-color var(--transition-medium);
+        @include soft-outline;
+
+        @include hover-interactive {
+            background-color: var(--translucent-medium-high);
+        }
+
+        &:focus-visible {
+            outline: 2px solid var(--translucent-high);
+            outline-offset: 2px;
+        }
+
+        &::-webkit-slider-runnable-track {
+            height: 100%;
+            background: transparent;
+            border: none;
+        }
+
+        &::-moz-range-track {
+            height: 100%;
+            background: transparent;
+            border: none;
+        }
+
+        &::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 1px;
+            height: var(--range-track-height);
+            background: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+        &::-moz-range-thumb {
+            width: 1px;
+            height: var(--range-track-height);
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            cursor: pointer;
+        }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .range-slider {
+        --range-fill-transition: 0s;
+    }
+}
+
+.range-value {
+    color: var(--sec-text-color);
+    font-size: 0.85em;
+    font-weight: 300;
+    letter-spacing: 0.3px;
+    line-height: 1;
+    text-transform: lowercase;
+    font-variant-numeric: tabular-nums;
+}

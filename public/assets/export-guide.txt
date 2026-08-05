@@ -60,7 +60,8 @@ by the consuming project.
     partials/components/cards      .card, .image-card, reveal card surfaces
     partials/components/grids      grid helpers, masonry columns, album containers
     partials/components/info-grid  .info-grid and .info-card
-    partials/components/forms      inputs, dropdowns, range sliders, image upload
+    partials/components/forms      inputs, dropdowns, image upload
+    partials/components/range-slider  .range-slider and .range-value
     partials/components/image-zoom Image zoom overlay classes
     partials/components/icon       .icon sizing and alignment
     partials/utilities/helpers     .stack, .cluster, .toolbar, .field, utilities
@@ -236,9 +237,9 @@ Inputs:
 
 Range slider visual contract:
 
-    <div class="range-slider">
+    <div class="range-slider" style="--value-percent: 50%">
       <p class="range-value">Size · <span>50</span></p>
-      <input type="range" min="0" max="100" value="50" style="--value-percent: 50%">
+      <input type="range" min="0" max="100" value="50">
     </div>
 
 Selection switch visual contract:

@@ -1,6 +1,7 @@
 ---
 import Post from '../../layouts/Post.astro';
 import SelectionSwitch from '../../components/SelectionSwitch.astro';
+import RangeSlider from '../../components/RangeSlider.astro';
 
 const orientationOptions = [
   { value: 'landscape', label: 'Landscape (3840×2160)' },
@@ -81,10 +82,12 @@ const typeOptions = [
       </div>
 
       <div class="field" id="smoothness-control" style="display: none;">
-        <div class="range-slider" data-range-slider>
-          <p class="range-value"><span id="smoothness-value">50</span></p>
-          <input type="range" id="smoothness-input" value="50" min="0" max="100" />
-        </div>
+        <RangeSlider
+          id="smoothness-input"
+          value={50}
+          min={0}
+          max={100}
+        />
       </div>
 
       <div class="toolbar">
@@ -167,7 +170,6 @@ const typeOptions = [
     const color2Text = document.getElementById('color2-text') as HTMLInputElement;
     const directionToggle = document.getElementById('direction-toggle') as HTMLElement;
     const smoothnessInput = document.getElementById('smoothness-input') as HTMLInputElement;
-    const smoothnessValue = document.getElementById('smoothness-value');
     const downloadBtn = document.getElementById('download-btn') as HTMLButtonElement;
     const preview = document.getElementById('gradient-preview') as HTMLElement;
     const exportCanvas = document.getElementById('gradient-canvas') as HTMLCanvasElement;
@@ -324,15 +326,7 @@ const typeOptions = [
       updatePreview();
     });
 
-    smoothnessInput.addEventListener('input', () => {
-      if (smoothnessValue) smoothnessValue.textContent = smoothnessInput.value;
-      const pct = ((Number(smoothnessInput.value) - Number(smoothnessInput.min)) /
-        (Number(smoothnessInput.max) - Number(smoothnessInput.min))) * 100;
-      smoothnessInput.style.setProperty('--value-percent', `${pct}%`);
-      updatePreview();
-    });
-    // Prime the slider fill on first render.
-    smoothnessInput.dispatchEvent(new Event('input'));
+    smoothnessInput.addEventListener('input', updatePreview);
 
     downloadBtn.addEventListener('click', () => {
       const { width, height } = getExportDims();
