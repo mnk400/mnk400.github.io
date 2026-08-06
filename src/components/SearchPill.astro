@@ -10,7 +10,7 @@ interface Props {
 }
 
 const {
-  id = 'site-search',
+  id = 'search-pill',
   label = 'Search',
   placeholder = 'search',
   target,
@@ -18,13 +18,13 @@ const {
 } = Astro.props;
 ---
 <div
-  class:list={['site-search', extraClass]}
+  class:list={['search-pill', extraClass]}
   id={id}
   data-search-component
   data-search-target={target}
 >
   <button
-    class="site-search__trigger"
+    class="search-pill__trigger"
     type="button"
     aria-expanded="false"
     aria-controls={`${id}-field`}
@@ -32,7 +32,7 @@ const {
     <Icon name="magnifying-glass" />
     <span>{label}</span>
   </button>
-  <label class="site-search__field" for={`${id}-field`}>
+  <label class="search-pill__field" for={`${id}-field`}>
     <Icon name="magnifying-glass" />
     <input
       id={`${id}-field`}
@@ -41,7 +41,7 @@ const {
       autocomplete="off"
       aria-label={label}
     />
-    <button class="site-search__clear" type="button" aria-label="Clear search" hidden>
+    <button class="search-pill__clear" type="button" aria-label="Clear search" hidden>
       <Icon name="x" />
     </button>
   </label>
@@ -51,9 +51,9 @@ const {
   function initSearch(container: HTMLElement) {
     if (container.dataset.searchInitialized === 'true') return;
 
-    const trigger = container.querySelector<HTMLButtonElement>('.site-search__trigger');
-    const input = container.querySelector<HTMLInputElement>('.site-search__field input');
-    const clear = container.querySelector<HTMLButtonElement>('.site-search__clear');
+    const trigger = container.querySelector<HTMLButtonElement>('.search-pill__trigger');
+    const input = container.querySelector<HTMLInputElement>('.search-pill__field input');
+    const clear = container.querySelector<HTMLButtonElement>('.search-pill__clear');
     if (!trigger || !input) return;
 
     const triggerEl = trigger;
@@ -74,7 +74,7 @@ const {
         const target = document.querySelector<HTMLElement>(container.dataset.searchTarget);
         if (target) {
           target.dataset.searchQuery = query;
-          target.dispatchEvent(new CustomEvent('site-search:change', {
+          target.dispatchEvent(new CustomEvent('search-pill:change', {
             detail: { ...detail, source: container },
           }));
         }

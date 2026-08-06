@@ -1,5 +1,4 @@
 @use "../base/variables" as *;
-@use "../base/mixins" as *;
 
 // =============================================================================
 // LAYOUT WRAPPERS
@@ -50,26 +49,4 @@ body {
     position: relative;
     box-sizing: border-box;
     overflow-x: hidden;
-}
-
-// Expandable content
-.expandable-section {
-    position: relative; // host for a corner badge charm
-    margin-bottom: var(--spacing-md);
-}
-
-.expandable-section--compact {
-    margin-bottom: 0;
-
-    .expandable-content {
-        margin-top: var(--spacing-sm);
-        padding-block: var(--spacing-sm);
-    }
-}
-
-.expandable-content {
-    padding: var(--spacing-md) var(--spacing-lg);
-    margin-top: var(--spacing-md);
-    @include translucent-surface;
-    @include expanding-collapsible;
 }

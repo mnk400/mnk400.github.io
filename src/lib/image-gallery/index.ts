@@ -114,7 +114,7 @@ export async function loadImageGallery(root: GalleryRoot, config: ImageGalleryCo
     }
     if (status && !requestedImageOnLoad) status.hidden = true;
 
-    root.addEventListener('site-search:change', (event) => {
+    root.addEventListener('search-pill:change', (event) => {
       state.query = (event as CustomEvent).detail?.query || '';
       const visibleItems = view!.render();
       root.dispatchEvent(new CustomEvent('image-gallery:filtered', {

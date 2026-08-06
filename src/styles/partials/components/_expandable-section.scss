@@ -1,0 +1,58 @@
+@use "../base/mixins" as *;
+
+// =============================================================================
+// EXPANDABLE SECTION — ExpandableSection.astro
+// =============================================================================
+
+.expandable-section {
+    position: relative; // host for a corner badge charm
+    margin-bottom: var(--spacing-md);
+}
+
+.expandable-section--compact {
+    margin-bottom: 0;
+
+    .expandable-content {
+        margin-top: var(--spacing-sm);
+        padding-block: var(--spacing-sm);
+    }
+}
+
+.expandable-toggle {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: var(--control-height-lg);
+    line-height: 1;
+    padding: var(--spacing-md) var(--spacing-lg);
+    background-color: var(--translucent-low);
+    backdrop-filter: blur(10px);
+    border: none;
+    border-radius: var(--radius-md);
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--text-color);
+    transition:
+        background-color var(--transition-medium),
+        color var(--transition-medium);
+    @include soft-outline;
+
+    @include hover-state-subtle;
+
+    .toggle-icon {
+        transition: transform var(--transition-slow);
+    }
+
+    &[aria-expanded="true"] .toggle-icon {
+        transform: rotate(45deg);
+    }
+}
+
+.expandable-content {
+    padding: var(--spacing-md) var(--spacing-lg);
+    margin-top: var(--spacing-md);
+    @include translucent-surface;
+    @include expanding-collapsible;
+}

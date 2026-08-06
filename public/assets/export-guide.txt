@@ -56,14 +56,24 @@ by the consuming project.
     partials/base/reset            Browser reset and basic element normalization
     partials/base/typography       Typography, links, headings, code
     partials/layout/wrapper        .wrapper layout container
-    partials/components/buttons    .btn, .normal-btn, selection switches, search pill
-    partials/components/cards      .card, .image-card, reveal card surfaces
+    partials/components/buttons    .btn, .normal-btn and button variants
+    partials/components/expandable-section  .expandable-section, -toggle, -content
+    partials/components/selection-switch    .selection-switch and .switch-option
+    partials/components/search-pill .search-pill, trigger, field, clear
+    partials/components/cards      .card, reveal card surfaces, .album-item
     partials/components/grids      grid helpers, masonry columns, album containers
+    partials/components/image-gallery  .image-gallery shell, .image-card, ratio box
     partials/components/info-grid  .info-grid and .info-card
-    partials/components/forms      inputs, dropdowns, image upload
+    partials/components/forms      bare inputs, select, colour input
+    partials/components/selection-dropdown  .selection-dropdown and its parts
+    partials/components/image-upload        .image-upload and its parts
     partials/components/range-slider  .range-slider and .range-value
     partials/components/image-zoom Image zoom overlay classes
     partials/components/icon       .icon sizing and alignment
+
+One component owns one partial: the .astro file, its root block class, and its
+SCSS partial share a name. Deleting a component deletes all of its CSS.
+partials/components/forms holds only bare elements no component owns.
     partials/utilities/helpers     .stack, .cluster, .toolbar, .field, utilities
     partials/utilities/reveal      reveal animation helper classes
 
@@ -127,25 +137,33 @@ Spacing:
 
 Radius:
 
-    --radius-sm      4px
-    --radius-md      6px
-    --radius-lg      8px
+    --radius-xs      4px
+    --radius-sm      6px
+    --radius-md      8px
+    --radius-lg      10px
     --radius-xl      12px
     --radius-pill    20px
     --radius-round   50%
 
 Controls:
 
+    --control-height-xs   24px
     --control-height-sm   30px
     --control-height-md   36px
+    --control-height-lg   42px
 
 Transitions:
 
     --transition-fast
+    --transition-press
     --transition-medium
     --transition-slow
     --transition-backdrop
     --transition-slowest
+
+Motion:
+
+    --motion-slide-offset   8px
 
 Z-index:
 
@@ -248,6 +266,22 @@ Selection switch visual contract:
       <button class="switch-option active" type="button">Grid</button>
       <button class="switch-option" type="button">List</button>
     </div>
+
+Search pill visual contract (was .site-search before the 2026-08 rename, see
+section 12):
+
+    <div class="search-pill">
+      <button class="search-pill__trigger" type="button" aria-expanded="false">
+        Search
+      </button>
+      <label class="search-pill__field">
+        <input type="search" placeholder="search">
+        <button class="search-pill__clear" type="button" hidden>x</button>
+      </label>
+    </div>
+
+Add .is-open or .has-query to .search-pill to swap the trigger for the field.
+.search-pill--small is the compact resting size.
 
 Selection dropdown visual contract:
 
@@ -408,6 +442,14 @@ Example with Phosphor web classes:
 ================================================================================
 12. VERSIONING NOTES
 ================================================================================
+
+Breaking changes:
+
+    2026-08  .site-search* renamed to .search-pill* so the class matches its
+             component (SearchPill.astro) and partial (_search-pill.scss).
+             Affects .site-search, __trigger, __field, __clear, --small and the
+             --site-search-* custom properties. No declarations changed; if you
+             consume export.css, rename the classes in your markup.
 
 This export is a visual CSS contract, not a full component runtime. The stable
 public URL is:

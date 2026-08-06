@@ -13,10 +13,16 @@
 
 // Components
 @use "partials/components/buttons";
+@use "partials/components/expandable-section";
+@use "partials/components/selection-switch";
+@use "partials/components/search-pill";
 @use "partials/components/cards";
 @use "partials/components/grids";
+@use "partials/components/image-gallery";
 @use "partials/components/info-grid";
 @use "partials/components/forms";
+@use "partials/components/selection-dropdown";
+@use "partials/components/image-upload";
 @use "partials/components/range-slider";
 @use "partials/components/image-zoom";
 @use "partials/components/icon";

@@ -1,0 +1,59 @@
+@use "../base/mixins" as *;
+
+// =============================================================================
+// IMAGE UPLOAD — ImageUpload.astro
+// =============================================================================
+
+.image-upload {
+    display: grid;
+    gap: var(--spacing-sm);
+}
+
+.image-upload__selector {
+    width: 100%;
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: 400;
+    color: var(--text-color);
+    border: none;
+    transition: background-color var(--transition-medium), color var(--transition-medium);
+    @include translucent-surface(var(--translucent-low), 10px);
+
+    @include hover-interactive {
+        background-color: var(--translucent-high);
+        color: var(--text-color);
+    }
+}
+
+.image-upload__input {
+    display: none;
+}
+
+.image-upload .image-upload__preview {
+    max-width: 100%;
+    display: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    border-radius: var(--radius-md);
+    transition: opacity 0.5s ease-out;
+    @include soft-outline(var(--translucent-medium));
+
+    &.fade-out {
+        opacity: 0;
+    }
+}
+
+.image-upload--has-preview {
+    .image-upload__selector {
+        display: none;
+    }
+
+    .image-upload__preview {
+        display: block;
+    }
+}
