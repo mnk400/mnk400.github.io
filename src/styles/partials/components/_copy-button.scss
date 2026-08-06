@@ -1,0 +1,10 @@
+// =============================================================================
+// COPY BUTTON (src/components/CopyButton.astro)
+// =============================================================================
+
+// The confirmation swap is already a same-click cue, so copy buttons do not
+// also use the standard press scale.
+.btn.copy-button:active,
+.normal-btn.copy-button:active {
+    scale: 1;
+}

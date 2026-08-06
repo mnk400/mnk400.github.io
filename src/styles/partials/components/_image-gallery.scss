@@ -6,8 +6,6 @@
 
 
 // The shell lives in the .astro file; the cards below are built by view.ts.
-// .album-container (the masonry host) stays in _grids.scss. a blog post uses
-// it standalone. TODO: Refactor the blog post to "fix" this.
 
 .image-gallery {
     position: relative;
@@ -59,6 +57,32 @@
     width: 100%;
     height: 1px;
     pointer-events: none;
+}
+
+.image-gallery__grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+
+    .masonry-column {
+        flex: 1 1 0;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+
+    // Direct image children support galleries that progressively enhance
+    // live image feeds before falling back to the manifest-backed runtime.
+    > img {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        border-radius: var(--radius-md);
+    }
 }
 
 // Image card (photo albums)

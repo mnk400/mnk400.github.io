@@ -1,0 +1,62 @@
+---
+interface Props {
+  id?: string;
+  /** Text to copy. Dynamic consumers update data-copy-value before activation. */
+  value?: string;
+  class?: string;
+  style?: string;
+}
+
+const {
+  id,
+  value,
+  class: extraClass,
+  style,
+} = Astro.props;
+const classes = ['copy-button', extraClass].filter(Boolean).join(' ');
+---
+<button
+  id={id}
+  class={classes}
+  type="button"
+  style={style}
+  aria-live="polite"
+  data-copy-button
+  data-copy-value={value}
+>
+  <slot />
+</button>
+
+<script>
+  import { copyText } from '../lib/clipboard.ts';
+
+  let registered = false;
+
+  function registerCopyButtons() {
+    if (registered) return;
+    registered = true;
+
+    document.addEventListener('click', (event) => {
+      const button = (event.target as HTMLElement | null)
+        ?.closest<HTMLButtonElement>('[data-copy-button]');
+      const value = button?.dataset.copyValue;
+      if (!button || button.disabled || !value
+        || button.classList.contains('is-copy-pending')
+        || button.classList.contains('is-copy-feedback')) return;
+
+      const content = button.innerHTML;
+      button.classList.add('is-copy-pending');
+      void copyText(value).then((ok) => {
+        button.classList.remove('is-copy-pending');
+        button.classList.add('is-copy-feedback');
+        button.textContent = ok ? 'Copied' : 'Couldn’t copy';
+        window.setTimeout(() => {
+          button.innerHTML = content;
+          button.classList.remove('is-copy-feedback');
+        }, 1500);
+      });
+    });
+  }
+
+  document.addEventListener('astro:page-load', registerCopyButtons);
+</script>

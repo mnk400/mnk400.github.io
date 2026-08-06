@@ -1,5 +1,6 @@
 ---
 import Default from '../layouts/Default.astro';
+import CopyButton from './CopyButton.astro';
 import Icon from './Icon.astro';
 import SelectionSwitch from './SelectionSwitch.astro';
 import ZoomableImage from './ZoomableImage.astro';
@@ -47,15 +48,13 @@ function installValue(entry: ProductInstall): string {
           )}
 
           {kind === 'native' && install.map((entry) => (
-            <button
-              type="button"
+            <CopyButton
               class="btn btn--outline product__copy-cmd"
-              data-copy={entry.command}
-              data-copy-feedback="Copied!"
+              value={entry.command}
             >
               <Icon name="terminal" />
               <code>{entry.displayCommand ?? entry.command}</code>
-            </button>
+            </CopyButton>
           ))}
         </div>
       )}
@@ -76,31 +75,27 @@ function installValue(entry: ProductInstall): string {
                     class:list={['product__install-panel', { active: index === 0 }]}
                     data-install-panel={installValue(entry)}
                   >
-                    <button
-                      type="button"
+                    <CopyButton
                       class="btn btn--outline product__copy-cmd product__copy-cmd--block"
-                      data-copy={entry.command}
-                      data-copy-feedback="Copied!"
+                      value={entry.command}
                     >
                       <Icon name="terminal" />
                       <code>{entry.displayCommand ?? entry.command}</code>
                       <span class="product__copy-label">copy</span>
-                    </button>
+                    </CopyButton>
                   </div>
                 ))}
               </div>
             </>
           ) : (
-            <button
-              type="button"
+            <CopyButton
               class="btn btn--outline product__copy-cmd product__copy-cmd--block"
-              data-copy={install[0].command}
-              data-copy-feedback="Copied!"
+              value={install[0].command}
             >
               <Icon name="terminal" />
               <code>{install[0].displayCommand ?? install[0].command}</code>
               <span class="product__copy-label">copy</span>
-            </button>
+            </CopyButton>
           )}
         </div>
       )}
@@ -183,10 +178,7 @@ function installValue(entry: ProductInstall): string {
 </Default>
 
 <script>
-  import { copyText } from '../lib/clipboard.ts';
   import { initProductReleaseMeta } from '../lib/product-release.ts';
-
-  let copyRegistered = false;
 
   function initProductInstallTabs() {
     document.querySelectorAll<HTMLElement>('[data-product-install]').forEach((root) => {
@@ -203,33 +195,8 @@ function installValue(entry: ProductInstall): string {
     });
   }
 
-  function initProductCopyButtons() {
-    if (copyRegistered) return;
-    copyRegistered = true;
-
-    document.addEventListener('click', (event) => {
-      const target = event.target as HTMLElement | null;
-      const button = target?.closest<HTMLButtonElement>('[data-copy]');
-      if (!button) return;
-
-      const text = button.dataset.copy;
-      if (!text) return;
-
-      const original = button.innerHTML;
-      const feedback = button.dataset.copyFeedback || 'Copied!';
-      copyText(text).then((ok) => {
-        if (!ok) return;
-        button.textContent = feedback;
-        window.setTimeout(() => {
-          button.innerHTML = original;
-        }, 1500);
-      });
-    });
-  }
-
   function initProductPage() {
     initProductInstallTabs();
-    initProductCopyButtons();
     initProductReleaseMeta();
   }
 

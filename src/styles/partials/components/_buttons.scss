@@ -126,13 +126,6 @@ button,
     scale: 0.96;
 }
 
-// Copy buttons run their own "Copied!" confirmation swap on click — skip the
-// press scale so the two cues don't fire on top of each other.
-.btn[data-copy]:active,
-.normal-btn[data-copy]:active {
-    scale: 1;
-}
-
 // File input button styling
 input[type="file"]::file-selector-button {
     padding: var(--spacing-sm) var(--spacing-lg);

@@ -11,14 +11,15 @@ export async function init() {
   if (gallery.dataset.mathArtLoaded === 'true') return;
   gallery.dataset.mathArtLoaded = 'true';
   gallery.innerHTML = '';
-  errorMessage.style.display = 'none';
+  loading.hidden = false;
+  errorMessage.hidden = true;
 
   try {
     const response = await fetch(`${API_URL}/api/images`);
     if (!response.ok) throw new Error('Network response was not ok');
 
     const data = await response.json();
-    loading.style.display = 'none';
+    loading.hidden = true;
     const imagesToShow: string[] = data.images.slice(0, 20);
     imagesToShow.forEach((imageUrl) => {
       const img = document.createElement('img');
@@ -29,8 +30,8 @@ export async function init() {
     });
   } catch (error) {
     console.error('Error loading images from RPi:', error);
-    loading.style.display = 'none';
-    errorMessage.style.display = 'block';
+    loading.hidden = true;
+    errorMessage.hidden = false;
 
     const root = document.getElementById('math-art-gallery');
     if (root) {

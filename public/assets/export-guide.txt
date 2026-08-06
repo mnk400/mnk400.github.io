@@ -57,12 +57,13 @@ by the consuming project.
     partials/base/typography       Typography, links, headings, code
     partials/layout/wrapper        .wrapper layout container
     partials/components/buttons    .btn, .normal-btn and button variants
+    partials/components/copy-button  .copy-button feedback state
     partials/components/expandable-section  .expandable-section, -toggle, -content
     partials/components/selection-switch    .selection-switch and .switch-option
     partials/components/search-pill .search-pill, trigger, field, clear
     partials/components/cards      .card, reveal card surfaces, .album-item
-    partials/components/grids      grid helpers, masonry columns, album containers
-    partials/components/image-gallery  .image-gallery shell, .image-card, ratio box
+    partials/components/grids      grid helpers and page-agnostic grid primitives
+    partials/components/image-gallery  gallery shell, masonry grid, image cards
     partials/components/info-grid  .info-grid and .info-card
     partials/components/forms      bare inputs, select, colour input
     partials/components/selection-dropdown  .selection-dropdown and its parts
@@ -238,8 +239,16 @@ Variants:
     .btn--dark-forced
     .btn--link-variant
 
-Copy behavior is not exported. If you use data-copy, wire the click handler in
-your own project.
+Copy button visual contract:
+
+    <button class="normal-btn copy-button" type="button"
+            data-copy-button data-copy-value="Text to copy" aria-live="polite">
+      Copy
+    </button>
+
+Add .is-copy-feedback while replacing the label with confirmation or error
+text. The Astro component and clipboard runtime are site-side and are not
+included in the CSS-only export.
 
 
 ================================================================================
@@ -321,7 +330,7 @@ Info grid:
 
 Image grid classes are included for projects that share album/gallery layouts:
 
-    .album-container
+    .image-gallery__grid
     .masonry-column
     .image-card
     .image-ratio-box
