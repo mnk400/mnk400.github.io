@@ -1,5 +1,6 @@
 ---
 import Post from '../../layouts/Post.astro';
+import ControlGroup from '../../components/ControlGroup.astro';
 import SelectionSwitch from '../../components/SelectionSwitch.astro';
 import RangeSlider from '../../components/RangeSlider.astro';
 import { cameraModes } from '../../lib/camera-modes/index.ts';
@@ -16,35 +17,34 @@ const modeOptions = cameraModes.map((m) => ({ value: m.id, label: m.label }));
     <video id="video" style="display: none;"></video>
 
     <div class="stack">
-      <RangeSlider
-        id="detail-input"
-        label="Detail"
-        value={33}
-        min={0}
-        max={100}
-      />
+      <ControlGroup label="detail" for="detail-input">
+        <RangeSlider
+          id="detail-input"
+          value={33}
+          min={0}
+          max={100}
+        />
+      </ControlGroup>
 
-      <div class="field">
-        <span class="field__label">mode</span>
+      <ControlGroup label="mode">
         <SelectionSwitch
           id="camera-mode-toggle"
           options={modeOptions}
           active={modeOptions[0].value}
         />
-      </div>
+      </ControlGroup>
 
       {cameraModes.map((mode) => (
         mode.controls?.length ? (
           <div class="mode-controls" data-mode={mode.id} hidden={mode.id !== modeOptions[0].value}>
             {mode.controls.map((control) => (
-              <div class="field">
-                <span class="field__label">{control.label}</span>
+              <ControlGroup label={control.label}>
                 <SelectionSwitch
                   id={`${mode.id}-${control.id}`}
                   options={control.options}
                   active={control.default}
                 />
-              </div>
+              </ControlGroup>
             ))}
           </div>
         ) : null

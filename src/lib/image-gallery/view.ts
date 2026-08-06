@@ -53,7 +53,7 @@ function div(className: string, text = ''): HTMLDivElement {
 }
 
 function createControlGroup(label: string, control: HTMLElement): HTMLElement {
-  const group = div('image-gallery__control-group field');
+  const group = div('image-gallery__control-group');
   group.setAttribute('aria-label', label);
   group.appendChild(control);
   return group;

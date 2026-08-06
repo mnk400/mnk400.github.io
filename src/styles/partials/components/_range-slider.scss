@@ -4,56 +4,15 @@
 // RANGE SLIDER (src/components/RangeSlider.astro)
 // =============================================================================
 
-// Registered so the fill can transition: an unregistered custom property is an
-// unparsed token stream and jumps straight to its new value.
-@property --value-percent {
-    syntax: '<percentage>';
-    inherits: true;
-    initial-value: 0%;
-}
-
 .range-slider {
     --range-track-height: var(--control-height-sm);
-    --range-tick-step: 10%;
-    --range-tick-offset: calc(var(--range-tick-step) / 2);
-    --range-fill-transition: var(--transition-press);
 
     display: grid;
-    gap: var(--spacing-xs);
-    transition: --value-percent var(--range-fill-transition);
-
-    &::before,
-    &::after {
-        content: '';
-        pointer-events: none;
-        z-index: 1;
-        background-image:
-            repeating-linear-gradient(
-                to right,
-                transparent 0 var(--range-tick-offset),
-                var(--range-tick-color) var(--range-tick-offset) calc(var(--range-tick-offset) + 1px),
-                transparent calc(var(--range-tick-offset) + 1px) var(--range-tick-step)
-            );
-        background-repeat: no-repeat;
-        background-size: 100% 6px;
-        background-position: center;
-    }
-
-    &::before {
-        --range-tick-color: var(--background-main);
-        clip-path: inset(0 calc(100% - var(--value-percent)) 0 0);
-    }
-
-    &::after {
-        --range-tick-color: var(--translucent-high);
-        clip-path: inset(0 0 0 var(--value-percent));
-    }
 
     > input[type="range"],
-    &::before,
-    &::after {
+    > .range-slider__value {
         grid-column: 1;
-        grid-row: 2;
+        grid-row: 1;
     }
 
     > input[type="range"] {
@@ -119,18 +78,24 @@
     }
 }
 
-@media (prefers-reduced-motion: reduce) {
-    .range-slider {
-        --range-fill-transition: 0s;
-    }
-}
-
-.range-value {
-    color: var(--sec-text-color);
+.range-slider__value {
+    z-index: 1;
+    align-self: center;
+    pointer-events: none;
+    color: transparent;
+    background-image:
+        linear-gradient(
+            to right,
+            var(--background-main) 0 var(--value-percent),
+            var(--sec-text-color) var(--value-percent) 100%
+        );
+    background-clip: text;
+    -webkit-background-clip: text;
     font-size: 0.85em;
     font-weight: 300;
     letter-spacing: 0.3px;
     line-height: 1;
-    text-transform: lowercase;
     font-variant-numeric: tabular-nums;
+    padding-inline: var(--spacing-lg);
+    text-align: right;
 }

@@ -1,0 +1,29 @@
+.control-group {
+    display: grid;
+    gap: var(--spacing-xs);
+    min-width: 0;
+}
+
+.cluster > .control-group {
+    flex: 1 1 200px;
+}
+
+.control-group__label {
+    color: var(--sec-text-color);
+    font-size: 0.85em;
+    line-height: 1;
+}
+
+.control-group__control {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    min-width: 0;
+
+    input[type="text"],
+    input[type="email"],
+    input[type="url"] {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+}

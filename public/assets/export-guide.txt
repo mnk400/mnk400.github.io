@@ -66,16 +66,17 @@ by the consuming project.
     partials/components/image-gallery  gallery shell, masonry grid, image cards
     partials/components/info-grid  .info-grid and .info-card
     partials/components/forms      bare inputs, select, colour input
+    partials/components/control-group  .control-group and its parts
     partials/components/selection-dropdown  .selection-dropdown and its parts
     partials/components/image-upload        .image-upload and its parts
-    partials/components/range-slider  .range-slider and .range-value
+    partials/components/range-slider  .range-slider and .range-slider__value
     partials/components/image-zoom Image zoom overlay classes
     partials/components/icon       .icon sizing and alignment
 
 One component owns one partial: the .astro file, its root block class, and its
 SCSS partial share a name. Deleting a component deletes all of its CSS.
 partials/components/forms holds only bare elements no component owns.
-    partials/utilities/helpers     .stack, .cluster, .toolbar, .field, utilities
+    partials/utilities/helpers     .stack, .cluster, .toolbar and utilities
     partials/utilities/reveal      reveal animation helper classes
 
 It does not include page-specific styles, site header/footer styles, view
@@ -194,9 +195,6 @@ Composition utilities:
     .cluster--sm    Smaller cluster gap
     .cluster--lg    Larger cluster gap
     .toolbar        Wrapping command row
-    .field          Label/control grid
-    .field__label   Muted field label
-    .field__control Inline control wrapper
 
 Common helpers:
 
@@ -262,12 +260,26 @@ Inputs:
     <input type="url" placeholder="URL">
     <select>...</select>
 
+Control group visual contract:
+
+    <div class="control-group">
+      <label class="control-group__label" for="size">Size</label>
+      <input id="size" type="text">
+    </div>
+
+Use .control-group__control around controls that should share one inline row.
+Use a span instead of a label for composite controls without a native input.
+
 Range slider visual contract:
 
     <div class="range-slider" style="--value-percent: 50%">
-      <p class="range-value">Size · <span>50</span></p>
       <input type="range" min="0" max="100" value="50">
+      <output class="range-slider__value">50</output>
     </div>
+
+The output overlays the track, right-aligned with the standard large inset. Its
+foreground splits at --value-percent so it stays legible across both the filled
+and unfilled portions.
 
 Selection switch visual contract:
 

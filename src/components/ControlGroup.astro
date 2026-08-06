@@ -1,0 +1,14 @@
+---
+interface Props {
+  label: string;
+  for?: string;
+}
+
+const { label, for: controlId } = Astro.props;
+---
+<div class="control-group">
+  {controlId
+    ? <label class="control-group__label" for={controlId}>{label}</label>
+    : <span class="control-group__label">{label}</span>}
+  <slot />
+</div>

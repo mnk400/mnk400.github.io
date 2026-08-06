@@ -31,7 +31,7 @@ Full-width controls sit at `--control-height-md`; compact inline controls at `--
 
 ## File organization
 
-- **One component, one partial.** A component's `.astro` file, its root block class, and its SCSS partial share a name: `RangeSlider.astro` → `.range-slider` → `components/_range-slider.scss`. Everything the component owns lives there (`.range-value` ships with the slider) so deleting the component deletes all of its CSS. Styling for bare elements no component owns — `input[type="text"]`, `<select>`, `input[type="color"]` — is base element CSS, not a component, and stays grouped.
+- **One component, one partial.** A component's `.astro` file, its root block class, and its SCSS partial share a name: `RangeSlider.astro` → `.range-slider` → `components/_range-slider.scss`. Everything the component owns lives there (`.range-slider__value` ships with the slider) so deleting the component deletes all of its CSS. Styling for bare elements no component owns — `input[type="text"]`, `<select>`, `input[type="color"]` — is base element CSS, not a component, and stays grouped.
 - **No Astro `<style>` blocks.** `export.scss` is a public CSS export and can only `@use` partials; scoped component styles would silently drop out of it and break the copy-the-markup contract in `export-guide.txt`. Global cascade + disciplined naming is the trade we've made — fix file boundaries, not the mechanism.
 - **`export.scss` keeps an explicit `@use` list.** No barrel file. Adding a component costs two `@use` lines, and in exchange there is exactly one place that declares what ships publicly.
 - **Splitting a partial preserves `@use` order.** New lines go where the old block sat in `main.scss`, or the cascade shifts between equal-specificity rules.

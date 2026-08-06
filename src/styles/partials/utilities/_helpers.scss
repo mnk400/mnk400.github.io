@@ -100,36 +100,6 @@
     gap: var(--spacing-xl);
 }
 
-.cluster > .field {
-    flex: 1 1 200px;
-}
-
-.field {
-    display: grid;
-    gap: var(--spacing-xs);
-    min-width: 0;
-}
-
-.field__label {
-    color: var(--sec-text-color);
-    font-size: 0.85em;
-    line-height: 1;
-}
-
-.field__control {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    min-width: 0;
-
-    input[type="text"],
-    input[type="email"],
-    input[type="url"] {
-        flex: 1 1 auto;
-        min-width: 0;
-    }
-}
-
 .toolbar {
     display: flex;
     flex-wrap: wrap;

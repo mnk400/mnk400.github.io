@@ -1,7 +1,7 @@
 ---
 import Post from '../../layouts/Post.astro';
+import ControlGroup from '../../components/ControlGroup.astro';
 import SelectionSwitch from '../../components/SelectionSwitch.astro';
-import RangeSlider from '../../components/RangeSlider.astro';
 
 const orientationOptions = [
   { value: 'landscape', label: 'Landscape (3840×2160)' },
@@ -34,61 +34,47 @@ const typeOptions = [
   <div class="gradient-container stack">
     <div class="stack">
       <div class="cluster cluster--lg">
-        <div class="field">
-          <span class="field__label">start color</span>
-          <div class="field__control">
+        <ControlGroup label="start color" for="color1">
+          <div class="control-group__control">
             <input type="color" id="color1" value="#C6A58F" />
             <input type="text" id="color1-text" value="#C6A58F" placeholder="#C6A58F" />
           </div>
-        </div>
+        </ControlGroup>
 
-        <div class="field">
-          <span class="field__label">end color</span>
-          <div class="field__control">
+        <ControlGroup label="end color" for="color2">
+          <div class="control-group__control">
             <input type="color" id="color2" value="#7C95AF" />
             <input type="text" id="color2-text" value="#7C95AF" placeholder="#7C95AF" />
           </div>
-        </div>
+        </ControlGroup>
       </div>
 
-      <div class="field">
-        <span class="field__label">orientation</span>
+      <ControlGroup label="orientation">
         <SelectionSwitch
           id="orientation-toggle"
           options={orientationOptions}
           active="landscape"
           class="orientation-toggle"
         />
-      </div>
+      </ControlGroup>
 
-      <div class="field">
-        <span class="field__label">gradient direction</span>
+      <ControlGroup label="gradient direction">
         <SelectionSwitch
           id="direction-toggle"
           options={linearDirectionOptions}
           active="0"
           class="direction-toggle"
         />
-      </div>
+      </ControlGroup>
 
-      <div class="field">
-        <span class="field__label">gradient type</span>
+      <ControlGroup label="gradient type">
         <SelectionSwitch
           id="type-toggle"
           options={typeOptions}
           active="linear"
           class="type-toggle"
         />
-      </div>
-
-      <div class="field" id="smoothness-control" style="display: none;">
-        <RangeSlider
-          id="smoothness-input"
-          value={50}
-          min={0}
-          max={100}
-        />
-      </div>
+      </ControlGroup>
 
       <div class="toolbar">
         <button id="download-btn" class="normal-btn">Download</button>
@@ -169,7 +155,6 @@ const typeOptions = [
     const color2 = document.getElementById('color2') as HTMLInputElement;
     const color2Text = document.getElementById('color2-text') as HTMLInputElement;
     const directionToggle = document.getElementById('direction-toggle') as HTMLElement;
-    const smoothnessInput = document.getElementById('smoothness-input') as HTMLInputElement;
     const downloadBtn = document.getElementById('download-btn') as HTMLButtonElement;
     const preview = document.getElementById('gradient-preview') as HTMLElement;
     const exportCanvas = document.getElementById('gradient-canvas') as HTMLCanvasElement;
@@ -254,8 +239,7 @@ const typeOptions = [
         gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, radius);
       }
 
-      const smoothness = parseInt(smoothnessInput.value);
-      const steps = Math.max(2, Math.floor(smoothness / 10) + 2);
+      const steps = 7;
       for (let i = 0; i < steps; i++) {
         const ratio = i / (steps - 1);
         gradient.addColorStop(ratio, interpolate(color1.value, color2.value, ratio));
@@ -325,8 +309,6 @@ const typeOptions = [
       rebuildDirectionOptions();
       updatePreview();
     });
-
-    smoothnessInput.addEventListener('input', updatePreview);
 
     downloadBtn.addEventListener('click', () => {
       const { width, height } = getExportDims();

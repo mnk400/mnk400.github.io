@@ -28,22 +28,18 @@ const periodOptions = [
 
     <div class="view-controls stack stack--sm">
       <h2>Top music from the past</h2>
-      <div class="field">
-        <SelectionSwitch
-          id="view-toggle"
-          options={viewOptions}
-          active="albums"
-          class="view-toggle"
-        />
-      </div>
-      <div class="field">
-        <SelectionSwitch
-          id="period-toggle"
-          options={periodOptions}
-          active="7day"
-          class="period-toggle"
-        />
-      </div>
+      <SelectionSwitch
+        id="view-toggle"
+        options={viewOptions}
+        active="albums"
+        class="view-toggle"
+      />
+      <SelectionSwitch
+        id="period-toggle"
+        options={periodOptions}
+        active="7day"
+        class="period-toggle"
+      />
     </div>
 
     <div id="album-grid" class="album-grid reveal-card-group"></div>
