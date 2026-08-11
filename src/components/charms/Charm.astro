@@ -51,12 +51,16 @@ const typeClass = type ? `charm--${type}` : className;
 
 const effectiveSize = size ?? def?.size;
 
+// Still `aria-hidden` even though it acts: it's a decorative double of the
+// breadcrumb's real back button, so hiding it costs nobody the action.
+const backNav = def?.action === 'back' ? '' : undefined;
+
 const style =
   `--charm-x:${x};--charm-y:${y};--charm-rotate:${rotate}deg;` +
   (effectiveSize !== undefined ? `--charm-size:${effectiveSize};` : '');
 ---
 
-<span class:list={['charm', anchorClass, typeClass]} style={style} aria-hidden="true">
+<span class:list={['charm', anchorClass, typeClass]} style={style} aria-hidden="true" data-back-nav={backNav}>
   {def ? (
     <span class="charm-fx">
       {def.kind === 'image' && (
@@ -84,6 +88,9 @@ const style =
     document.querySelectorAll<HTMLElement>('.charm-fx__body').forEach((body) => {
       const charm = body.closest<HTMLElement>('.charm');
       if (!charm || charm.dataset.pulseInit === 'true') return;
+      // A charm that acts answers its own click (the back button presses in);
+      // pulsing is for the charms with nothing else to say.
+      if (charm.hasAttribute('data-back-nav')) return;
       charm.dataset.pulseInit = 'true';
 
       charm.addEventListener('click', () => {

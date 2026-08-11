@@ -9,7 +9,9 @@
 
 // `size` is the charm's default height multiplier over --charm-base-height
 // A `size` prop on <Charm> overrides it per placement.
-type CharmBase = { size?: number };
+// `action` tags a charm that isn't only decorative with behaviour the site
+// already implements.
+type CharmBase = { size?: number; action?: 'back' };
 export type CharmDef = CharmBase &
   (
     | {
@@ -55,6 +57,12 @@ const clockSvg =
   `<circle class="clock-glass" cx="50" cy="50" r="45"/>` +
   `</svg>`;
 
+// back button charm chevron
+const backSvg =
+  `<svg viewBox="0 0 44 44" role="img">` +
+  `<path class="back-chevron" d="M24.3 14.6 17.7 22l6.6 7.4"/>` +
+  `</svg>`;
+
 // `size` defaults are optically tuned (see above) so the charms read at one
 // visual scale in the gallery: sparse/narrow art (pearl, jacket) runs bigger,
 // dense filled shapes (count) run smaller.
@@ -75,6 +83,10 @@ export const CHARMS = {
   // agree on an art style. Runs bigger than the rule above: it's a real photo,
   // not art drawn to read as an icon.
   gr3: { kind: 'image', src: '/assets/images/site/ricoh_gr3.png', size: 1.15 },
+  // Off the sizing rule above on purpose: the only charm pretending to be a
+  // real control, so it runs at the real control's size (44pt against the
+  // collection's 3.6rem base). Bigger and it's a drawing of a back button.
+  back: { kind: 'svg', markup: backSvg, size: 44 / 57.6, action: 'back' },
   // `value` prop supplies the real number at each call site; `sample` is the gallery placeholder.
   count: { kind: 'text', sample: 42, size: 0.62 },
 } satisfies Record<string, CharmDef>;

@@ -5,17 +5,21 @@
 // =============================================================================
 //
 // No cases and no drift: the charms are tipped out across the page like stickers
-// on a desk. An auto-fill grid keeps them from colliding and handles the reflow,
+// on a desk. Fixed-width cells keep them from colliding and handle the reflow,
 // and each charm then shrugs off its cell with an offset and tilt dealt from its
 // name (see charms.astro) — organised underneath, a mess on the surface.
+//
+// Wrapping flex rows rather than grid tracks: a grid strands the remainder
+// against the left edge (nine charms, four columns, one alone on row three),
+// while centred rows put a short row under the middle of the pile.
 
 .charm-collection {
     --spot-spread: 1;
 
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
-    justify-items: center;
+    justify-content: center;
     // Spills into the wrapper's gutters so the pile isn't penned inside the
     // measure of the prose above it.
     margin: var(--spacing-md) calc(-1 * var(--spacing-2xl)) var(--spacing-xl);
@@ -25,8 +29,8 @@
 
     @media screen and (max-width: $breakpoint-mobile) {
         margin-inline: calc(-1 * var(--spacing-xl));
-        // Two wide columns, so a full-strength offset would walk the broadest
-        // charm off the edge of the page.
+        // Three columns is all that fits, close enough together that a
+        // full-strength offset would knock the broadest charms into each other.
         --spot-spread: 0.55;
     }
 }
@@ -36,10 +40,11 @@
 .charm-collection .charm-collection__spot {
     display: grid;
     place-items: center;
+    flex: 0 0 8rem;
     min-height: 9.5rem;
     padding: 0;
-    // Percentages resolve against the cell, so the scatter scales with the grid
-    // instead of pulling charms into their neighbours on narrow screens.
+    // Percentages resolve against the cell, one fixed width for every charm, so
+    // a broad charm and a narrow one shrug off by the same distance.
     translate:
         calc(var(--spot-dx) * var(--spot-spread) * 1%)
         calc(var(--spot-dy) * var(--spot-spread) * 1%);

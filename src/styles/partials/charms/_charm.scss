@@ -8,6 +8,8 @@
 // through `--charm-rotate-hover` and `--charm-scale` so a stylesheet rule can
 // override them without fighting the inline resting values.
 
+@use "../base/mixins" as *;
+
 .charm {
     --charm-x: 0;
     --charm-y: 0;
@@ -33,6 +35,7 @@
     transform-origin: center;
     transition: transform var(--transition-medium);
     will-change: transform;
+    @include no-select;
 
     &--tr { top: 0; right: 0; }
     &--tl { top: 0; left: 0; }
