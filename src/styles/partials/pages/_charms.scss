@@ -13,7 +13,7 @@
 // against the left edge (nine charms, four columns, one alone on row three),
 // while centred rows put a short row under the middle of the pile.
 
-.charm-collection {
+.post__content .charm-collection {
     --spot-spread: 1;
 
     display: flex;
@@ -28,7 +28,7 @@
     padding: var(--spacing-lg) 0 0;
 
     @media screen and (max-width: $breakpoint-mobile) {
-        margin-inline: calc(-1 * var(--spacing-xl));
+        margin-inline: 0;
         // Three columns is all that fits, close enough together that a
         // full-strength offset would knock the broadest charms into each other.
         --spot-spread: 0.55;
@@ -49,6 +49,11 @@
         calc(var(--spot-dx) * var(--spot-spread) * 1%)
         calc(var(--spot-dy) * var(--spot-spread) * 1%);
     rotate: var(--spot-rot);
+
+    // Narrower cells so three columns still fit once the pile stops spilling.
+    @media screen and (max-width: $breakpoint-mobile) {
+        flex-basis: 7rem;
+    }
 
     .charm {
         --charm-base-height: 3.6rem;
