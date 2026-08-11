@@ -22,8 +22,6 @@ export type CharmDef = CharmBase &
     | { kind: 'text'; sample: string | number } // `sample` is what the gallery shows
   );
 
-const heartSvg = `<svg viewBox="0 0 24 22" role="img"><path d="M12 5.7C10.5 2.9 8.2 1.6 5.9 1.6C2.9 1.6 1.4 4.2 1.4 7.4C1.4 10.7 4.1 13.6 6.9 16.1C8.2 17.3 9.5 18.7 10.5 20C11.2 20.9 12.8 20.9 13.5 20C14.5 18.7 15.8 17.3 17.1 16.1C19.9 13.6 22.6 10.7 22.6 7.4C22.6 4.2 21.1 1.6 18.1 1.6C15.8 1.6 13.5 2.9 12 5.7Z"/></svg>`;
-
 // A Bauhaus-lineage wall clock (Max Bill by way of Junghans), and the only charm
 // showing something true: it reads the visitor's clock. Drawn on a 100×100 grid
 // so every hand rotates about (50, 50); Charm.astro seeks them to `now` at load.
@@ -59,7 +57,7 @@ const clockSvg =
 
 // `size` defaults are optically tuned (see above) so the charms read at one
 // visual scale in the gallery: sparse/narrow art (pearl, jacket) runs bigger,
-// dense filled shapes (heart, count) run smaller.
+// dense filled shapes (count) run smaller.
 export const CHARMS = {
   flower: {
     kind: 'image',
@@ -69,14 +67,14 @@ export const CHARMS = {
     size: 1.15,
   },
   jacket: { kind: 'image', src: '/assets/images/site/jacket.png', size: 1.35 },
+  heart: { kind: 'image', src: '/assets/images/site/heart.png', size: 0.95 },
   canister: { kind: 'image', src: '/assets/images/site/film_canister.png', size: 1.1 },
   pearl: { kind: 'image', src: '/assets/images/site/pearl.png', size: 1.5 },
+  clock: { kind: 'svg', markup: clockSvg, size: 1.4 },
   // Photographic rather than painted, on purpose — the charms aren't meant to
   // agree on an art style. Runs bigger than the rule above: it's a real photo,
   // not art drawn to read as an icon.
   gr3: { kind: 'image', src: '/assets/images/site/ricoh_gr3.png', size: 1.15 },
-  heart: { kind: 'svg', markup: heartSvg, size: 0.8 },
-  clock: { kind: 'svg', markup: clockSvg, size: 1.4 },
   // `value` prop supplies the real number at each call site; `sample` is the gallery placeholder.
   count: { kind: 'text', sample: 42, size: 0.62 },
 } satisfies Record<string, CharmDef>;

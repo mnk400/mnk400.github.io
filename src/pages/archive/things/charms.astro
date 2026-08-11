@@ -9,152 +9,44 @@ const charmTypes = Object.keys(CHARMS) as CharmType[];
 
 // Easter egg: the count charm here tallies the charms themselves.
 const charmCount = charmTypes.length;
+
+// Each charm's offset and tilt are dealt from its own name rather than its
+// position in the list, so adding one doesn't reshuffle the rest.
+function noise(key: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < key.length; i++) h = Math.imul(h ^ key.charCodeAt(i), 16777619);
+  // FNV on its own leaves the low bits barely mixed, which lands most of the
+  // offsets on the same side of zero and quietly rebuilds the grid.
+  h ^= h >>> 15;
+  h = Math.imul(h, 2246822507);
+  h ^= h >>> 13;
+  return (h >>> 0) / 4294967296;
+}
+
+const spread = (name: string, axis: string, limit: number) =>
+  ((noise(`${name}#${axis}`) * 2 - 1) * limit).toFixed(1);
+
+const scatter = (name: string) =>
+  `--spot-dx:${spread(name, 'x', 26)};--spot-dy:${spread(name, 'y', 30)};` +
+  `--spot-rot:${spread(name, 'r', 16)}deg;`;
 ---
 
 <Post
   title="Charms"
-  description="Every decorative charm on the site, adrift in its own case."
+  description="Every decorative charm on the site, tipped out in a pile."
   image="/assets/images/previews/charms.jpg"
 >
-  <p>Every decorative charm on the site, adrift in its own case. Give one a poke.</p>
+  <p>Every decorative charm on the site, tipped out in a pile. Give one a poke.</p>
 
   <ul class="charm-collection">
     {charmTypes.map((type) => (
-      <li class="charm-collection__case">
-        <span class="charm-collection__float">
-          <Charm
-            type={type}
-            anchor="top-left"
-            value={type === 'count' ? charmCount : undefined}
-          />
-        </span>
+      <li class="charm-collection__spot" style={scatter(type)}>
+        <Charm
+          type={type}
+          anchor="top-left"
+          value={type === 'count' ? charmCount : undefined}
+        />
       </li>
     ))}
   </ul>
 </Post>
-
-<script>
-  // Each charm drifts in a straight line and bounces off the walls of its case,
-  // all driven by one rAF loop. Positions are held as an offset from the case
-  // centre (where the grid rests the wrapper) and written out each frame.
-  interface Body {
-    caseEl: HTMLElement;
-    el: HTMLElement;
-    x: number;
-    y: number;
-    vx: number;
-    vy: number;
-    rangeX: number;
-    rangeY: number;
-    wobble: number;
-    held: boolean;
-  }
-
-  // Keeps a tilted charm's artwork clear of the corners, since the measured
-  // layout box ignores the charm's own rotation.
-  const INSET = 6;
-  const MIN_SPEED = 9; // px/s — slow enough to read as adrift, not as sliding
-  const SPEED_RANGE = 8;
-  const WOBBLE_DEG = 3;
-  const WOBBLE_RATE = 0.55;
-
-  function clamp(value: number, limit: number): number {
-    return Math.max(-limit, Math.min(limit, value));
-  }
-
-  function floatCharms() {
-    const cases = [...document.querySelectorAll<HTMLElement>('.charm-collection__case')];
-    if (!cases.length) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    const bodies: Body[] = [];
-    for (const caseEl of cases) {
-      const el = caseEl.querySelector<HTMLElement>('.charm-collection__float');
-      if (!el) continue;
-      const angle = Math.random() * Math.PI * 2;
-      const speed = MIN_SPEED + Math.random() * SPEED_RANGE;
-      bodies.push({
-        caseEl,
-        el,
-        x: 0,
-        y: 0,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        rangeX: 0,
-        rangeY: 0,
-        wobble: Math.random() * Math.PI * 2, // phase offset so tilts aren't in sync
-        held: false,
-      });
-    }
-    if (!bodies.length) return;
-
-    // Bounds are the case's inner half-extent minus the charm's own half-size,
-    // so the charm's edge — not its centre — is what meets the wall.
-    const measure = () => {
-      for (const body of bodies) {
-        body.rangeX = Math.max(0, (body.caseEl.clientWidth - body.el.offsetWidth) / 2 - INSET);
-        body.rangeY = Math.max(0, (body.caseEl.clientHeight - body.el.offsetHeight) / 2 - INSET);
-        body.x = clamp(body.x, body.rangeX);
-        body.y = clamp(body.y, body.rangeY);
-      }
-    };
-
-    measure();
-
-    for (const body of bodies) {
-      // Scatter the starting points so the six don't set off from dead centre.
-      body.x = (Math.random() * 2 - 1) * body.rangeX;
-      body.y = (Math.random() * 2 - 1) * body.rangeY;
-      // A drifting target is hard to poke, so hold still while hovered.
-      body.caseEl.addEventListener('pointerenter', () => { body.held = true; });
-      body.caseEl.addEventListener('pointerleave', () => { body.held = false; });
-    }
-
-    const resizeObserver = new ResizeObserver(measure);
-    resizeObserver.observe(cases[0].parentElement ?? cases[0]);
-
-    let frame = 0;
-    let last = performance.now();
-
-    const step = (now: number) => {
-      // Clamped so a backgrounded tab doesn't resume with one huge jump.
-      const dt = Math.min((now - last) / 1000, 0.05);
-      last = now;
-
-      for (const body of bodies) {
-        if (!body.held) {
-          body.x += body.vx * dt;
-          body.y += body.vy * dt;
-          // Reflect off a wall, and clamp back inside so a charm can't tunnel
-          // out and stick to the edge with its velocity flipping every frame.
-          if (Math.abs(body.x) >= body.rangeX) {
-            body.vx = -body.vx;
-            body.x = clamp(body.x, body.rangeX);
-          }
-          if (Math.abs(body.y) >= body.rangeY) {
-            body.vy = -body.vy;
-            body.y = clamp(body.y, body.rangeY);
-          }
-          body.wobble += dt;
-        }
-        body.el.style.translate = `${body.x.toFixed(2)}px ${body.y.toFixed(2)}px`;
-        body.el.style.rotate = `${(Math.sin(body.wobble * WOBBLE_RATE) * WOBBLE_DEG).toFixed(2)}deg`;
-      }
-
-      frame = requestAnimationFrame(step);
-    };
-
-    frame = requestAnimationFrame(step);
-
-    // View transitions swap the document without a reload, so the loop has to be
-    // torn down or it keeps running against detached nodes.
-    const stop = () => {
-      cancelAnimationFrame(frame);
-      resizeObserver.disconnect();
-      document.removeEventListener('astro:before-swap', stop);
-    };
-    document.addEventListener('astro:before-swap', stop);
-  }
-
-  document.addEventListener('astro:page-load', floatCharms);
-</script>

@@ -1,38 +1,52 @@
-@use "../base/mixins" as *;
+@use "../base/variables" as *;
 
 // =============================================================================
 // CHARMS COLLECTION — /archive/things/charms
 // =============================================================================
+//
+// No cases and no drift: the charms are tipped out across the page like stickers
+// on a desk. An auto-fill grid keeps them from colliding and handles the reflow,
+// and each charm then shrugs off its cell with an offset and tilt dealt from its
+// name (see charms.astro) — organised underneath, a mess on the surface.
 
 .charm-collection {
+    --spot-spread: 1;
+
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--spacing-md);
-    margin: var(--spacing-lg) 0 0;
-    // The global `ul` rule aligns items on the baseline, which here would size
-    // rows off each charm's baseline and stagger the columns.
-    align-items: start;
+    grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+    align-items: center;
+    justify-items: center;
+    // Spills into the wrapper's gutters so the pile isn't penned inside the
+    // measure of the prose above it.
+    margin: var(--spacing-md) calc(-1 * var(--spacing-2xl)) var(--spacing-xl);
+    // Headroom for the upward half of the scatter, so a high charm doesn't
+    // collide with the paragraph above.
+    padding: var(--spacing-lg) 0 0;
+
+    @media screen and (max-width: $breakpoint-mobile) {
+        margin-inline: calc(-1 * var(--spacing-xl));
+        // Two wide columns, so a full-strength offset would walk the broadest
+        // charm off the edge of the page.
+        --spot-spread: 0.55;
+    }
 }
 
-// Scoped under the list to out-specify `.post__content li`, which pads list
-// items asymmetrically and would shift the drift area off-centre.
-.charm-collection .charm-collection__case {
-    @include translucent-surface;
+// Scoped under the list to out-specify `.post__content li`, whose padding would
+// push the charms off their dealt positions.
+.charm-collection .charm-collection__spot {
     display: grid;
     place-items: center;
-    aspect-ratio: 4 / 3;
+    min-height: 9.5rem;
     padding: 0;
-    overflow: hidden; // the charm drifts against these edges
+    // Percentages resolve against the cell, so the scatter scales with the grid
+    // instead of pulling charms into their neighbours on narrow screens.
+    translate:
+        calc(var(--spot-dx) * var(--spot-spread) * 1%)
+        calc(var(--spot-dy) * var(--spot-spread) * 1%);
+    rotate: var(--spot-rot);
 
     .charm {
         --charm-base-height: 3.6rem;
         position: static;
     }
-}
-
-// Drift rides on this wrapper, never on .charm: the charm owns its own
-// transform chain, and `translate`/`rotate` here stay clear of it.
-.charm-collection__float {
-    display: inline-flex;
-    will-change: translate, rotate;
 }

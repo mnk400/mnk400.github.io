@@ -1,45 +1,23 @@
 // =============================================================================
-// CHARM · heart — a plump little valentine
+// CHARM · heart — a wonky one, torn out of red paper
 // =============================================================================
 //
-// Sibling to the count badge: a soft filled shape with a lighter halo tracing
-// its outline. The heart is drawn as inline SVG so the halo can follow the
-// curves. Wears the shared entrance-pop + click-pulse (see charms/_motion).
+// Replaced the perfect SVG heart: this one is hand-cut, lopsided, and scanned in
+// as a PNG. The scan came in a hot crimson, so the shipped file is already faded
+// back to ~hsl(357, 49%, 49%) — don't re-export it straight from the source.
+// Outlined in a lighter shade of that red, like the other painted charms; the
+// paper-white edge is the GR3's and belongs to the photograph. Wears the shared
+// entrance-pop + click-pulse (see charms/_motion).
 
 @use "motion" as *;
+@use "outline" as *;
 
 .charm--heart {
-    // Darker fill, lighter outline (like the count badge). The outline keeps
-    // real chroma rather than a washed-out pink so its outer edge still reads
-    // against a light canvas — a too-pale outline blurs into the background.
-    --charm-heart-fill: #d16a64;
-    --charm-heart-outline: #eba49d;
-
-    font-size: 0.75rem; // em basis for the corner nudge, matching the badge
+    --charm-heart-outline: #dc8488;
 
     @include charm-motion;
 
-    .charm-fx__body {
-        display: block;
-        width: auto;
-        height: var(--charm-h);
-    }
-
-    svg {
-        display: block;
-        height: 100%;
-        width: auto;
-        overflow: visible; // let the halo spill past the viewBox edges
-    }
-
-    path {
-        fill: var(--charm-heart-fill);
-        stroke: var(--charm-heart-outline);
-        // paint-order: stroke draws the stroke behind the fill, so only its
-        // outer half shows — the visible halo is ~half this width. Kept thin to
-        // sit alongside the die-cut outlines on the other charms.
-        stroke-width: 2;
-        stroke-linejoin: round;
-        paint-order: stroke;
-    }
+    // A hairline, so the die-cut follows the torn edge's notches instead of
+    // filling them in and handing the heart back its smooth silhouette.
+    @include charm-image-body(var(--charm-heart-outline));
 }
