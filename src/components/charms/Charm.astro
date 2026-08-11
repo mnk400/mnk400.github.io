@@ -97,5 +97,30 @@ const style =
     });
   }
 
-  document.addEventListener('astro:page-load', wireCharmPulse);
+  // The clock charm's hands are CSS animations with the real periods, so the
+  // only work here is seeking each to `now` with a negative animation-delay —
+  // after that the browser keeps time and nothing runs per frame.
+  function wireCharmClocks() {
+    const now = new Date();
+    const seconds = now.getSeconds() + now.getMilliseconds() / 1000;
+    const minutes = now.getMinutes() + seconds / 60;
+    const hours = (now.getHours() % 12) + minutes / 60;
+
+    // Seconds elapsed into each hand's own cycle.
+    const elapsed: Record<string, number> = {
+      second: seconds,
+      minute: minutes * 60,
+      hour: hours * 3600,
+    };
+
+    document.querySelectorAll<HTMLElement>('.charm--clock .clock-hand').forEach((hand) => {
+      const unit = hand.dataset.hand;
+      if (unit && unit in elapsed) hand.style.animationDelay = `-${elapsed[unit]}s`;
+    });
+  }
+
+  document.addEventListener('astro:page-load', () => {
+    wireCharmPulse();
+    wireCharmClocks();
+  });
 </script>

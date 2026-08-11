@@ -1,0 +1,21 @@
+// =============================================================================
+// CHARM · gr3 — a Ricoh GR III, photographed rather than painted
+// =============================================================================
+//
+// A straight product photo, cut out and given a paper-white edge so it reads as
+// a snipped print instead of a die-cut sticker. The body is near-black, so that
+// edge is also what keeps the charm off the dark themes' canvas. Wears the
+// shared entrance-pop + click-pulse (see charms/_motion).
+
+@use "motion" as *;
+@use "outline" as *;
+
+.charm--gr3 {
+    --charm-gr3-outline: #b3afaa;
+
+    @include charm-motion;
+
+    // Thicker than the painted charms: a photo has no drawn edge of its own, so
+    // a hairline reads as an artifact rather than a cut.
+    @include charm-image-body(var(--charm-gr3-outline), 1.5px);
+}

@@ -1,0 +1,77 @@
+// =============================================================================
+// CHARM · clock — a Bauhaus-lineage wall clock, running on real time
+// =============================================================================
+//
+// Max Bill by way of Junghans: cream dial, hairline tick track, slim blued-steel
+// hands. Each hand is a CSS animation with the real period, and Charm.astro sets
+// a negative animation-delay at load to seek it to the current time. Colours are
+// theme-independent, and the metal rim is what separates the dial from the paler
+// canvases. Wears the shared entrance-pop + click-pulse (see charms/_motion).
+
+@use "motion" as *;
+
+.charm--clock {
+    --charm-clock-ink: #3d4753; // blued steel, not black
+    --charm-clock-tick: #8a8272; // low enough contrast to stay a ring, not noise
+    --charm-clock-second: #c2603f;
+
+    @include charm-motion;
+
+    .charm-fx__body {
+        display: block;
+        width: auto;
+        height: var(--charm-h);
+    }
+
+    svg {
+        display: block;
+        height: 100%;
+        width: auto;
+    }
+
+    .clock-rim { fill: url("#charm-clock-rim"); }
+    .clock-face { fill: url("#charm-clock-dial"); }
+
+    // Above the hands, as on the real object: without it they read as composited
+    // onto the dial rather than sealed under glass.
+    .clock-glass {
+        fill: url("#charm-clock-glass");
+        pointer-events: none;
+    }
+
+    .clock-tick { fill: var(--charm-clock-tick); }
+
+    .clock-tick--hour,
+    .clock-hand,
+    .clock-hub {
+        fill: var(--charm-clock-ink);
+    }
+
+    .clock-hand--second {
+        fill: var(--charm-clock-second);
+    }
+
+    .clock-hand {
+        // view-box, not the default fill-box: hands pivot about the dial's centre.
+        transform-box: view-box;
+        transform-origin: 50px 50px;
+    }
+
+    .clock-hand--hour { animation: clock-sweep 43200s linear infinite; }
+    .clock-hand--minute { animation: clock-sweep 3600s linear infinite; }
+    .clock-hand--second { animation: clock-sweep 60s linear infinite; }
+
+    // Paused rather than removed: the negative delay has already seeked each
+    // hand, so pausing holds the right time. Dropping the animation instead
+    // would park every hand at twelve.
+    @media (prefers-reduced-motion: reduce) {
+        .clock-hand {
+            animation-play-state: paused;
+        }
+    }
+}
+
+@keyframes clock-sweep {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
