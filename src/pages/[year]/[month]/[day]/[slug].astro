@@ -22,6 +22,21 @@ const { Content } = await render(post);
 const date =
   post.data.date ??
   new Date(`${Astro.params.year}-${Astro.params.month}-${Astro.params.day}T00:00:00Z`);
+
+const WORDS_PER_MINUTE = 180;
+const readingTime =
+  post.data.readingTime ??
+  Math.max(
+    1,
+    Math.round(
+      post.body!
+        // Strip HTML blocks and markdown syntax so markup isn't counted as words.
+        .replace(/<[^>]+>/g, ' ')
+        .replace(/[#*_`>\[\]()]/g, ' ')
+        .split(/\s+/)
+        .filter(Boolean).length / WORDS_PER_MINUTE,
+    ),
+  );
 ---
 <Post
   title={post.data.title}
@@ -29,8 +44,8 @@ const date =
   image={post.data.image}
   date={date}
   edit={post.data.edit}
-  showDate
   useMath={post.data.useMath}
+  readingTime={readingTime}
 >
   <Content />
 </Post>

@@ -1,0 +1,64 @@
+---
+// The shell for every page that isn't a dated article: games, tools, hubs,
+// `about`, `404`. A title above a body, and nothing that assumes running text.
+//
+// Set `prose` when the body is authored prose rather than UI copy, it opts into
+// the reading typography in _prose.scss. Articles go through Post.astro, which
+// wraps this and fills the `meta` and `body-end` slots.
+import Default from './Default.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  useMath?: boolean;
+  prose?: boolean;
+  /** Widens the header-to-body gap; set by Post.astro, which adds a byline. */
+  article?: boolean;
+  styles?: string[];
+  entity?: { type?: string; name?: string; same_as?: string[] };
+  schemaType?: string;
+  /** schema.org hint passed to StructuredData: 'post' yields Article. */
+  layoutKind?: string;
+}
+
+const {
+  title,
+  description,
+  image,
+  useMath = false,
+  prose = false,
+  article = false,
+  styles,
+  entity,
+  schemaType,
+  layoutKind = 'page',
+} = Astro.props;
+
+const showHeader = !!title || Astro.slots.has('meta');
+---
+<Default
+  title={title}
+  description={description}
+  image={image}
+  useMath={useMath}
+  styles={styles}
+  entity={entity}
+  schemaType={schemaType}
+  layoutKind={layoutKind}
+  pageTitle={title}
+>
+  <div class:list={['page', { 'page--article': article }]}>
+    {showHeader && (
+      <header class="page__header stack stack--sm">
+        {title && <h1 class="page__title">{title}</h1>}
+        <slot name="meta" />
+        <slot name="header-charm" />
+      </header>
+    )}
+    <div class:list={['page__body', { prose }]}>
+      <slot />
+      <slot name="body-end" />
+    </div>
+  </div>
+</Default>

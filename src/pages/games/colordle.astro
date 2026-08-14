@@ -1,9 +1,9 @@
 ---
-import Post from '../../layouts/Post.astro';
+import Page from '../../layouts/Page.astro';
 import CopyButton from '../../components/CopyButton.astro';
 import ExpandableSection from '../../components/ExpandableSection.astro';
 ---
-<Post
+<Page
   title="Colordle"
   description="Guess the hex color code in 6 tries"
   image="/assets/images/previews/colordle.jpg"
@@ -73,7 +73,7 @@ import ExpandableSection from '../../components/ExpandableSection.astro';
       </div>
     </div>
   </div>
-</Post>
+</Page>
 
 <script>
   interface GuessEntry {

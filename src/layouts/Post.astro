@@ -1,5 +1,11 @@
 ---
-import Default from './Default.astro';
+// A dated article. Used by exactly one route — pages/[year]/[month]/[day]/[slug]
+// which renders every file in src/content/posts.
+//
+// Everything shared with the rest of the site (shell, body copy, flow) comes
+// from Page.astro; this layout adds only what a *post* has that a page doesn't:
+// the byline, the end mark, and the schema.org Article type.
+import Page from './Page.astro';
 
 interface Props {
   title?: string;
@@ -7,8 +13,8 @@ interface Props {
   image?: string;
   date?: Date | string;
   edit?: Date | string;
-  showDate?: boolean;
   useMath?: boolean;
+  readingTime?: number;
   styles?: string[];
   entity?: { type?: string; name?: string; same_as?: string[] };
   schemaType?: string;
@@ -20,8 +26,8 @@ const {
   image,
   date,
   edit,
-  showDate = false,
   useMath = false,
+  readingTime,
   styles,
   entity,
   schemaType,
@@ -36,10 +42,8 @@ const formatDate = (d: Date | string) =>
     day: 'numeric',
     timeZone: 'UTC',
   });
-
-const showHeader = !!title || showDate;
 ---
-<Default
+<Page
   title={title}
   description={description}
   image={image}
@@ -48,23 +52,18 @@ const showHeader = !!title || showDate;
   entity={entity}
   schemaType={schemaType}
   layoutKind="post"
-  pageTitle={title}
+  prose
+  article
 >
-  <div class:list={['post', { 'post--dated': showDate }]}>
-    {showHeader && (
-      <header class="post__header stack stack--sm">
-        {title && <h1 class="post__title">{title}</h1>}
-        {showDate && date && (
-          <p class="post__date">
-            {formatDate(date)}.
-            {edit && <> Edited on {formatDate(edit)}.</>}
-          </p>
-        )}
-        <slot name="header-charm" />
-      </header>
-    )}
-    <div class="post__content">
-      <slot />
-    </div>
-  </div>
-</Default>
+  {date && (
+    <p class="post__date" slot="meta">
+      {formatDate(date)}{readingTime ? '' : '.'}
+      {readingTime && (
+        <> · <span class="post__reading-time">{readingTime}</span> min read.</>
+      )}
+      {edit && <> Edited on {formatDate(edit)}.</>}
+    </p>
+  )}
+  <slot />
+  <div class="post__end" aria-hidden="true" slot="body-end"></div>
+</Page>

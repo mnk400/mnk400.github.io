@@ -1,5 +1,5 @@
 ---
-import Post from '../../layouts/Post.astro';
+import Page from '../../layouts/Page.astro';
 import SelectionSwitch from '../../components/SelectionSwitch.astro';
 
 const difficultyOptions = [
@@ -8,7 +8,7 @@ const difficultyOptions = [
   { value: 'expert', label: 'Expert' },
 ];
 ---
-<Post title="Minesweeper">
+<Page title="Minesweeper">
   <div class="game-wrapper">
     <div id="minesweeper-container">
       <div id="minesweeper-header">
@@ -28,7 +28,7 @@ const difficultyOptions = [
       <span id="game-status"></span>
     </div>
   </div>
-</Post>
+</Page>
 
 <script>
   interface Cell {

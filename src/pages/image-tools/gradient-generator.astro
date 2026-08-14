@@ -1,5 +1,5 @@
 ---
-import Post from '../../layouts/Post.astro';
+import Page from '../../layouts/Page.astro';
 import ControlGroup from '../../components/ControlGroup.astro';
 import SelectionSwitch from '../../components/SelectionSwitch.astro';
 
@@ -25,7 +25,7 @@ const typeOptions = [
   { value: 'radial', label: 'Radial' },
 ];
 ---
-<Post
+<Page
   title="Gradient Generator"
   description="Create gradient images with custom colors and orientations."
 >
@@ -90,7 +90,7 @@ const typeOptions = [
       <p>Generating...</p>
     </div>
   </div>
-</Post>
+</Page>
 
 <script>
   import { initSelectionSwitch } from '../../lib/selection-controls.ts';

@@ -1,5 +1,5 @@
 ---
-import Post from '../../../layouts/Post.astro';
+import Page from '../../../layouts/Page.astro';
 import ImageGallery from '../../../components/ImageGallery.astro';
 import { paintingGalleryItems, type PaintingGalleryItemData } from '../../../data/more/paintings.ts';
 
@@ -17,7 +17,7 @@ interface Props {
 const { painting } = Astro.props;
 const slug = painting.id.split('/').at(-1) ?? 'paintings';
 ---
-<Post
+<Page
   title={painting.title}
   description={painting.description}
   image={painting.image}
@@ -43,4 +43,4 @@ const slug = painting.id.split('/').at(-1) ?? 'paintings';
       class: 'search-pill--small image-gallery__search',
     }}
   />
-</Post>
+</Page>

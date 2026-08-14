@@ -1,5 +1,5 @@
 ---
-import Post from '../../layouts/Post.astro';
+import Page from '../../layouts/Page.astro';
 import ControlGroup from '../../components/ControlGroup.astro';
 import SelectionSwitch from '../../components/SelectionSwitch.astro';
 import RangeSlider from '../../components/RangeSlider.astro';
@@ -7,7 +7,7 @@ import { cameraModes } from '../../lib/camera-modes/index.ts';
 
 const modeOptions = cameraModes.map((m) => ({ value: m.id, label: m.label }));
 ---
-<Post
+<Page
   title="Camera Art"
   description="Convert your camera feed into real-time ASCII or circle art"
 >
@@ -60,7 +60,7 @@ const modeOptions = cameraModes.map((m) => ({ value: m.id, label: m.label }));
       <canvas id="camera-canvas"></canvas>
     </div>
   </div>
-</Post>
+</Page>
 
 <script>
   import { createCameraManager } from '../../lib/camera-manager.ts';

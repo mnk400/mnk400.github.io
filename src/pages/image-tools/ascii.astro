@@ -1,5 +1,5 @@
 ---
-import Post from '../../layouts/Post.astro';
+import Page from '../../layouts/Page.astro';
 import CopyButton from '../../components/CopyButton.astro';
 import ControlGroup from '../../components/ControlGroup.astro';
 import SelectionSwitch from '../../components/SelectionSwitch.astro';
@@ -18,7 +18,7 @@ const ditherOptions = [
   { value: 'floyd', label: 'Floyd' },
 ];
 ---
-<Post
+<Page
   title="ASCII Art Converter"
   description="Convert an image into a simple ASCII art"
 >
@@ -66,7 +66,7 @@ const ditherOptions = [
 
     <pre id="ascii-output"></pre>
   </div>
-</Post>
+</Page>
 
 <script>
   import {

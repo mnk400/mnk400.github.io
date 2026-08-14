@@ -148,14 +148,14 @@ function installValue(entry: ProductInstall): string {
     )}
 
     {Astro.slots.has('default') && (
-      <section class="post__content product__body">
+      <section class="page__body product__body">
         <slot />
       </section>
     )}
 
     {Astro.slots.has('readme') && (
       <section class="product__readme">
-        <div class="post__content github-readme__content">
+        <div class="page__body prose github-readme__content">
           <slot name="readme" />
         </div>
       </section>

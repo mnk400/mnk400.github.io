@@ -49,21 +49,12 @@ h3 {
 }
 
 // Body text
+// Body copy inside a page lives in _page.scss (`.page__body p`) — this is only
+// the fallback for text outside the page shell.
 p {
     font-size: 12pt;
     font-weight: 200;
     line-height: 1.25em;
-
-    // In post content
-    .post__content & {
-        font-size: 11.5pt;
-        font-weight: 200;
-        line-height: 16pt;
-        text-align: left;
-        word-wrap: break-word;
-        letter-spacing: 0.2px;
-        color: var(--sec-text-color);
-    }
 }
 
 // Text utilities

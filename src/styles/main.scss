@@ -41,7 +41,14 @@
 @use "partials/charms/back";
 
 // Pages
+// page → prose → post reads as a stack: the shell every page shares, the reading
+// layer articles opt into, then article-only furniture. Each compounds its
+// selector so the order here is documentation, not load-bearing.
+@use "partials/pages/page";
+@use "partials/pages/prose";
 @use "partials/pages/post";
+@use "partials/pages/more";
+@use "partials/pages/archive";
 @use "partials/pages/home";
 @use "partials/pages/games";
 @use "partials/pages/music";

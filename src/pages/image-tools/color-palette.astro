@@ -1,11 +1,11 @@
 ---
-import Post from '../../layouts/Post.astro';
+import Page from '../../layouts/Page.astro';
 import CopyButton from '../../components/CopyButton.astro';
 import ControlGroup from '../../components/ControlGroup.astro';
 import ImageUpload from '../../components/ImageUpload.astro';
 import RangeSlider from '../../components/RangeSlider.astro';
 ---
-<Post
+<Page
   title="Color Palette Extractor"
   description="Extract a color palette from any image"
 >
@@ -49,7 +49,7 @@ import RangeSlider from '../../components/RangeSlider.astro';
       </button>
     </template>
   </div>
-</Post>
+</Page>
 
 <script>
   import { copyText } from '../../lib/clipboard.ts';

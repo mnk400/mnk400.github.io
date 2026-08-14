@@ -13,7 +13,7 @@
 // against the left edge (nine charms, four columns, one alone on row three),
 // while centred rows put a short row under the middle of the pile.
 
-.post__content .charm-collection {
+.page__body .charm-collection {
     --spot-spread: 1;
 
     display: flex;
@@ -35,8 +35,10 @@
     }
 }
 
-// Scoped under the list to out-specify `.post__content li`, whose padding would
-// push the charms off their dealt positions.
+// Scoped under the list to out-specify `.page__body li`, whose padding would
+// push the charms off their dealt positions. That list rule is baseline rather
+// than prose because the games and tools pages use real bulleted lists, so this
+// override stays necessary.
 .charm-collection .charm-collection__spot {
     display: grid;
     place-items: center;

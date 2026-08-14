@@ -1,0 +1,182 @@
+@use "../base/mixins" as *;
+
+// =============================================================================
+// PAGE SHELL
+// =============================================================================
+//
+// The shell every page shares: a header carrying the title above a body. Split
+// three ways so each rule has exactly one owner:
+//
+//   .page / .page__body   here — the shell, and *baseline* copy: the size,
+//                         colour and vertical rhythm any page's text gets,
+//                         whether it's an essay or one line above a widget.
+//   .prose                _prose.scss — the reading layer, opted into by
+//                         articles and product READMEs.
+//   .post__*              _post.scss — article furniture (byline, end mark).
+//
+// Nothing here may assume the content is an article; 23 of the 24 pages using
+// this shell are a title above a game, tool or gallery.
+
+.page {
+    --page-header-gap: var(--spacing-md);
+    display: grid;
+    gap: var(--page-header-gap);
+
+    // Articles carry a byline under the title, so the header is a two-line
+    // block and needs a clearer break before the body starts.
+    &--article {
+        --page-header-gap: var(--spacing-xl);
+    }
+
+    &__back {
+        text-align: left;
+        display: block;
+    }
+
+    &__header {
+        min-width: 0;
+        position: relative;
+    }
+
+    &__title {
+        font-size: 24pt;
+        font-weight: 500;
+        text-align: left;
+        line-height: 1.1em;
+        text-wrap: balance;
+    }
+
+    &__body {
+        color: var(--text-color);
+
+        // Vertical rhythm, single owner. Block margins are zeroed and re-applied
+        // by the flow rule below, so an element's spacing never depends on which
+        // UA default or base rule it happened to inherit. An element that wants
+        // a different gap above it sets its own `--flow-space` — the var is read
+        // off the child being spaced, so it shadows the container's value.
+        --flow-space: var(--spacing-md);
+
+        > * {
+            margin-block: 0;
+        }
+
+        > * + * {
+            margin-top: var(--flow-space);
+        }
+
+        h1, h2 {
+            --flow-space: var(--spacing-lg);
+        }
+
+        p {
+            font-size: 11.5pt;
+            font-weight: 200;
+            line-height: 16pt;
+            text-align: left;
+            word-wrap: break-word;
+            letter-spacing: 0.2px;
+            color: var(--sec-text-color);
+        }
+
+        // Lists are baseline rather than prose: the games and tools pages use
+        // them for bulleted instruction copy too (see colordle's how-to-play),
+        // so moving them into `.prose` would strip those of bullets and indent.
+        ul {
+            font-size: 12pt;
+            list-style: disc;
+            padding-bottom: 0;
+            line-height: 1.3em;
+            margin-left: var(--spacing-lg);
+            color: var(--sec-text-color);
+        }
+
+        ol {
+            list-style: disc;
+            padding-bottom: 0;
+            line-height: 1.65em;
+            margin-left: var(--spacing-lg);
+        }
+
+        li {
+            padding-top: 3px;
+            padding-bottom: 3px;
+            padding-left: 2px;
+        }
+
+        > img,
+        > p > img {
+            max-width: 100%;
+            // Must pair with `height: auto` so the HTML `height` attr (used for
+            // CLS reservation) doesn't become a hard pixel height when CSS
+            // shrinks the width via max-width.
+            height: auto;
+            padding: 0;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        // Images take their vertical spacing from the flow rule above like every
+        // other block — no margins of their own. Raw <img> in markdown sits
+        // directly in the body (Astro's parser doesn't wrap it in <p> like
+        // kramdown did); images wrapped in <p> are spaced by the <p>.
+        > .img-curved-edges,
+        > p > .img-curved-edges {
+            padding: 0;
+            max-width: 100%;
+            display: block;
+            border-radius: var(--radius-md);
+            @include soft-outline(var(--translucent-medium));
+        }
+
+        .note {
+            display: block;
+            background: var(--translucent-low);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md) var(--spacing-lg);
+            color: var(--sec-text-color);
+            font-size: 0.95em;
+
+            a {
+                line-height: 25px;
+                text-decoration: underline;
+                text-decoration-color: var(--color-link-underline);
+                text-decoration-thickness: 0.125em;
+                text-underline-offset: 2.5px;
+            }
+        }
+
+        // Code blocks (syntax-highlighted and plain). Baseline rather than prose:
+        // the ASCII tool renders into a bare <pre>.
+        .highlight pre {
+            padding: 0;
+            margin: 0;
+        }
+
+        .highlight,
+        pre {
+            background: var(--code-bg);
+            padding: var(--spacing-lg);
+            line-height: 16pt;
+            font-weight: 200;
+            overflow-x: auto;
+            border-radius: var(--radius-md);
+            margin-bottom: 0;
+            font-size: 11pt;
+            @include mono-font;
+            color: var(--text-color);
+        }
+
+        .lineno {
+            color: var(--color-line-number);
+            margin-right: var(--spacing-lg);
+            @include no-select;
+        }
+
+        .codebreak {
+            margin: var(--spacing-lg);
+            border: 0;
+            border-bottom: 1px dashed var(--color-code-break);
+        }
+    }
+}

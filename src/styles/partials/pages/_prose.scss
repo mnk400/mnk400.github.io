@@ -1,0 +1,56 @@
+// =============================================================================
+// PROSE — the reading layer
+// =============================================================================
+//
+// Opt-in typography for authored running text: blog posts, `about`, and product
+// READMEs. Layered on top of `.page__body` (see _page.scss), which already owns
+// copy size, colour and flow — so this file carries only what *reading* needs
+// and UI copy doesn't: longer leading, heading rhythm, and the marks markdown
+// produces.
+//
+// Compounded with `.page__body` rather than written as a bare `.prose` so the
+// two files can't fight over source order; every rule here out-specifies its
+// baseline counterpart by one class regardless of import sequence.
+
+.page__body.prose {
+    --flow-space: var(--spacing-lg);
+
+    p {
+        line-height: 1.6;
+    }
+
+    // A heading belongs to the text underneath it. At the roomier prose flow
+    // space a heading ends up with equal margins on both sides, which leaves it
+    // floating between two blocks instead of introducing one — so open up the
+    // break above and bind the heading to what follows.
+    h1, h2, h3 {
+        --flow-space: var(--spacing-xl);
+    }
+
+    h1 + *,
+    h2 + *,
+    h3 + * {
+        --flow-space: var(--spacing-sm);
+    }
+
+    // Section break. Note this renders as a hairline only because the UA's
+    // `border-style: inset` shades the top edge — the declared colour is the
+    // page background.
+    hr {
+        width: 10%;
+        color: var(--background-main);
+        opacity: 60%;
+    }
+
+    // Quoted text needs to read as *lifted out* of the prose — without a rule of
+    // its own a <blockquote> is indistinguishable from a <p>.
+    blockquote {
+        padding-left: var(--spacing-lg);
+        border-left: 1px solid var(--translucent-high);
+
+        p {
+            color: var(--text-color);
+            font-style: italic;
+        }
+    }
+}
