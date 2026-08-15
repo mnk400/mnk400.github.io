@@ -1,0 +1,23 @@
+// =============================================================================
+// CHARM · newspaper — the Evening Herald, out of a Peto letter rack
+// =============================================================================
+//
+// Lifted from John Frederick Peto's Old Time Letter Rack (1894, MFA Boston).
+// The shipped PNG is brightened off the scan — Peto's interior is dim, so his
+// "white" paper is really mid grey-brown and goes muddy at charm size. Don't
+// re-export it straight from the painting.
+//
+// Pile-only: no page pins it. Drawn for /more under the butterfly, but two
+// charms in that header read as clutter. Wears the shared entrance-pop +
+// click-pulse (see charms/_motion).
+
+@use "motion" as *;
+@use "outline" as *;
+
+.charm--newspaper {
+    --charm-newspaper-outline: #C3B5A0; // a lighter shade of the aged newsprint
+
+    @include charm-motion;
+
+    @include charm-image-body(var(--charm-newspaper-outline));
+}

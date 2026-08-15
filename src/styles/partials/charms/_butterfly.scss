@@ -1,0 +1,19 @@
+// =============================================================================
+// CHARM · butterfly — a peacock, out of a van Kessel specimen study
+// =============================================================================
+//
+// A straight cutout from a Jan van Kessel the Elder insect study, whose
+// specimens already sit isolated on a plain ground. The scan carried 56 stray
+// flecks of background; the shipped PNG is despeckled, so don't re-export from
+// the raw cutout — a die-cut would ring every fleck as its own dot.
+// Wears the shared entrance-pop + click-pulse (see charms/_motion).
+
+@use "motion" as *;
+@use "outline" as *;
+
+.charm--butterfly {
+    --charm-butterfly-outline: #d4c4b6;
+    @include charm-motion;
+
+    @include charm-image-body(var(--charm-butterfly-outline));
+}

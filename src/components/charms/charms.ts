@@ -87,6 +87,8 @@ export const CHARMS = {
   // real control, so it runs at the real control's size (44pt against the
   // collection's 3.6rem base). Bigger and it's a drawing of a back button.
   back: { kind: 'svg', markup: backSvg, size: 44 / 57.6, action: 'back' },
+  butterfly: { kind: 'image', src: '/assets/images/site/butterfly.png', size: 1.5 },
+  newspaper: { kind: 'image', src: '/assets/images/site/newspaper.png', size: 0.8 },
   // `value` prop supplies the real number at each call site; `sample` is the gallery placeholder.
   count: { kind: 'text', sample: 42, size: 0.62 },
 } satisfies Record<string, CharmDef>;
