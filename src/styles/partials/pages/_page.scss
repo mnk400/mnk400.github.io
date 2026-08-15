@@ -38,6 +38,19 @@
         position: relative;
     }
 
+    // A header charm pins into this corner absolutely, so left alone its only
+    // room is whatever whitespace the title happens to leave — which collides in
+    // a band of widths (on /more, 410–515px). Reserve a real gutter so the title
+    // wraps early instead. Page.astro sets the modifier when the slot is filled;
+    // each placement sizes the gutter to its own charm via `titleGutter`.
+    //
+    // The cap stops a narrow viewport handing the whole column to the gutter.
+    // 42% is the crossover: lower clips the title on small phones, higher costs
+    // an extra title line at 320px.
+    &__header--charmed &__title {
+        padding-right: min(var(--page-title-gutter, 7rem), 42%);
+    }
+
     &__title {
         font-size: 24pt;
         font-weight: 500;

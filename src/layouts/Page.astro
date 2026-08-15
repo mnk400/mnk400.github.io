@@ -20,6 +20,8 @@ interface Props {
   schemaType?: string;
   /** schema.org hint passed to StructuredData: 'post' yields Article. */
   layoutKind?: string;
+  /** Width of the gutter kept clear at the title's right */
+  titleGutter?: string;
 }
 
 const {
@@ -33,9 +35,13 @@ const {
   entity,
   schemaType,
   layoutKind = 'page',
+  titleGutter,
 } = Astro.props;
 
 const showHeader = !!title || Astro.slots.has('meta');
+
+// Flags the header so the title can reserve a gutter for the charm (_page.scss).
+const hasHeaderCharm = Astro.slots.has('header-charm');
 ---
 <Default
   title={title}
@@ -50,7 +56,10 @@ const showHeader = !!title || Astro.slots.has('meta');
 >
   <div class:list={['page', { 'page--article': article }]}>
     {showHeader && (
-      <header class="page__header stack stack--sm">
+      <header
+        class:list={['page__header', 'stack', 'stack--sm', { 'page__header--charmed': hasHeaderCharm }]}
+        style={hasHeaderCharm && titleGutter ? `--page-title-gutter:${titleGutter};` : undefined}
+      >
         {title && <h1 class="page__title" data-page-title>{title}</h1>}
         <slot name="meta" />
         <slot name="header-charm" />
