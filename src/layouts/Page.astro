@@ -51,7 +51,7 @@ const showHeader = !!title || Astro.slots.has('meta');
   <div class:list={['page', { 'page--article': article }]}>
     {showHeader && (
       <header class="page__header stack stack--sm">
-        {title && <h1 class="page__title">{title}</h1>}
+        {title && <h1 class="page__title" data-page-title>{title}</h1>}
         <slot name="meta" />
         <slot name="header-charm" />
       </header>

@@ -140,6 +140,7 @@ header:has(.header-breadcrumb) {
 .header-left {
     display: flex;
     align-items: baseline;
+    min-width: 0;
 }
 
 // Homepage: name with hover menu
@@ -245,7 +246,13 @@ header:has(.header-breadcrumb) {
     display: flex;
     align-items: baseline;
     gap: var(--spacing-sm);
+    min-width: 0;
     color: var(--text-color);
+
+    // Ancestry never shrinks; the title crumb is the only part that gives way.
+    > *:not(.breadcrumb-title) {
+        flex: none;
+    }
 
     a {
         text-decoration: none;
@@ -278,6 +285,33 @@ header:has(.header-breadcrumb) {
 
 .header-breadcrumb .breadcrumb-mid {
     color: var(--sec-text-color);
+}
+
+.breadcrumb-title {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-sm);
+    min-width: 0;
+    height: 1em; // 1lh fallback
+    height: 1lh;
+    opacity: 0;
+    transform: translateY(var(--motion-slide-offset));
+    pointer-events: none; // decorative: never drag-select the invisible copy
+    transition:
+        opacity var(--transition-slow),
+        transform var(--transition-slow);
+}
+
+:root.is-title-collapsed .breadcrumb-title {
+    opacity: 1;
+    transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .breadcrumb-title {
+        transform: none;
+        transition: opacity var(--transition-fast);
+    }
 }
 
 .breadcrumb-current {

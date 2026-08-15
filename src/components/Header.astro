@@ -11,6 +11,11 @@ interface Props {
 
 const { pathname, breadcrumbs = [] } = Astro.props;
 const isHome = pathname === '/' || pathname === '/index.html';
+
+// The last crumb is the page's own title, which the <h1> below already prints,
+// so it's split off and revealed on scroll instead.
+const trail = breadcrumbs.filter((item) => !item.current);
+const titleCrumb = breadcrumbs.find((item) => item.current);
 ---
 <header>
   <div class="title-photo-container" id="titlePhotoContainer">
@@ -47,18 +52,22 @@ const isHome = pathname === '/' || pathname === '/index.html';
             <Icon name="arrow-down-left" />
           </button>
           <a href="/" class="breadcrumb-home">Manik</a>
-          {breadcrumbs.map((item) => (
+          {trail.map((item, index) => (
             <>
-              <span class:list={['breadcrumb-sep', { 'breadcrumb-root-sep': item === breadcrumbs[0] }]}>/</span>
-              {item.current ? (
-                <span class="breadcrumb-current">{item.label}</span>
-              ) : item.href ? (
+              <span class:list={['breadcrumb-sep', { 'breadcrumb-root-sep': index === 0 }]}>/</span>
+              {item.href ? (
                 <a href={item.href} class="breadcrumb-mid">{item.label}</a>
               ) : (
                 <span class="breadcrumb-mid">{item.label}</span>
               )}
             </>
           ))}
+          {titleCrumb && (
+            <span class="breadcrumb-title" data-breadcrumb-title aria-hidden="true">
+              <span class="breadcrumb-sep">/</span>
+              <span class="breadcrumb-current">{titleCrumb.label}</span>
+            </span>
+          )}
         </nav>
       )}
     </div>
@@ -67,6 +76,58 @@ const isHome = pathname === '/' || pathname === '/index.html';
 
 <script>
   import { navigate } from 'astro:transitions/client';
+  import { untilSwap } from '../lib/lifecycle.ts';
+
+  // Show the title crumb once the [data-page-title] heading's FIRST line has
+  // scrolled up behind the sticky header. A page with no heading has no title
+  // to repeat, so its crumb just stays visible.
+  function initTitleCollapse() {
+    const root = document.documentElement;
+    root.classList.remove('is-title-collapsed');
+
+    const crumb = document.querySelector('[data-breadcrumb-title]');
+    if (!crumb) return;
+
+    const heading = document.querySelector('[data-page-title]');
+    const header = document.querySelector('.header-breadcrumb')?.closest('header');
+    if (!heading || !header) {
+      root.classList.add('is-title-collapsed');
+      return;
+    }
+
+    let observer: IntersectionObserver | null = null;
+
+    const tailHeight = () => {
+      const range = document.createRange();
+      range.selectNodeContents(heading);
+      const rects = Array.from(range.getClientRects());
+      if (!rects.length) return 0;
+      const firstLineBottom = Math.min(...rects.map((rect) => rect.bottom));
+      return Math.max(0, heading.getBoundingClientRect().bottom - firstLineBottom);
+    };
+
+    const observe = () => {
+      observer?.disconnect();
+      const offset = Math.round(header.getBoundingClientRect().height + tailHeight());
+      observer = new IntersectionObserver(
+        ([entry]) => root.classList.toggle('is-title-collapsed', !entry.isIntersecting),
+        { rootMargin: `-${offset}px 0px 0px 0px` },
+      );
+      observer.observe(heading);
+    };
+
+    observe();
+    const resizeObserver = new ResizeObserver(observe);
+    resizeObserver.observe(header);
+    resizeObserver.observe(heading);
+
+    untilSwap(() => {
+      observer?.disconnect();
+      resizeObserver.disconnect();
+    });
+  }
+
+  document.addEventListener('astro:page-load', initTitleCollapse);
 
   // Photo reveal animation (used by the site-name in header AND any
   // [data-photo-reveal] link in page content).

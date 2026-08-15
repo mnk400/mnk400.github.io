@@ -132,7 +132,7 @@ const ogTitle = title ? `${title} — Manik` : 'Manik';
          that survive DOM swaps. -->
     <script>
       (function () {
-        var breadcrumbSelectors = ['.breadcrumb-back', '.breadcrumb-home', '.breadcrumb-sep'];
+        var breadcrumbSelectors = ['.breadcrumb-back', '.breadcrumb-home', '.breadcrumb-root-sep'];
 
         function setBreadcrumbNames(doc: Document, value: string) {
           breadcrumbSelectors.forEach(function (sel) {
