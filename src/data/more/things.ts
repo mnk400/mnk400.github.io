@@ -40,6 +40,21 @@ export const thingGalleryItems = [
       zoomMeta: ['meta:Owned'],
     },
   },
+  {
+    id: 'archive/things/sweaters',
+    title: 'Sweaters',
+    shortTitle: 'Sweaters',
+    tags: [...thingTags, 'sweaters', 'knitwear', 'clothing', 'wool'],
+    image: '/assets/images/previews/sweaters.jpg',
+    order: 3,
+    description: 'An archive of sweaters I have grown to own in my few years of being alive.',
+    source: 'https://media.manik.cc/sweater-album/manifest.json',
+    galleryName: 'sweaters',
+    gallery: {
+      captionTitle: ['title'],
+      captionBody: ['description'],
+    },
+  },
 ] satisfies ThingGalleryItemData[];
 
 // Things that live under the archive but aren't manifest-backed galleries, so
