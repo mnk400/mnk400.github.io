@@ -218,12 +218,11 @@ async function createClone(
 ): Promise<HTMLImageElement | null> {
   if (!session.view) return null;
   const clone = createZoomImage(item, initialRect);
-  session.view.overlay.appendChild(clone);
   await decodeImage(clone);
   if (activeSession !== session) {
-    clone.remove();
     return null;
   }
+  session.view.overlay.appendChild(clone);
   return clone;
 }
 
