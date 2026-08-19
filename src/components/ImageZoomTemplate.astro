@@ -1,13 +1,11 @@
 ---
 import Icon from './Icon.astro';
 ---
-<template id="image-zoom-template">
-  <div
+<dialog
     class="image-zoom-overlay"
-    role="dialog"
-    aria-modal="true"
     aria-label="Image viewer"
     tabindex="-1"
+    data-image-zoom
   >
     <button
       type="button"
@@ -17,9 +15,11 @@ import Icon from './Icon.astro';
       data-zoom-backdrop
     />
 
+    <div class="image-zoom-viewport" data-zoom-viewport />
+
     <div class="image-zoom-controls" data-zoom-controls>
-      <!-- Edge navigation. Hidden on touch (swipe handles it) and when the
-           gallery has a single image. -->
+      <!-- Edge navigation. Hidden on touch (native scrolling handles it) and
+           when the gallery has a single image. -->
       <button type="button" class="image-zoom-edge image-zoom-edge--prev" aria-label="Previous image" data-zoom-previous>
         <Icon name="caret-left" />
       </button>
@@ -50,5 +50,4 @@ import Icon from './Icon.astro';
         </div>
       </div>
     </div>
-  </div>
-</template>
+</dialog>

@@ -4,14 +4,31 @@
 // IMAGE ZOOM
 // =============================================================================
 
+body:has(.image-zoom-overlay[open]) {
+    position: fixed;
+    top: var(--image-zoom-scroll-top);
+    left: var(--image-zoom-scroll-left);
+    width: 100%;
+    overflow: hidden;
+}
+
 .image-zoom-overlay {
     position: fixed;
     inset: 0;
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    overflow: hidden;
     z-index: var(--z-modal);
     isolation: isolate;
     --image-zoom-horizontal-padding: 60px;
-    --image-zoom-top-strip: 52px;
-    --image-zoom-control-strip-height: 32px;
+    --image-zoom-stage-inset: 52px;
     --image-zoom-direct-scale: 0.985;
     --image-zoom-direct-image-duration: 200ms;
     --image-zoom-direct-opacity-duration: 180ms;
@@ -20,12 +37,70 @@
     --image-zoom-direct-backdrop-delay: 50ms;
 
     &--has-meta {
-        --image-zoom-control-strip-height: 56px;
+        --image-zoom-stage-inset: 56px;
+    }
+
+    &::backdrop {
+        background: transparent;
+    }
+
+    &:focus {
+        outline: none;
     }
 
     @media (hover: none) {
         --image-zoom-horizontal-padding: 20px;
     }
+}
+
+// Native horizontal scrolling owns all navigation input: touch, trackpad,
+// mouse, keyboard and edge buttons converge on this one snap surface.
+.image-zoom-viewport {
+    position: fixed;
+    top: var(--image-zoom-stage-inset);
+    right: 0;
+    bottom: var(--image-zoom-stage-inset);
+    left: 0;
+    z-index: calc(var(--z-modal) + 1);
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    touch-action: pan-x pinch-zoom;
+    opacity: 0;
+    pointer-events: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
+    &.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+}
+
+.image-zoom-slide {
+    flex: 0 0 100%;
+    height: 100%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: stretch;
+    padding: 0 var(--image-zoom-horizontal-padding);
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+}
+
+.image-zoom-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: transparent;
+    cursor: default;
+    user-select: none;
+    -webkit-user-drag: none;
 }
 
 // Zoomable image cursor + frame. Applied to any `<img data-zoomable>` —
@@ -113,19 +188,6 @@
         }
     }
 
-    // Once entrance motion settles, CSS owns the available viewport box.
-    // `object-fit` keeps the bitmap centered and responsive without resize JS.
-    &.image-zoom-clone--settled {
-        top: var(--image-zoom-top-strip) !important;
-        left: var(--image-zoom-horizontal-padding) !important;
-        width: calc(100vw - var(--image-zoom-horizontal-padding) - var(--image-zoom-horizontal-padding)) !important;
-        height: calc(100vh - var(--image-zoom-top-strip) - var(--image-zoom-control-strip-height)) !important;
-        height: calc(100dvh - var(--image-zoom-top-strip) - var(--image-zoom-control-strip-height)) !important;
-        max-width: none;
-        max-height: none;
-        transform: translateZ(0) !important;
-        transition: none !important;
-    }
 }
 
 .image-zoom-clone.image-zoom-clone--direct,
@@ -155,10 +217,9 @@
     }
 }
 
-// Full-viewport chrome layer. Fades in as a whole via `.active`, and the focus
-// trap walks the buttons inside it. `pointer-events: none` lets backdrop clicks
-// pass through everywhere except the actual controls. Three clusters are
-// positioned within: edge nav, top-right utility corner, bottom caption.
+// Full-viewport chrome layer. Fades in as a whole via `.active` while the
+// native dialog owns focus containment. `pointer-events: none` lets backdrop
+// clicks pass through everywhere except the actual controls.
 .image-zoom-controls {
     position: fixed;
     inset: 0;
@@ -285,15 +346,10 @@
     align-items: baseline;
     gap: var(--spacing-sm);
     max-width: 100%;
-    transition: opacity var(--transition-slow);
 
     &:empty,
     &.is-empty {
         display: none;
-    }
-
-    &.is-fading {
-        opacity: 0;
     }
 }
 

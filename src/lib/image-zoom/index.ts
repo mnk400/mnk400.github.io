@@ -1,9 +1,8 @@
-// Image Zoom — singleton lightbox controller for standalone zoomable images
-// and data-backed galleries. Gallery sessions navigate the complete item list,
-// even when incremental rendering means most thumbnails are not in the DOM.
+// Image Zoom — singleton viewer for standalone zoomable images and
+// data-backed galleries. Navigation is a native scrolling surface; temporary
+// clones exist only for the thumbnail-to-viewer opening and closing morphs.
 
 import {
-  computeZoomTarget,
   createZoomImage,
   decodeImage,
   directCloseDuration,
@@ -16,9 +15,11 @@ import {
   waitForAnimationFrame,
   type ZoomRect,
 } from './motion.ts';
+import { allowPixelReads } from '../images.ts';
 import { extractPalette, type PaletteColor } from '../color-palette.ts';
 import {
   createZoomView,
+  destroyZoomView,
   resetZoomShareFeedback,
   setZoomShareFeedback,
   updateZoomMeta,
@@ -53,7 +54,7 @@ interface CloseZoomOptions {
   immediate?: boolean;
 }
 
-type ZoomPhase = 'opening' | 'open' | 'navigating' | 'closing';
+type ZoomPhase = 'opening' | 'open' | 'closing';
 
 interface ZoomSession {
   controller: AbortController;
@@ -65,40 +66,26 @@ interface ZoomSession {
   phase: ZoomPhase;
   view: ZoomView | null;
   clonedImage: HTMLImageElement | null;
-  inertTarget: HTMLElement | null;
-  inertTargetWasInert: boolean;
-  previousBodyOverflow: string;
-  backgroundLocked: boolean;
   shareFeedbackTimer: number | null;
-  touchStartX: number;
-  touchStartY: number;
 }
 
 let activeSession: ZoomSession | null = null;
 
-const SWIPE_THRESHOLD = 50;
-const SETTLED_IMAGE_CLASS = 'image-zoom-clone--settled';
-
 const PALETTE_DOTS = 4;
-// Cost scales with the square of this.
 const PALETTE_SAMPLE_SIZE = 64;
 const PALETTE_CACHE_LIMIT = 120;
 
 // Keyed by thumbnail URL, item ids are only unique within one manifest.
-// Persists across sessions so re-visiting an image doesn't re-cluster it.
 const paletteCache = new Map<string, PaletteColor[]>();
 
 function paletteForImage(item: ZoomGalleryItem, image: HTMLImageElement): PaletteColor[] {
   const cached = paletteCache.get(item.thumbSrc);
   if (cached) return cached;
 
-  // The clone is still showing the decoded thumbnail here; extraction happens
-  // before upgradeImageSource can replace it with the full-resolution image.
   const colors = extractPalette(image, {
     count: PALETTE_DOTS,
     sampleSize: PALETTE_SAMPLE_SIZE,
   });
-
   if (paletteCache.size >= PALETTE_CACHE_LIMIT) {
     const oldest = paletteCache.keys().next();
     if (!oldest.done) paletteCache.delete(oldest.value);
@@ -114,8 +101,7 @@ function setSessionTimer(session: ZoomSession, callback: () => void, delay: numb
 }
 
 function clearTimer(timer: number | null) {
-  if (timer === null) return;
-  window.clearTimeout(timer);
+  if (timer !== null) window.clearTimeout(timer);
 }
 
 function requestSessionFrame(session: ZoomSession, callback: () => void) {
@@ -127,12 +113,6 @@ function requestSessionFrame(session: ZoomSession, callback: () => void) {
 async function waitForSessionFrame(session: ZoomSession): Promise<boolean> {
   await waitForAnimationFrame();
   return activeSession === session;
-}
-
-function finishMotion(session: ZoomSession, phase: 'opening' | 'navigating') {
-  if (activeSession !== session || session.phase !== phase) return;
-  settleClone(session);
-  session.phase = 'open';
 }
 
 function itemForImage(img: HTMLImageElement): ZoomGalleryItem {
@@ -153,62 +133,14 @@ function findSiblingImages(img: HTMLImageElement): HTMLImageElement[] {
   const container = img.closest('[data-gallery]');
   if (!container) return [img];
   const siblings = Array.from(container.querySelectorAll<HTMLImageElement>('[data-zoomable]'));
-  const hasIndex = siblings.every((el) => el.dataset.galleryIndex !== undefined);
-  if (hasIndex) {
-    siblings.sort(
-      (a, b) => Number(a.dataset.galleryIndex) - Number(b.dataset.galleryIndex),
-    );
+  if (siblings.every((element) => element.dataset.galleryIndex !== undefined)) {
+    siblings.sort((a, b) => Number(a.dataset.galleryIndex) - Number(b.dataset.galleryIndex));
   }
   return siblings;
 }
 
 function currentItem(session: ZoomSession): ZoomGalleryItem | null {
   return session.items[session.currentIndex] || null;
-}
-
-function settleClone(session: ZoomSession) {
-  const clone = session.clonedImage;
-  if (!clone) return;
-  clone.classList.add(SETTLED_IMAGE_CLASS);
-  clone.style.removeProperty('top');
-  clone.style.removeProperty('left');
-  clone.style.removeProperty('width');
-  clone.style.removeProperty('height');
-  clone.style.removeProperty('opacity');
-  clone.style.removeProperty('transform');
-}
-
-function freezeCloneAtPresentation(session: ZoomSession) {
-  const clone = session.clonedImage;
-  const item = currentItem(session);
-  if (!clone || !item) return;
-  const rect = clone.classList.contains(SETTLED_IMAGE_CLASS)
-    ? getContainedImageRect(item, clone)
-    : clone.getBoundingClientRect();
-  const opacity = getComputedStyle(clone).opacity;
-  clone.style.transition = 'none';
-  clone.classList.remove(SETTLED_IMAGE_CLASS);
-  clone.style.transform = 'none';
-  clone.style.opacity = opacity;
-  setZoomRect(clone, rect);
-  void clone.offsetHeight;
-  clone.style.transition = '';
-}
-
-function handleOverlayClick(session: ZoomSession, event: MouseEvent) {
-  const clone = session.clonedImage;
-  const item = currentItem(session);
-  if (!clone || !item || event.target !== clone || !clone.classList.contains(SETTLED_IMAGE_CLASS)) return;
-  const rect = getContainedImageRect(item, clone);
-  const outsideImage = event.clientX < rect.left || event.clientX > rect.left + rect.width
-    || event.clientY < rect.top || event.clientY > rect.top + rect.height;
-  if (outsideImage) requestSessionFrame(session, () => closeZoom());
-}
-
-function preloadAdjacentImages(session: ZoomSession) {
-  [session.items[session.currentIndex - 1], session.items[session.currentIndex + 1]].forEach((item) => {
-    if (item?.thumbSrc) void preloadImage(item.thumbSrc);
-  });
 }
 
 async function createClone(
@@ -219,15 +151,105 @@ async function createClone(
   if (!session.view) return null;
   const clone = createZoomImage(item, initialRect);
   await decodeImage(clone);
-  if (activeSession !== session) {
-    return null;
-  }
+  if (activeSession !== session) return null;
   session.view.overlay.appendChild(clone);
   return clone;
 }
 
-function upgradeCloneToFull(session: ZoomSession, clone: HTMLImageElement, item: ZoomGalleryItem) {
-  upgradeImageSource(clone, item, () => activeSession === session);
+async function loadViewerImage(
+  session: ZoomSession,
+  index: number,
+): Promise<HTMLImageElement | null> {
+  const item = session.items[index];
+  const image = session.view?.images[index];
+  if (!item || !image) return null;
+
+  if (!image.getAttribute('src')) {
+    allowPixelReads(image, item.thumbSrc);
+    image.src = item.thumbSrc;
+  }
+  await decodeImage(image);
+  if (activeSession !== session) return null;
+  upgradeImageSource(image, item, () => activeSession === session && image.hasAttribute('src'));
+  return image;
+}
+
+function loadAround(session: ZoomSession, index: number) {
+  session.view?.images.forEach((image, itemIndex) => {
+    if (Math.abs(itemIndex - index) <= 1) void loadViewerImage(session, itemIndex);
+    else image.removeAttribute('src');
+  });
+}
+
+function setCurrentIndex(session: ZoomSession, index: number, notify = true) {
+  const safeIndex = Math.max(0, Math.min(index, session.items.length - 1));
+  if (safeIndex === session.currentIndex) return;
+  const previous = currentItem(session);
+  if (previous?.element?.isConnected) previous.element.style.visibility = '';
+
+  session.currentIndex = safeIndex;
+  const item = currentItem(session);
+  if (!item || !session.view) return;
+  if (item.element?.isConnected) item.element.style.visibility = 'hidden';
+  updateZoomNavigation(session.view, safeIndex, session.items.length);
+  updateZoomMeta(session.view, item);
+  resetZoomShareFeedback(session.view);
+  loadAround(session, safeIndex);
+  void loadViewerImage(session, safeIndex).then((image) => {
+    if (image && activeSession === session && session.currentIndex === safeIndex && session.view) {
+      updateZoomPalette(session.view, paletteForImage(item, image));
+    }
+  });
+  if (notify) session.options.onChange?.(item, safeIndex);
+}
+
+function nearestScrollIndex(session: ZoomSession): number {
+  const viewport = session.view?.viewport;
+  if (!viewport || viewport.clientWidth === 0) return session.currentIndex;
+  return Math.max(
+    0,
+    Math.min(Math.round(viewport.scrollLeft / viewport.clientWidth), session.items.length - 1),
+  );
+}
+
+function handleScroll(session: ZoomSession) {
+  if (session.phase !== 'open') return;
+  setCurrentIndex(session, nearestScrollIndex(session));
+}
+
+function scrollToIndex(session: ZoomSession, index: number) {
+  const viewport = session.view?.viewport;
+  if (!viewport) return;
+  const safeIndex = Math.max(0, Math.min(index, session.items.length - 1));
+  viewport.scrollTo({
+    left: safeIndex * viewport.clientWidth,
+    behavior: prefersReducedMotion() ? 'auto' : 'smooth',
+  });
+}
+
+function navigate(session: ZoomSession, direction: number) {
+  if (activeSession !== session || session.phase !== 'open') return;
+  scrollToIndex(session, nearestScrollIndex(session) + direction);
+}
+
+function handleResize(session: ZoomSession) {
+  requestSessionFrame(session, () => {
+    if (activeSession !== session || !session.view) return;
+    session.view.viewport.scrollLeft = session.currentIndex * session.view.viewport.clientWidth;
+  });
+}
+
+function handleOverlayClick(session: ZoomSession, event: MouseEvent) {
+  if (session.phase !== 'open' || !session.view) return;
+  const slide = (event.target as Element | null)?.closest<HTMLElement>('.image-zoom-slide');
+  if (Number(slide?.dataset.zoomIndex) !== session.currentIndex) return;
+  const item = currentItem(session);
+  const image = session.view.images[session.currentIndex];
+  if (!item || !image) return;
+  const rect = getContainedImageRect(item, image);
+  const outsideImage = event.clientX < rect.left || event.clientX > rect.left + rect.width
+    || event.clientY < rect.top || event.clientY > rect.top + rect.height;
+  if (outsideImage) requestSessionFrame(session, () => closeZoom());
 }
 
 async function copyCurrentLink(session: ZoomSession) {
@@ -246,31 +268,15 @@ async function copyCurrentLink(session: ZoomSession) {
   }, 1600);
 }
 
-function lockBackground(session: ZoomSession) {
-  session.previousBodyOverflow = document.body.style.overflow;
-  document.body.style.overflow = 'hidden';
-  session.inertTarget = document.querySelector<HTMLElement>('.wrapper');
-  if (session.inertTarget) {
-    session.inertTargetWasInert = session.inertTarget.inert;
-    session.inertTarget.inert = true;
-  }
-  session.backgroundLocked = true;
-}
-
-function unlockBackground(session: ZoomSession) {
-  if (!session.backgroundLocked) return;
-  document.body.style.overflow = session.previousBodyOverflow;
-  if (session.inertTarget) session.inertTarget.inert = session.inertTargetWasInert;
-  session.backgroundLocked = false;
-}
-
-
 function attachInteractionListeners(session: ZoomSession) {
-  const signal = session.controller.signal;
+  if (!session.view) return;
+  const { signal } = session.controller;
   document.addEventListener('keydown', handleKeyDown, { signal });
-  document.addEventListener('touchstart', handleTouchStart, { passive: true, signal });
-  document.addEventListener('touchend', handleTouchEnd, { passive: true, signal });
-  document.addEventListener('touchmove', preventTouchMove, { passive: false, signal });
+  session.view.viewport.addEventListener('scroll', () => handleScroll(session), {
+    passive: true,
+    signal,
+  });
+  window.addEventListener('resize', () => handleResize(session), { signal });
 }
 
 export async function openZoomGallery(
@@ -293,13 +299,7 @@ export async function openZoomGallery(
     phase: 'opening',
     view: null,
     clonedImage: null,
-    inertTarget: null,
-    inertTargetWasInert: false,
-    previousBodyOverflow: '',
-    backgroundLocked: false,
     shareFeedbackTimer: null,
-    touchStartX: 0,
-    touchStartY: 0,
   };
   activeSession = session;
 
@@ -314,23 +314,30 @@ export async function openZoomGallery(
     direct: session.directEntrance,
     multi: session.items.length > 1,
     share: options.share === true,
+    items: session.items,
     signal: session.controller.signal,
     onClose: () => closeZoom(),
     onBackdrop: () => requestSessionFrame(session, () => closeZoom()),
     onOverlayClick: (event) => handleOverlayClick(session, event),
-    onPrevious: () => void navigate(session, -1),
-    onNext: () => void navigate(session, 1),
+    onPrevious: () => navigate(session, -1),
+    onNext: () => navigate(session, 1),
     onShare: () => void copyCurrentLink(session),
   });
-  lockBackground(session);
   attachInteractionListeners(session);
+  session.view.viewport.scrollLeft = safeIndex * session.view.viewport.clientWidth;
+
+  const viewerImage = await loadViewerImage(session, safeIndex);
+  if (!viewerImage || activeSession !== session || !session.view) return false;
+  loadAround(session, safeIndex);
 
   const clone = await createClone(session, selected, originalRect);
-  if (!clone || activeSession !== session) return false;
+  if (!clone || activeSession !== session || !session.view) return false;
   session.clonedImage = clone;
   updateZoomPalette(session.view, paletteForImage(selected, clone));
-  const target = computeZoomTarget(selected, clone, originalRect);
-  upgradeCloneToFull(session, clone, selected);
+  updateZoomNavigation(session.view, safeIndex, session.items.length);
+  updateZoomMeta(session.view, selected);
+  upgradeImageSource(clone, selected, () => activeSession === session);
+  const target = getContainedImageRect(selected, viewerImage);
 
   if (session.directEntrance) {
     setZoomRect(clone, target);
@@ -343,21 +350,19 @@ export async function openZoomGallery(
   if (origin) origin.style.visibility = 'hidden';
 
   requestSessionFrame(session, () => {
-    if (session.phase !== 'opening') return;
-    const view = session.view;
-    const item = currentItem(session);
-    if (!view || !item) return;
-    view.backdrop.classList.add('active');
-    view.controls.classList.add('active');
-    updateZoomNavigation(view, session.currentIndex, session.items.length);
-    updateZoomMeta(view, item);
-    preloadAdjacentImages(session);
-    if (session.clonedImage) {
-      setZoomRect(session.clonedImage, target);
-      session.clonedImage.classList.add('zoomed');
-    }
-    (options.direct ? view.overlay : view.closeButton).focus({ preventScroll: true });
-    setSessionTimer(session, () => finishMotion(session, 'opening'), transitionDuration());
+    if (session.phase !== 'opening' || !session.view || !session.clonedImage) return;
+    session.view.backdrop.classList.add('active');
+    session.view.controls.classList.add('active');
+    setZoomRect(session.clonedImage, target);
+    session.clonedImage.classList.add('zoomed');
+    (options.direct ? session.view.overlay : session.view.closeButton).focus({ preventScroll: true });
+    setSessionTimer(session, () => {
+      if (session.phase !== 'opening' || !session.view) return;
+      session.view.viewport.classList.add('active');
+      session.clonedImage?.remove();
+      session.clonedImage = null;
+      session.phase = 'open';
+    }, transitionDuration());
   });
 
   return true;
@@ -369,101 +374,16 @@ export function openZoom(img: HTMLImageElement) {
   return openZoomGallery(galleryItems, index, { returnFocus: img });
 }
 
-async function navigate(session: ZoomSession, direction: number) {
-  if (activeSession !== session || session.phase !== 'open' || !session.clonedImage) return;
-  const newIndex = session.currentIndex + direction;
-  if (newIndex < 0 || newIndex >= session.items.length) return;
-
-  session.phase = 'navigating';
-  freezeCloneAtPresentation(session);
-  session.view?.metaLine.classList.add('is-fading');
-  const oldItem = currentItem(session);
-  const newItem = session.items[newIndex];
-  if (!newItem) {
-    session.phase = 'open';
-    return;
-  }
-
-  const newClone = await createClone(session, newItem);
-  if (!newClone || activeSession !== session) return;
-  if (session.phase !== 'navigating') {
-    newClone.remove();
-    return;
-  }
-  const palette = paletteForImage(newItem, newClone);
-  const target = computeZoomTarget(newItem, newClone);
-  upgradeCloneToFull(session, newClone, newItem);
-  setZoomRect(newClone, target);
-  newClone.classList.add('zoomed');
-
-  const reducedMotion = prefersReducedMotion();
-  const slide = window.innerWidth;
-  const enterFrom = direction > 0 ? slide : -slide;
-  if (reducedMotion) {
-    newClone.style.opacity = '0';
-  } else {
-    newClone.style.transform = `translateX(${enterFrom}px)`;
-  }
-
-  void newClone.offsetHeight;
-  newClone.style.transition = '';
-  if (!await waitForSessionFrame(session)) {
-    newClone.remove();
-    return;
-  }
-  if (session.phase !== 'navigating') {
-    newClone.remove();
-    return;
-  }
-  if (oldItem?.element?.isConnected) oldItem.element.style.visibility = '';
-  if (newItem.element?.isConnected) newItem.element.style.visibility = 'hidden';
-
-  const oldClone = session.clonedImage;
-  session.currentIndex = newIndex;
-  session.clonedImage = newClone;
-  session.options.onChange?.(newItem, session.currentIndex);
-  preloadAdjacentImages(session);
-
-  requestSessionFrame(session, () => {
-    if (session.phase !== 'navigating') return;
-    if (reducedMotion) {
-      newClone.style.opacity = '1';
-      oldClone.style.opacity = '0';
-    } else {
-      newClone.style.transform = 'translateX(0)';
-      oldClone.style.transform = `translateX(${-enterFrom}px)`;
-    }
-  });
-
-  setSessionTimer(session, () => {
-    if (session.phase !== 'navigating') return;
-    if (session.view) {
-      updateZoomNavigation(session.view, session.currentIndex, session.items.length);
-      updateZoomMeta(session.view, newItem);
-      updateZoomPalette(session.view, palette);
-      session.view.metaLine.classList.remove('is-fading');
-    }
-  }, transitionDuration() / 2);
-
-  setSessionTimer(session, () => {
-    if (session.phase !== 'navigating') return;
-    newClone.style.opacity = '';
-    newClone.style.transform = '';
-    oldClone.remove();
-    finishMotion(session, 'navigating');
-  }, transitionDuration());
-}
-
 function finishClose(session: ZoomSession) {
   if (activeSession !== session) return;
   activeSession = null;
-
+  clearTimer(session.shareFeedbackTimer);
   session.items.forEach((item) => {
     if (item.element?.isConnected) item.element.style.visibility = '';
   });
   session.controller.abort();
-  session.view?.overlay.remove();
-  unlockBackground(session);
+  session.clonedImage?.remove();
+  if (session.view) destroyZoomView(session.view);
 
   const focusTarget = session.options.returnFocus || session.previousFocus;
   const onClosed = session.options.onClosed;
@@ -471,29 +391,47 @@ function finishClose(session: ZoomSession) {
   onClosed?.();
 }
 
-export function closeZoom(options: CloseZoomOptions = {}) {
-  const session = activeSession;
-  if (!session) return;
+async function closeSession(session: ZoomSession, options: CloseZoomOptions) {
   if (session.phase === 'closing') {
     if (options.immediate) finishClose(session);
     return;
   }
   if (!options.skipRequest && session.options.onRequestClose?.() === true) return;
-
-  if (options.immediate || !session.view || !session.clonedImage) {
+  if (options.immediate || !session.view) {
     finishClose(session);
     return;
   }
-  session.phase = 'closing';
-  freezeCloneAtPresentation(session);
 
-  const clone = session.clonedImage;
-  session.view.overlay.querySelectorAll<HTMLImageElement>('.image-zoom-clone').forEach((image) => {
-    if (image !== clone) image.style.opacity = '0';
-  });
-  clone.style.opacity = '';
+  if (session.phase === 'open') setCurrentIndex(session, nearestScrollIndex(session));
+  session.phase = 'closing';
   const selected = currentItem(session);
-  const origin = !session.directEntrance && selected?.element?.isConnected
+  const viewerImage = selected
+    ? await loadViewerImage(session, session.currentIndex)
+    : null;
+  if (!selected || !viewerImage || activeSession !== session || !session.view) {
+    finishClose(session);
+    return;
+  }
+
+  const cloneItem = {
+    ...selected,
+    thumbSrc: viewerImage.currentSrc || selected.thumbSrc,
+    fullSrc: undefined,
+  };
+  const clone = await createClone(
+    session,
+    cloneItem,
+    getContainedImageRect(selected, viewerImage),
+  );
+  if (!clone || activeSession !== session || !session.view) return;
+  session.clonedImage = clone;
+  clone.classList.add('zoomed');
+  session.view.viewport.classList.remove('active');
+  void clone.offsetHeight;
+  clone.style.transition = '';
+  if (!await waitForSessionFrame(session) || !session.view) return;
+
+  const origin = !session.directEntrance && selected.element?.isConnected
     ? selected.element
     : null;
   if (origin) {
@@ -509,58 +447,21 @@ export function closeZoom(options: CloseZoomOptions = {}) {
   }
 }
 
+export function closeZoom(options: CloseZoomOptions = {}) {
+  const session = activeSession;
+  if (session) void closeSession(session, options);
+}
+
 function handleKeyDown(event: KeyboardEvent) {
   const session = activeSession;
   if (!session) return;
-  if (event.key === 'Escape') closeZoom();
-  else if (event.key === 'ArrowLeft') void navigate(session, -1);
-  else if (event.key === 'ArrowRight') void navigate(session, 1);
-  else if (event.key === 'Tab' && session.view) {
-    const focusable = Array.from(
-      session.view.controls.querySelectorAll<HTMLButtonElement>('button:not(:disabled):not([hidden])'),
-    );
-    if (focusable.length === 0) return;
-    const first = focusable[0];
-    const last = focusable[focusable.length - 1];
-    if (document.activeElement === session.view.overlay) {
-      event.preventDefault();
-      (event.shiftKey ? last : first).focus();
-    } else if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault();
-      last.focus();
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault();
-      first.focus();
-    }
-  }
-}
-
-function preventTouchMove(event: TouchEvent) {
-  event.preventDefault();
-}
-
-function handleTouchStart(event: TouchEvent) {
-  const session = activeSession;
-  if (!session) return;
-  if (event.touches.length !== 1) return;
-  session.touchStartX = event.touches[0].clientX;
-  session.touchStartY = event.touches[0].clientY;
-}
-
-function handleTouchEnd(event: TouchEvent) {
-  const session = activeSession;
-  if (!session) return;
-  if (!event.changedTouches.length) return;
-  const dx = event.changedTouches[0].clientX - session.touchStartX;
-  const dy = event.changedTouches[0].clientY - session.touchStartY;
-  if (Math.abs(dx) < SWIPE_THRESHOLD || Math.abs(dx) < Math.abs(dy)) return;
-  void navigate(session, dx < 0 ? 1 : -1);
+  if (event.key === 'ArrowLeft') navigate(session, -1);
+  else if (event.key === 'ArrowRight') navigate(session, 1);
 }
 
 function handleImageActivation(event: MouseEvent | KeyboardEvent) {
   if (event instanceof KeyboardEvent && event.key !== 'Enter' && event.key !== ' ') return;
-  const target = event.target as HTMLElement | null;
-  const img = target?.closest<HTMLImageElement>('[data-zoomable]');
+  const img = (event.target as HTMLElement | null)?.closest<HTMLImageElement>('[data-zoomable]');
   if (!img || img.tagName !== 'IMG') return;
   event.preventDefault();
   event.stopPropagation();
@@ -571,13 +472,14 @@ function decorateZoomableImages(root: ParentNode = document) {
   root.querySelectorAll<HTMLImageElement>('img[data-zoomable]').forEach((image) => {
     if (!image.hasAttribute('tabindex')) image.tabIndex = 0;
     if (!image.hasAttribute('role')) image.setAttribute('role', 'button');
-    if (!image.hasAttribute('aria-label')) {
-      image.setAttribute('aria-label', `Open ${image.alt || 'image'}`);
-    }
+    if (!image.hasAttribute('aria-label')) image.setAttribute('aria-label', `Open ${image.alt || 'image'}`);
   });
 }
 
 document.addEventListener('click', handleImageActivation);
 document.addEventListener('keydown', handleImageActivation);
 document.addEventListener('astro:page-load', () => decorateZoomableImages());
+document.addEventListener('astro:before-swap', () => {
+  closeZoom({ skipRequest: true, immediate: true });
+});
 decorateZoomableImages();

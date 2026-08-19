@@ -375,9 +375,11 @@ The CSS includes the overlay classes used by manik.cc's image zoom runtime:
     .image-zoom-overlay
     .image-zoom-overlay--closing-direct
     .image-zoom-backdrop
+    .image-zoom-viewport
+    .image-zoom-slide
+    .image-zoom-image
     .image-zoom-clone
     .image-zoom-clone--direct
-    .image-zoom-clone--settled
     .image-zoom-controls
     .image-zoom-palette
     .image-zoom-palette__dot
@@ -385,7 +387,6 @@ The CSS includes the overlay classes used by manik.cc's image zoom runtime:
     .image-zoom-meta
     .image-zoom-caption
     .image-zoom-detail
-    .image-zoom-nav
     .image-zoom-control-button
     .image-zoom-share
 
@@ -394,15 +395,25 @@ visual closing state. Its descendant rules fade/scale the clone, fade controls,
 and delay the backdrop fade; JavaScript only adds the class and schedules final
 teardown.
 
-Direct opens focus the dialog container itself. The first Tab moves into the
-first enabled viewer control (Shift+Tab moves to the last), keeping focus
-contained without showing a synthetic focus ring on the close button.
+`.image-zoom-overlay` is a native modal `<dialog>`, so the browser owns focus
+containment and document inertness. `.image-zoom-viewport` is the persistent
+horizontal scroll container; it lays out one `.image-zoom-slide` per item with
+mandatory center snapping. Touch, trackpad, keyboard, and edge-button input all
+move this same native scrolling surface. If any gallery item has metadata, keep
+`.image-zoom-overlay--has-meta` set for the full dialog session so the caption
+rail never changes the image viewport's geometry during navigation. The image
+stage uses equal top and bottom insets, keeping every image vertically centered
+while the caption occupies the lower safe area.
 
-After entrance motion completes, apply `.image-zoom-clone--settled`. CSS then
-owns the available viewport box and `object-fit: contain` keeps the bitmap
-centered through browser resizing without JavaScript resize listeners. Before
-navigation or dismissal, freeze the rendered bitmap's current presentation
-rectangle and remove the settled class so spatial motion starts without a jump.
+While the dialog is open, the component CSS fixes the body at custom-property
+offsets supplied by the runtime. Preserve the window offset before
+`showModal()`, then remove those offsets and restore the window position when
+the dialog closes. This prevents background scrolling without Chrome resetting
+the page to the top.
+
+The `.image-zoom-clone` is temporary. It morphs between a gallery thumbnail and
+the current `.image-zoom-image` only while the dialog opens or closes, then is
+removed. Gallery navigation never creates overlapping clones.
 
 Populate `.image-zoom-palette` before activating `.image-zoom-controls`, so its
 initial appearance shares the controls' opacity transition instead of arriving
@@ -423,13 +434,13 @@ stable IDs plus thumb/full sources and optional title, metadata, dimensions, and
 origin elements. This allows navigation across items that are not mounted in
 the DOM. Direct sessions cross-fade without inventing a thumbnail origin;
 pointer-opened sessions return to their source. The runtime also provides dialog
-semantics, focus containment/restoration, scroll locking, keyboard activation,
+semantics, focus containment/restoration, keyboard activation,
 reduced-motion transitions, and an optional copy-link control for data-backed
 sessions. Keep mutable viewer state in one session object, invalidate it on
 teardown, and verify session identity after asynchronous image decoding or frame
-yields. Model lifecycle as `opening`, `open`, `navigating`, or `closing`; closing
-may interrupt motion and must begin from the current presentation rectangle.
-Session-owned AbortSignals should remove interaction listeners together.
+yields. Model lifecycle as `opening`, `open`, or `closing`; horizontal scrolling
+owns navigation and updates the current item as slides cross the viewport center.
+Session-owned AbortSignals remove interaction listeners together.
 
 
 ================================================================================

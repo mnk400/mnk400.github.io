@@ -11,10 +11,6 @@ export type ZoomRect = {
 const DIRECT_CLOSE_DURATION = 220;
 const REDUCED_MOTION_CLOSE_DURATION = 120;
 
-function isTouchDevice(): boolean {
-  return window.matchMedia('(hover: none)').matches;
-}
-
 export function prefersReducedMotion(): boolean {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
@@ -84,28 +80,6 @@ function fitRect(imageAspect: number, box: ZoomRect): ZoomRect {
   }
   const width = box.height * imageAspect;
   return { top: box.top, left: box.left + (box.width - width) / 2, width, height: box.height };
-}
-
-export function computeZoomTarget(
-  item: ZoomGalleryItem,
-  image: HTMLImageElement,
-  fallbackRect?: ZoomRect,
-): ZoomRect {
-  const naturalWidth = image.naturalWidth || item.width || fallbackRect?.width || 1;
-  const naturalHeight = image.naturalHeight || item.height || fallbackRect?.height || 1;
-  const viewportWidth = window.innerWidth;
-  const viewportHeight = window.innerHeight;
-  const horizontalPadding = isTouchDevice() ? 20 : 60;
-  const topStrip = 52; // --image-zoom-top-strip
-  const bottomStrip = item.title || item.meta ? 56 : 32; // --image-zoom-control-strip-height
-  const maxWidth = Math.max(1, viewportWidth - horizontalPadding * 2);
-  const maxHeight = Math.max(1, viewportHeight - topStrip - bottomStrip);
-  return fitRect(naturalWidth / naturalHeight, {
-    top: topStrip,
-    left: horizontalPadding,
-    width: maxWidth,
-    height: maxHeight,
-  });
 }
 
 export function getContainedImageRect(

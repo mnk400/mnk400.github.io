@@ -2,8 +2,10 @@ import type { PaletteColor } from '../color-palette.ts';
 import type { ZoomGalleryItem } from './index.ts';
 
 export interface ZoomView {
-  overlay: HTMLElement;
+  overlay: HTMLDialogElement;
   backdrop: HTMLButtonElement;
+  viewport: HTMLElement;
+  images: HTMLImageElement[];
   controls: HTMLElement;
   metaLine: HTMLElement;
   closeButton: HTMLButtonElement;
@@ -17,12 +19,15 @@ export interface ZoomView {
   caption: HTMLElement;
   detail: HTMLElement;
   metaSeparator: HTMLElement;
+  scrollX: number;
+  scrollY: number;
 }
 
 interface ZoomViewOptions {
   direct: boolean;
   multi: boolean;
   share: boolean;
+  items: ZoomGalleryItem[];
   signal: AbortSignal;
   onClose: () => void;
   onBackdrop: () => void;
@@ -56,29 +61,56 @@ function bindPalettePulse(palette: HTMLElement, signal: AbortSignal) {
 }
 
 export function createZoomView(options: ZoomViewOptions): ZoomView {
-  const template = document.querySelector<HTMLTemplateElement>('#image-zoom-template');
-  if (!template) throw new Error('Image zoom template is missing');
-  const fragment = template.content.cloneNode(true) as DocumentFragment;
-  const overlay = fragment.querySelector<HTMLElement>('.image-zoom-overlay')!;
-  const backdrop = fragment.querySelector<HTMLButtonElement>('[data-zoom-backdrop]')!;
-  const controls = fragment.querySelector<HTMLElement>('[data-zoom-controls]')!;
-  const metaLine = fragment.querySelector<HTMLElement>('[data-zoom-meta]')!;
-  const caption = fragment.querySelector<HTMLElement>('[data-zoom-caption]')!;
-  const detail = fragment.querySelector<HTMLElement>('[data-zoom-detail]')!;
-  const metaSeparator = fragment.querySelector<HTMLElement>('[data-zoom-meta-separator]')!;
-  const closeButton = fragment.querySelector<HTMLButtonElement>('[data-zoom-close]')!;
-  const previous = fragment.querySelector<HTMLButtonElement>('[data-zoom-previous]')!;
-  const next = fragment.querySelector<HTMLButtonElement>('[data-zoom-next]')!;
-  const counter = fragment.querySelector<HTMLElement>('[data-zoom-counter]')!;
-  const palette = fragment.querySelector<HTMLElement>('[data-zoom-palette]')!;
-  const shareButton = fragment.querySelector<HTMLButtonElement>('[data-zoom-share]')!;
-  const shareLinkIcon = fragment.querySelector<HTMLElement>('[data-zoom-share-link]')!;
-  const shareCheckIcon = fragment.querySelector<HTMLElement>('[data-zoom-share-check]')!;
+  const overlay = document.querySelector<HTMLDialogElement>('[data-image-zoom]');
+  if (!overlay) throw new Error('Image zoom dialog is missing');
+  const backdrop = overlay.querySelector<HTMLButtonElement>('[data-zoom-backdrop]')!;
+  const viewport = overlay.querySelector<HTMLElement>('[data-zoom-viewport]')!;
+  const controls = overlay.querySelector<HTMLElement>('[data-zoom-controls]')!;
+  const metaLine = overlay.querySelector<HTMLElement>('[data-zoom-meta]')!;
+  const caption = overlay.querySelector<HTMLElement>('[data-zoom-caption]')!;
+  const detail = overlay.querySelector<HTMLElement>('[data-zoom-detail]')!;
+  const metaSeparator = overlay.querySelector<HTMLElement>('[data-zoom-meta-separator]')!;
+  const closeButton = overlay.querySelector<HTMLButtonElement>('[data-zoom-close]')!;
+  const previous = overlay.querySelector<HTMLButtonElement>('[data-zoom-previous]')!;
+  const next = overlay.querySelector<HTMLButtonElement>('[data-zoom-next]')!;
+  const counter = overlay.querySelector<HTMLElement>('[data-zoom-counter]')!;
+  const palette = overlay.querySelector<HTMLElement>('[data-zoom-palette]')!;
+  const shareButton = overlay.querySelector<HTMLButtonElement>('[data-zoom-share]')!;
+  const shareLinkIcon = overlay.querySelector<HTMLElement>('[data-zoom-share-link]')!;
+  const shareCheckIcon = overlay.querySelector<HTMLElement>('[data-zoom-share-check]')!;
+
+  const images = options.items.map((item, index) => {
+    const slide = document.createElement('div');
+    slide.className = 'image-zoom-slide';
+    slide.dataset.zoomIndex = String(index);
+    const image = document.createElement('img');
+    image.className = 'image-zoom-image';
+    image.alt = item.alt || '';
+    image.draggable = false;
+    if (item.width && item.height) {
+      image.width = item.width;
+      image.height = item.height;
+    }
+    slide.appendChild(image);
+    return { slide, image };
+  });
+  viewport.replaceChildren(...images.map(({ slide }) => slide));
 
   [previous, next, counter].forEach((element) => { element.hidden = !options.multi; });
   shareButton.hidden = !options.share;
 
+  overlay.classList.remove('image-zoom-overlay--closing-direct');
+  overlay.classList.toggle(
+    'image-zoom-overlay--has-meta',
+    options.items.some((item) => !!(item.title || item.meta)),
+  );
+  viewport.classList.remove('active');
+  controls.classList.remove('active');
   backdrop.classList.toggle('active', options.direct);
+  overlay.addEventListener('cancel', (event) => {
+    event.preventDefault();
+    options.onClose();
+  }, { signal: options.signal });
   overlay.addEventListener('click', options.onOverlayClick, { signal: options.signal });
   backdrop.addEventListener('click', (event) => {
     if (event.target !== backdrop) return;
@@ -94,10 +126,15 @@ export function createZoomView(options: ZoomViewOptions): ZoomView {
   if (options.share) bindClick(shareButton, options.onShare, options.signal);
   bindPalettePulse(palette, options.signal);
 
-  document.body.appendChild(fragment);
+  const { scrollX, scrollY } = window;
+  document.body.style.setProperty('--image-zoom-scroll-left', `${-scrollX}px`);
+  document.body.style.setProperty('--image-zoom-scroll-top', `${-scrollY}px`);
+  overlay.showModal();
   return {
     overlay,
     backdrop,
+    viewport,
+    images: images.map(({ image }) => image),
     controls,
     metaLine,
     closeButton,
@@ -111,13 +148,30 @@ export function createZoomView(options: ZoomViewOptions): ZoomView {
     caption,
     detail,
     metaSeparator,
+    scrollX,
+    scrollY,
   };
+}
+
+export function destroyZoomView(view: ZoomView) {
+  resetZoomShareFeedback(view);
+  view.viewport.classList.remove('active');
+  view.backdrop.classList.remove('active');
+  view.controls.classList.remove('active');
+  view.overlay.classList.remove(
+    'image-zoom-overlay--closing-direct',
+    'image-zoom-overlay--has-meta',
+  );
+  view.viewport.replaceChildren();
+  if (view.overlay.open) view.overlay.close();
+  document.body.style.removeProperty('--image-zoom-scroll-left');
+  document.body.style.removeProperty('--image-zoom-scroll-top');
+  window.scrollTo(view.scrollX, view.scrollY);
 }
 
 export function updateZoomMeta(view: ZoomView, item: ZoomGalleryItem) {
   const title = item.title || '';
   const detail = item.meta || '';
-  view.overlay.classList.toggle('image-zoom-overlay--has-meta', !!(title || detail));
   view.caption.textContent = title;
   view.caption.style.display = title ? '' : 'none';
   view.detail.textContent = detail;
