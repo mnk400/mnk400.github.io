@@ -15,14 +15,14 @@
     "@astrojs/sitemap": "^3.7.3",
     "@fontsource/inter": "^5.3.0",
     "@iconify-json/ph": "^1.2.2",
-    "astro": "^7.2.1",
-    "astro-icon": "^1.1.5",
+    "astro": "^7.2.4",
+    "astro-icon": "^1.2.0",
     "sass": "^1.102.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
-    "@cloudflare/workers-types": "^5.20260812.1",
-    "satori": "^0.29.0",
+    "@cloudflare/workers-types": "^5.20260819.1",
+    "satori": "^0.29.1",
     "sharp": "^0.35.3",
     "typescript": "^5.9.3"
   }
