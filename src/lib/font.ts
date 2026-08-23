@@ -15,7 +15,7 @@ export const fonts: Font[] = [
   {
     name: 'default',
     label: 'Default Font',
-    stack: '-apple-system, "SF Pro Display", "Inter", sans-serif',
+    stack: '-apple-system, BlinkMacSystemFont, system-ui, "Inter", sans-serif',
   },
   {
     name: 'source-serif',
