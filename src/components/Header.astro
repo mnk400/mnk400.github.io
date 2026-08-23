@@ -71,6 +71,19 @@ const titleCrumb = breadcrumbs.find((item) => item.current);
         </nav>
       )}
     </div>
+
+    {!isHome && (
+      <button
+        type="button"
+        class="breadcrumb-settings"
+        data-settings-trigger
+        aria-label="Settings"
+        aria-expanded="false"
+        aria-controls="settingsPanel"
+      >
+        <Icon name="dots-three" />
+      </button>
+    )}
   </div>
 </header>
 
@@ -83,15 +96,29 @@ const titleCrumb = breadcrumbs.find((item) => item.current);
   // to repeat, so its crumb just stays visible.
   function initTitleCollapse() {
     const root = document.documentElement;
-    root.classList.remove('is-title-collapsed');
+    root.classList.remove('is-title-collapsed', 'is-crumb-crowded');
 
     const crumb = document.querySelector('[data-breadcrumb-title]');
     if (!crumb) return;
 
+    const nav = document.querySelector('.header-breadcrumb');
+    const ink = document.querySelector('.breadcrumb-settings svg');
+    const clearance = parseFloat(getComputedStyle(root).getPropertyValue('--spacing-2xl'));
+
+    // Hide the glyph only when the collapsed title would actually reach it. The
+    // crumb holds its slot even while faded out, and its right edge clamps to
+    // the glyph once the title outgrows the row, so one gap covers both cases.
+    const measureCrowding = () => {
+      if (!nav || !ink) return;
+      const gap = ink.getBoundingClientRect().left - nav.getBoundingClientRect().right;
+      root.classList.toggle('is-crumb-crowded', gap < clearance);
+    };
+
     const heading = document.querySelector('[data-page-title]');
-    const header = document.querySelector('.header-breadcrumb')?.closest('header');
+    const header = nav?.closest('header');
     if (!heading || !header) {
       root.classList.add('is-title-collapsed');
+      measureCrowding();
       return;
     }
 
@@ -109,6 +136,7 @@ const titleCrumb = breadcrumbs.find((item) => item.current);
     const observe = () => {
       observer?.disconnect();
       const offset = Math.round(header.getBoundingClientRect().height + tailHeight());
+      measureCrowding();
       observer = new IntersectionObserver(
         ([entry]) => root.classList.toggle('is-title-collapsed', !entry.isIntersecting),
         { rootMargin: `-${offset}px 0px 0px 0px` },

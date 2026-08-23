@@ -14,8 +14,11 @@ header {
 // HEADER REVEAL PANELS (shared animation pattern)
 // =============================================================================
 
-// Base reveal animation — collapsed by default, slides down when .revealed
+// Base reveal animation — collapsed by default, slides down when .revealed.
+// --reveal-rise is how far the top edge travels against the bottom, which is
+// what makes opening read as a split rather than a push.
 .header-reveal {
+    --reveal-rise: calc(var(--spacing-2xl) * 0.6);
     order: -1;
     max-height: 0;
     overflow: hidden;
@@ -24,10 +27,11 @@ header {
         max-height var(--transition-slow),
         opacity var(--transition-slow),
         margin-top var(--transition-slow),
+        margin-bottom var(--transition-slow),
         padding-bottom var(--transition-slow);
 
     &.revealed {
-        margin-top: calc(var(--spacing-2xl) * -0.6);
+        margin-top: calc(var(--reveal-rise) * -1);
         max-height: 300px;
         padding-bottom: calc(var(--spacing-2xl) * 0.5);
         opacity: 1;
@@ -44,7 +48,7 @@ header {
     &.revealed {
         padding-top: var(--spacing-md);
         padding-bottom: var(--spacing-lg);
-        margin-top: calc(var(--spacing-2xl) * -0.6 - var(--spacing-md));
+        margin-top: calc(var(--reveal-rise) * -1 - var(--spacing-md));
     }
 
     .title-photo {
@@ -130,6 +134,19 @@ header:has(.header-breadcrumb) {
     .header-row {
         position: relative;
         margin-bottom: 0;
+    }
+
+    // Same rise as the homepage, taken from the other end: this header sits
+    // flush to the viewport top, so the panel rests pre-lowered and gives that
+    // back on open rather than pulling up into nothing.
+    .settings-panel {
+        margin-top: var(--reveal-rise);
+        margin-bottom: calc(var(--reveal-rise) * -1);
+
+        &.revealed {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
     }
 }
 
@@ -266,7 +283,9 @@ header:has(.header-breadcrumb) {
     }
 }
 
-.breadcrumb-back {
+// The row's two bookends: back nav at the leading edge, settings at the trailing.
+.breadcrumb-back,
+.breadcrumb-settings {
     @include button-as-text;
     font-size: 0.9em;
     font-weight: inherit !important; // override global `button { font-weight: 300 !important }`
@@ -320,6 +339,37 @@ header:has(.header-breadcrumb) {
 
 .breadcrumb-settings {
     color: var(--sec-text-color);
+    transition:
+        color var(--transition-medium),
+        opacity var(--transition-slow),
+        transform var(--transition-slow);
+
+    @include hover-interactive {
+        color: var(--text-color);
+    }
+
+    &[aria-expanded="true"] {
+        color: var(--text-color);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        transition:
+            color var(--transition-medium),
+            opacity var(--transition-fast);
+    }
+}
+
+// The glyph yields to the title crumb only when the two would collide
+// (is-crumb-crowded is measured in Header.astro). An open panel keeps its
+// trigger either way, otherwise scrolling strands the panel.
+:root.is-title-collapsed.is-crumb-crowded .breadcrumb-settings:not([aria-expanded="true"]) {
+    opacity: 0;
+    transform: translateY(calc(var(--motion-slide-offset) * -1));
+    pointer-events: none;
+
+    @media (prefers-reduced-motion: reduce) {
+        transform: none;
+    }
 }
 
 .breadcrumb-sep {
