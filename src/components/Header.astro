@@ -146,6 +146,22 @@ const titleCrumb = breadcrumbs.find((item) => item.current);
     '/assets/images/site/paws.jpg': '#734444',
   };
 
+  const TILT_MAGNITUDES = [2.0, 2.4, 2.7, 3.0];
+  let tiltBag: number[] = [];
+  let tiltSign = Math.random() < 0.5 ? 1 : -1;
+
+  function nextTilt() {
+    if (!tiltBag.length) {
+      tiltBag = TILT_MAGNITUDES.slice();
+      for (let i = tiltBag.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [tiltBag[i], tiltBag[j]] = [tiltBag[j], tiltBag[i]];
+      }
+    }
+    tiltSign = -tiltSign;
+    return tiltBag.pop()! * tiltSign;
+  }
+
   function triggerPhotoReveal(imagePath: string) {
     const container = document.getElementById('titlePhotoContainer');
     if (!container || isTransitioning) return;
@@ -158,9 +174,8 @@ const titleCrumb = breadcrumbs.find((item) => item.current);
     }
 
     const revealWithImage = () => {
-      // Quirky charm touch: land the photo at a random tilt each pop.
-      const tilt = (Math.random() * 8 - 4).toFixed(2);
-      img.style.setProperty('--photo-tilt', `${tilt}deg`);
+      // Quirky charm touch: land the photo at a fresh tilt each pop.
+      img.style.setProperty('--photo-tilt', `${nextTilt()}deg`);
       img.style.setProperty('--photo-outline', PHOTO_OUTLINES[imagePath] ?? 'var(--translucent-medium)');
       container.classList.add('revealed');
       photoRevealTimeout = window.setTimeout(() => {
