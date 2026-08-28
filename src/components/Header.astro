@@ -19,7 +19,9 @@ const titleCrumb = breadcrumbs.find((item) => item.current);
 ---
 <header>
   <div class="title-photo-container" id="titlePhotoContainer">
-    <img src="/assets/images/site/me.jpg" alt="Manik" class="title-photo" />
+    <div class="title-photo-wrap">
+      <img src="/assets/images/site/me.jpg" alt="Manik" class="title-photo" />
+    </div>
   </div>
 
   <SettingsPanel />
@@ -32,7 +34,6 @@ const titleCrumb = breadcrumbs.find((item) => item.current);
             <button
               type="button"
               class="site-name"
-              id="title-photo-trigger"
               data-site-name-trigger
             >Manik</button>
             <Charm type="flower" anchor="top-right" x="1.3em" y="-0.2em" rotate={-10} size={0.4} />
@@ -139,29 +140,6 @@ const titleCrumb = breadcrumbs.find((item) => item.current);
     hasClientRouteHistory = true;
   });
 
-  // Each reveal photo has its own hand-picked outline colour,
-  const PHOTO_OUTLINES: Record<string, string> = {
-    '/assets/images/site/me.jpg': '#c0ccc8',
-    '/assets/images/site/kindle.png': '#8b8c84',
-    '/assets/images/site/paws.jpg': '#734444',
-  };
-
-  const TILT_MAGNITUDES = [2.0, 2.4, 2.7, 3.0];
-  let tiltBag: number[] = [];
-  let tiltSign = Math.random() < 0.5 ? 1 : -1;
-
-  function nextTilt() {
-    if (!tiltBag.length) {
-      tiltBag = TILT_MAGNITUDES.slice();
-      for (let i = tiltBag.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [tiltBag[i], tiltBag[j]] = [tiltBag[j], tiltBag[i]];
-      }
-    }
-    tiltSign = -tiltSign;
-    return tiltBag.pop()! * tiltSign;
-  }
-
   function triggerPhotoReveal(imagePath: string) {
     const container = document.getElementById('titlePhotoContainer');
     if (!container || isTransitioning) return;
@@ -173,22 +151,15 @@ const titleCrumb = breadcrumbs.find((item) => item.current);
       photoRevealTimeout = null;
     }
 
-    const revealWithImage = () => {
-      // Quirky charm touch: land the photo at a fresh tilt each pop.
-      img.style.setProperty('--photo-tilt', `${nextTilt()}deg`);
-      img.style.setProperty('--photo-outline', PHOTO_OUTLINES[imagePath] ?? 'var(--translucent-medium)');
-      container.classList.add('revealed');
-      photoRevealTimeout = window.setTimeout(() => {
-        container.classList.remove('revealed');
-        photoRevealTimeout = null;
-      }, 2500);
-    };
-
     const preloadAndReveal = () => {
       const preloader = new Image();
       preloader.onload = () => {
         img.src = imagePath;
-        revealWithImage();
+        container.classList.add('revealed');
+        photoRevealTimeout = window.setTimeout(() => {
+          container.classList.remove('revealed');
+          photoRevealTimeout = null;
+        }, 2500);
         isTransitioning = false;
       };
       preloader.onerror = () => { isTransitioning = false; };
