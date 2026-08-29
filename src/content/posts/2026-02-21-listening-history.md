@@ -6,13 +6,13 @@ date: 2026-02-21
 readingTime: 10
 ---
 
-Sometime around 2016 I set up a [last.fm](https://www.last.fm/user/mnk_400) account, which I initially forgot about but have been tracking more closely in recent years. What I've never done is sit down and analyze how my taste has evolved. A decade later, I have around <span id="scrobble-count">xx,xxx</span> tracked plays and it felt like the right time to actually look at what all that data says.
+Sometime around 2016 I set up a [last.fm](https://www.last.fm/user/mnk_400) account, which I initially forgot about but have been tracking more closely in recent years. What I've never done is sit down and analyze how my taste has evolved. A decade later, I have around <span id="scrobble-count" data-scrobble-count>xx,xxx</span> tracked plays and it felt like the right time to actually look at what all that data says.
 
 This is less of a rigorous analysis and more of a personal dig through the numbers. what changed, what surprised me, and what I'd forgotten about entirely.
 
 <div class="lastfm-charts data-range">
   <span class="data-range__label">Show data through</span>
-  <div class="selection-switch" id="data-range-toggle" data-selection-switch>
+  <div class="selection-switch" id="data-range-toggle" data-selection-switch data-listening-range>
     <span id="written" class="switch-option active" data-value="written">Feb 2026</span>
     <span id="latest" class="switch-option" data-value="latest">Latest</span>
   </div>
@@ -26,15 +26,15 @@ Each line in the graph below tracks a genre's relative share of my total listeni
 
 To a complete non-surprise to me, one genre has been steadily climbing since 2018.
 
-<div class="lastfm-charts" id="genre-drift-chart">
+<div class="lastfm-charts" id="genre-drift-chart" data-genre-drift-chart>
   <div class="chart-controls">
-    <div class="selection-switch" id="genre-drift-resolution" data-selection-switch>
+    <div class="selection-switch" id="genre-drift-resolution" data-selection-switch data-genre-drift-resolution>
       <span id="quarterly" class="switch-option active" data-value="quarterly">Quarterly</span>
       <span id="monthly" class="switch-option" data-value="monthly">Monthly</span>
     </div>
   </div>
   <div class="chart-container">
-    <canvas></canvas>
+    <canvas role="img" aria-label="Line chart of each top genre's relative share of listening over time.">Genre listening share over time. Use the legend below to isolate a genre.</canvas>
   </div>
   <div class="chart-legend"></div>
 </div>
@@ -53,15 +53,15 @@ By 2025, indie alone accounts for over 40% of my listening. The stuff that grew 
 
 I've never cared much about how "obscure or mainstream" an artist is, but I figured I'd look anyway.
 
-<div class="lastfm-charts" id="tier-chart">
+<div class="lastfm-charts" id="tier-chart" data-tier-chart>
   <div class="chart-controls">
-    <div class="selection-switch" id="tier-resolution" data-selection-switch>
+    <div class="selection-switch" id="tier-resolution" data-selection-switch data-tier-resolution>
       <span id="tier-quarterly" class="switch-option active" data-value="quarterly">Quarterly</span>
       <span id="tier-monthly" class="switch-option" data-value="monthly">Monthly</span>
     </div>
   </div>
   <div class="chart-container">
-    <canvas></canvas>
+    <canvas role="img" aria-label="Stacked area chart of listening by artist-obscurity tier over time.">Listening share by artist-obscurity tier over time.</canvas>
   </div>
   <div class="chart-legend"></div>
 </div>
@@ -78,7 +78,7 @@ The interesting bit is that my peak obscurity was around 2020–2021, possibly a
 
 Not every artist sticks around forever. Here are the ones I listened to in bursts: heavy phases that eventually fizzled out.
 
-<div class="lastfm-charts" id="artist-lifecycle-chart">
+<div class="lastfm-charts" id="artist-lifecycle-chart" data-artist-lifecycle-chart>
   <div class="lifecycle-list"></div>
 </div>
 
@@ -94,15 +94,15 @@ If nothing else, this reminds me to listen to more Duster and underscores.
 
 Am I still discovering new music, or have I mostly settled into what I love?
 
-<div class="lastfm-charts" id="discovery-chart">
+<div class="lastfm-charts" id="discovery-chart" data-discovery-chart>
   <div class="chart-controls">
-    <div class="selection-switch" id="discovery-resolution" data-selection-switch>
+    <div class="selection-switch" id="discovery-resolution" data-selection-switch data-discovery-resolution>
       <span id="discovery-quarterly" class="switch-option active" data-value="quarterly">Quarterly</span>
       <span id="discovery-monthly" class="switch-option" data-value="monthly">Monthly</span>
     </div>
   </div>
   <div class="chart-container">
-    <canvas></canvas>
+    <canvas role="img" aria-label="Line chart of newly discovered artists over time.">Newly discovered artists over time.</canvas>
   </div>
 </div>
 
@@ -116,8 +116,8 @@ The most recent quarters are at their lowest point ever, which is a bit disappoi
 
 Lastly, I wanted to see how my listening patterns look throughout the day.
 
-<div class="lastfm-charts" id="day-in-music">
-  <div class="hourly-bars"></div>
+<div class="lastfm-charts" id="day-in-music" data-day-in-music>
+  <div class="hourly-bars" role="img" aria-label="Bar chart of total listening by hour of day."></div>
   <div class="hourly-labels"></div>
   <div class="time-blocks"></div>
 </div>
