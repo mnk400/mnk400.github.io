@@ -1,5 +1,40 @@
 ---
 ---
 <footer class="site-footer">
-  <span id="current-time-location"></span>
+  <div class="site-footer__row">
+    <span>seattle<span data-home-clock hidden> · <time data-local-time title="Local time in Seattle"></time></span></span>
+    <button type="button" class="site-footer__settings" data-settings-trigger aria-expanded="false" aria-controls="settingsPanel"><span class="settings-toggle-slot"><span class="settings-toggle-text">settings</span></span></button>
+  </div>
 </footer>
+
+<script>
+  import { untilSwap } from '../lib/lifecycle.ts';
+
+  function initLocalTime() {
+    const clock = document.querySelector<HTMLTimeElement>('[data-local-time]');
+    const clockGroup = document.querySelector<HTMLElement>('[data-home-clock]');
+    if (!clock || !clockGroup) return;
+
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+      timeZone: 'America/Los_Angeles',
+    });
+    let timeout: number;
+
+    const update = () => {
+      const now = new Date();
+      clock.textContent = formatter.format(now).toLowerCase();
+      clock.dateTime = now.toISOString();
+      clockGroup.hidden = false;
+      // Stay aligned with the actual minute, including after a sleeping tab resumes.
+      timeout = window.setTimeout(update, 60000 - (now.getTime() % 60000));
+    };
+
+    update();
+    untilSwap(() => window.clearTimeout(timeout));
+  }
+
+  document.addEventListener('astro:page-load', initLocalTime);
+</script>

@@ -8,7 +8,7 @@ const SWITCH_ID = 'fontSwitch';
 <SelectionSwitch id={SWITCH_ID} options={options} active={defaultFont} />
 
 <script>
-  import { setFont, applyFont, getActiveFont } from '../lib/font.ts';
+  import { setFont, getActiveFont } from '../lib/font.ts';
 
   function syncActive(switchEl: HTMLElement, value: string) {
     switchEl.querySelectorAll<HTMLElement>('.switch-option').forEach(opt => {
@@ -31,13 +31,5 @@ const SWITCH_ID = 'fontSwitch';
     });
   }
 
-  document.addEventListener('astro:before-swap', (e: Event) => {
-    const newDoc = (e as Event & { newDocument: Document }).newDocument;
-    applyFont(getActiveFont(), newDoc);
-  });
-
-  document.addEventListener('astro:page-load', () => {
-    applyFont(getActiveFont());
-    wire();
-  });
+  document.addEventListener('astro:page-load', wire);
 </script>

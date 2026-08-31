@@ -8,7 +8,7 @@ const SWITCH_ID = 'themeSwitch';
 <SelectionSwitch id={SWITCH_ID} options={options} active={defaultTheme} />
 
 <script>
-  import { setTheme, applyTheme, getActiveTheme } from '../lib/theme.ts';
+  import { setTheme, getActiveTheme } from '../lib/theme.ts';
 
   function syncActive(switchEl: HTMLElement, value: string) {
     switchEl.querySelectorAll<HTMLElement>('.switch-option').forEach(opt => {
@@ -31,16 +31,5 @@ const SWITCH_ID = 'themeSwitch';
     });
   }
 
-  // Apply theme to the incoming document before swap so the new page paints
-  // with the right colors immediately — no flash.
-  document.addEventListener('astro:before-swap', (e: Event) => {
-    const newDoc = (e as Event & { newDocument: Document }).newDocument;
-    applyTheme(getActiveTheme(), newDoc);
-  });
-
-  // Initial load + every client-side navigation.
-  document.addEventListener('astro:page-load', () => {
-    applyTheme(getActiveTheme());
-    wire();
-  });
+  document.addEventListener('astro:page-load', wire);
 </script>

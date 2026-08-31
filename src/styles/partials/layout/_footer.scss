@@ -1,13 +1,55 @@
+@use "../base/mixins" as *;
+
 // =============================================================================
 // SITE FOOTER
 // =============================================================================
 
 .site-footer {
-    text-align: center;
-    font-size: 0.8em;
-    color: var(--sec-text-color);
+    padding-top: var(--spacing-xs);
+
+    &__row {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: var(--spacing-lg);
+        font-size: 0.8em;
+        color: var(--sec-text-color);
+
+        time {
+            font-variant-numeric: tabular-nums;
+        }
+    }
+
+    &__settings {
+        @include button-as-text;
+        @include tap-target-expand;
+        font-weight: inherit !important;
+        color: inherit;
+        white-space: nowrap;
+
+        @media (any-hover: hover) {
+            &:hover {
+                text-decoration: underline;
+                text-decoration-color: var(--translucent-high);
+                text-underline-offset: 2px;
+            }
+        }
+    }
 }
 
-.footer-sep {
-    color: var(--sec-text-color);
+// Reserve the longer label's width when settings changes to close. The button
+// is the row's right-hand item, so the label hugs the right edge of that slot.
+.settings-toggle-slot {
+    display: inline-grid;
+    text-align: right;
+
+    .settings-toggle-text {
+        grid-area: 1 / 1;
+    }
+
+    &::after {
+        content: "settings";
+        visibility: hidden;
+        grid-area: 1 / 1;
+    }
 }

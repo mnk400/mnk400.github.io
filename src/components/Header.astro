@@ -43,8 +43,6 @@ const titleCrumb = breadcrumbs.find((item) => item.current);
             <a href="/photos/">photos</a>
             <a href="https://linkedin.com/in/manik-kumar" target="_blank">linkedin</a>
             <a href="mailto:me@manik.cc">email</a>
-            <span class="menu-sep">/</span>
-            <button type="button" class="menu-trigger" data-settings-trigger aria-expanded="false" aria-controls="settingsPanel"><span class="settings-toggle-slot"><span class="settings-toggle-text">settings</span></span></button>
           </div>
         </div>
       ) : (
@@ -238,32 +236,11 @@ const titleCrumb = breadcrumbs.find((item) => item.current);
       return;
     }
 
-    const settingsTrigger = target.closest<HTMLElement>('[data-settings-trigger]');
-    if (settingsTrigger) {
-      event.preventDefault();
-      document.dispatchEvent(new CustomEvent('settings:toggle'));
-      return;
-    }
-
     const backNav = target.closest<HTMLElement>('[data-back-nav]');
     if (backNav) {
       event.preventDefault();
       handleBackNavigation();
       return;
     }
-  });
-
-  // React to settings panel open/close to update the trigger link text and
-  // the site-name menu's open class. SettingsPanel owns its state; we react.
-  document.addEventListener('settings:state-changed', (e: Event) => {
-    const isOpen = (e as CustomEvent<{ isOpen: boolean }>).detail.isOpen;
-    const menu = document.getElementById('siteNameMenu');
-    if (menu) menu.classList.toggle('is-open', isOpen);
-    document.querySelectorAll('.settings-toggle-text').forEach(el => {
-      el.textContent = isOpen ? 'close' : 'settings';
-    });
-    document.querySelectorAll('[data-settings-trigger]').forEach(el => {
-      el.setAttribute('aria-expanded', String(isOpen));
-    });
   });
 </script>

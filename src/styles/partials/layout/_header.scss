@@ -198,8 +198,7 @@ header:has(.header-breadcrumb) {
     padding-top: var(--spacing-xs);
     color: var(--sec-text-color);
 
-    > a,
-    > .menu-trigger {
+    > a {
         text-decoration: none;
         color: var(--sec-text-color);
         transition:
@@ -213,30 +212,6 @@ header:has(.header-breadcrumb) {
             text-decoration-color: var(--translucent-high);
             text-underline-offset: 2px;
         }
-    }
-
-    > .menu-trigger {
-        @include button-as-text;
-        font-weight: inherit !important; // override global `button { font-weight: 300 !important }`
-    }
-}
-
-// The trigger label swaps between "settings" and "close",' reserve the width
-// of the longer word so the swap never shifts the row (zero-shift rule).
-// inline-grid overlays the live label and a hidden "settings" in one cell,
-// keeping the button at constant width without disturbing the baseline.
-.settings-toggle-slot {
-    display: inline-grid;
-    text-align: left;
-
-    .settings-toggle-text {
-        grid-area: 1 / 1;
-    }
-
-    &::after {
-        content: "settings";
-        visibility: hidden;
-        grid-area: 1 / 1;
     }
 }
 
