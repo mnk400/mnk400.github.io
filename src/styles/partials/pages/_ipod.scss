@@ -443,24 +443,3 @@
 .ytp-title {
     display: none;
 }
-
-// IE/Edge specific fixes
-_:-ms-lang(x),
-.ipod-device {
-    box-shadow: inset 5px -5px 25px 3px #99999950;
-}
-
-_:-ms-lang(x),
-.ipod-screen {
-    box-shadow: inset 0px 0px 20px 1px #59595950;
-}
-
-_:-ms-lang(x),
-.ipod-outer-ring {
-    box-shadow: inset 5px -5px 50px -7px #99999950;
-}
-
-_:-ms-lang(x),
-.ipod-touch-wheel {
-    box-shadow: 5px -5px 50px -7px #99999950;
-}
