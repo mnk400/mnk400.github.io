@@ -18,32 +18,84 @@
 .archive-index-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--spacing-lg) var(--spacing-lg);
+    gap: var(--spacing-xl) var(--spacing-lg);
     margin-top: var(--spacing-xl);
 }
 
 .archive-index-card {
     display: grid;
-    gap: var(--spacing-xs);
-    --reveal-card-ratio: 8 / 5;
-    --reveal-card-padding: var(--spacing-lg);
-    --reveal-card-meta-size: 0.82em;
-    --reveal-card-body-size: 0.88em;
+    gap: var(--spacing-sm);
+    align-content: start;
+    min-width: 0;
+    color: inherit;
+    text-decoration: none;
+
+    // These links wrap a whole block, so the global link hover (italic +
+    // underline) has to be stamped out; the plate's hairline carries it instead.
+    @include hover-interactive {
+        color: inherit;
+        font-style: normal;
+        text-decoration: none;
+
+        .archive-index-card__plate {
+            outline-color: var(--translucent-high);
+        }
+    }
+
+    &:focus-visible .archive-index-card__plate {
+        outline-color: var(--translucent-high);
+    }
+}
+
+.archive-index-card__plate {
+    position: relative;
+    display: block;
+    aspect-ratio: 8 / 5;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    background-color: var(--translucent-low);
+    @include soft-outline(var(--translucent-medium));
+    transition: outline-color var(--transition-medium);
+
+    img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        object-fit: cover;
+    }
+}
+
+// Frosted count on the plate. Built from background-main rather than a
+// translucent token so it stays readable over any image in any theme.
+.archive-index-card__count {
+    position: absolute;
+    inset: auto auto var(--spacing-sm) var(--spacing-sm);
+    padding: 3px var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    background-color: color-mix(in srgb, var(--background-main) 58%, transparent);
+    backdrop-filter: blur(20px);
+    color: var(--text-color);
+    font-size: 0.72em;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.35;
+    white-space: nowrap;
 }
 
 .archive-index-card__caption {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: var(--spacing-sm);
-    align-items: center;
-    min-height: 25px;
+    gap: var(--spacing-2xs);
+    min-width: 0;
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid var(--translucent-medium);
 }
 
 .archive-index-card__heading {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: var(--spacing-sm);
+    align-items: center;
 }
 
 .archive-index-card__title {
@@ -52,17 +104,7 @@
     color: var(--text-color);
     font-size: 0.95em;
     font-weight: 400;
-    line-height: 1.2;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.archive-index-card__sub {
-    min-width: 0;
-    overflow: hidden;
-    color: var(--sec-text-color);
-    font-size: 0.78em;
-    line-height: 1.2;
+    line-height: 1.3;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -74,27 +116,35 @@
     transition: none;
 }
 
-.archive-index-card.reveal-card {
-    .reveal-card__overlay {
-        justify-content: flex-end;
-        background-color: transparent;
-        background-image: linear-gradient(
-            to top,
-            rgba(0, 0, 0, 0.78) 0%,
-            rgba(0, 0, 0, 0.5) 40%,
-            rgba(0, 0, 0, 0) 80%
-        );
-    }
+.archive-index-card__sub {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--sec-text-color);
+    font-size: 0.78em;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.3;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
+.archive-index-card__body {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    // Chrome clips descenders against an overflow-hidden box; pad then negate.
+    padding-bottom: 0.2em;
+    margin-bottom: -0.2em;
+    color: var(--sec-text-color);
+    font-size: 0.8em;
+    line-height: 1.4;
+}
+
+// Mobile holds 2 columns. Full-width plates turn the 15-painter hub into
+// roughly 6000px of scroll for the same cards.
 @media screen and (max-width: $breakpoint-mobile) {
     .archive-index-grid {
-        grid-template-columns: 1fr;
-        gap: var(--spacing-lg);
-    }
-
-    .archive-index-card {
-        --reveal-card-ratio: 3 / 2;
+        gap: var(--spacing-lg) var(--spacing-md);
     }
 }
 
