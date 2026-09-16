@@ -67,16 +67,18 @@
     }
 }
 
-// Frosted count on the plate. Built from background-main rather than a
-// translucent token so it stays readable over any image in any theme.
+// Frosted count on the plate. Deliberately a fixed colour, not a theme token:
+// it sits on a painting, so image brightness decides legibility, not the theme.
+// A themed chip goes mid-grey whenever the two oppose — a dark theme's chip over
+// a bright painting, a light theme's over a dark one.
 .archive-index-card__count {
     position: absolute;
     inset: auto auto var(--spacing-sm) var(--spacing-sm);
     padding: 3px var(--spacing-sm);
     border-radius: var(--radius-sm);
-    background-color: color-mix(in srgb, var(--background-main) 58%, transparent);
+    background-color: rgba(0, 0, 0, 0.55);
     backdrop-filter: blur(20px);
-    color: var(--text-color);
+    color: rgba(255, 255, 255, 0.95);
     font-size: 0.72em;
     font-variant-numeric: tabular-nums;
     line-height: 1.35;
