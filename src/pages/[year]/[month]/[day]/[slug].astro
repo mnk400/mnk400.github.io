@@ -8,10 +8,11 @@ export async function getStaticPaths() {
       const match = post.id.match(/^(\d{4})-(\d{2})-(\d{2})-(.+)$/);
       if (!match) throw new Error(`Post id doesn't match YYYY-MM-DD-slug: ${post.id}`);
       const [, year, month, day, slug] = match;
-      return { post, params: { year, month, day, slug }, url: `/${year}/${month}/${day}/${slug}` };
+      // Same key as the home archive: a frontmatter date can differ from the filename's.
+      const date = post.data.date ?? new Date(`${year}-${month}-${day}T00:00:00Z`);
+      return { post, date, params: { year, month, day, slug }, url: `/${year}/${month}/${day}/${slug}` };
     })
-    // Newest first, same order as the home archive. Ids lead with the date.
-    .sort((a, b) => b.post.id.localeCompare(a.post.id));
+    .sort((a, b) => b.date.getTime() - a.date.getTime());
 
   const link = (entry?: (typeof posts)[number]) =>
     entry && { title: entry.post.data.title, url: entry.url };
