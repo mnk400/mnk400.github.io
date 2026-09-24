@@ -1,74 +1,76 @@
-@use "../base/variables" as *;
+@use "../base/mixins" as *;
 
 // =============================================================================
 // MORE — /more
 // =============================================================================
 //
-// A label-and-links index: each row is a category on the left and a comma-run of
-// entries on the right. Rows and items can be hidden by the page's filter, so
-// the separator commas are drawn with ::after and the last *visible* item gets
-// its comma suppressed by a class the filter maintains.
+// The index reads as prose: one sentence per group (templates live in
+// data/categories.ts), item names inline as links. Search fades everything but
+// the matches instead of hiding rows, so the paragraphs never lose their shape.
 
-.more-page {
+.more-prose {
+    // Chips and search fade what doesn't match; a chip is a deliberate "show me
+    // these", so it recedes the rest further than live search does.
+    --more-faded: color-mix(in srgb, var(--sec-text-color) 45%, transparent);
+    --more-dimmed: color-mix(in srgb, var(--sec-text-color) 22%, transparent);
+
     display: grid;
-    gap: var(--spacing-sm);
+    gap: var(--spacing-md);
     margin-top: var(--spacing-md);
+
+    p {
+        line-height: 1.7;
+    }
 }
 
-.more-section {
-    display: grid;
-    grid-template-columns: 130px minmax(0, 1fr);
-    gap: var(--spacing-lg);
-    align-items: baseline;
-    font-size: 11.5pt;
-    line-height: 25px;
+.more-prose__item,
+.more-prose__hub,
+.more-prose__more {
+    // A half step above the weight-200 copy: enough to find the names, quiet
+    // enough that a sentence full of them still reads as a sentence.
+    color: var(--text-color);
+    font-weight: 300;
+    line-height: inherit;
+    transition: color var(--transition-medium);
 }
 
-.more-section__label {
-    color: var(--sec-text-color);
-    font-size: 0.85em;
-    white-space: nowrap;
+.more-prose__more {
+    @include button-as-text;
+    color: var(--text-color);
+    transition: color var(--transition-medium);
+
+    // !important only to beat the global button rule's own !important, so the
+    // fold reads as one more link in the sentence.
+    @include hover-interactive {
+        color: var(--text-color);
+        text-decoration: underline !important;
+        text-decoration-color: var(--translucent-high);
+        text-underline-offset: 2px;
+        font-style: italic;
+    }
 }
 
-.more-section__label a {
-    color: inherit;
+// A chip dims every sentence outside its category; a query dims the prose and
+// every name that doesn't match. A match stays lit even in a dimmed sentence.
+.more-prose__sentence {
+    transition: color var(--transition-medium);
 }
 
-.more-section__path-sep {
-    opacity: 0.45;
-    margin: 0 4px;
+.more-prose.is-filtering .more-prose__sentence:not(.is-focus) {
+    &,
+    .more-prose__item:not(.is-match),
+    .more-prose__hub,
+    .more-prose__more {
+        color: var(--more-dimmed);
+    }
 }
 
-.more-section__links {
-    min-width: 0;
-}
-
-.more-section__item {
-    display: inline-flex;
-    align-items: baseline;
-}
-
-.more-section__item::after {
-    content: ",";
-    color: var(--sec-text-color);
-    opacity: 0.5;
-    margin-right: 2px;
-}
-
-.more-section__item.is-last-visible::after {
-    content: "";
-    margin-right: 0;
-}
-
-.more-section[hidden],
-.more-section__item[hidden] {
-    display: none;
-}
-
-@media screen and (max-width: 360px) {
-    .more-section {
-        grid-template-columns: 1fr;
-        gap: 0;
+.more-prose.is-searching {
+    .more-prose__sentence,
+    .more-prose__item:not(.is-match),
+    .more-prose__hub,
+    .more-prose__more {
+        color: var(--more-faded);
     }
 }
 
@@ -76,4 +78,67 @@
     color: var(--sec-text-color);
     font-size: 0.9em;
     margin-top: var(--spacing-md);
+}
+
+// The status note is a slip (see the mixin): hugs its content, quick in, soft
+// out, so a brief visit doesn't blink. Sticky, so it sits under the prose on a
+// short page and pins to the viewport bottom on a long one.
+.more-note {
+    position: sticky;
+    bottom: var(--spacing-xl);
+    z-index: var(--z-sticky);
+    display: grid;
+    gap: var(--spacing-2xs);
+    width: fit-content;
+    max-width: 80%;
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-sm) var(--spacing-md);
+    @include slip;
+    font-size: 0.85em;
+    line-height: 1.35;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(var(--motion-slide-offset));
+    transition:
+        opacity var(--transition-medium),
+        transform var(--transition-medium);
+
+    &.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+        transition:
+            opacity var(--transition-fast),
+            transform var(--transition-fast);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        transform: none;
+    }
+}
+
+.more-note__head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-sm);
+}
+
+.more-note__title {
+    color: var(--text-color);
+    font-weight: 400;
+}
+
+.more-note__group {
+    color: var(--sec-text-color);
+    font-size: 0.85em;
+    white-space: nowrap;
+}
+
+.more-note__body {
+    color: var(--sec-text-color);
+    font-weight: 200;
+    text-wrap: pretty;
+
+    &:empty {
+        display: none;
+    }
 }

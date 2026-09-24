@@ -2,19 +2,77 @@
 import Page from '../../layouts/Page.astro';
 import SearchPill from '../../components/SearchPill.astro';
 import SelectionSwitch from '../../components/SelectionSwitch.astro';
-import { getMoreCategory } from '../../data/categories.ts';
-import { getMoreGroups, getMoreRoots, getMoreSearchText } from '../../lib/more.ts';
+import { moreCategories, getMoreCategory } from '../../data/categories.ts';
+import { getMoreGroups, getMoreSearchText, type MoreGroup, type MoreItem } from '../../lib/more.ts';
 import Charm from '../../components/charms/Charm.astro';
 
-const groups = getMoreGroups();
-const roots = getMoreRoots();
+// Each group reads as one sentence (see `sentence` in categories.ts), grouped
+// into paragraphs. Long groups fold past `inlineLimit` into "and N more".
+type Part = { kind: 'text'; text: string } | { kind: 'hub'; text: string } | { kind: 'items' };
+
+interface Sentence {
+  group: MoreGroup;
+  parts: Part[];
+  shown: MoreItem[];
+  rest: MoreItem[];
+}
+
+const LEDE = "I make things when I'm bored, and this is where they end up.";
+const readingOrder: string[] = Object.keys(moreCategories);
+const rank = (path: string) => {
+  const index = readingOrder.indexOf(path);
+  return index < 0 ? readingOrder.length : index;
+};
+
+function parseSentence(template: string): Part[] {
+  return template
+    .split(/(\{items\}|\[[^\]]+\])/)
+    .filter(Boolean)
+    .map((chunk): Part => {
+      if (chunk === '{items}') return { kind: 'items' };
+      if (chunk.startsWith('[')) return { kind: 'hub', text: chunk.slice(1, -1) };
+      return { kind: 'text', text: chunk };
+    });
+}
+
+const paragraphs = new Map<number, Sentence[]>();
+const lastParagraph = Math.max(1, ...Object.values(moreCategories).map((c) => ('paragraph' in c ? c.paragraph : 1)));
+
+for (const group of [...getMoreGroups()].sort((a, b) => rank(a.path) - rank(b.path))) {
+  const category = getMoreCategory(group.path);
+  const limit = category?.inlineLimit ?? Infinity;
+  // Folding a single item into "and 1 more" hides it for no gain.
+  const fold = group.items.length > limit + 1;
+  const sentence: Sentence = {
+    group,
+    parts: parseSentence(category?.sentence ?? `[${group.label}]: {items}.`),
+    shown: fold ? group.items.slice(0, limit) : group.items,
+    rest: fold ? group.items.slice(limit) : [],
+  };
+  const paragraph = category?.paragraph ?? lastParagraph + 1;
+  paragraphs.set(paragraph, [...(paragraphs.get(paragraph) ?? []), sentence]);
+}
+
+const orderedParagraphs = [...paragraphs.entries()].sort(([a], [b]) => a - b).map(([, s]) => s);
+// Chips follow the order their sentences appear in, not the alphabet.
+const chipRoots = [...new Set(orderedParagraphs.flat().map(({ group }) => group.root))];
 const rootOptions = [
   { value: 'all', label: 'all' },
-  ...roots.map((root) => ({
-    value: root,
-    label: getMoreCategory(root)?.chip ?? root,
-  })),
+  ...chipRoots.map((root) => ({ value: root, label: getMoreCategory(root)?.chip ?? root })),
 ];
+const joiner = (index: number, count: number) => (index === 0 ? '' : index === count - 1 ? ' and ' : ', ');
+// Descriptions live in the hover note, which is aria-hidden, so screen readers
+// get them from the link itself.
+const itemAttrs = (item: MoreItem, group: MoreGroup) => ({
+  class: 'more-prose__item',
+  href: item.url,
+  'aria-description': item.description,
+  'data-more-item': '',
+  'data-more-search': getMoreSearchText(item, group),
+  'data-more-title': item.title,
+  'data-more-desc': item.description,
+  'data-more-group': group.chip,
+});
 ---
 <Page
   title="Cluster of Random Stuff"
@@ -22,10 +80,6 @@ const rootOptions = [
   titleGutter="4rem"
 >
   <Charm type="heart" slot="header-charm" anchor="top-right" x="-1em" y="0.4em" size={0.7} />
-
-  <p>
-    This page is an ongoing list of random things and projects.
-  </p>
 
   <div class="stack">
     <SearchPill
@@ -35,114 +89,182 @@ const rootOptions = [
       class="search-pill--small"
     />
 
-    <SelectionSwitch
-      id="more-chips"
-      options={rootOptions}
-      active="all"
-    />
+    <SelectionSwitch id="more-chips" options={rootOptions} active="all" />
   </div>
 
-  <div class="more-page">
-    {groups.map((group) => {
-      const groupSegments = group.path.split('/');
-      const rootCategory = getMoreCategory(group.root);
-      const rootLabel = rootCategory?.chip ?? group.root;
-
-      return (
-        <div class="more-section" data-more-category={group.root}>
-          <span class="more-section__label">
-            {groupSegments.length === 1 ? (
-              rootLabel
-            ) : (
-              <>
-                {group.rootHub ? (
-                  <a href={group.rootHub.url}>{rootLabel}</a>
-                ) : (
-                  <span>{rootLabel}</span>
-                )}
-                <span class="more-section__path-sep">/</span>
-                {group.hub ? (
-                  <a href={group.hub.url}>{group.chip}</a>
-                ) : (
-                  <span>{group.chip}</span>
-                )}
-              </>
-            )}
-          </span>
-          <span class="more-section__links">
-            {group.items.map((item) => {
-              const linkText = item.shortTitle ?? item.title;
-              const searchText = getMoreSearchText(item, group);
-
+  <div class="more-prose" data-more-prose>
+    {orderedParagraphs.map((sentences, paragraphIndex) => (
+      <p>
+        {paragraphIndex === 0 && <span class="more-prose__sentence">{`${LEDE} `}</span>}
+        {sentences.map(({ group, parts, shown, rest }, sentenceIndex) => (
+          <span class="more-prose__sentence" data-more-root={group.root}>
+            {/* Cloudflare strips whitespace-only text nodes; an encoded space survives. */}
+            {sentenceIndex > 0 && <Fragment set:html={'&#32;'} />}
+            {parts.map((part) => {
+              if (part.kind === 'text') return part.text.trim() ? part.text : <Fragment set:html={'&#32;'} />;
+              if (part.kind === 'hub') {
+                return group.hub
+                  ? <a class="more-prose__hub" href={group.hub.url}>{part.text}</a>
+                  : part.text;
+              }
               return (
-                <span class="more-section__item" data-more-search={searchText}>
-                  <a href={item.url} title={item.description}>{linkText}</a>
+                <span class="more-prose__list" data-more-list>
+                  {shown.map((item, index) => (
+                    <>
+                      {rest.length ? (index === 0 ? '' : ', ') : joiner(index, shown.length)}
+                      <a {...itemAttrs(item, group)}>{item.shortTitle ?? item.title}</a>
+                    </>
+                  ))}
+                  {rest.length > 0 && (
+                    <>
+                      <span class="more-prose__rest" data-more-rest hidden>
+                        {rest.map((item, index) => (
+                          <>
+                            {index === rest.length - 1 ? ' and ' : ', '}
+                            <a {...itemAttrs(item, group)}>{item.shortTitle ?? item.title}</a>
+                          </>
+                        ))}
+                      </span>
+                      <span class="more-prose__fold" data-more-fold>
+                        {' and '}
+                        <button
+                          type="button"
+                          class="more-prose__more"
+                          data-more-expand
+                          aria-label={`show ${rest.length} more ${group.label.toLowerCase()}`}
+                        >
+                          {`${rest.length} more`}
+                        </button>
+                      </span>
+                    </>
+                  )}
                 </span>
               );
             })}
           </span>
-        </div>
-      );
-    })}
+        ))}
+      </p>
+    ))}
   </div>
 
   <p class="more-empty" hidden>No matches.</p>
+
+  <div class="more-note" data-more-note aria-hidden="true">
+    <span class="more-note__head">
+      <span class="more-note__title" data-more-note-title></span>
+      <span class="more-note__group" data-more-note-group></span>
+    </span>
+    <span class="more-note__body" data-more-note-body></span>
+  </div>
 </Page>
 
 <script>
   function initMoreIndex() {
+    const prose = document.querySelector<HTMLElement>('[data-more-prose]');
     const search = document.getElementById('more-search');
     const chips = document.getElementById('more-chips');
-    const page = document.querySelector<HTMLElement>('.more-page');
     const empty = document.querySelector<HTMLElement>('.more-empty');
+    const note = document.querySelector<HTMLElement>('[data-more-note]');
+    if (!prose || prose.dataset.moreIndexInitialized === 'true') return;
+    prose.dataset.moreIndexInitialized = 'true';
 
-    if (!page || page.dataset.moreIndexInitialized === 'true') return;
-    page.dataset.moreIndexInitialized = 'true';
+    const items = Array.from(prose.querySelectorAll<HTMLElement>('[data-more-item]'));
+    const lists = Array.from(prose.querySelectorAll<HTMLElement>('[data-more-list]'));
 
-    const sections = Array.from(page.querySelectorAll<HTMLElement>('.more-section'));
-    let activeCategory = 'all';
+    const setExpanded = (list: HTMLElement, expanded: boolean) => {
+      const rest = list.querySelector<HTMLElement>('[data-more-rest]');
+      const fold = list.querySelector<HTMLElement>('[data-more-fold]');
+      if (!rest || !fold) return;
+      rest.hidden = !expanded;
+      fold.hidden = expanded;
+    };
+
+    // A fold the reader opened stays open; one opened by a search closes again
+    // once the query no longer needs it.
+    prose.addEventListener('click', (event) => {
+      const button = (event.target as HTMLElement).closest<HTMLElement>('[data-more-expand]');
+      const list = button?.closest<HTMLElement>('[data-more-list]');
+      if (!list) return;
+      list.dataset.userExpanded = 'true';
+      setExpanded(list, true);
+      list.querySelector<HTMLElement>('[data-more-rest] [data-more-item]')?.focus();
+    });
+
+    // Chips and search both highlight rather than hide. The chip sets the
+    // backdrop (its sentences stay lit, the rest dim); the query lights matching
+    // names anywhere, even inside a dimmed sentence.
+    const sentences = Array.from(prose.querySelectorAll<HTMLElement>('.more-prose__sentence'));
+    let activeRoot = 'all';
     let query = '';
 
-    function applyFilter() {
-      let visible = 0;
-
-      sections.forEach((section) => {
-        const matchesCategory =
-          activeCategory === 'all' ||
-          section.dataset.moreCategory === activeCategory;
-
-        const items = Array.from(section.querySelectorAll<HTMLElement>('.more-section__item'));
-        const visibleItems: HTMLElement[] = [];
-
-        items.forEach((item) => {
-          const matchesQuery = !query || (item.dataset.moreSearch ?? '').includes(query);
-          const show = matchesCategory && matchesQuery;
-          item.hidden = !show;
-          if (show) visibleItems.push(item);
-        });
-
-        items.forEach((item) => item.classList.remove('is-last-visible'));
-        visibleItems.at(-1)?.classList.add('is-last-visible');
-
-        const sectionVisible = visibleItems.length > 0;
-        section.hidden = !sectionVisible;
-        visible += visibleItems.length;
+    const apply = () => {
+      const inRoot = (el: HTMLElement) =>
+        activeRoot === 'all' || el.closest<HTMLElement>('[data-more-root]')?.dataset.moreRoot === activeRoot;
+      let matches = 0;
+      items.forEach((item) => {
+        const match = !!query && (item.dataset.moreSearch ?? '').includes(query);
+        item.classList.toggle('is-match', match);
+        if (match) matches += 1;
       });
-
-      if (empty) empty.hidden = visible !== 0;
-    }
+      sentences.forEach((sentence) => {
+        sentence.classList.toggle('is-focus', activeRoot !== 'all' && inRoot(sentence));
+      });
+      lists.forEach((list) => {
+        const needed =
+          (!!query && !!list.querySelector('[data-more-rest] .is-match')) ||
+          (activeRoot !== 'all' && inRoot(list));
+        setExpanded(list, needed || list.dataset.userExpanded === 'true');
+      });
+      prose.classList.toggle('is-searching', !!query);
+      prose.classList.toggle('is-filtering', activeRoot !== 'all');
+      if (empty) empty.hidden = !query || matches > 0;
+    };
 
     search?.addEventListener('search:change', (event) => {
-      query = event instanceof CustomEvent && event.detail?.query ? event.detail.query : '';
-      applyFilter();
+      query = event instanceof CustomEvent && event.detail?.query
+        ? String(event.detail.query).trim().toLowerCase()
+        : '';
+      apply();
     });
 
     chips?.addEventListener('change', (event) => {
-      activeCategory = event instanceof CustomEvent && event.detail?.value ? event.detail.value : 'all';
-      applyFilter();
+      activeRoot = event instanceof CustomEvent && event.detail?.value ? event.detail.value : 'all';
+      apply();
     });
 
-    applyFilter();
+    if (!note) return;
+    const title = note.querySelector<HTMLElement>('[data-more-note-title]');
+    const body = note.querySelector<HTMLElement>('[data-more-note-body]');
+    const group = note.querySelector<HTMLElement>('[data-more-note-group]');
+
+    // Leaving an item holds the note briefly, so sliding from one name to the
+    // next swaps its text in place instead of fading out and back in.
+    const HOLD_MS = 250;
+    let hideTimer: number | undefined;
+
+    const show = (target: EventTarget | null) => {
+      const item = (target as HTMLElement | null)?.closest<HTMLElement>('[data-more-item]');
+      if (!item || !title || !body || !group) return;
+      window.clearTimeout(hideTimer);
+      title.textContent = item.dataset.moreTitle ?? '';
+      body.textContent = item.dataset.moreDesc ?? '';
+      group.textContent = item.dataset.moreGroup ?? '';
+      note.classList.add('is-visible');
+    };
+    const hide = () => {
+      window.clearTimeout(hideTimer);
+      hideTimer = window.setTimeout(() => note.classList.remove('is-visible'), HOLD_MS);
+    };
+
+    prose.addEventListener('pointerover', (event) => {
+      if (event.pointerType === 'mouse') show(event.target);
+    });
+    prose.addEventListener('pointerout', (event) => {
+      const next = event.relatedTarget as HTMLElement | null;
+      if (!next?.closest('[data-more-item]')) hide();
+    });
+    prose.addEventListener('focusin', (event) => show(event.target));
+    prose.addEventListener('focusout', hide);
   }
 
   document.addEventListener('astro:page-load', initMoreIndex);

@@ -38,6 +38,13 @@
     outline: 1px solid var(--translucent-medium);
 }
 
+// Slip: the transient counterpart to translucent-surface. Page-coloured rather
+// than tinted, so a hover note reads as paper lifted over the page, not another
+// slab in it. See "Surfaces" in docs/style-dna.md.
+@mixin slip {
+    @include translucent-surface(color-mix(in srgb, var(--background-main) 85%, transparent));
+}
+
 @mixin soft-outline($color: var(--translucent-medium)) {
     outline: solid 1px $color;
 }

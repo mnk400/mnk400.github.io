@@ -22,6 +22,18 @@ A small, quiet, airy personal site: thin type on soft themed canvases, transluce
 - **Collapse/expand** = `expanding-collapsible` mixin (max-height + opacity + margins over `--transition-slow`).
 - **Easing** = `cubic-bezier(0.4, 0, 0.2, 1)` everywhere, durations only via `--transition-fast/medium/slow/backdrop/slowest`.
 - **Reduced motion** is honored: transforms removed, durations collapsed (see `_reveal.scss` pattern).
+- **Filters highlight, they don't hide** (on index pages written as prose, e.g. `/more`). Nothing is ever removed: a chip dims everything outside its category, search dims every name that doesn't match (across all categories, so a match stays lit even inside a dimmed sentence), both via a `color-mix` of `--sec-text-color`. A chip is a deliberate choice, so it fades harder (~22%) than live search does (~45%). The one layout change allowed is opening an "and N more" fold that holds what was asked for.
+
+## Surfaces
+
+Two kinds, and a surface belongs to exactly one:
+
+- **Tinted surfaces stay.** Cards, controls, the music widget row, dropdown panels: `translucent-surface` (a `--translucent-*` fill + blur + hairline). They sit *in* the page, often full width, and hold still.
+- **Slips come and go.** Anything that appears on hover/focus and leaves on its own (first use: the `/more` status note, `.more-note`). A slip is page-coloured, not tinted (the `slip` mixin: `--background-main` at 85% + blur + `--translucent-medium` hairline), so it reads as paper lifted *over* the page rather than another slab. Rules:
+    - Hugs its content (`width: fit-content`, capped below full width), never spans the column.
+    - Stacked type one step down: a title line at 400, detail below at 200 in `--sec-text-color`. No inline separators.
+    - Quick in, soft out: enters on `--transition-fast`, exits on `--transition-medium` after a short hold (~250ms), so moving between triggers swaps content in place instead of blinking.
+    - Never interactive (`pointer-events: none`). If it needs a click, it's a tinted surface.
 
 ## Token discipline
 

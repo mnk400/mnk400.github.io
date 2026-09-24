@@ -17,7 +17,6 @@ export interface MoreGroup {
   label: string;
   chip: string;
   sort: 'title' | 'order';
-  rootHub?: MoreItem;
   hub?: MoreItem;
   items: MoreItem[];
 }
@@ -53,10 +52,6 @@ export const moreItems: MoreItem[] = astroMoreItems
 const listedMoreItems = moreItems.filter((item) => item.listed);
 const moreLeafItems = listedMoreItems.filter((item) => !item.isHub && item.groupPath.length > 0);
 
-export function getMoreRoots(): string[] {
-  return Array.from(new Set(moreLeafItems.map((item) => item.root))).sort();
-}
-
 export function getMoreGroups(): MoreGroup[] {
   const hubsByUrl = new Map(
     listedMoreItems.filter((item) => item.isHub).map((item) => [item.url, item]),
@@ -85,7 +80,6 @@ export function getMoreGroups(): MoreGroup[] {
         label: groupCategory?.label ?? rootCategory?.label ?? groupSlug,
         chip: groupCategory?.chip ?? groupSlug,
         sort,
-        rootHub: hubsByUrl.get(`/${root}/`),
         hub: hubsByUrl.get(`/${path}/`),
         items: sortedItems,
       };
