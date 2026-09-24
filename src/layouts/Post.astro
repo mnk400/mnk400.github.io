@@ -4,7 +4,7 @@
 //
 // Everything shared with the rest of the site (shell, body copy, flow) comes
 // from Page.astro; this layout adds only what a *post* has that a page doesn't:
-// the byline, the end mark, and the schema.org Article type.
+// the byline, the end mark, older/newer links, and the schema.org Article type.
 import Page from './Page.astro';
 
 interface Props {
@@ -18,6 +18,13 @@ interface Props {
   styles?: string[];
   entity?: { type?: string; name?: string; same_as?: string[] };
   schemaType?: string;
+  newer?: PostLink;
+  older?: PostLink;
+}
+
+interface PostLink {
+  title: string;
+  url: string;
 }
 
 const {
@@ -31,6 +38,8 @@ const {
   styles,
   entity,
   schemaType,
+  newer,
+  older,
 } = Astro.props;
 
 // timeZone: 'UTC' so a frontmatter date like 2020-02-06 always displays as
@@ -65,5 +74,23 @@ const formatDate = (d: Date | string) =>
     </p>
   )}
   <slot />
-  <div class="post__end" aria-hidden="true" slot="body-end"></div>
+  <Fragment slot="body-end">
+    <div class="post__end" aria-hidden="true"></div>
+    {(older || newer) && (
+      <nav class="post-nav" aria-label="More posts">
+        {older && (
+          <a class="post-nav__link post-nav__link--older" href={older.url}>
+            <span class="post-nav__label">older</span>
+            <span class="post-nav__title">{older.title}</span>
+          </a>
+        )}
+        {newer && (
+          <a class="post-nav__link post-nav__link--newer" href={newer.url}>
+            <span class="post-nav__label">newer</span>
+            <span class="post-nav__title">{newer.title}</span>
+          </a>
+        )}
+      </nav>
+    )}
+  </Fragment>
 </Page>
