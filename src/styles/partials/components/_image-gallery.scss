@@ -89,8 +89,6 @@
 .image-card {
     break-inside: avoid;
     cursor: pointer;
-    opacity: 0;
-    transition: opacity var(--transition-slow);
     width: 100%;
     // Skip layout/paint for offscreen cards. Big galleries (Monet ~2k items)
     // froze Safari's VT snapshot for 1–2s; with this the browser only
@@ -98,18 +96,19 @@
     content-visibility: auto;
     contain-intrinsic-size: auto 0 auto 400px;
 
-    &.loaded {
-        opacity: 1;
-    }
-
     // Aspect-ratio skeleton, reserves height before image loads so the
     // masonry layout never reflows. The ratio is set inline as `aspect-ratio`
-    // from the manifest's width/height.
+    // from the manifest's width/height. The skeleton stays visible and only the
+    // image fades in; without a known ratio there's no honest shape to show.
     .image-ratio-box {
         width: 100%;
         background-color: var(--translucent-low);
         border-radius: var(--radius-md);
         overflow: hidden;
+
+        &[data-ratio-pending] {
+            background-color: transparent;
+        }
 
         img {
             width: 100%;
@@ -117,7 +116,13 @@
             display: block;
             object-fit: contain;
             border-radius: inherit;
+            opacity: 0;
+            transition: opacity var(--transition-slow);
         }
+    }
+
+    &.loaded .image-ratio-box img {
+        opacity: 1;
     }
 }
 
