@@ -41,7 +41,9 @@ Full-width controls sit at `--control-height-md`; compact inline controls at `--
 Small decorative corner pieces, that give an otherwise minimal page a little personality. They are the exception to "decoration is scarce," kept in line by discipline rather than banned.
 
 - **The `<Charm>` contract.** A charm absolutely pins to a corner of a `position: relative` host, then applies an outward `x`/`y` nudge + resting `rotate` all passed as props that become inline CSS custom properties. Content is an open slot (emoji, `<img>`, inline SVG, a text badge); the host owns placement, the slot owns look. `aria-hidden` + `pointer-events: none` by default; a charm opts back into pointer events when it wants its own hover
-- **Restraint is the rule.** Few per page, static at rest (no perpetual motion), living in margins/corners, never inside the reading column. Any motion is hover-only and rides the standard easing + `--transition-*`.
+- **Stickers, not ornaments.** A charm reads like a sticker pressed onto the page: it pins to a corner of a real host (page header, section card, gallery) and may hang past that host's edge, into the gutter or over the corner of an image. Header charms sit in the title gutter that `page__header--charmed` reserves.
+- **Never over words.** A charm may overlap imagery or surface chrome, never copy, a title, or a control's label. Overlap is only safe because charms don't take pointer events; one that opts back in must not sit over anything clickable.
+- **Restraint is the rule.** One decorative charm per page, plus the site-wide ones (header flower, count badges). Static at rest (no perpetual motion); any motion is hover-only and rides the standard easing + `--transition-*`.
 
 ## Tone
 
