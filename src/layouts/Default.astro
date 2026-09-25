@@ -4,7 +4,7 @@ import { site } from '../data/site.ts';
 import Header from '../components/Header.astro';
 import ImageZoomTemplate from '../components/ImageZoomTemplate.astro';
 import StructuredData from '../components/StructuredData.astro';
-import { themes, defaultTheme } from '../lib/theme.ts';
+import { themes, defaultTheme, themeAliases } from '../lib/theme.ts';
 import { fonts, defaultFont } from '../lib/font.ts';
 import { getBreadcrumbs } from '../lib/breadcrumbs.ts';
 import '../styles/inter.scss';
@@ -78,14 +78,15 @@ const ogTitle = title ? `${title} — Manik` : 'Manik';
     <!-- Pre-paint theme + font apply. Runs synchronously before CSS so the
          page never flashes the wrong palette. Data is sourced from the same
          lib modules the switcher components use, via define:vars. -->
-    <script is:inline define:vars={{ themes, defaultTheme, fonts, defaultFont }}>
+    <script is:inline define:vars={{ themes, defaultTheme, themeAliases, fonts, defaultFont }}>
       // @ts-nocheck -- variables in this pre-paint script are injected by Astro define:vars.
       (function () {
         var themeNames = themes.map(function (t) { return t.name; });
         var fontNames = fonts.map(function (f) { return f.name; });
 
-        var urlTheme = new URL(location.href).searchParams.get('theme');
-        var storedTheme = localStorage.getItem('theme');
+        function alias(name) { return (name && themeAliases[name]) || name; }
+        var urlTheme = alias(new URL(location.href).searchParams.get('theme'));
+        var storedTheme = alias(localStorage.getItem('theme'));
         var themeName =
           urlTheme && themeNames.indexOf(urlTheme) !== -1 ? urlTheme :
           storedTheme && themeNames.indexOf(storedTheme) !== -1 ? storedTheme :

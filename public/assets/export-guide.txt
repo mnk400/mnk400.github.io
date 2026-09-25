@@ -93,7 +93,7 @@ Set a theme with data-theme on the html element:
 
 Available themes:
 
-    linen, charcoal, denim, plum, moss, butter, espresso, blush, sky
+    linen, charcoal, denim, plum, moss, butter, espresso, petal, sky
 
 The default visual baseline is linen.
 
@@ -114,7 +114,7 @@ If your project wants persistent theme selection, own it locally:
 
     <script>
       (function () {
-        var themes = ['linen', 'charcoal', 'denim', 'plum', 'moss', 'butter', 'espresso', 'blush', 'sky'];
+        var themes = ['linen', 'charcoal', 'denim', 'plum', 'moss', 'butter', 'espresso', 'petal', 'sky'];
         var stored = localStorage.getItem('theme');
         var theme = themes.indexOf(stored) === -1 ? 'linen' : stored;
         document.documentElement.setAttribute('data-theme', theme);

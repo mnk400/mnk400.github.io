@@ -14,13 +14,21 @@ export const themes: Theme[] = [
   { name: 'plum',     label: 'Plum',     meta: '#2a1a1d' },
   { name: 'moss',     label: 'Moss',     meta: '#2a2f2a' },
   { name: 'butter',   label: 'Butter',   meta: '#F1D799' },
-  { name: 'blush',    label: 'Blush',    meta: '#f1d9d3' },
+  { name: 'petal',    label: 'Petal',    meta: '#efdadf' },
   { name: 'sky',      label: 'Sky',      meta: '#d9eaf8' },
   { name: 'espresso', label: 'Espresso', meta: '#1f1410' },
 ];
 
 export const defaultTheme = 'linen';
 export const themeNames = themes.map(t => t.name);
+
+// Renamed themes, so stored preferences and ?theme= links keep resolving.
+// Default.astro's pre-paint script applies the same map.
+export const themeAliases: Record<string, string> = { blush: 'petal' };
+
+function resolveAlias(name: string | null): string | null {
+  return name && (themeAliases[name] ?? name);
+}
 
 const STORAGE_KEY = 'theme';
 
@@ -31,9 +39,9 @@ function isValid(name: string | null): name is string {
 /** Reads the active theme from (URL ?theme=) → localStorage → default. */
 export function getActiveTheme(): string {
   if (typeof window === 'undefined') return defaultTheme;
-  const urlTheme = new URL(window.location.href).searchParams.get('theme');
+  const urlTheme = resolveAlias(new URL(window.location.href).searchParams.get('theme'));
   if (isValid(urlTheme)) return urlTheme;
-  const stored = window.localStorage.getItem(STORAGE_KEY);
+  const stored = resolveAlias(window.localStorage.getItem(STORAGE_KEY));
   if (isValid(stored)) return stored;
   return defaultTheme;
 }

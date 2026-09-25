@@ -10,7 +10,7 @@ A small, quiet, airy personal site: thin type on soft themed canvases, transluce
 
 - **Thin body type.** `body` and `p` are weight **200** (`_typography.scss`). Bold is 400, headings 500. Never bump body weight for "legibility."
 - **Small scale.** Body 11.5–12pt, headings top out at 16pt. Content column is **525px** (`$max-content-width`).
-- **Themed, not light/dark.** 9 palettes (`linen` default, denim, charcoal, plum, moss, butter, espresso, blush, sky) via `[data-theme]` on `:root` (`_variables.scss`). Nothing may assume a light or dark background — use tokens (`--text-color`, `--sec-text-color`, `--translucent-*`, `--contrast-overlay`), never hardcoded colors, so all 9 themes work.
+- **Themed, not light/dark.** 9 palettes (`linen` default, denim, charcoal, plum, moss, butter, espresso, petal, sky) via `[data-theme]` on `:root` (`_variables.scss`). Nothing may assume a light or dark background — use tokens (`--text-color`, `--sec-text-color`, `--translucent-*`, `--contrast-overlay`), never hardcoded colors, so all 9 themes work.
 - **Translucency for depth.** Surfaces are `--translucent-low/medium/high` + `backdrop-filter: blur(10px)` + a 1px `outline` hairline (`translucent-surface` / `soft-outline` mixins in `_mixins.scss`) — not opaque cards, not box-shadow-heavy elevation.
 - **User-switchable fonts.** `--font-family` and `--font-size-scale` are set pre-paint from localStorage (`Default.astro`). Never hardcode a font-family in page styles; use the token or the mixins.
 
