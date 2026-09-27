@@ -12,6 +12,7 @@ import {
   prefersReducedMotion,
   preloadImage,
   setFlipTransform,
+  setZoomRect,
   transitionDuration,
   upgradeImageSource,
   waitForAnimationFrame,
@@ -24,7 +25,7 @@ import {
   destroyZoomView,
   renderZoomSlides,
   resetZoomShareFeedback,
-  revealInPinnedPage,
+  revealInLockedPage,
   setZoomShareFeedback,
   updateZoomMeta,
   updateZoomNavigation,
@@ -77,6 +78,8 @@ interface ZoomSession {
   phase: ZoomPhase;
   view: ZoomView | null;
   clonedImage: HTMLImageElement | null;
+  // Set once the opening morph is running; cleared when it hands off.
+  openTimer: number | null;
   hiddenOrigin: HTMLElement | null;
   shareFeedbackTimer: number | null;
 }
@@ -280,6 +283,7 @@ function navigate(session: ZoomSession, direction: number) {
 function handleResize(session: ZoomSession) {
   requestSessionFrame(session, () => {
     if (activeSession !== session || !session.view) return;
+    retargetOpening(session);
     // Snapping back cancels any in-flight smooth scroll.
     session.navTarget = null;
     session.view.viewport.scrollLeft = session.currentIndex * zoomSlideWidth(session.view);
@@ -352,6 +356,7 @@ export async function openZoomGallery(
     phase: 'opening',
     view: null,
     clonedImage: null,
+    openTimer: null,
     hiddenOrigin: null,
     shareFeedbackTimer: null,
   };
@@ -362,7 +367,7 @@ export async function openZoomGallery(
     if (activeSession !== session) return false;
   }
 
-  const origin = session.directEntrance ? null : selected.element;
+  const origin = session.directEntrance ? null : selected.element ?? null;
   const originalRect = origin?.getBoundingClientRect();
   session.view = createZoomView({
     direct: session.directEntrance,
@@ -402,7 +407,7 @@ export async function openZoomGallery(
   void clone.offsetHeight;
   clone.style.transition = '';
   if (!await waitForSessionFrame(session)) return false;
-  hideOrigin(session, origin ?? null);
+  hideOrigin(session, origin);
 
   requestSessionFrame(session, () => {
     if (session.phase !== 'opening' || !session.view || !session.clonedImage) return;
@@ -411,17 +416,49 @@ export async function openZoomGallery(
     if (!session.directEntrance) session.clonedImage.style.transform = IDENTITY_TRANSFORM;
     session.clonedImage.classList.add('zoomed');
     (options.direct ? session.view.overlay : session.view.closeButton).focus({ preventScroll: true });
-    setSessionTimer(session, () => {
-      if (session.phase !== 'opening' || !session.view) return;
-      session.view.viewport.classList.add('active');
-      session.clonedImage?.remove();
-      session.clonedImage = null;
-      session.phase = 'open';
-      session.view.slides.forEach((_, index) => upgradeViewerImage(session, index));
-    }, transitionDuration());
+    scheduleFinishOpening(session);
   });
 
   return true;
+}
+
+function scheduleFinishOpening(session: ZoomSession) {
+  clearTimer(session.openTimer);
+  session.openTimer = setSessionTimer(session, () => finishOpening(session), transitionDuration());
+}
+
+function finishOpening(session: ZoomSession) {
+  if (session.phase !== 'opening' || !session.view) return;
+  session.openTimer = null;
+  session.view.viewport.classList.add('active');
+  session.clonedImage?.remove();
+  session.clonedImage = null;
+  session.phase = 'open';
+  session.view.slides.forEach((_, index) => upgradeViewerImage(session, index));
+}
+
+// A viewport resize mid-open (window resize, rotation) moves the viewer
+// image. Continue the morph from the clone's current spot to the new
+// one instead of jumping at the handoff.
+function retargetOpening(session: ZoomSession) {
+  const clone = session.clonedImage;
+  const item = currentItem(session);
+  const image = session.view?.slides.get(session.currentIndex);
+  if (session.phase !== 'opening' || !clone || !item || !image) return;
+  const target = getContainedImageRect(item, image);
+  const unchanged = (['top', 'left', 'width', 'height'] as const)
+    .every((side) => Math.abs(target[side] - parseFloat(clone.style[side])) < 1);
+  if (unchanged) return;
+  const box = clone.getBoundingClientRect();
+
+  clone.style.transition = 'none';
+  setZoomRect(clone, target);
+  if (!session.directEntrance) setFlipTransform(clone, target, box);
+  void clone.offsetHeight;
+  clone.style.transition = '';
+  if (session.openTimer === null) return; // not started: the start frame animates it
+  if (!session.directEntrance) clone.style.transform = IDENTITY_TRANSFORM;
+  scheduleFinishOpening(session);
 }
 
 export function openZoom(img: HTMLImageElement) {
@@ -504,7 +541,7 @@ async function closeSession(session: ZoomSession, options: CloseZoomOptions) {
 
   const origin = closeOrigin(session, selected);
   if (origin) {
-    await revealInPinnedPage(session.view, origin);
+    await revealInLockedPage(origin);
     await waitForOrigin(origin);
     if (activeSession !== session || !session.view) return;
     hideOrigin(session, origin);

@@ -21,8 +21,6 @@ export interface ZoomView {
   caption: HTMLElement;
   detail: HTMLElement;
   metaSeparator: HTMLElement;
-  scrollX: number;
-  scrollY: number;
 }
 
 interface ZoomViewOptions {
@@ -118,9 +116,6 @@ export function createZoomView(options: ZoomViewOptions): ZoomView {
   if (options.share) bindClick(shareButton, options.onShare, options.signal);
   bindPalettePulse(palette, options.signal);
 
-  const { scrollX, scrollY } = window;
-  document.body.style.setProperty('--image-zoom-scroll-left', `${-scrollX}px`);
-  document.body.style.setProperty('--image-zoom-scroll-top', `${-scrollY}px`);
   overlay.showModal();
   return {
     overlay,
@@ -141,8 +136,6 @@ export function createZoomView(options: ZoomViewOptions): ZoomView {
     caption,
     detail,
     metaSeparator,
-    scrollX,
-    scrollY,
   };
 }
 
@@ -189,22 +182,20 @@ export function zoomSlideWidth(view: ZoomView): number {
 
 const REVEAL_PASSES = 4;
 
-// The page is pinned under the dialog, so scrolling it means moving the pin;
-// destroyZoomView restores the window to the adjusted offset. Cards entering
+// Scrolls the locked page (programmatic scrolling still works). Cards entering
 // the viewport trade content-visibility placeholders for real heights a frame
-// later, so re-center until the element stops moving.
-export async function revealInPinnedPage(view: ZoomView, element: HTMLElement) {
+// later, and scroll anchoring adjusts for them, so re-center from the live
+// offset until the element stops moving.
+export async function revealInLockedPage(element: HTMLElement) {
   for (let pass = 0; pass < REVEAL_PASSES; pass += 1) {
     const rect = element.getBoundingClientRect();
     if (pass === 0 && rect.top >= 0 && rect.bottom <= window.innerHeight) return;
-    const centered = view.scrollY + rect.top - (window.innerHeight - rect.height) / 2;
-    // body.scrollHeight still measures the content while pinned (the root's
-    // collapses) and counts any gallery pages rendered for this close.
-    const limit = document.body.scrollHeight - window.innerHeight;
+    const centered = window.scrollY + rect.top - (window.innerHeight - rect.height) / 2;
+    // Read per pass: gallery pages rendered for this close grow the page.
+    const limit = document.documentElement.scrollHeight - window.innerHeight;
     const next = Math.round(Math.max(0, Math.min(centered, limit)));
-    if (Math.abs(next - view.scrollY) <= 1) return;
-    view.scrollY = next;
-    document.body.style.setProperty('--image-zoom-scroll-top', `${-next}px`);
+    if (Math.abs(next - window.scrollY) <= 1) return;
+    window.scrollTo({ top: next, behavior: 'instant' });
     // A rAF callback runs before that frame's layout; the next runs after it.
     await waitForAnimationFrame();
     await waitForAnimationFrame();
@@ -222,9 +213,6 @@ export function destroyZoomView(view: ZoomView) {
   );
   view.viewport.replaceChildren();
   if (view.overlay.open) view.overlay.close();
-  document.body.style.removeProperty('--image-zoom-scroll-left');
-  document.body.style.removeProperty('--image-zoom-scroll-top');
-  window.scrollTo(view.scrollX, view.scrollY);
 }
 
 export function updateZoomMeta(view: ZoomView, item: ZoomGalleryItem) {

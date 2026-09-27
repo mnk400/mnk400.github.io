@@ -411,11 +411,13 @@ rail never changes the image viewport's geometry during navigation. The image
 stage uses equal top and bottom insets, keeping every image vertically centered
 while the caption occupies the lower safe area.
 
-While the dialog is open, the component CSS fixes the body at custom-property
-offsets supplied by the runtime. Preserve the window offset before
-`showModal()`, then remove those offsets and restore the window position when
-the dialog closes. This prevents background scrolling without Chrome resetting
-the page to the top.
+While the dialog is open, the component CSS sets `overflow: hidden` on the
+root (`html:has(.image-zoom-overlay[open])`). That blocks background scrolling
+without changing the scroll offset, so nothing needs restoring on close and
+iOS Safari keeps a collapsed toolbar collapsed; pinning the body with
+`position: fixed` instead resets the offset and makes the toolbar re-expand.
+Programmatic scrolling still works while locked, so a runtime can bring the
+current item into view before its closing morph.
 
 The `.image-zoom-clone` is temporary. It morphs between a gallery thumbnail and
 the current `.image-zoom-image` only while the dialog opens or closes, then is

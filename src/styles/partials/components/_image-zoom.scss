@@ -4,11 +4,9 @@
 // IMAGE ZOOM
 // =============================================================================
 
-body:has(.image-zoom-overlay[open]) {
-    position: fixed;
-    top: var(--image-zoom-scroll-top);
-    left: var(--image-zoom-scroll-left);
-    width: 100%;
+// Lock the page without moving it. Pinning the body instead reset the root
+// scroll offset, which made iOS Safari re-expand a collapsed toolbar.
+html:has(.image-zoom-overlay[open]) {
     overflow: hidden;
 }
 
