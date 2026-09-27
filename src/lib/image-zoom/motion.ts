@@ -30,6 +30,17 @@ export function setZoomRect(element: HTMLElement, rect: ZoomRect) {
   element.style.height = `${rect.height}px`;
 }
 
+// Morphs animate `transform` only: the compositor scales one rasterized layer
+// instead of re-rasterizing (and re-decoding) the image at every frame's size.
+export const IDENTITY_TRANSFORM = 'translate(0px, 0px) scale(1, 1)';
+
+// Makes an element laid out at `box` appear at `rect`.
+export function setFlipTransform(element: HTMLElement, box: ZoomRect, rect: ZoomRect) {
+  element.style.transformOrigin = '0 0';
+  element.style.transform = `translate(${rect.left - box.left}px, ${rect.top - box.top}px) `
+    + `scale(${rect.width / box.width}, ${rect.height / box.height})`;
+}
+
 export async function preloadImage(src: string): Promise<void> {
   if (!src) return;
   const loader = new Image();

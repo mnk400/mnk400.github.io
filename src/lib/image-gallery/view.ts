@@ -248,10 +248,19 @@ export function createImageGalleryView(options: GalleryViewOptions) {
     get visibleItems() {
       return visibleItems;
     },
-    renderedImages: () => new Map(
-      [...grid.querySelectorAll<HTMLImageElement>('[data-gallery-item-id]')]
-        .map((image) => [image.dataset.galleryItemId!, image]),
-    ),
+    // The card for a visible item, rendering pages up to it if the viewer
+    // navigated past what infinite scroll has shown.
+    elementFor: (id: string): HTMLImageElement | null => {
+      const index = visibleItems.findIndex((item) => item.id === id);
+      if (index < 0 || !renderState) return null;
+      while (renderState.renderedCount <= index) {
+        appendPage(renderState, visibleItems, state.pageSize, renderOptions);
+      }
+      if (renderState.renderedCount >= visibleItems.length) stopPagination();
+      return grid.querySelector<HTMLImageElement>(
+        `[data-gallery-item-id="${CSS.escape(id)}"]`,
+      );
+    },
     zoomText: (item: GalleryItem) => ({
       title: formatFields(item, renderOptions.zoomTitleFields),
       meta: formatFields(item, renderOptions.zoomMetaFields),

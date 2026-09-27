@@ -33,7 +33,6 @@ function readConfig(root: GalleryRoot): ImageGalleryConfig | null {
 }
 
 function zoomItemsFor(items: GalleryItem[], view: ImageGalleryView): ZoomGalleryItem[] {
-  const renderedImages = view.renderedImages();
   return items.map((item) => ({
     id: item.id,
     thumbSrc: item.thumb,
@@ -42,7 +41,6 @@ function zoomItemsFor(items: GalleryItem[], view: ImageGalleryView): ZoomGallery
     ...view.zoomText(item),
     width: item.width,
     height: item.height,
-    element: renderedImages.get(item.id) || null,
   }));
 }
 
@@ -131,17 +129,20 @@ export async function loadImageGallery(root: GalleryRoot, config: ImageGalleryCo
 
     const openItem = async (
       id: string,
-      direct: boolean,
+      origin: HTMLImageElement | null,
       returnFocus: HTMLElement | null,
       navigationItems: GalleryItem[],
     ) => {
       const index = navigationItems.findIndex((item) => item.id === id);
       if (index < 0 || lightboxOpen || !view) return;
       lightboxOpen = true;
-      const opened = await openZoomGallery(zoomItemsFor(navigationItems, view), index, {
-        direct,
+      const zoomItems = zoomItemsFor(navigationItems, view);
+      zoomItems[index].element = origin;
+      const opened = await openZoomGallery(zoomItems, index, {
+        direct: !origin,
         share: true,
         returnFocus,
+        resolveElement: (item) => view?.elementFor(item.id) ?? null,
         onChange: (item) => imageRoute?.replace(item.id),
         onRequestClose: () => imageRoute?.requestClose() ?? false,
         onClosed: () => {
@@ -169,7 +170,7 @@ export async function loadImageGallery(root: GalleryRoot, config: ImageGalleryCo
         const navigationItems = view.visibleItems.some((item) => item.id === id)
           ? view.visibleItems
           : sortItems(items, state.sort);
-        await openItem(id, true, root, navigationItems);
+        await openItem(id, null, root, navigationItems);
       },
       close: () => closeZoom({ skipRequest: true }),
       setPending: setDeepLinkPending,
@@ -193,7 +194,7 @@ export async function loadImageGallery(root: GalleryRoot, config: ImageGalleryCo
       event.preventDefault();
       event.stopPropagation();
       imageRoute?.push(id);
-      void openItem(id, false, image, view.visibleItems);
+      void openItem(id, image, image, view.visibleItems);
     };
 
     root.addEventListener('click', onGalleryActivate, { signal });

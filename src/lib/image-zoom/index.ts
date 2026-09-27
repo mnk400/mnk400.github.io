@@ -1,15 +1,17 @@
 // Image Zoom — singleton viewer for standalone zoomable images and
-// data-backed galleries. Navigation is a native scrolling surface; temporary
-// clones exist only for the thumbnail-to-viewer opening and closing morphs.
+// data-backed galleries. Navigation is a native scrolling surface with only
+// the slides near the current one mounted; temporary clones exist only for
+// the thumbnail-to-viewer opening and closing morphs.
 
 import {
   createZoomImage,
   decodeImage,
   directCloseDuration,
   getContainedImageRect,
+  IDENTITY_TRANSFORM,
   prefersReducedMotion,
   preloadImage,
-  setZoomRect,
+  setFlipTransform,
   transitionDuration,
   upgradeImageSource,
   waitForAnimationFrame,
@@ -20,11 +22,14 @@ import { extractPalette, type PaletteColor } from '../color-palette.ts';
 import {
   createZoomView,
   destroyZoomView,
+  renderZoomSlides,
   resetZoomShareFeedback,
+  revealInPinnedPage,
   setZoomShareFeedback,
   updateZoomMeta,
   updateZoomNavigation,
   updateZoomPalette,
+  zoomSlideWidth,
   type ZoomView,
 } from './view.ts';
 
@@ -47,6 +52,9 @@ export interface ZoomGalleryOptions {
   onChange?: (item: ZoomGalleryItem, index: number) => void;
   onRequestClose?: () => boolean | void;
   onClosed?: () => void;
+  // Finds (or renders) the page image for an item the viewer navigated to,
+  // so closing can morph back into it.
+  resolveElement?: (item: ZoomGalleryItem, index: number) => HTMLImageElement | null;
 }
 
 interface CloseZoomOptions {
@@ -60,17 +68,24 @@ interface ZoomSession {
   controller: AbortController;
   items: ZoomGalleryItem[];
   currentIndex: number;
+  // Where keyboard/button navigation is headed while its smooth scroll runs,
+  // so repeated presses step from the destination, not mid-animation.
+  navTarget: number | null;
   options: ZoomGalleryOptions;
   directEntrance: boolean;
   previousFocus: HTMLElement | null;
   phase: ZoomPhase;
   view: ZoomView | null;
   clonedImage: HTMLImageElement | null;
+  hiddenOrigin: HTMLElement | null;
   shareFeedbackTimer: number | null;
 }
 
 let activeSession: ZoomSession | null = null;
 
+// Slides mounted (and loaded) on each side of the current one.
+const SLIDE_RADIUS = 1;
+const ORIGIN_LOAD_WAIT = 400;
 const PALETTE_DOTS = 4;
 const PALETTE_SAMPLE_SIZE = 64;
 const PALETTE_CACHE_LIMIT = 120;
@@ -161,40 +176,70 @@ async function loadViewerImage(
   index: number,
 ): Promise<HTMLImageElement | null> {
   const item = session.items[index];
-  const image = session.view?.images[index];
+  const image = session.view?.slides.get(index);
   if (!item || !image) return null;
 
   if (!image.getAttribute('src')) {
     allowPixelReads(image, item.thumbSrc);
     image.src = item.thumbSrc;
+    await decodeImage(image);
+    upgradeViewerImage(session, index);
+  } else if (!image.complete || image.naturalWidth === 0) {
+    // Loaded images skip decode(): on an upgraded original it re-decodes,
+    // which can take seconds.
+    await decodeImage(image);
   }
-  await decodeImage(image);
-  if (activeSession !== session) return null;
-  upgradeImageSource(image, item, () => activeSession === session && image.hasAttribute('src'));
-  return image;
+  return activeSession === session && image.isConnected ? image : null;
 }
 
-function loadAround(session: ZoomSession, index: number) {
-  session.view?.images.forEach((image, itemIndex) => {
-    if (Math.abs(itemIndex - index) <= 1) void loadViewerImage(session, itemIndex);
-    else image.removeAttribute('src');
+// Swaps a mounted slide to its full-size source, but only once the opening
+// morph has ended: decoding a large original mid-animation stutters it.
+function upgradeViewerImage(session: ZoomSession, index: number) {
+  const item = session.items[index];
+  const image = session.view?.slides.get(index);
+  if (activeSession !== session || !item || !image || session.phase !== 'open') return;
+  if ('zoomUpgrade' in image.dataset) return;
+  image.dataset.zoomUpgrade = '';
+  upgradeImageSource(image, item, () => activeSession === session && image.isConnected);
+}
+
+function syncSlides(session: ZoomSession) {
+  if (!session.view) return;
+  const current = session.currentIndex;
+  const target = session.navTarget ?? current;
+  // Mount around the current slide and the destination only. A smooth scroll
+  // crosses unmounted slides, and the scroll handler mounts them as it passes.
+  const indices = new Set<number>();
+  for (let offset = -SLIDE_RADIUS; offset <= SLIDE_RADIUS; offset += 1) {
+    indices.add(current + offset);
+    indices.add(target + offset);
+  }
+  renderZoomSlides(session.view, indices);
+  session.view.slides.forEach((_, index) => {
+    if (Math.abs(index - current) <= SLIDE_RADIUS || index === target) {
+      void loadViewerImage(session, index);
+    }
   });
+}
+
+function hideOrigin(session: ZoomSession, element: HTMLElement | null) {
+  if (session.hiddenOrigin === element) return;
+  if (session.hiddenOrigin) session.hiddenOrigin.style.visibility = '';
+  session.hiddenOrigin = element;
+  if (element) element.style.visibility = 'hidden';
 }
 
 function setCurrentIndex(session: ZoomSession, index: number, notify = true) {
   const safeIndex = Math.max(0, Math.min(index, session.items.length - 1));
   if (safeIndex === session.currentIndex) return;
-  const previous = currentItem(session);
-  if (previous?.element?.isConnected) previous.element.style.visibility = '';
-
   session.currentIndex = safeIndex;
+  if (session.navTarget === safeIndex) session.navTarget = null;
   const item = currentItem(session);
   if (!item || !session.view) return;
-  if (item.element?.isConnected) item.element.style.visibility = 'hidden';
   updateZoomNavigation(session.view, safeIndex, session.items.length);
   updateZoomMeta(session.view, item);
   resetZoomShareFeedback(session.view);
-  loadAround(session, safeIndex);
+  syncSlides(session);
   void loadViewerImage(session, safeIndex).then((image) => {
     if (image && activeSession === session && session.currentIndex === safeIndex && session.view) {
       updateZoomPalette(session.view, paletteForImage(item, image));
@@ -204,11 +249,12 @@ function setCurrentIndex(session: ZoomSession, index: number, notify = true) {
 }
 
 function nearestScrollIndex(session: ZoomSession): number {
-  const viewport = session.view?.viewport;
-  if (!viewport || viewport.clientWidth === 0) return session.currentIndex;
+  if (!session.view) return session.currentIndex;
+  const width = zoomSlideWidth(session.view);
+  if (width === 0) return session.currentIndex;
   return Math.max(
     0,
-    Math.min(Math.round(viewport.scrollLeft / viewport.clientWidth), session.items.length - 1),
+    Math.min(Math.round(session.view.viewport.scrollLeft / width), session.items.length - 1),
   );
 }
 
@@ -217,25 +263,26 @@ function handleScroll(session: ZoomSession) {
   setCurrentIndex(session, nearestScrollIndex(session));
 }
 
-function scrollToIndex(session: ZoomSession, index: number) {
-  const viewport = session.view?.viewport;
-  if (!viewport) return;
-  const safeIndex = Math.max(0, Math.min(index, session.items.length - 1));
-  viewport.scrollTo({
-    left: safeIndex * viewport.clientWidth,
+function navigate(session: ZoomSession, direction: number) {
+  if (activeSession !== session || session.phase !== 'open' || !session.view) return;
+  const from = session.navTarget ?? nearestScrollIndex(session);
+  const target = Math.max(0, Math.min(from + direction, session.items.length - 1));
+  session.navTarget = target === session.currentIndex ? null : target;
+  // Mount the destination first: a programmatic scroll only snaps to slides
+  // that exist when it starts.
+  syncSlides(session);
+  session.view.viewport.scrollTo({
+    left: target * zoomSlideWidth(session.view),
     behavior: prefersReducedMotion() ? 'auto' : 'smooth',
   });
-}
-
-function navigate(session: ZoomSession, direction: number) {
-  if (activeSession !== session || session.phase !== 'open') return;
-  scrollToIndex(session, nearestScrollIndex(session) + direction);
 }
 
 function handleResize(session: ZoomSession) {
   requestSessionFrame(session, () => {
     if (activeSession !== session || !session.view) return;
-    session.view.viewport.scrollLeft = session.currentIndex * session.view.viewport.clientWidth;
+    // Snapping back cancels any in-flight smooth scroll.
+    session.navTarget = null;
+    session.view.viewport.scrollLeft = session.currentIndex * zoomSlideWidth(session.view);
   });
 }
 
@@ -244,7 +291,7 @@ function handleOverlayClick(session: ZoomSession, event: MouseEvent) {
   const slide = (event.target as Element | null)?.closest<HTMLElement>('.image-zoom-slide');
   if (Number(slide?.dataset.zoomIndex) !== session.currentIndex) return;
   const item = currentItem(session);
-  const image = session.view.images[session.currentIndex];
+  const image = session.view.slides.get(session.currentIndex);
   if (!item || !image) return;
   const rect = getContainedImageRect(item, image);
   const outsideImage = event.clientX < rect.left || event.clientX > rect.left + rect.width
@@ -277,6 +324,11 @@ function attachInteractionListeners(session: ZoomSession) {
     signal,
   });
   window.addEventListener('resize', () => handleResize(session), { signal });
+  // Direct input takes over from any pending button/keyboard destination.
+  const dropNavTarget = () => { session.navTarget = null; };
+  ['pointerdown', 'wheel', 'touchstart'].forEach((type) => {
+    session.view!.viewport.addEventListener(type, dropNavTarget, { passive: true, signal });
+  });
 }
 
 export async function openZoomGallery(
@@ -293,12 +345,14 @@ export async function openZoomGallery(
     controller: new AbortController(),
     items: galleryItems,
     currentIndex: safeIndex,
+    navTarget: null,
     options,
     directEntrance: options.direct === true || !selected.element?.isConnected,
     previousFocus: options.returnFocus || document.activeElement as HTMLElement | null,
     phase: 'opening',
     view: null,
     clonedImage: null,
+    hiddenOrigin: null,
     shareFeedbackTimer: null,
   };
   activeSession = session;
@@ -324,36 +378,37 @@ export async function openZoomGallery(
     onShare: () => void copyCurrentLink(session),
   });
   attachInteractionListeners(session);
-  session.view.viewport.scrollLeft = safeIndex * session.view.viewport.clientWidth;
+  syncSlides(session);
+  session.view.viewport.scrollLeft = safeIndex * zoomSlideWidth(session.view);
 
   const viewerImage = await loadViewerImage(session, safeIndex);
   if (!viewerImage || activeSession !== session || !session.view) return false;
-  loadAround(session, safeIndex);
 
-  const clone = await createClone(session, selected, originalRect);
+  // Laid out at its final rect and transformed back onto the thumbnail.
+  const target = getContainedImageRect(selected, viewerImage);
+  const clone = await createClone(session, selected, target);
   if (!clone || activeSession !== session || !session.view) return false;
   session.clonedImage = clone;
   updateZoomPalette(session.view, paletteForImage(selected, clone));
   updateZoomNavigation(session.view, safeIndex, session.items.length);
   updateZoomMeta(session.view, selected);
-  upgradeImageSource(clone, selected, () => activeSession === session);
-  const target = getContainedImageRect(selected, viewerImage);
 
-  if (session.directEntrance) {
-    setZoomRect(clone, target);
+  if (session.directEntrance || !originalRect) {
     clone.classList.add('image-zoom-clone--direct');
+  } else {
+    setFlipTransform(clone, target, originalRect);
   }
 
   void clone.offsetHeight;
   clone.style.transition = '';
   if (!await waitForSessionFrame(session)) return false;
-  if (origin) origin.style.visibility = 'hidden';
+  hideOrigin(session, origin ?? null);
 
   requestSessionFrame(session, () => {
     if (session.phase !== 'opening' || !session.view || !session.clonedImage) return;
     session.view.backdrop.classList.add('active');
     session.view.controls.classList.add('active');
-    setZoomRect(session.clonedImage, target);
+    if (!session.directEntrance) session.clonedImage.style.transform = IDENTITY_TRANSFORM;
     session.clonedImage.classList.add('zoomed');
     (options.direct ? session.view.overlay : session.view.closeButton).focus({ preventScroll: true });
     setSessionTimer(session, () => {
@@ -362,6 +417,7 @@ export async function openZoomGallery(
       session.clonedImage?.remove();
       session.clonedImage = null;
       session.phase = 'open';
+      session.view.slides.forEach((_, index) => upgradeViewerImage(session, index));
     }, transitionDuration());
   });
 
@@ -378,17 +434,35 @@ function finishClose(session: ZoomSession) {
   if (activeSession !== session) return;
   activeSession = null;
   clearTimer(session.shareFeedbackTimer);
-  session.items.forEach((item) => {
-    if (item.element?.isConnected) item.element.style.visibility = '';
-  });
+  const origin = session.hiddenOrigin?.isConnected ? session.hiddenOrigin : null;
+  hideOrigin(session, null);
   session.controller.abort();
   session.clonedImage?.remove();
   if (session.view) destroyZoomView(session.view);
 
-  const focusTarget = session.options.returnFocus || session.previousFocus;
+  const focusTarget = origin || session.options.returnFocus || session.previousFocus;
   const onClosed = session.options.onClosed;
   if (focusTarget?.isConnected) focusTarget.focus({ preventScroll: true });
   onClosed?.();
+}
+
+function closeOrigin(session: ZoomSession, item: ZoomGalleryItem): HTMLImageElement | null {
+  if (session.directEntrance) return null;
+  const element = item.element?.isConnected
+    ? item.element
+    : session.options.resolveElement?.(item, session.currentIndex);
+  return element?.isConnected ? element : null;
+}
+
+// A card rendered for this close may not have loaded its thumbnail yet; give
+// it a moment so the morph doesn't land on an empty skeleton.
+async function waitForOrigin(image: HTMLImageElement) {
+  if (image.complete && image.naturalWidth > 0) return;
+  image.loading = 'eager';
+  await Promise.race([
+    decodeImage(image),
+    new Promise((resolve) => window.setTimeout(resolve, ORIGIN_LOAD_WAIT)),
+  ]);
 }
 
 async function closeSession(session: ZoomSession, options: CloseZoomOptions) {
@@ -413,17 +487,14 @@ async function closeSession(session: ZoomSession, options: CloseZoomOptions) {
     return;
   }
 
-  const cloneItem = {
-    ...selected,
-    thumbSrc: viewerImage.currentSrc || selected.thumbSrc,
-    fullSrc: undefined,
-  };
-  const clone = await createClone(
-    session,
-    cloneItem,
-    getContainedImageRect(selected, viewerImage),
-  );
+  // The thumbnail, not the upgraded original: the clone shrinks away at once,
+  // and decoding a large original first would stall the close.
+  const cloneItem = { ...selected, fullSrc: undefined };
+  const cloneBox = getContainedImageRect(selected, viewerImage);
+  const clone = await createClone(session, cloneItem, cloneBox);
   if (!clone || activeSession !== session || !session.view) return;
+  // Closing mid-open: the opening clone is still mounted.
+  session.clonedImage?.remove();
   session.clonedImage = clone;
   clone.classList.add('zoomed');
   session.view.viewport.classList.remove('active');
@@ -431,12 +502,13 @@ async function closeSession(session: ZoomSession, options: CloseZoomOptions) {
   clone.style.transition = '';
   if (!await waitForSessionFrame(session) || !session.view) return;
 
-  const origin = !session.directEntrance && selected.element?.isConnected
-    ? selected.element
-    : null;
+  const origin = closeOrigin(session, selected);
   if (origin) {
-    origin.scrollIntoView({ block: 'nearest', behavior: 'instant' as ScrollBehavior });
-    setZoomRect(clone, origin.getBoundingClientRect());
+    await revealInPinnedPage(session.view, origin);
+    await waitForOrigin(origin);
+    if (activeSession !== session || !session.view) return;
+    hideOrigin(session, origin);
+    setFlipTransform(clone, cloneBox, origin.getBoundingClientRect());
     clone.classList.remove('zoomed');
     session.view.backdrop.classList.remove('active');
     session.view.controls.classList.remove('active');

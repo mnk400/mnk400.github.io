@@ -1,11 +1,13 @@
 import type { PaletteColor } from '../color-palette.ts';
+import { waitForAnimationFrame } from './motion.ts';
 import type { ZoomGalleryItem } from './index.ts';
 
 export interface ZoomView {
   overlay: HTMLDialogElement;
   backdrop: HTMLButtonElement;
   viewport: HTMLElement;
-  images: HTMLImageElement[];
+  items: ZoomGalleryItem[];
+  slides: Map<number, HTMLImageElement>;
   controls: HTMLElement;
   metaLine: HTMLElement;
   closeButton: HTMLButtonElement;
@@ -79,22 +81,12 @@ export function createZoomView(options: ZoomViewOptions): ZoomView {
   const shareLinkIcon = overlay.querySelector<HTMLElement>('[data-zoom-share-link]')!;
   const shareCheckIcon = overlay.querySelector<HTMLElement>('[data-zoom-share-check]')!;
 
-  const images = options.items.map((item, index) => {
-    const slide = document.createElement('div');
-    slide.className = 'image-zoom-slide';
-    slide.dataset.zoomIndex = String(index);
-    const image = document.createElement('img');
-    image.className = 'image-zoom-image';
-    image.alt = item.alt || '';
-    image.draggable = false;
-    if (item.width && item.height) {
-      image.width = item.width;
-      image.height = item.height;
-    }
-    slide.appendChild(image);
-    return { slide, image };
-  });
-  viewport.replaceChildren(...images.map(({ slide }) => slide));
+  // Slides are mounted on demand by renderZoomSlides; the spacer alone
+  // gives the strip its full scroll width.
+  const spacer = document.createElement('div');
+  spacer.className = 'image-zoom-spacer';
+  spacer.style.setProperty('--zoom-count', String(options.items.length));
+  viewport.replaceChildren(spacer);
 
   [previous, next, counter].forEach((element) => { element.hidden = !options.multi; });
   shareButton.hidden = !options.share;
@@ -134,7 +126,8 @@ export function createZoomView(options: ZoomViewOptions): ZoomView {
     overlay,
     backdrop,
     viewport,
-    images: images.map(({ image }) => image),
+    items: options.items,
+    slides: new Map(),
     controls,
     metaLine,
     closeButton,
@@ -151,6 +144,71 @@ export function createZoomView(options: ZoomViewOptions): ZoomView {
     scrollX,
     scrollY,
   };
+}
+
+function createSlide(view: ZoomView, index: number): HTMLImageElement {
+  const item = view.items[index];
+  const slide = document.createElement('div');
+  slide.className = 'image-zoom-slide';
+  slide.dataset.zoomIndex = String(index);
+  slide.style.setProperty('--zoom-index', String(index));
+  const image = document.createElement('img');
+  image.className = 'image-zoom-image';
+  image.alt = item.alt || '';
+  image.draggable = false;
+  if (item.width && item.height) {
+    image.width = item.width;
+    image.height = item.height;
+  }
+  slide.appendChild(image);
+  // Insert in index order so DOM (and reading) order matches the visual order.
+  const next = [...view.slides.keys()].filter((key) => key > index).sort((a, b) => a - b)[0];
+  view.viewport.insertBefore(slide, next === undefined ? null : view.slides.get(next)!.parentElement);
+  return image;
+}
+
+// Mounts exactly the slides in `indices` and unmounts every other slide.
+export function renderZoomSlides(view: ZoomView, indices: Set<number>) {
+  view.slides.forEach((image, index) => {
+    if (indices.has(index)) return;
+    image.removeAttribute('src');
+    image.parentElement?.remove();
+    view.slides.delete(index);
+  });
+  indices.forEach((index) => {
+    if (index < 0 || index >= view.items.length || view.slides.has(index)) return;
+    view.slides.set(index, createSlide(view, index));
+  });
+}
+
+// Slide pitch in fractional px. clientWidth rounds, and the error would grow
+// with the index until deep slides miss their snap points.
+export function zoomSlideWidth(view: ZoomView): number {
+  return view.viewport.getBoundingClientRect().width;
+}
+
+const REVEAL_PASSES = 4;
+
+// The page is pinned under the dialog, so scrolling it means moving the pin;
+// destroyZoomView restores the window to the adjusted offset. Cards entering
+// the viewport trade content-visibility placeholders for real heights a frame
+// later, so re-center until the element stops moving.
+export async function revealInPinnedPage(view: ZoomView, element: HTMLElement) {
+  for (let pass = 0; pass < REVEAL_PASSES; pass += 1) {
+    const rect = element.getBoundingClientRect();
+    if (pass === 0 && rect.top >= 0 && rect.bottom <= window.innerHeight) return;
+    const centered = view.scrollY + rect.top - (window.innerHeight - rect.height) / 2;
+    // body.scrollHeight still measures the content while pinned (the root's
+    // collapses) and counts any gallery pages rendered for this close.
+    const limit = document.body.scrollHeight - window.innerHeight;
+    const next = Math.round(Math.max(0, Math.min(centered, limit)));
+    if (Math.abs(next - view.scrollY) <= 1) return;
+    view.scrollY = next;
+    document.body.style.setProperty('--image-zoom-scroll-top', `${-next}px`);
+    // A rAF callback runs before that frame's layout; the next runs after it.
+    await waitForAnimationFrame();
+    await waitForAnimationFrame();
+  }
 }
 
 export function destroyZoomView(view: ZoomView) {

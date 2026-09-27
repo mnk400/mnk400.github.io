@@ -62,7 +62,6 @@ body:has(.image-zoom-overlay[open]) {
     bottom: var(--image-zoom-stage-inset);
     left: 0;
     z-index: calc(var(--z-modal) + 1);
-    display: flex;
     overflow-x: auto;
     overflow-y: hidden;
     overscroll-behavior-x: contain;
@@ -82,8 +81,19 @@ body:has(.image-zoom-overlay[open]) {
     }
 }
 
+// Sizes the strip for every item while only a few slides are mounted.
+.image-zoom-spacer {
+    width: calc(var(--zoom-count) * 100%);
+    height: 100%;
+}
+
+// Positioned against the viewport with an explicit width: a slide's content
+// can never widen it, so slide N always sits at exactly N viewport widths.
 .image-zoom-slide {
-    flex: 0 0 100%;
+    position: absolute;
+    top: 0;
+    left: calc(var(--zoom-index) * 100%);
+    width: 100%;
     height: 100%;
     box-sizing: border-box;
     display: flex;
@@ -95,6 +105,7 @@ body:has(.image-zoom-overlay[open]) {
 
 .image-zoom-image {
     width: 100%;
+    min-width: 0;
     height: 100%;
     object-fit: contain;
     background: transparent;
@@ -153,14 +164,11 @@ body:has(.image-zoom-overlay[open]) {
     }
 }
 
-// Cloned image during zoom
+// Cloned image during zoom. Its box stays put and the morph is an inline
+// transform (see setFlipTransform in motion.ts).
 .image-zoom-clone {
     z-index: calc(var(--z-modal) + 1);
-    transition: top var(--transition-slow),
-                left var(--transition-slow),
-                width var(--transition-slow),
-                height var(--transition-slow),
-                transform var(--transition-slow),
+    transition: transform var(--transition-slow),
                 opacity var(--transition-medium);
     cursor: default;
     border-radius: 0 !important;
@@ -459,7 +467,8 @@ body:has(.image-zoom-overlay[open]) {
         transition-duration: 160ms;
     }
 
-    .image-zoom-clone {
+    .image-zoom-clone.image-zoom-clone--direct,
+    .image-zoom-overlay--closing-direct .image-zoom-clone {
         transform: none !important;
     }
 }

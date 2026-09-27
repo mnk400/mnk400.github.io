@@ -376,6 +376,7 @@ The CSS includes the overlay classes used by manik.cc's image zoom runtime:
     .image-zoom-overlay--closing-direct
     .image-zoom-backdrop
     .image-zoom-viewport
+    .image-zoom-spacer
     .image-zoom-slide
     .image-zoom-image
     .image-zoom-clone
@@ -397,9 +398,14 @@ teardown.
 
 `.image-zoom-overlay` is a native modal `<dialog>`, so the browser owns focus
 containment and document inertness. `.image-zoom-viewport` is the persistent
-horizontal scroll container; it lays out one `.image-zoom-slide` per item with
-mandatory center snapping. Touch, trackpad, keyboard, and edge-button input all
-move this same native scrolling surface. If any gallery item has metadata, keep
+horizontal scroll container with mandatory center snapping. A single
+`.image-zoom-spacer` (inline `--zoom-count`) gives it the full scroll width,
+and only the slides near the current index are mounted: each
+`.image-zoom-slide` is absolutely positioned at inline `--zoom-index` viewport
+widths with an explicit width, so slide N always sits at N * viewport width no
+matter how wide its image is. Mount the destination slide before a programmatic
+scroll, since snapping only sees mounted slides. Touch, trackpad, keyboard, and
+edge-button input all move this same native scrolling surface. If any gallery item has metadata, keep
 `.image-zoom-overlay--has-meta` set for the full dialog session so the caption
 rail never changes the image viewport's geometry during navigation. The image
 stage uses equal top and bottom insets, keeping every image vertically centered
@@ -413,7 +419,12 @@ the page to the top.
 
 The `.image-zoom-clone` is temporary. It morphs between a gallery thumbnail and
 the current `.image-zoom-image` only while the dialog opens or closes, then is
-removed. Gallery navigation never creates overlapping clones.
+removed. Gallery navigation never creates overlapping clones. The clone's
+position and size stay fixed at one end of the morph; animate it with an inline
+`transform` (translate + scale, origin `0 0`) toward the other end. The class
+transitions only `transform` and `opacity`, so changing top/left/width/height
+will not animate. Keep the clone on the thumbnail source: swapping in a large
+original mid-morph stutters it.
 
 Populate `.image-zoom-palette` before activating `.image-zoom-controls`, so its
 initial appearance shares the controls' opacity transition instead of arriving
