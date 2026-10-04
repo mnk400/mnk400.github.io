@@ -177,17 +177,35 @@
     font-variant-numeric: tabular-nums;
 }
 
+// A ∿ that scrolls
 .music-widget-status-icon {
     display: none;
-    font-size: 1.15em;
+    width: 1.15em;
+    height: 1em;
     align-self: baseline;
-    // The ∿ glyph's ink sits ~0.065em below the lowercase optical center, so
-    // baseline-align it with the label and nudge it up to read as centered.
-    transform: translateY(-0.065em);
+    transform: translateY(calc(0.5em - 0.5ex));
+    mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+
+    path {
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.1;
+        stroke-linecap: round;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+        path {
+            animation: music-wave-travel 1.6s linear infinite;
+        }
+    }
 
     .music-widget-status.is-live & {
-        display: inline-block;
+        display: block;
     }
+}
+
+@keyframes music-wave-travel {
+    to { transform: translateX(-8px); }
 }
 
 .music-widget-arrow {
