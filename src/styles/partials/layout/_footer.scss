@@ -12,12 +12,8 @@
         align-items: baseline;
         justify-content: space-between;
         gap: var(--spacing-lg);
-        font-size: 0.8em;
+        @include meta-text;
         color: var(--sec-text-color);
-
-        time {
-            font-variant-numeric: tabular-nums;
-        }
     }
 
     &__settings {

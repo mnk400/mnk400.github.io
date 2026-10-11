@@ -1,20 +1,18 @@
 ---
-interface SwitchOption {
-  value: string;
-  label: string;
-}
+import { switchClasses, swatchAttributes, type SwitchOption, type SwitchVariant } from '../lib/selection-options.ts';
 
 interface Props {
   id: string;
   options: SwitchOption[];
   active?: string;
   class?: string;
+  variant?: SwitchVariant;
 }
 
-const { id, options, active, class: extraClass } = Astro.props;
+const { id, options, active, class: extraClass, variant } = Astro.props;
 const activeValue = active ?? options[0]?.value;
 
-const classes = ['selection-switch', extraClass].filter(Boolean).join(' ');
+const classes = switchClasses(variant, extraClass);
 ---
 <div class={classes} id={id} data-selection-switch>
   {options.map(opt => (
@@ -22,6 +20,7 @@ const classes = ['selection-switch', extraClass].filter(Boolean).join(' ');
       id={opt.value}
       class:list={['switch-option', { active: opt.value === activeValue }]}
       data-value={opt.value}
+      {...swatchAttributes(opt.swatch)}
     >{opt.label}</span>
   ))}
 </div>

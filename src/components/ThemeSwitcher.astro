@@ -2,10 +2,10 @@
 import SelectionSwitch from './SelectionSwitch.astro';
 import { themes, defaultTheme } from '../lib/theme.ts';
 
-const options = themes.map(t => ({ value: t.name, label: t.label }));
+const options = themes.map(t => ({ value: t.name, label: t.label, swatch: { theme: t.name } }));
 const SWITCH_ID = 'themeSwitch';
 ---
-<SelectionSwitch id={SWITCH_ID} options={options} active={defaultTheme} />
+<SelectionSwitch id={SWITCH_ID} options={options} active={defaultTheme} variant="swatch" />
 
 <script>
   import { setTheme, getActiveTheme } from '../lib/theme.ts';

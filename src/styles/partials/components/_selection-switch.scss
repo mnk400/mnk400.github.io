@@ -54,6 +54,58 @@
     }
 }
 
+// Swatch variant: options paint in --swatch-fill/--swatch-ink, which default to
+// the option's tokens, so data-theme-preview alone gives a theme chip. Selection
+// can't invert the fill, so it's a corner check instead.
+.selection-switch--swatch {
+    // Resolved here in the page's theme, before options swap in their own.
+    --swatch-edge: var(--translucent-high);
+
+    .switch-option {
+        --swatch-fill: var(--background-main);
+        --swatch-ink: var(--text-color);
+        min-width: 6em;
+        min-height: calc(var(--control-height-lg) + var(--spacing-xs));
+        align-items: flex-end;
+        justify-content: flex-start;
+        padding: var(--spacing-sm) var(--spacing-md);
+        border-radius: var(--radius-lg);
+        position: relative;
+        background-color: var(--swatch-fill);
+        color: var(--swatch-ink);
+        @include soft-outline(var(--swatch-edge));
+
+        // Same check glyph SelectionDropdown uses, masked so it takes the ink.
+        &::after {
+            content: "";
+            position: absolute;
+            top: var(--spacing-sm);
+            right: var(--spacing-sm);
+            width: 0.9em;
+            height: 0.9em;
+            background-color: var(--swatch-ink);
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56A8,8,0,0,1,45.66,138.34L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z'/%3E%3C/svg%3E") center / contain no-repeat;
+            opacity: 0;
+            transition: opacity var(--transition-medium);
+            pointer-events: none;
+        }
+
+        @include hover-interactive {
+            background-color: color-mix(in srgb, var(--swatch-fill) 92%, var(--swatch-ink));
+        }
+
+        &.active {
+            background-color: var(--swatch-fill);
+            color: var(--swatch-ink);
+            @include soft-outline(var(--swatch-edge));
+
+            &::after {
+                opacity: 1;
+            }
+        }
+    }
+}
+
 .selection-switch-wrap {
     --switch-fade-width: 4.5em;
     --switch-fade-left: #000;
@@ -122,4 +174,12 @@
         height: 0.7em;
         transform: rotate(var(--switch-chevron-rotation));
     }
+}
+
+// Swatches are taller than the chevron's square, so center a compact one.
+.selection-switch-wrap:has(> .selection-switch--swatch) .selection-switch-chevron {
+    top: 50%;
+    bottom: auto;
+    height: var(--control-height-sm);
+    translate: 0 -50%;
 }

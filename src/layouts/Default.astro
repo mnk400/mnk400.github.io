@@ -5,7 +5,6 @@ import Header from '../components/Header.astro';
 import ImageZoomTemplate from '../components/ImageZoomTemplate.astro';
 import StructuredData from '../components/StructuredData.astro';
 import { themes, defaultTheme, themeAliases } from '../lib/theme.ts';
-import { fonts, defaultFont } from '../lib/font.ts';
 import { getBreadcrumbs } from '../lib/breadcrumbs.ts';
 import '../styles/inter.scss';
 import '../styles/main.scss';
@@ -75,14 +74,13 @@ const ogTitle = title ? `${title} — Manik` : 'Manik';
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
     <link rel="icon" href="/assets/images/site/favicon.ico" />
 
-    <!-- Pre-paint theme + font apply. Runs synchronously before CSS so the
-         page never flashes the wrong palette. Data is sourced from the same
-         lib modules the switcher components use, via define:vars. -->
-    <script is:inline define:vars={{ themes, defaultTheme, themeAliases, fonts, defaultFont }}>
+    <!-- Pre-paint theme apply. Runs synchronously before CSS so the page never
+         flashes the wrong palette. Data is sourced from the same lib module the
+         switcher component uses, via define:vars. -->
+    <script is:inline define:vars={{ themes, defaultTheme, themeAliases }}>
       // @ts-nocheck -- variables in this pre-paint script are injected by Astro define:vars.
       (function () {
         var themeNames = themes.map(function (t) { return t.name; });
-        var fontNames = fonts.map(function (f) { return f.name; });
 
         function alias(name) { return (name && themeAliases[name]) || name; }
         var urlTheme = alias(new URL(location.href).searchParams.get('theme'));
@@ -100,16 +98,6 @@ const ogTitle = title ? `${title} — Manik` : 'Manik';
           document.head.appendChild(metaTag);
         }
         metaTag.content = theme.meta;
-
-        var storedFont = localStorage.getItem('font');
-        var fontName =
-          storedFont && fontNames.indexOf(storedFont) !== -1 ? storedFont : defaultFont;
-        var font = fonts.find(function (f) { return f.name === fontName; });
-        document.documentElement.style.setProperty('--font-family', font.stack);
-        document.documentElement.style.setProperty(
-          '--font-size-scale',
-          String(font.scale != null ? font.scale : 1),
-        );
       })();
     </script>
 

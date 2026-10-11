@@ -8,11 +8,12 @@ A small, quiet, airy personal site: thin type on soft themed canvases, transluce
 
 ## Non-negotiables
 
-- **Thin body type.** `body` and `p` are weight **200** (`_typography.scss`). Bold is 400, headings 500. Never bump body weight for "legibility."
-- **Small scale.** Body 11.5–12pt, headings top out at 16pt. Content column is **525px** (`$max-content-width`).
+- **Thin body type.** `body` and `p` are weight **200** (`_typography.scss`). Bold is 400. Never bump body weight for "legibility."
+- **Hierarchy by size, not weight.** Page titles are 300 with tracking tightened (-0.022em), so they share the body's thinness; body headings h1–h3 are all 400 and step down by size only. Tracking tightens as size grows.
+- **Small scale, one set of tokens.** `--type-meta` 13 · `--type-body` 15 · `--type-lede` 16 · `--type-h3` 16 · `--type-h2` 19 · `--type-h1` 22 · `--type-title` 30 (px, as rems). Running text leads at 1.5, prose at 1.65. Meta (dates, footer, archive dates) uses the `meta-text` mixin: 13px/300 with tabular figures. Content column is **525px** (`$max-content-width`).
 - **Themed, not light/dark.** 9 palettes (`linen` default, denim, charcoal, plum, moss, butter, espresso, petal, sky) via `[data-theme]` on `:root` (`_variables.scss`). Nothing may assume a light or dark background — use tokens (`--text-color`, `--sec-text-color`, `--translucent-*`, `--contrast-overlay`), never hardcoded colors, so all 9 themes work.
 - **Translucency for depth.** Surfaces are `--translucent-low/medium/high` + `backdrop-filter: blur(10px)` + a 1px `outline` hairline (`translucent-surface` / `soft-outline` mixins in `_mixins.scss`) — not opaque cards, not box-shadow-heavy elevation.
-- **User-switchable fonts.** `--font-family` and `--font-size-scale` are set pre-paint from localStorage (`Default.astro`). Never hardcode a font-family in page styles; use the token or the mixins.
+- **One family.** `--font-family` (`_variables.scss`): SF via `-apple-system, BlinkMacSystemFont, system-ui` on Apple, Inter elsewhere (tuned to match in `inter.scss`). Never hardcode a font-family in page styles; use the token or the mixins. Note the reset gives `h1`/`p`/`span` `font-family: inherit`, which outranks the `*` rule, so a family change on a container must set `font-family` itself, not just the variable.
 
 ## Interaction grammar
 

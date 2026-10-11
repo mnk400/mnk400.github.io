@@ -1,16 +1,19 @@
 import { pageSignal, untilSwap } from './lifecycle.ts';
-
-export interface SelectionOption {
-  value: string;
-  label: string;
-}
+import {
+  switchClasses,
+  swatchAttributes,
+  type SelectionOption,
+  type SwitchOption,
+  type SwitchVariant,
+} from './selection-options.ts';
 
 interface SwitchConfig {
   id?: string;
-  options: SelectionOption[];
+  options: SwitchOption[];
   active?: string;
   ariaLabel?: string;
   className?: string;
+  variant?: SwitchVariant;
 }
 
 interface DropdownConfig {
@@ -127,7 +130,7 @@ export function initSelectionSwitch(container: HTMLElement) {
 
 export function createSelectionSwitch(config: SwitchConfig): HTMLElement {
   const el = document.createElement('div');
-  el.className = ['selection-switch', config.className].filter(Boolean).join(' ');
+  el.className = switchClasses(config.variant, config.className);
   if (config.id) el.id = config.id;
   if (config.ariaLabel) el.setAttribute('aria-label', config.ariaLabel);
   el.dataset.selectionSwitch = '';
@@ -138,6 +141,7 @@ export function createSelectionSwitch(config: SwitchConfig): HTMLElement {
     span.className = 'switch-option' + (opt.value === active ? ' active' : '');
     span.dataset.value = opt.value;
     span.textContent = opt.label;
+    Object.entries(swatchAttributes(opt.swatch)).forEach(([name, value]) => span.setAttribute(name, value));
     el.appendChild(span);
   });
 

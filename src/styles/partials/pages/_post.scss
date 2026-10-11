@@ -10,10 +10,9 @@
 // these, so unlike the other two files this one may assume an article.
 
 .post__date {
-    font-size: 0.75em;
+    @include meta-text;
     text-align: left;
     color: var(--sec-text-color);
-    font-weight: 200;
 }
 
 .post__reading-time {

@@ -95,8 +95,11 @@ $themes: (
     ),
 );
 
+// [data-theme-preview] scopes a theme's tokens to one element, so a swatch can
+// render in its own palette while the page stays in the active one.
 @each $theme, $tokens in $themes {
-    :root[data-theme="#{$theme}"] {
+    :root[data-theme="#{$theme}"],
+    [data-theme-preview="#{$theme}"] {
         @each $name, $value in $tokens {
             --#{$name}: #{$value};
         }
@@ -136,6 +139,18 @@ $themes: (
     --control-height-sm: 30px;
     --control-height-md: 36px;
     --control-height-lg: 42px;
+
+    // Typography. One family everywhere: SF on Apple, Inter elsewhere (tuned
+    // to match in inter.scss). Hierarchy comes from size and colour, not
+    // weight, so body stays at 200 and titles at 300.
+    --font-family: -apple-system, BlinkMacSystemFont, system-ui, "Inter", sans-serif;
+    --type-meta: 0.8125rem;   // 13px: dates, footer, small labels
+    --type-body: 0.9375rem;   // 15px: page copy
+    --type-lede: 1rem;        // 16px: home intro
+    --type-h3: 1rem;          // 16px
+    --type-h2: 1.1875rem;     // 19px
+    --type-h1: 1.375rem;      // 22px: section headings in a body
+    --type-title: 1.875rem;   // 30px: page titles
 
     // Transitions
     --transition-fast: 0.1s cubic-bezier(0.4, 0, 0.2, 1);

@@ -15,8 +15,9 @@
 .page__body.prose {
     --flow-space: var(--spacing-lg);
 
-    p {
-        line-height: 1.6;
+    p,
+    li {
+        line-height: 1.65;
     }
 
     // A heading belongs to the text underneath it. At the roomier prose flow

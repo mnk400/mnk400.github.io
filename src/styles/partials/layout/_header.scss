@@ -173,6 +173,7 @@ header:has(.header-breadcrumb) {
     @include button-as-text;
     font-size: 1.5em;
     font-weight: 400 !important; // override global `button { font-weight: 300 !important }`
+    letter-spacing: -0.02em;
     text-decoration: none;
     color: var(--text-color);
     line-height: inherit;

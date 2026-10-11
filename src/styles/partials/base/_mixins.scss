@@ -92,6 +92,15 @@
     font-family: var(--font-family, -apple-system, BlinkMacSystemFont, system-ui, "Inter", sans-serif);
 }
 
+// Meta tier: dates, reading time, footer, small labels. At 13px a 200 stem
+// goes grey-on-grey, so meta takes 300 and a hair of tracking.
+@mixin meta-text {
+    font-size: var(--type-meta);
+    font-weight: 300;
+    letter-spacing: 0.01em;
+    font-variant-numeric: tabular-nums;
+}
+
 // Monospace font
 @mixin mono-font {
     font-family: "IBM Plex Mono", ui-monospace, monospace;

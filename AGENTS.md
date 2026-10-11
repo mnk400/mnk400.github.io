@@ -74,16 +74,18 @@ new node, so init runs again on a fresh element.
 The established pattern is an `AbortController` whose signal is passed to every listener, aborted
 on `astro:before-swap` — see `src/lib/image-zoom/index.ts` and `src/lib/image-gallery/index.ts`.
 
-### Theme & Font System
+### Theme System
 
 Nine themes defined in `src/styles/partials/base/_variables.scss`, toggled via `data-theme` on
-`<html>`. State logic lives in `src/lib/theme.ts` and `src/lib/font.ts`; the switcher components
-(`ThemeSwitcher.astro`, `FontSwitcher.astro`) own the event wiring.
+`<html>`. State logic lives in `src/lib/theme.ts`; `ThemeSwitcher.astro` owns the event wiring.
 
-`Default.astro` also contains an inline pre-paint script that applies theme and font before first
+`Default.astro` also contains an inline pre-paint script that applies the theme before first
 paint to avoid a flash. It deliberately duplicates the resolution logic in ES5 but sources its
-*data* from the same modules via `define:vars`. **Changing theme/font resolution order means
-changing both places.**
+*data* from the same module via `define:vars`. **Changing theme resolution order means changing
+both places.**
+
+Typography is fixed, not user-switchable: one family (`--font-family`: SF on Apple, Inter
+elsewhere) and a `--type-*` size scale, both in `_variables.scss`. See `docs/style-dna.md`.
 
 ### Content Collections
 

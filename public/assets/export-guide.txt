@@ -97,6 +97,12 @@ Available themes:
 
 The default visual baseline is linen.
 
+To render one element in a different theme's palette (a preview or swatch),
+set data-theme-preview on it. Its tokens resolve to that theme; the rest of
+the page keeps the active one:
+
+    <div data-theme-preview="plum">...</div>
+
 Theme tokens:
 
     --background-main
@@ -153,6 +159,21 @@ Controls:
     --control-height-sm   30px
     --control-height-md   36px
     --control-height-lg   42px
+
+Typography:
+
+    --font-family    SF on Apple (-apple-system, BlinkMacSystemFont, system-ui),
+                     then Inter, then sans-serif
+    --type-meta      0.8125rem  (13px)  dates, footers, small labels
+    --type-body      0.9375rem  (15px)  page copy
+    --type-lede      1rem       (16px)  intro paragraphs
+    --type-h3        1rem       (16px)
+    --type-h2        1.1875rem  (19px)
+    --type-h1        1.375rem   (22px)  section headings within a page
+    --type-title     1.875rem   (30px)  page titles
+
+    Body copy is weight 200. Hierarchy comes from size and color, not weight:
+    titles are 300 with letter-spacing -0.022em; h1-h3 are all 400.
 
 Transitions:
 
@@ -286,6 +307,20 @@ Selection switch visual contract:
     <div class="selection-switch" aria-label="View">
       <button class="switch-option active" type="button">Grid</button>
       <button class="switch-option" type="button">List</button>
+    </div>
+
+Add .selection-switch--swatch for taller paint-chip options, each filled with
+its own color. An option paints in --swatch-fill (background) and --swatch-ink
+(label + check), which default to the option's --background-main and
+--text-color. So data-theme-preview alone makes a theme chip, and inline
+custom properties make any other color. Set ink alongside fill so the label
+stays legible. The selected option gets a corner check in its ink instead of
+the dark fill:
+
+    <div class="selection-switch selection-switch--swatch" aria-label="Theme">
+      <button class="switch-option active" type="button" data-theme-preview="linen">Linen</button>
+      <button class="switch-option" type="button" data-theme-preview="plum">Plum</button>
+      <button class="switch-option" type="button" style="--swatch-fill: #b6393d; --swatch-ink: #fff">Red</button>
     </div>
 
 Search pill visual contract (was .site-search before the 2026-08 rename, see
