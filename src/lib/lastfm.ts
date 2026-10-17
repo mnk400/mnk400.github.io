@@ -14,15 +14,18 @@ interface LastfmTrack {
 }
 interface LastfmAlbum {
   name: string;
+  url: string;
   artist: { name: string };
   image: LastfmImage[];
   playcount: string;
 }
 interface LastfmArtist {
   name: string;
+  url: string;
   playcount: string;
 }
 interface GridItem {
+  url: string;
   imageUrl: string;
   title: string;
   subtitle: string | null;
@@ -195,20 +198,13 @@ export function initMusicPage() {
 
     items.forEach((item) => {
       const card = template.content.cloneNode(true) as DocumentFragment;
-      const img = card.querySelector('[data-field="image"]') as HTMLImageElement;
-      const title = card.querySelector('[data-field="title"]') as HTMLElement;
-      const subtitle = card.querySelector('[data-field="subtitle"]') as HTMLElement;
-      const playcount = card.querySelector('[data-field="playcount"]') as HTMLElement;
+      const field = (name: string) => card.querySelector(`[data-field="${name}"]`) as HTMLElement;
+      const plays = `${item.playcount} plays`;
 
-      img.src = item.imageUrl;
-      img.alt = item.title;
-      title.textContent = item.title;
-      if (item.subtitle) {
-        subtitle.textContent = item.subtitle;
-      } else {
-        subtitle.remove();
-      }
-      playcount.textContent = `${item.playcount} Plays`;
+      (card.firstElementChild as HTMLAnchorElement).href = item.url;
+      (field('image') as HTMLImageElement).src = item.imageUrl;
+      field('title').textContent = item.title;
+      field('meta').textContent = item.subtitle ? `${item.subtitle} · ${plays}` : plays;
 
       grid.appendChild(card);
     });
@@ -231,6 +227,7 @@ export function initMusicPage() {
       }
 
       const items: GridItem[] = data.topalbums.album.map((album: LastfmAlbum) => ({
+        url: album.url,
         imageUrl: imageOf(album.image),
         title: album.name,
         subtitle: album.artist.name,
@@ -260,6 +257,7 @@ export function initMusicPage() {
       );
 
       const items: GridItem[] = artists.map((artist, index) => ({
+        url: artist.url,
         imageUrl: imageResults[index].status === 'fulfilled'
           ? (imageResults[index] as PromiseFulfilledResult<string>).value
           : PLACEHOLDER,

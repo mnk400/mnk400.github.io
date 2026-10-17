@@ -61,7 +61,7 @@ by the consuming project.
     partials/components/expandable-section  .expandable-section, -toggle, -content
     partials/components/selection-switch    .selection-switch and .switch-option
     partials/components/search-pill .search-pill, trigger, field, clear
-    partials/components/cards      reveal card surfaces, .album-item
+    partials/components/cards      .palette-actions row
     partials/components/grids      grid helpers and page-agnostic grid primitives
     partials/components/image-gallery  gallery shell, masonry grid, image cards
     partials/components/info-grid  .info-grid and .info-card

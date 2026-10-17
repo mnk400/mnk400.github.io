@@ -222,3 +222,83 @@
         display: none;
     }
 }
+
+// =============================================================================
+// TOP ALBUMS / ARTISTS GRID
+// =============================================================================
+
+// The highlight paints over the art (the tint tone) and holds the stats.
+.album-grid {
+    @include highlight-scope(1);
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-md);
+    transition: opacity var(--transition-slow);
+
+    // Room for a card's box to clear its neighbours. Touch never draws it.
+    @media (any-hover: hover) {
+        gap: var(--spacing-lg);
+    }
+
+    @media (max-width: 768px) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    &.grid-fade-out {
+        opacity: 0;
+    }
+}
+
+.album-item {
+    @include highlight-surface($hover: null, $tone: tint, $pad: var(--spacing-xs), $radius: calc(var(--radius-md) + var(--spacing-xs)));
+    position: relative;
+    display: block;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity var(--transition-slow), transform var(--transition-slow);
+
+    // none, not translateY(0): see highlight-tint-layer.
+    &.card-visible {
+        opacity: 1;
+        transform: none;
+    }
+
+    img {
+        display: block;
+        width: 100%;
+        aspect-ratio: 1;
+        object-fit: cover;
+        border-radius: var(--radius-md);
+        @include soft-outline(highlight-fade(var(--translucent-medium)));
+    }
+}
+
+.album-item__stats {
+    @include highlight-tint-layer;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 2px;
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-md);
+    line-height: 1.25;
+    text-align: left;
+
+    > * {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+}
+
+.album-item__title {
+    font-size: 0.86em;
+}
+
+.album-item__meta {
+    font-size: 0.74em;
+    font-variant-numeric: tabular-nums;
+}

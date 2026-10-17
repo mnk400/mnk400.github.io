@@ -46,7 +46,7 @@
 }
 
 @property --highlight-tone {
-    syntax: "wash | solid | keep";
+    syntax: "wash | solid | keep | tint";
     inherits: false;
     initial-value: wash;
 }
@@ -113,6 +113,13 @@
     background-color: var(--accent);
 }
 
+// Over art the box tints it (see the tint tone in _mixins).
+[data-highlight-slot="before"][data-highlight-kind="tint"]::before,
+[data-highlight-slot="after"][data-highlight-kind="tint"]::after {
+    background-color: transparent;
+    background-image: $highlight-tint;
+}
+
 [data-highlight-slot="before"][data-highlight-visible]::before,
 [data-highlight-slot="after"][data-highlight-visible]::after {
     opacity: 1;
@@ -122,9 +129,9 @@
         background-color var(--transition-medium);
 }
 
-// Text takes the accent, secondary lines too, like a link; on a solid box it
-// keeps its colour. (0,3,0) beats the colours links and captions carry.
-:is(a, button, [data-highlight])[data-highlight-active]:not([data-highlight-active="solid"], [data-highlight-active="keep"]) {
+// Text takes the accent, secondary lines too, like a link; on a solid or tint
+// box it keeps its colour. (0,3,0) beats the colours links and captions carry.
+:is(a, button, [data-highlight])[data-highlight-active]:not([data-highlight-active="solid"], [data-highlight-active="keep"], [data-highlight-active="tint"]) {
     &, * {
         color: var(--accent);
     }

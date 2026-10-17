@@ -69,18 +69,33 @@
     --highlight-magnet: 0.5;
 }
 
+// The tint tone's box: light over the art, deep behind text at its foot.
+$highlight-tint: linear-gradient(
+    color-mix(in srgb, var(--accent) 38%, transparent),
+    color-mix(in srgb, var(--accent) 45%, transparent) 50%,
+    color-mix(in srgb, var(--accent) 80%, transparent)
+);
+
 // Anything with a fill or outline: a box $pad bigger than it takes over its
 // fill as it covers it.
 //   $fill    resting fill, then owned by the mixin: change it through
 //            --surface-fill. null when it's opaque or on a child (highlight-fill).
 //   $hover   fill for touch taps and pages without the highlighter.
-//   $tone    wash (default), solid (filled buttons) or keep (content fills).
+//   $tone    wash (default), solid (filled buttons), keep (content fills) or
+//            tint (art: the box paints over it, in a scope at highlight-scope(1)).
 //   $radius  defaults to the element's own plus $pad.
 @mixin highlight-surface($fill: null, $hover: var(--translucent-medium-high), $tone: null, $radius: null, $pad: null) {
     --highlight-fit: surface;
 
     @if $tone {
         --highlight-tone: #{$tone};
+    }
+
+    // Shows its highlight-tint-layer where no box is drawn.
+    @if $tone == tint {
+        @include hover-fallback {
+            --highlight-cover: 1;
+        }
     }
 
     @if $radius {
@@ -98,6 +113,21 @@
         @include hover-fallback {
             background-color: $hover;
         }
+    }
+}
+
+// Content over a tint surface's art, like its stats: above the box, in the
+// page colour, as visible as the box is. Needs the scope at highlight-scope(1)
+// and no stacking context in between (transform, opacity < 1, filter).
+// Position it yourself.
+@mixin highlight-tint-layer {
+    z-index: 2;
+    color: var(--background-main);
+    opacity: var(--highlight-cover);
+
+    // No box on touch taps or without the highlighter: the layer is the tint.
+    :where(:root:not([data-highlighter]), .touch-hover) & {
+        background-image: $highlight-tint;
     }
 }
 

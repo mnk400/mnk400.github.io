@@ -42,22 +42,17 @@ const periodOptions = [
       />
     </div>
 
-    <div id="album-grid" class="album-grid reveal-card-group"></div>
+    <div id="album-grid" class="album-grid"></div>
   </div>
 
   <template id="music-card-template">
-    <div class="album-item reveal-card">
-      <div class="reveal-card__media">
-        <img class="img-curved-edges" data-field="image">
-        <div class="reveal-card__overlay">
-          <div class="reveal-card__copy">
-            <p class="reveal-card__title" data-field="title"></p>
-            <p class="reveal-card__meta" data-field="subtitle"></p>
-          </div>
-          <span class="reveal-card__meta reveal-card__meta--bottom" data-field="playcount"></span>
-        </div>
-      </div>
-    </div>
+    <a class="album-item" target="_blank" rel="noopener" data-highlight>
+      <img data-field="image" alt="">
+      <span class="album-item__stats">
+        <span class="album-item__title" data-field="title"></span>
+        <span class="album-item__meta" data-field="meta"></span>
+      </span>
+    </a>
   </template>
 </Page>
 

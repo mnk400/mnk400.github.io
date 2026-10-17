@@ -8,9 +8,10 @@ import { isTransparent, scopeFor, type Scope } from './scopes.ts';
 export type Fit = 'text' | 'box' | 'surface';
 
 // wash: a light box, text turns accent. solid: an accent box, text keeps its
-// colour. keep: the element keeps its fill and colours. 'text' is the look of
-// text and rows unless they're solid.
-export type Tone = 'wash' | 'solid' | 'keep';
+// colour. keep: the element keeps its fill and colours. tint: the box paints
+// over the element (album art). 'text' is the look of text and rows unless
+// they're solid.
+export type Tone = 'wash' | 'solid' | 'keep' | 'tint';
 export type Look = 'text' | Tone;
 
 /** A target's look. Read every frame, since selecting a target under a still
@@ -19,7 +20,7 @@ export function lookOf(el: HTMLElement, fit: Fit): Look {
   const tone = getComputedStyle(el).getPropertyValue('--highlight-tone').trim();
   if (tone === 'solid') return 'solid';
   if (fit !== 'surface') return 'text';
-  return tone === 'keep' ? 'keep' : 'wash';
+  return tone === 'keep' || tone === 'tint' ? tone : 'wash';
 }
 
 export interface Target {

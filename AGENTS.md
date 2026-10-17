@@ -108,8 +108,9 @@ elsewhere) and a `--type-*` size scale, both in `_variables.scss`. See `docs/sty
 2. Declare its kind with a mixin from `_mixins.scss` (undeclared targets are inferred):
    - `highlight-control`: the standard outlined translucent control. Most new controls want this.
    - `highlight-surface($fill, $hover, $tone, $radius, $pad)`: any other fill or outline. `$tone`
-     is `solid` for filled buttons, `keep` when the fill is content. A fill on a child takes
-     `highlight-fill`.
+     is `solid` for filled buttons, `keep` when the fill is content, `tint` to paint over art
+     (the music grid; content over the art takes `highlight-tint-layer`). A fill on a child
+     takes `highlight-fill`.
    - `highlight-text`, or `highlight-row($inset)` with `highlight-rows` on the list.
 3. No `:hover` styles: the highlight is the hover. Change a surface's fill through
    `--surface-fill`, never `background-color`. Selected is ARIA plus the dark fill and
