@@ -91,6 +91,28 @@ const swatches = themeNames.slice(0, 5).map((theme) => ({ value: `swatch-${theme
       <MusicWidget />
     </section>
 
+    <section class="hover-lab__section">
+      <h2>Themes</h2>
+      <p class="hover-lab__note">every theme at once, hover states drawn still: a link, a row on a card, a chip's ring, secondary text</p>
+      <div class="theme-matrix">
+        {themeNames.map((theme) => (
+          <div class="theme-matrix__cell" data-theme-preview={theme}>
+            <p class="theme-matrix__name">{theme}</p>
+            <p class="theme-matrix__prose">games like <span class="theme-matrix__link is-on">Colordle</span> and <span class="theme-matrix__link">Minesweeper</span></p>
+            <div class="theme-matrix__card">
+              <span class="theme-matrix__row is-on">Writing Tax <span class="theme-matrix__date">Aug-26</span></span>
+              <span class="theme-matrix__row">Listening <span class="theme-matrix__date">Feb-26</span></span>
+            </div>
+            <div class="theme-matrix__chips">
+              <span class="theme-matrix__chip is-on">games</span>
+              <span class="theme-matrix__chip">fun</span>
+            </div>
+            <p class="theme-matrix__sec">secondary · Aug-26</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
     <section class="hover-lab__panel" aria-label="Tuning">
       <label class="hover-lab__control">
         <span>accent</span>

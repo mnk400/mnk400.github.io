@@ -107,3 +107,86 @@
         background-color: var(--accent-fill);
     }
 }
+
+// Theme matrix: each cell renders in its own theme (data-theme-preview), with
+// hover states painted still so all nine can be compared side by side.
+.theme-matrix {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: var(--spacing-sm);
+}
+
+.theme-matrix__cell {
+    display: grid;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    background-color: var(--background-main);
+    color: var(--text-color);
+    font-size: var(--type-meta);
+    @include soft-outline;
+
+    p {
+        margin: 0;
+        line-height: 1.5;
+    }
+}
+
+.theme-matrix__name {
+    font-weight: 400;
+}
+
+.theme-matrix__prose {
+    color: var(--sec-text-color);
+}
+
+.theme-matrix__link {
+    padding: var(--spacing-2xs) 3px;
+    border-radius: var(--radius-xs);
+    color: var(--text-color);
+    font-weight: 300;
+}
+
+.theme-matrix__card {
+    display: grid;
+    padding-block: var(--spacing-2xs);
+    @include translucent-surface;
+}
+
+.theme-matrix__row {
+    margin-inline: var(--spacing-2xs);
+    padding: var(--spacing-2xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+}
+
+.theme-matrix__date,
+.theme-matrix__sec {
+    color: var(--sec-text-color);
+}
+
+.theme-matrix__link.is-on,
+.theme-matrix__row.is-on {
+    background-color: var(--accent-fill);
+
+    &,
+    .theme-matrix__date {
+        color: var(--accent);
+    }
+}
+
+.theme-matrix__chips {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.theme-matrix__chip {
+    padding: var(--spacing-2xs) var(--spacing-sm);
+    border: 1px solid var(--translucent-medium);
+    border-radius: var(--radius-pill);
+    background-color: var(--translucent-low);
+
+    // The ring, as an outline: it sits outside the border box and follows the radius.
+    &.is-on {
+        outline: 4px solid var(--accent-fill);
+    }
+}

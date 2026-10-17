@@ -79,7 +79,7 @@ const itemAttrs = (item: MoreItem, group: MoreGroup) => ({
   description="An ongoing list of random things and projects Manik has built."
   titleGutter="4rem"
 >
-  <Charm type="heart" slot="header-charm" anchor="top-right" x="-1em" y="0.4em" size={0.7} />
+  <Charm type="heart" slot="header-charm" anchor="top-right" x="-1em" y="-0.2em" size={0.7} />
 
   <div class="stack">
     <SearchPill
@@ -130,7 +130,6 @@ const itemAttrs = (item: MoreItem, group: MoreGroup) => ({
                         <button
                           type="button"
                           class="more-prose__more"
-                          data-highlight
                           data-more-expand
                           aria-label={`show ${rest.length} more ${group.label.toLowerCase()}`}
                         >

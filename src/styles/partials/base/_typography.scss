@@ -70,9 +70,12 @@ i {
 }
 
 // Links
+// A half step above the weight-200 copy: enough to find a link at rest without
+// an underline. Inside bold text or a heading, a link keeps its parent's weight.
 a {
     line-height: 25px;
     color: var(--text-color);
+    font-weight: 300;
     text-decoration: none;
     transition: color var(--transition-medium);
 
@@ -81,6 +84,10 @@ a {
     @include hover-fallback {
         color: var(--accent);
     }
+}
+
+:is(b, strong, h1, h2, h3, h4) a {
+    font-weight: inherit;
 }
 
 // Code
@@ -108,9 +115,12 @@ pre code {
 }
 
 // Superscript
+// The meta size, the smallest on the scale; line-height 0 keeps it from
+// opening a gap above its line.
 sup {
     vertical-align: super;
-    font-size: 8pt;
+    font-size: var(--type-meta);
+    line-height: 0;
 }
 
 .ph {

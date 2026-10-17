@@ -126,10 +126,11 @@
     }
 
     // The switch scrolls, so it clips anything past its padding box. Pad it
-    // enough for an option's halo and hand the space back with a negative
-    // margin; the extra 1px keeps the old inset the chevrons line up with.
+    // enough for an option's ring and hand the space back with a negative
+    // margin; the extra 1px above and below keeps the inset the chevrons line
+    // up with.
     > .selection-switch {
-        padding: calc(var(--switch-gutter) + 1px);
+        padding: calc(var(--switch-gutter) + 1px) var(--switch-gutter);
         margin: calc(-1 * var(--switch-gutter));
     }
 
@@ -147,10 +148,15 @@
     }
 }
 
+// Centred, and never taller than the compact control size, so it matches a
+// chip row and stays small beside taller options (swatches, year rows).
 .selection-switch-chevron {
     position: absolute;
-    top: 1px;
-    bottom: 1px;
+    top: 50%;
+    // The wrap's box includes the switch's ring gutters (their negative
+    // margins collapse through it), so they come off the row height.
+    height: min(calc(100% - 2 * var(--switch-gutter) - 2px), var(--control-height-sm));
+    translate: 0 -50%;
     aspect-ratio: 1;
     padding: 0;
     border: none;
@@ -192,12 +198,4 @@
         height: 0.7em;
         transform: rotate(var(--switch-chevron-rotation));
     }
-}
-
-// Swatches are taller than the chevron's square, so center a compact one.
-.selection-switch-wrap:has(> .selection-switch--swatch) .selection-switch-chevron {
-    top: 50%;
-    bottom: auto;
-    height: var(--control-height-sm);
-    translate: 0 -50%;
 }
