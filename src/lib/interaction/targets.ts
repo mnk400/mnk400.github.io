@@ -9,6 +9,8 @@ export const HIGHLIGHT_TARGETS = [
   'select',
   'input[type="range"]',
   'input[type="color"]',
+  // Text fields, unless a [data-highlight] field (the search pill) wraps them.
+  'input:is([type="text"], [type="email"], [type="url"]):not([data-highlight] *)',
   '.btn',
   '[data-highlight]',
 ].join(', ');

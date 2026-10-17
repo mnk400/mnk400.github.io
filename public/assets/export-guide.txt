@@ -212,7 +212,7 @@ Hover:
     highlight of your own.
 
     Controls (.btn, chips, toggles, the dropdown trigger, the search pill,
-    sliders, image upload) paint their fill from --surface-fill, a registered
+    text inputs and select, sliders, image upload) paint their fill from --surface-fill, a registered
     colour property. To restyle a control's fill, set --surface-fill rather
     than background-color; it transitions, and states like selected and
     expanded are written the same way.

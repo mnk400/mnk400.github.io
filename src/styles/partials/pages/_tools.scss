@@ -247,7 +247,9 @@
     align-items: center;
     gap: var(--spacing-sm);
     padding: 0 var(--spacing-md);
-    @include translucent-surface;
+    border-radius: var(--radius-md);
+    cursor: text;
+    @include highlight-control;
 
     i {
         flex-shrink: 0;
@@ -263,10 +265,6 @@
         outline: none;
         border-radius: 0;
         font-size: 1em;
-
-        &:focus {
-            background: transparent;
-        }
     }
 }
 

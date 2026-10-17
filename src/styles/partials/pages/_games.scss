@@ -4,8 +4,8 @@
 // GAME-SPECIFIC STYLES
 // =============================================================================
 
-// Flappy Bird
-#flappy-meta {
+// Status line above a board: score, turn, mines, time.
+.game-meta {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
@@ -15,6 +15,32 @@
     letter-spacing: 0.3px;
     margin: var(--spacing-xl) 0 var(--spacing-sm);
 }
+
+// Square boards. Game of Life and Minesweeper set their columns from JS.
+.board-grid {
+    display: grid;
+    gap: var(--spacing-xs);
+
+    @media screen and (max-width: 768px) {
+        gap: 3px;
+    }
+}
+
+// A board square: a hairline the highlight takes over. States set
+// --surface-fill; played squares opt out with data-highlight="off".
+@mixin board-cell {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    min-width: 0;
+    outline: 1px solid;
+    outline-offset: -1px;
+    cursor: pointer;
+    user-select: none;
+    @include highlight-surface(transparent, var(--translucent-medium));
+}
+
+// Flappy Bird
 
 #flappy-game-container {
     display: flex;
@@ -99,48 +125,23 @@
 }
 
 // Tic Tac Toe
-#ttt-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    font-size: 0.85em;
-    font-weight: 300;
-    color: var(--sec-text-color);
-    letter-spacing: 0.3px;
-    margin: var(--spacing-xl) 0 var(--spacing-sm);
-}
-
 #ttt-game-container {
-    display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 1fr);
     gap: var(--spacing-sm);
     margin-bottom: var(--spacing-lg);
 }
 
 .ttt-cell {
-    position: relative;
     border-radius: var(--radius-md);
-    cursor: pointer;
     @include mono-font;
-    transition: background-color var(--transition-medium);
-    border: 1px solid var(--translucent-medium);
-    aspect-ratio: 1;
-    backdrop-filter: blur(10px);
+    transition: --surface-fill var(--transition-medium);
+    @include board-cell;
 
     &::before {
         content: attr(data-content);
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
         font-size: 1.3em;
         font-weight: 300;
-        line-height: 100;
-    }
-
-    @include hover-interactive {
-        background-color: var(--translucent-medium);
+        line-height: 1;
     }
 
     &.x::before {
@@ -152,7 +153,7 @@
     }
 
     &.winning-cell {
-        background-color: color-mix(in srgb, var(--game-ttt-win) 50%, transparent);
+        --surface-fill: color-mix(in srgb, var(--game-ttt-win) 50%, transparent);
 
         &::before {
             color: var(--text-color);
@@ -165,93 +166,28 @@
     margin: var(--spacing-lg) 0 0;
 }
 
-#game-of-life-grid {
-    display: grid;
-    grid-gap: var(--spacing-xs);
-    max-width: 100%;
-    overflow: hidden;
-    box-sizing: border-box;
-
-    @media screen and (max-width: 768px) {
-        grid-gap: 3px;
-    }
-}
-
 .gol-cell {
-    border: 1px solid var(--translucent-medium);
     border-radius: var(--radius-sm);
-    cursor: pointer;
-    user-select: none;
-    aspect-ratio: 1;
-    min-width: 0;
-    box-sizing: border-box;
+    @include board-cell;
 
-    @include hover-interactive {
-        background-color: var(--translucent-medium);
-    }
-
+    // Alive is selected: its fill hands over to a solid box.
     &.alive {
-        background-color: var(--text-color);
-        border-color: var(--text-color);
+        --surface-fill: var(--text-color);
+        --highlight-tone: solid;
     }
 }
 
-// Minesweeper
-#minesweeper-container {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    margin: 0;
-}
-
-#minesweeper-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    width: 100%;
-    font-size: 0.85em;
-    font-weight: 300;
-    color: var(--sec-text-color);
-    letter-spacing: 0.3px;
-    margin: var(--spacing-xl) 0 var(--spacing-sm);
-}
-
-#minesweeper-grid {
-    display: grid;
-    grid-gap: var(--spacing-xs);
-    max-width: 100%;
-    overflow: hidden;
-    box-sizing: border-box;
-
-    @media screen and (max-width: 768px) {
-        grid-gap: 3px;
-    }
-}
-
+// Minesweeper (font size set from JS to fit the cell)
 .ms-cell {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid var(--translucent-medium);
     border-radius: var(--radius-sm);
-    cursor: pointer;
     font-weight: 400;
     @include mono-font;
-    transition: background-color var(--transition-medium), border-color var(--transition-medium);
-    user-select: none;
-    position: relative;
-    font-size: calc(100% - 2px);
-    box-sizing: border-box;
-    aspect-ratio: 1;
-    min-width: 0;
-
-    @include hover-interactive {
-        background-color: var(--translucent-medium);
-    }
+    transition: --surface-fill var(--transition-medium), outline-color var(--transition-medium);
+    @include board-cell;
 
     &.revealed {
-        border-color: var(--translucent-low);
-        background-color: var(--translucent-low);
+        --surface-fill: var(--translucent-low);
+        outline-color: var(--translucent-low);
     }
 
     @each $state, $icon in (flagged: "🚩", mine: "💣", flagged-correct: "🚩", flagged-wrong: "❌") {
@@ -288,18 +224,12 @@
 }
 
 // Colordle
-#colordle-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    font-size: 0.85em;
-    font-weight: 300;
-    color: var(--sec-text-color);
-    letter-spacing: 0.3px;
-    margin-bottom: var(--spacing-sm);
-}
-
 .colordle-container {
+    // Spaced by its .stack instead.
+    .game-meta {
+        margin-top: 0;
+    }
+
     #color-display {
         height: 70px;
         border: 1px solid var(--translucent-medium);
@@ -444,7 +374,6 @@
     #game-over,
     #start-screen,
     .ttt-cell,
-    .gol-cell,
     .ms-cell,
     .colordle-container .hex-cell {
         transition: none;

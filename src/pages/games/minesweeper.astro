@@ -10,13 +10,11 @@ const difficultyOptions = [
 ---
 <Page title="Minesweeper">
   <div class="game-wrapper">
-    <div id="minesweeper-container">
-      <div id="minesweeper-header">
-        <div id="mine-counter">Mines: 10</div>
-        <div id="game-timer">Time: 0</div>
-      </div>
-      <div id="minesweeper-grid"></div>
+    <div class="game-meta">
+      <div id="mine-counter">Mines: 10</div>
+      <div id="game-timer">Time: 0</div>
     </div>
+    <div id="minesweeper-grid" class="board-grid"></div>
     <div id="minesweeper-controls" class="toolbar">
       <SelectionSwitch
         id="difficulty-selector"
@@ -31,6 +29,8 @@ const difficultyOptions = [
 </Page>
 
 <script>
+  import { untilSwap } from '../../lib/lifecycle.ts';
+
   interface Cell {
     isMine: boolean;
     isRevealed: boolean;
@@ -78,16 +78,14 @@ const difficultyOptions = [
       minesLeft = gameConfig.mines;
       mineCounterElement!.textContent = `mines · ${minesLeft}`;
       gameStatusElement!.textContent = '';
+      gameStatusElement!.classList.remove('win', 'lose');
 
       grid = [];
 
       gridElement!.style.gridTemplateColumns = `repeat(${gameConfig.cols}, 1fr)`;
 
-      const gameWrapper = document.querySelector('.game-wrapper') as HTMLElement;
-      const availableWidth = Math.min(gameWrapper.clientWidth, window.innerWidth);
-      const gap = window.innerWidth <= 768 ? 3 : 5;
-      const totalHorizontalSpacing = (gameConfig.cols - 1) * gap + gameConfig.cols * 2;
-      const cellSize = (availableWidth - totalHorizontalSpacing) / gameConfig.cols;
+      const gap = parseFloat(getComputedStyle(gridElement!).columnGap) || 0;
+      const cellSize = (gridElement!.clientWidth - (gameConfig.cols - 1) * gap) / gameConfig.cols;
 
       for (let row = 0; row < gameConfig.rows; row++) {
         grid[row] = [];
@@ -101,12 +99,11 @@ const difficultyOptions = [
 
           const cell = document.createElement('div');
           cell.classList.add('ms-cell');
-          cell.setAttribute('data-row', String(row));
-          cell.setAttribute('data-col', String(col));
+          cell.dataset.highlight = '';
           cell.style.fontSize = `${Math.max(cellSize * 0.5, 12)}px`;
 
-          cell.addEventListener('click', handleCellClick);
-          cell.addEventListener('contextmenu', handleRightClick);
+          cell.addEventListener('click', () => handleCellClick(row, col));
+          cell.addEventListener('contextmenu', () => handleRightClick(row, col));
 
           gridElement!.appendChild(cell);
         }
@@ -137,6 +134,10 @@ const difficultyOptions = [
       }
     }
 
+    function cellAt(row: number, col: number): HTMLElement {
+      return gridElement!.children[row * gameConfig.cols + col] as HTMLElement;
+    }
+
     function countAdjacentMines(row: number, col: number) {
       let count = 0;
 
@@ -150,12 +151,8 @@ const difficultyOptions = [
       return count;
     }
 
-    function handleCellClick(event: Event) {
+    function handleCellClick(row: number, col: number) {
       if (!gameActive) return;
-
-      const target = event.target as HTMLElement;
-      const row = parseInt(target.getAttribute('data-row') || '');
-      const col = parseInt(target.getAttribute('data-col') || '');
 
       if (firstClick) {
         firstClick = false;
@@ -168,25 +165,13 @@ const difficultyOptions = [
       revealCell(row, col);
     }
 
-    function handleRightClick(event: Event) {
-      event.preventDefault();
-      if (!gameActive) return;
+    function handleRightClick(row: number, col: number) {
+      const cell = grid[row][col];
+      if (!gameActive || cell.isRevealed) return;
 
-      const target = event.target as HTMLElement;
-      const row = parseInt(target.getAttribute('data-row') || '');
-      const col = parseInt(target.getAttribute('data-col') || '');
-
-      if (grid[row][col].isRevealed) return;
-
-      if (grid[row][col].isFlagged) {
-        grid[row][col].isFlagged = false;
-        target.classList.remove('flagged');
-        minesLeft++;
-      } else {
-        grid[row][col].isFlagged = true;
-        target.classList.add('flagged');
-        minesLeft--;
-      }
+      cell.isFlagged = !cell.isFlagged;
+      cellAt(row, col).classList.toggle('flagged', cell.isFlagged);
+      minesLeft += cell.isFlagged ? -1 : 1;
 
       mineCounterElement!.textContent = `mines · ${minesLeft}`;
     }
@@ -198,8 +183,9 @@ const difficultyOptions = [
 
       cell.isRevealed = true;
 
-      const cellElement = document.querySelector(`.ms-cell[data-row="${row}"][data-col="${col}"]`) as HTMLElement;
+      const cellElement = cellAt(row, col);
       cellElement.classList.add('revealed');
+      cellElement.dataset.highlight = 'off';
 
       if (cell.isMine) {
         cellElement.classList.add('mine');
@@ -236,6 +222,9 @@ const difficultyOptions = [
 
     function endGame(isWin: boolean) {
       gameActive = false;
+      gridElement!.querySelectorAll<HTMLElement>('.ms-cell').forEach((cell) => {
+        cell.dataset.highlight = 'off';
+      });
       if (timerInterval !== null) clearInterval(timerInterval);
 
       if (isWin) {
@@ -245,8 +234,7 @@ const difficultyOptions = [
         for (let row = 0; row < gameConfig.rows; row++) {
           for (let col = 0; col < gameConfig.cols; col++) {
             if (grid[row][col].isMine && !grid[row][col].isFlagged) {
-              const cellElement = document.querySelector(`.ms-cell[data-row="${row}"][data-col="${col}"]`);
-              cellElement?.classList.add('flagged');
+              cellAt(row, col).classList.add('flagged');
             }
           }
         }
@@ -256,17 +244,12 @@ const difficultyOptions = [
 
         for (let row = 0; row < gameConfig.rows; row++) {
           for (let col = 0; col < gameConfig.cols; col++) {
+            const cellElement = cellAt(row, col);
             if (grid[row][col].isMine) {
-              const cellElement = document.querySelector(`.ms-cell[data-row="${row}"][data-col="${col}"]`);
-              cellElement?.classList.add('revealed');
-              cellElement?.classList.add('mine');
-
-              if (grid[row][col].isFlagged) {
-                cellElement?.classList.add('flagged-correct');
-              }
+              cellElement.classList.add('revealed', 'mine');
+              cellElement.classList.toggle('flagged-correct', grid[row][col].isFlagged);
             } else if (grid[row][col].isFlagged) {
-              const cellElement = document.querySelector(`.ms-cell[data-row="${row}"][data-col="${col}"]`);
-              cellElement?.classList.add('flagged-wrong');
+              cellElement.classList.add('flagged-wrong');
             }
           }
         }
@@ -285,23 +268,18 @@ const difficultyOptions = [
       initGame();
     }
 
-    newGameButton.addEventListener('click', () => {
-      gameStatusElement!.classList.remove('win', 'lose');
-      initGame();
-    });
+    newGameButton.addEventListener('click', initGame);
 
     difficultySelector.addEventListener('change', (event) => {
       const value = (event as CustomEvent).detail?.value;
-      if (!value) return;
-      gameStatusElement!.classList.remove('win', 'lose');
-      changeDifficulty(value);
+      if (value) changeDifficulty(value);
     });
 
     gridElement.addEventListener('contextmenu', (e) => e.preventDefault());
 
-    document.addEventListener('astro:before-swap', () => {
+    untilSwap(() => {
       if (timerInterval !== null) clearInterval(timerInterval);
-    }, { once: true });
+    });
 
     initGame();
   }

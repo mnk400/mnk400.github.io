@@ -130,9 +130,10 @@
 }
 
 // Text takes the accent, secondary lines too, like a link; on a solid or tint
-// box it keeps its colour. (0,3,0) beats the colours links and captions carry.
-:is(a, button, [data-highlight])[data-highlight-active]:not([data-highlight-active="solid"], [data-highlight-active="keep"], [data-highlight-active="tint"]) {
-    &, * {
+// box it keeps its colour. (0,3,0) beats the colours links and captions carry;
+// `*` doesn't reach pseudo-elements so placeholder has to be named.
+:is(a, button, input, [data-highlight])[data-highlight-active]:not([data-highlight-active="solid"], [data-highlight-active="keep"], [data-highlight-active="tint"]) {
+    &, *, &::placeholder, ::placeholder {
         color: var(--accent);
     }
 }

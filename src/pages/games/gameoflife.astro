@@ -15,7 +15,7 @@ import Page from '../../layouts/Page.astro';
       To quickly get started, click the Random button to create a random matrix pattern.
     </p>
     <div id="game-of-life-container" class="stack">
-      <div id="game-of-life-grid"></div>
+      <div id="game-of-life-grid" class="board-grid"></div>
       <div class="toolbar">
         <button id="start-btn" class="normal-btn">Start</button>
         <button id="random-btn" class="normal-btn">Random</button>
@@ -27,6 +27,8 @@ import Page from '../../layouts/Page.astro';
 </Page>
 
 <script>
+  import { untilSwap } from '../../lib/lifecycle.ts';
+
   function initGameOfLife() {
     const gridElement = document.getElementById('game-of-life-grid');
     const startBtn = document.getElementById('start-btn');
@@ -60,6 +62,7 @@ import Page from '../../layouts/Page.astro';
         for (let j = 0; j < cols; j++) {
           const cell = document.createElement('div');
           cell.classList.add('gol-cell');
+          cell.dataset.highlight = '';
           cell.addEventListener('click', () => toggleCell(i, j));
           gridElement!.appendChild(cell);
           cellElements[i][j] = cell;
@@ -149,9 +152,7 @@ import Page from '../../layouts/Page.astro';
     stepBtn.addEventListener('click', step);
     resetBtn.addEventListener('click', reset);
 
-    document.addEventListener('astro:before-swap', () => {
-      if (gameInterval !== null) clearInterval(gameInterval);
-    }, { once: true });
+    untilSwap(stopGame);
 
     buildGrid();
     render();
