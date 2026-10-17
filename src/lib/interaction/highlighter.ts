@@ -1,12 +1,13 @@
 // Hover highlight: one box per scope that glides between targets, grows out of
 // and shrinks back toward the pointer, and leans toward it (after
 // jespervos.com). Mouse, pen and keyboard focus; touch gets touch.ts instead.
-// Bare text gets an accent box behind it; a surface gets a ring around it.
+// Bare text gets an accent box behind it; a surface's box is a little bigger
+// than it and takes over its fill (--highlight-cover).
 // See "Interaction grammar" in docs/style-dna.md.
 import { HIGHLIGHT_TARGETS, NO_FOCUS, NO_HOVER } from './targets.ts';
 import {
-  BOX_KEYS, distanceToRects, dot, goalBox, lineMask, readTarget, scopeOrigin, targetRects,
-  type Box, type Point, type Target,
+  BOX_KEYS, distanceToRects, dot, goalBox, lineMask, lookOf, readTarget, scopeOrigin, targetRects,
+  type Box, type Look, type Point, type Target,
 } from './geometry.ts';
 import type { Scope } from './scopes.ts';
 
@@ -29,7 +30,7 @@ export function configure(next: Partial<HighlighterConfig>): void {
 interface Painted {
   scope: Scope;
   box: Box;
-  kind: 'text' | 'surface';
+  kind: Look;
   mask: string;
   /** Last settled-on box: exits shrink toward the pointer, kept near this. */
   anchor: Box;
@@ -46,6 +47,10 @@ let focused: HTMLElement | null = null;
 // After a click, layout under a still pointer can shift (a panel opens), and
 // whatever lands there shouldn't light up until the pointer actually moves.
 let held: Point | null = null;
+// Surfaces get --highlight-cover, the share of them the box covers (0-1), so
+// their fill thins exactly as the box takes its place and returns as it leaves
+// (highlight-surface in _mixins.scss), with no timer to fall out of step.
+const covered = new Map<HTMLElement, Scope>();
 let frame = 0;
 let lastTime = 0;
 let busyUntil = 0;
@@ -88,11 +93,45 @@ function setTarget(el: HTMLElement | null): void {
   // A target with nowhere to paint is treated as no target at all.
   current = el ? readTarget(el) : null;
   if (!current) return;
-  current.el.setAttribute('data-highlight-active', current.fit === 'surface' ? 'surface' : 'text');
+  current.el.setAttribute('data-highlight-active', current.look);
   resized.observe(current.el);
 }
 
+// Selecting the target under the pointer turns its wash solid.
+function refreshLook(t: Target): void {
+  const look = lookOf(t.el, t.fit);
+  if (look === t.look) return;
+  t.look = look;
+  t.el.setAttribute('data-highlight-active', look);
+}
+
 // --- painting ---------------------------------------------------------------
+
+function coverage(el: HTMLElement, scope: Scope, box: Box): number {
+  const r = el.getBoundingClientRect();
+  if (!r.width || !r.height) return 0;
+  const o = scopeOrigin(scope);
+  const w = Math.min(r.right - o.x, box.x + box.w) - Math.max(r.left - o.x, box.x);
+  const h = Math.min(r.bottom - o.y, box.y + box.h) - Math.max(r.top - o.y, box.y);
+  return w > 0 && h > 0 ? Math.min(1, (w * h) / (r.width * r.height)) : 0;
+}
+
+function trackCover(): void {
+  // A solid row has a fill to hand over too (a selected dropdown option).
+  if (current && current.look !== 'keep' && (current.fit === 'surface' || current.look === 'solid')) {
+    covered.set(current.el, current.scope);
+  }
+  for (const [el, scope] of covered) {
+    const p = painted.get(scope.el);
+    const c = p && el.isConnected ? coverage(el, scope, p.box) : 0;
+    if (c > 0.001) {
+      el.style.setProperty('--highlight-cover', c.toFixed(3));
+    } else {
+      el.style.removeProperty('--highlight-cover');
+      covered.delete(el);
+    }
+  }
+}
 
 function local(scope: Scope): Point {
   const o = scopeOrigin(scope);
@@ -143,6 +182,7 @@ function tick(now: number): void {
   const active = current;
 
   if (active) {
+    refreshLook(active);
     const lean = !focused && !reduced ? local(active.scope) : null;
     const rects = targetRects(active);
     const goal = goalBox(active, rects, lean, config.magnet);
@@ -152,7 +192,7 @@ function tick(now: number): void {
       p = { scope: active.scope, box: focused ? { ...goal } : dot(local(active.scope)), kind: 'text', mask: 'none', anchor: goal };
       painted.set(active.scope.el, p);
     }
-    p.kind = active.fit === 'surface' ? 'surface' : 'text';
+    p.kind = active.look;
     p.mask = lineMask(active, rects);
     p.anchor = goal;
     moving = step(p.box, goal, k);
@@ -171,6 +211,7 @@ function tick(now: number): void {
     else moving = true;
   }
 
+  trackCover();
   if (moving || now < busyUntil) frame = requestAnimationFrame(tick);
   else lastTime = 0;
 }
@@ -192,6 +233,7 @@ function reset(): void {
   held = null;
   for (const p of painted.values()) paint(p, false);
   painted.clear();
+  covered.clear();
 }
 
 // --- wiring -------------------------------------------------------------------
@@ -237,9 +279,11 @@ window.addEventListener('resize', wake, { passive: true });
 document.addEventListener('transitionrun', () => stayBusy(400), { passive: true, capture: true });
 document.addEventListener('animationend', wake, { passive: true, capture: true });
 
+// The focused element may sit inside its target (a gallery tile's image).
 document.addEventListener('focusin', (e) => {
-  const el = (e.target as Element).closest<HTMLElement>(HIGHLIGHT_TARGETS);
-  if (el && el.matches(':focus-visible') && isLive(el, NO_FOCUS)) {
+  const node = e.target as Element;
+  const el = node.closest<HTMLElement>(HIGHLIGHT_TARGETS);
+  if (el && node.matches(':focus-visible') && isLive(el, NO_FOCUS)) {
     focused = el;
     wake();
   }

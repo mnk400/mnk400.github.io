@@ -17,22 +17,21 @@
     width: 100%;
     min-height: var(--control-height-lg);
     padding: var(--spacing-sm) var(--spacing-lg);
-    background-color: var(--translucent-low);
     color: var(--text-color);
     border: none;
     border-radius: var(--radius-lg);
     backdrop-filter: none;
-    transition: background-color var(--transition-medium);
+    transition: --surface-fill var(--transition-medium);
     @include soft-outline;
 
-    @include highlight-surface(var(--translucent-medium));
+    @include highlight-surface(var(--translucent-low), var(--translucent-medium));
 
     .selection-dropdown__chevron {
         transition: transform var(--transition-slow);
     }
 
     &[aria-expanded="true"] {
-        background-color: var(--translucent-medium);
+        --surface-fill: var(--translucent-medium);
 
         .selection-dropdown__chevron {
             transform: rotate(180deg);
@@ -55,7 +54,7 @@
 
 .selection-dropdown__menu {
     display: grid;
-    // Keeps the hover box off the selected row's tint even when they're
+    // Keeps the hover box off the selected row's fill even when they're
     // neighbours: the gap plus the rows' drift.
     gap: var(--spacing-2xs);
     max-height: 240px;
@@ -75,7 +74,7 @@
 
 // Bare rows, like the home archive: no hairlines, the highlighter's box is the
 // hover and the neighbours make room for it. Inset (the margin) and rounded so
-// the selected tint and the hover box are the same shape.
+// the selected fill and the hover box are the same shape.
 .selection-dropdown__option {
     @include highlight-row(0px);
 
@@ -86,17 +85,12 @@
     width: auto;
     margin-inline: var(--spacing-xs);
     padding: var(--spacing-sm) var(--spacing-md);
-    background-color: transparent;
     color: var(--text-color);
     border: none;
     border-radius: var(--radius-sm);
     text-align: left;
     backdrop-filter: none;
-
-    @include hover-fallback {
-        background-color: var(--translucent-medium);
-        color: var(--text-color);
-    }
+    @include highlight-fill(transparent, var(--translucent-medium));
 
     .selection-dropdown__option-check {
         flex: 0 0 auto;
@@ -104,12 +98,12 @@
         transition: opacity var(--transition-fast);
     }
 
-    // A tint, not the inverted fill: next to the rounded selected pills
-    // nearby, a bright full-width slab reads as a header bar. The check
-    // carries the selection; the tint just anchors it.
+    // Selected is the dark fill, as on switch chips; the check makes it
+    // scannable in a long list. Hovered, it hands over to a solid accent box.
     &[aria-selected="true"] {
-        background-color: var(--translucent-medium-high);
-        color: var(--text-color);
+        --surface-fill: var(--contrast-overlay);
+        --highlight-tone: solid;
+        color: var(--background-main);
 
         .selection-dropdown__option-check {
             opacity: 1;

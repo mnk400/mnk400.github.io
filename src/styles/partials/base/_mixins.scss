@@ -34,7 +34,7 @@
     }
 }
 
-// Hover the highlighter (src/lib/highlighter) takes over. Once the module flags
+// Hover the highlighter (src/lib/interaction) takes over. Once the module flags
 // <html data-highlighter>, the box or halo is the hover and this only applies
 // to a touch tap; a page without the module (the CSS export) keeps it as a
 // plain hover. :where() keeps the root check out of the specificity.
@@ -66,7 +66,8 @@
 }
 
 // A row in a list: the box fills the row, $inset in from its sides (and
-// $inset-y from its top and bottom).
+// $inset-y from its top and bottom). A selected row with a fill (highlight-fill)
+// sets --highlight-tone: solid, so the fill hands over to a solid box.
 @mixin highlight-row($inset: var(--spacing-xs), $radius: var(--radius-sm), $inset-y: 0px) {
     --highlight-fit: box;
     --highlight-pad-x: calc(-1 * #{$inset});
@@ -75,21 +76,52 @@
     --highlight-magnet: 0.5;
 }
 
-// Anything with its own fill or outline: the hover is a ring around it and the
-// surface itself doesn't change. $fill / $color are the fallback hover (touch
-// taps, pages without the highlighter); pass null to leave either alone.
-// $radius overrides the ring's radius, else it's the element's own plus 4px.
-@mixin highlight-surface($fill: var(--translucent-medium-high), $color: var(--text-color), $radius: null) {
+// Anything with its own fill or outline: the hover is an accent box 3px
+// bigger than it, and the element's fill thins out exactly as the box covers
+// it (--highlight-cover), so the two hand over with no gap and it ends up one
+// flat accent shape, the way a link does.
+//   $fill    its resting fill, which the mixin then owns: change it later
+//            through --surface-fill (selected, expanded), never
+//            background-color. null leaves the fill alone (opaque on purpose,
+//            or a child carries it: give that child highlight-fill).
+//   $hover   the fallback hover fill (touch taps, pages without the
+//            highlighter); null for none.
+//   $tone    wash (default): a light box, text turns accent. solid: a solid
+//            accent box, text keeps its colour (filled buttons). keep: fill
+//            and colours stay, the box shows around it (swatches, imagery).
+//   $radius  the box's radius, else the element's own plus 3px.
+@mixin highlight-surface($fill: null, $hover: var(--translucent-medium-high), $tone: null, $radius: null) {
     --highlight-fit: surface;
+
+    @if $tone {
+        --highlight-tone: #{$tone};
+    }
 
     @if $radius {
         --highlight-radius: #{$radius};
     }
 
-    @if $fill or $color {
+    @if $fill {
+        @include highlight-fill($fill, $hover);
+    } @else if $hover {
         @include hover-fallback {
-            background-color: $fill;
-            color: $color;
+            background-color: $hover;
+        }
+    }
+}
+
+// The fill half of highlight-surface, for a fill on a child of the target (the
+// cover inherits). Its hairline fades with it. Animate fill changes through
+// `transition: --surface-fill`: background-color follows the box every frame.
+@mixin highlight-fill($fill, $hover: null) {
+    $keep: calc(100% - 100% * var(--highlight-cover, 0));
+    --surface-fill: #{$fill};
+    background-color: color-mix(in srgb, var(--surface-fill) #{$keep}, transparent);
+    outline-color: color-mix(in srgb, var(--translucent-medium) #{$keep}, transparent);
+
+    @if $hover {
+        @include hover-fallback {
+            --surface-fill: #{$hover};
         }
     }
 }
@@ -101,7 +133,7 @@
     > #{$row} {
         transition:
             color var(--transition-medium),
-            background-color var(--transition-medium),
+            --surface-fill var(--transition-medium),
             translate var(--transition-medium);
     }
 

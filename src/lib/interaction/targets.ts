@@ -17,17 +17,15 @@ export const HIGHLIGHT_TARGETS = [
  * around images, whose hover styles (reveal cards) double as tap feedback. */
 export const TAP_TARGETS = `${HIGHLIGHT_TARGETS}, a[href]`;
 
-/** No hover highlight. Selection is read from ARIA state; selected things take
- * no hover. [data-highlight-ignore] marks a child with its own hover (an
- * album-art charm) that hides its parent's highlight while hovered. */
+/** No hover highlight. [data-highlight-ignore] marks a child with its own
+ * hover (an album-art charm) that hides its parent's highlight while hovered.
+ * Selected things do take it: their dark fill hands over to a solid box. */
 export const NO_HOVER = [
   '[data-highlight="off"]',
   ':disabled',
   '[aria-disabled="true"]',
-  '[aria-selected="true"]',
-  '[aria-pressed="true"]',
   ':has([data-highlight-ignore]:hover)',
 ].join(', ');
 
-/** No focus highlight. Selected things keep theirs: it's the focus ring. */
+/** No focus highlight. */
 export const NO_FOCUS = '[data-highlight="off"], :disabled';

@@ -20,9 +20,9 @@
     font-size: 0.9em;
     color: var(--text-color);
     border: none;
-    transition: background-color var(--transition-medium), color var(--transition-medium);
+    transition: --surface-fill var(--transition-medium), color var(--transition-medium);
     @include translucent-surface(var(--translucent-low), 10px);
-    @include highlight-surface(var(--translucent-high));
+    @include highlight-surface(var(--translucent-low), var(--translucent-high));
 }
 
 .image-upload__input {

@@ -76,6 +76,8 @@ function setLoaded(card: HTMLElement, image: HTMLImageElement, ratioBox: HTMLEle
 
 function createCard(item: GalleryItem, index: number, options: RenderOptions): HTMLElement {
   const card = div('image-card image-gallery-card');
+  // One highlight target, caption included; the image inside takes focus.
+  card.dataset.highlight = '';
   const ratioBox = div('image-ratio-box');
   if (item.width && item.height) ratioBox.style.aspectRatio = `${item.width} / ${item.height}`;
   else {
@@ -117,6 +119,8 @@ function createCard(item: GalleryItem, index: number, options: RenderOptions): H
     captionParts.forEach(([className, text]) => {
       if (text) caption.appendChild(div(className, text));
     });
+    // The caption is part of the tile: clicking it opens the photo too.
+    caption.addEventListener('click', () => image.click());
     card.appendChild(caption);
   }
   setLoaded(card, image, ratioBox);

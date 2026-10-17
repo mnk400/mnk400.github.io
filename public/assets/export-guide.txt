@@ -116,7 +116,7 @@ Theme tokens:
     --translucent-high
     --code-bg
     --accent          hover accent; each theme's clears 4.6:1 against its fill
-    --accent-mix      strength of the hover fill (12-28% per theme)
+    --accent-mix      strength of the hover fill (~12% light themes, 18-20% dark)
     --accent-fill     --accent at --accent-mix, translucent
 
 If your project wants persistent theme selection, own it locally:
@@ -203,12 +203,19 @@ Z-index:
 
 Hover:
 
-    On manik.cc a script draws a gliding highlight: a box behind hovered text
-    (which turns --accent) and a halo around hovered surfaces. The script is
-    not exported. Without it, the CSS falls back to plain hovers: links turn
-    --accent, and buttons, chips, toggles and dropdown parts shift their fill.
-    The fallback switches off when <html> carries data-highlighter, so leave
-    that attribute unset unless you draw a highlight of your own.
+    On manik.cc a script draws a gliding highlight: an accent box behind
+    hovered text and over hovered surfaces, which hand their fill over to it.
+    The script is not exported. Without it, the CSS falls back to plain
+    hovers: links turn --accent, and buttons, chips, toggles and dropdown
+    parts shift their fill. The fallback switches off when <html> carries
+    data-highlighter, so leave that attribute unset unless you draw a
+    highlight of your own.
+
+    Controls (.btn, chips, toggles, the dropdown trigger, the search pill,
+    sliders, image upload) paint their fill from --surface-fill, a registered
+    colour property. To restyle a control's fill, set --surface-fill rather
+    than background-color; it transitions, and states like selected and
+    expanded are written the same way.
 
 
 ================================================================================
@@ -320,9 +327,12 @@ and unfilled portions.
 Selection switch visual contract:
 
     <div class="selection-switch" aria-label="View">
-      <button class="switch-option active" type="button">Grid</button>
-      <button class="switch-option" type="button">List</button>
+      <button class="switch-option" type="button" aria-pressed="true">Grid</button>
+      <button class="switch-option" type="button" aria-pressed="false">List</button>
     </div>
+
+The selected option is the one with aria-pressed="true" (there is no .active
+class); keep it in sync from your own click handling.
 
 Add .selection-switch--swatch for taller paint-chip options, each filled with
 its own color. An option paints in --swatch-fill (background) and --swatch-ink
@@ -333,9 +343,9 @@ stays legible. The selected option gets a corner check in its ink instead of
 the dark fill:
 
     <div class="selection-switch selection-switch--swatch" aria-label="Theme">
-      <button class="switch-option active" type="button" data-theme-preview="linen">Linen</button>
-      <button class="switch-option" type="button" data-theme-preview="plum">Plum</button>
-      <button class="switch-option" type="button" style="--swatch-fill: #b6393d; --swatch-ink: #fff">Red</button>
+      <button class="switch-option" type="button" aria-pressed="true" data-theme-preview="linen">Linen</button>
+      <button class="switch-option" type="button" aria-pressed="false" data-theme-preview="plum">Plum</button>
+      <button class="switch-option" type="button" aria-pressed="false" style="--swatch-fill: #b6393d; --swatch-ink: #fff">Red</button>
     </div>
 
 Search pill visual contract (was .site-search before the 2026-08 rename, see
@@ -361,12 +371,12 @@ Selection dropdown visual contract:
         <span class="selection-dropdown__trigger-text">Latest first</span>
       </button>
       <div class="selection-dropdown__menu collapsed" role="listbox">
-        <button class="selection-dropdown__option active" type="button" role="option">Latest first</button>
+        <button class="selection-dropdown__option" type="button" role="option" aria-selected="true">Latest first</button>
       </div>
     </div>
 
-Options are bare rows, inset from the menu edge and rounded; .active takes a
-tint and shows the check. Rows drift apart around [data-highlight-active],
+Options are bare rows, inset from the menu edge and rounded; the one with
+aria-selected="true" takes the dark fill (as a selected chip does) and shows the check. Rows drift apart around [data-highlight-active],
 which only the site's highlight script sets.
 
 These are styles only. Open/close, active state, keyboard handling, and slider

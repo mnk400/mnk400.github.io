@@ -100,14 +100,6 @@
     gap: var(--spacing-md);
 }
 
-// The pre-ring halo, for comparison: the fill showing through surfaces too.
-:root[data-lab-wash] {
-    [data-highlight-slot="before"][data-highlight-kind="surface"]::before,
-    [data-highlight-slot="after"][data-highlight-kind="surface"]::after {
-        background-color: var(--accent-fill);
-    }
-}
-
 // Theme matrix: each cell renders in its own theme (data-theme-preview), with
 // hover states painted still so all nine can be compared side by side.
 .theme-matrix {
@@ -176,6 +168,7 @@
 
 .theme-matrix__chips {
     display: flex;
+    flex-wrap: wrap;
     gap: var(--spacing-sm);
 }
 
@@ -185,8 +178,24 @@
     border-radius: var(--radius-pill);
     background-color: var(--translucent-low);
 
-    // The ring, as an outline: it sits outside the border box and follows the radius.
+    // Under the box: its own fill and hairline gone, one flat wash 3px out
+    // (an outline for the outside, which follows the radius), accent text.
     &.is-on {
-        outline: 4px solid var(--accent-fill);
+        border-color: transparent;
+        outline: 3px solid var(--accent-fill);
+        background-color: var(--accent-fill);
+        color: var(--accent);
+    }
+}
+
+.theme-matrix__btn {
+    padding: var(--spacing-2xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    background-color: var(--contrast-overlay);
+    color: var(--background-main);
+
+    &.is-on {
+        outline: 3px solid var(--accent);
+        background-color: var(--accent);
     }
 }

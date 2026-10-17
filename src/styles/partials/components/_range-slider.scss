@@ -23,21 +23,23 @@
         padding: 0;
         -webkit-appearance: none;
         appearance: none;
-        background-color: var(--translucent-low);
+        // The value is a solid fill, so under the highlight it goes accent,
+        // like a filled button, while the empty track hands over to the wash.
         background-image:
             linear-gradient(
                 to right,
-                var(--contrast-overlay) var(--value-percent),
+                color-mix(in srgb, var(--accent) calc(100% * var(--highlight-cover, 0)), var(--contrast-overlay)) var(--value-percent),
                 transparent var(--value-percent)
             );
         border: none;
         border-radius: var(--radius-md);
         cursor: pointer;
-        transition: background-color var(--transition-medium);
+        transition: --surface-fill var(--transition-medium);
         @include soft-outline;
-        @include highlight-surface(var(--translucent-medium-high), null);
+        @include highlight-surface(var(--translucent-low));
 
-        &:focus-visible {
+        // Only when the highlighter isn't already showing focus with its halo.
+        &:focus-visible:not([data-highlight-active]) {
             outline: 2px solid var(--translucent-high);
             outline-offset: 2px;
         }

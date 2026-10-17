@@ -23,7 +23,7 @@ const {
       const title = useShortTitle ? item.shortTitle ?? item.title : item.title;
 
       return (
-        <a class="archive-index-card" href={item.url} aria-labelledby={titleId}>
+        <a class="archive-index-card" href={item.url} aria-labelledby={titleId} data-highlight>
           <span class="archive-index-card__plate">
             {item.image && (
               <img src={item.image} alt="" loading="lazy" decoding="async" />

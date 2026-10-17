@@ -9,14 +9,15 @@
 // =============================================================================
 .music-widget {
     // A link wrapping an image, so it opts in (data-highlight). The frosted
-    // bar is its child, which owns the fallback hover and the radius.
-    @include highlight-surface(null, null, calc(var(--radius-md) + 4px));
+    // bar is its child, which carries the fill (highlight-fill) and radius.
+    @include highlight-surface(null, null, null, calc(var(--radius-md) + 3px));
 
     display: block;
     text-decoration: none;
     color: inherit;
 
-    &:hover {
+    // Beats the link hover a page without the highlighter shows.
+    @include hover-fallback {
         color: inherit;
     }
 }
@@ -28,20 +29,15 @@
     gap: var(--spacing-md);
     padding: 7px var(--spacing-lg) 7px var(--spacing-md);
     @include translucent-surface(var(--translucent-low), 10px);
-    transition: background-color var(--transition-medium);
+    @include highlight-fill(var(--translucent-low), var(--translucent-medium-high));
+    transition: --surface-fill var(--transition-medium);
     line-height: 1em;
     border-radius: var(--radius-md);
-
-    @include hover-fallback {
-        background-color: var(--translucent-medium-high);
-        color: var(--text-color);
-    }
 
     // The album art is its own charm, clicking it pulses instead of following
     // the link, no need to show widget bar's hover state
     &:has(.music-widget-art-wrapper:hover) {
-        background-color: var(--translucent-low);
-        color: inherit;
+        --surface-fill: var(--translucent-low);
     }
 }
 
@@ -168,10 +164,15 @@
     color: var(--sec-text-color);
     white-space: nowrap;
     opacity: 0;
-    transition: opacity var(--transition-slow);
+    transition: opacity var(--transition-slow), color var(--transition-medium);
 
     &.loaded {
         opacity: 1;
+    }
+
+    // Everything in a hovered target takes the accent, the status included.
+    .music-widget[data-highlight-active] & {
+        color: var(--accent);
     }
 }
 

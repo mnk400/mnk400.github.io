@@ -239,6 +239,9 @@ header:has(.header-breadcrumb) {
 
 .breadcrumb-back {
     @include highlight-text;
+    // A tighter circle than other icons: the name sits close beside it.
+    --highlight-pad-x: 4px;
+    --highlight-pad-y: 4px;
     font-size: 0.9em;
     font-weight: inherit;
     line-height: 1;

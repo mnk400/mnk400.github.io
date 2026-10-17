@@ -35,10 +35,9 @@
         padding: var(--spacing-xs) var(--spacing-md);
         border: none;
         border-radius: var(--radius-pill);
-        background-color: var(--translucent-low);
         color: var(--text-color);
         cursor: pointer;
-        transition: background-color var(--transition-medium), color var(--transition-medium), scale var(--transition-press);
+        transition: --surface-fill var(--transition-medium), color var(--transition-medium), scale var(--transition-press);
 
         @include soft-outline;
 
@@ -46,10 +45,12 @@
             scale: 0.96;
         }
 
-        @include highlight-surface;
+        @include highlight-surface(var(--translucent-low));
 
+        // Selected: the dark fill, which hands over to a solid accent box.
         &[aria-pressed="true"] {
-            background-color: var(--contrast-overlay);
+            --surface-fill: var(--contrast-overlay);
+            --highlight-tone: solid;
             color: var(--background-main);
             outline: none;
         }
@@ -92,9 +93,11 @@
             pointer-events: none;
         }
 
-        @include highlight-surface(color-mix(in srgb, var(--swatch-fill) 92%, var(--swatch-ink)), null);
+        // The fill is what a swatch shows, so it stays, and so does its ink.
+        @include highlight-surface(null, color-mix(in srgb, var(--swatch-fill) 92%, var(--swatch-ink)), keep);
 
         &[aria-pressed="true"] {
+            --highlight-tone: keep;
             background-color: var(--swatch-fill);
             color: var(--swatch-ink);
             @include soft-outline(var(--swatch-edge));

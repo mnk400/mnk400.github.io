@@ -24,7 +24,6 @@
     min-height: var(--control-height-lg);
     line-height: 1;
     padding: var(--spacing-md) var(--spacing-lg);
-    background-color: var(--translucent-low);
     backdrop-filter: blur(10px);
     border: none;
     border-radius: var(--radius-md);
@@ -35,10 +34,10 @@
     align-items: center;
     color: var(--text-color);
     transition:
-        background-color var(--transition-medium),
+        --surface-fill var(--transition-medium),
         color var(--transition-medium);
     @include soft-outline;
-    @include highlight-surface;
+    @include highlight-surface(var(--translucent-low));
 
     .toggle-icon {
         transition: transform var(--transition-slow);

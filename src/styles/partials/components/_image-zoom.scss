@@ -231,6 +231,9 @@ html:has(.image-zoom-overlay[open]) {
     pointer-events: none;
     opacity: 0;
     transition: opacity var(--transition-slow);
+    // Transparent, so the highlighter wouldn't find it on its own; the buttons'
+    // boxes paint here, above the image.
+    @include highlight-scope;
 
     &.active {
         opacity: 1;
@@ -254,23 +257,22 @@ html:has(.image-zoom-overlay[open]) {
     background: transparent;
     border: none;
     border-radius: var(--radius-md);
-    // Inherited from the old global button rule; frosts the photo's edge
-    // under the arrow. Kept as-is pending a decision on whether it's wanted.
-    backdrop-filter: blur(10px);
     cursor: pointer;
     font-size: 1.6em;
     line-height: 1;
     color: var(--sec-text-color);
     transition: color var(--transition-medium);
+    // The whole 48x88 strip takes the pointer; the box sits round the caret.
+    @include highlight-text;
 
     &--prev { left: 8px; }
     &--next { right: 8px; }
 
-    @include hover-interactive {
-        background-color: transparent;
+    @include hover-fallback {
         color: var(--text-color);
     }
 
+    // The highlighter's box is the focus ring.
     &:focus { outline: none; }
 
     &[hidden] { display: none; }
@@ -280,7 +282,7 @@ html:has(.image-zoom-overlay[open]) {
         cursor: default;
         opacity: 0.35;
 
-        @include hover-interactive {
+        @include hover-fallback {
             color: var(--sec-text-color);
         }
     }
@@ -415,12 +417,13 @@ html:has(.image-zoom-overlay[open]) {
     cursor: pointer;
     font-size: 1em;
     line-height: 1;
-    // Quiet at rest, brighten on hover — matches the edge nav so all the
-    // zoom chrome (counter, arrows, close, share) reads as one system.
+    // Quiet at rest like the edge nav, so all the zoom chrome (counter,
+    // arrows, close, share) reads as one system; a round box when hovered.
     color: var(--sec-text-color);
     transition:
         color var(--transition-medium),
         opacity var(--transition-medium);
+    @include highlight-text;
 
     // Extend hit area to the 40x40 minimum without growing the visible glyph.
     &::before {
@@ -429,8 +432,7 @@ html:has(.image-zoom-overlay[open]) {
         inset: -8px;
     }
 
-    @include hover-interactive {
-        background-color: transparent;
+    @include hover-fallback {
         color: var(--text-color);
     }
 
@@ -443,8 +445,7 @@ html:has(.image-zoom-overlay[open]) {
         cursor: default;
         opacity: 0.35;
 
-        @include hover-interactive {
-            background-color: transparent;
+        @include hover-fallback {
             color: var(--sec-text-color);
         }
     }

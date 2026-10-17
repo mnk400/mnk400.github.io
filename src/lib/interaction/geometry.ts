@@ -2,14 +2,33 @@
 // a pure read of layout; the loop in highlighter.ts owns state and painting.
 import { isTransparent, scopeFor, type Scope } from './scopes.ts';
 
-// text: hug the glyphs. box: the element's own box (rows). surface: a ring
-// around the element that stretches toward the pointer instead of sliding.
+// text: hug the glyphs. box: the element's own box (rows). surface: a box a
+// little bigger than the element that stretches toward the pointer instead of
+// sliding.
 export type Fit = 'text' | 'box' | 'surface';
+
+// What a box looks like. wash: a light accent box that takes over the
+// element's fill, text turns accent. solid: a solid accent box, text keeps its
+// colour (filled buttons, selected things, rows too). keep: the element keeps
+// its fill and colours, the box shows around it (swatches, buttons over
+// imagery). Text and rows default to 'text', a surface to wash.
+export type Tone = 'wash' | 'solid' | 'keep';
+export type Look = 'text' | Tone;
+
+/** A target's look. Read every frame, since selecting a target under a still
+ * pointer changes it (wash to solid). */
+export function lookOf(el: HTMLElement, fit: Fit): Look {
+  const tone = getComputedStyle(el).getPropertyValue('--highlight-tone').trim();
+  if (tone === 'solid') return 'solid';
+  if (fit !== 'surface') return 'text';
+  return tone === 'keep' ? 'keep' : 'wash';
+}
 
 export interface Target {
   el: HTMLElement;
   scope: Scope;
   fit: Fit;
+  look: Look;
   inline: boolean;
   /** An icon with no text (the breadcrumb back arrow): gets a round box. */
   iconOnly: boolean;
@@ -20,22 +39,21 @@ export interface Target {
   magnet: number;
 }
 
-/** A box in scope coordinates. bt/br/bb/bl are a surface ring's widths. */
-export interface Box {
-  x: number; y: number; w: number; h: number; r: number;
-  bt: number; br: number; bb: number; bl: number;
-}
+/** A box in scope coordinates. */
+export interface Box { x: number; y: number; w: number; h: number; r: number }
 
 export interface Point { x: number; y: number }
 
-export const BOX_KEYS = ['x', 'y', 'w', 'h', 'r', 'bt', 'br', 'bb', 'bl'] as const;
+export const BOX_KEYS = ['x', 'y', 'w', 'h', 'r'] as const;
 
-export const dot = (p: Point): Box => ({ x: p.x, y: p.y, w: 0, h: 0, r: 0, bt: 0, br: 0, bb: 0, bl: 0 });
+export const dot = (p: Point): Box => ({ x: p.x, y: p.y, w: 0, h: 0, r: 0 });
+
+const ICON_PAD = 6;
 
 const DEFAULTS: Record<Fit, { padX: number; padY: number; magnet: number }> = {
   text: { padX: 4, padY: 2, magnet: 0.35 },
   box: { padX: 10, padY: 6, magnet: 1 },
-  surface: { padX: 4, padY: 4, magnet: 0.6 },
+  surface: { padX: 3, padY: 3, magnet: 0.6 },
 };
 
 // A focus ring is an outline too, but it doesn't make a link a surface.
@@ -60,11 +78,14 @@ export function readTarget(el: HTMLElement): Target | null {
     const value = parseFloat(cs.getPropertyValue(name));
     return Number.isFinite(value) ? value : fallback;
   };
+  // An icon's rect is all ink, where a text run's carries the line's leading
+  // above and below; so an icon gets more room, and a circle (goalBox).
+  const iconOnly = fit === 'text' && !el.textContent?.trim();
   // Prose links sit a comma's width apart; 3px keeps the box off the comma.
-  const padX = num('--highlight-pad-x', fit === 'text' && inline ? 3 : d.padX);
+  const padX = num('--highlight-pad-x', iconOnly ? ICON_PAD : fit === 'text' && inline ? 3 : d.padX);
   let radius: number | null = num('--highlight-radius', NaN);
   if (!Number.isFinite(radius)) {
-    // A ring stays concentric with the corners it wraps.
+    // A surface's box stays concentric with the corners it covers.
     const height = el.getBoundingClientRect().height;
     radius = fit === 'surface' ? Math.min(parseFloat(cs.borderTopLeftRadius) || 0, height / 2) + padX
       : fit === 'box' ? 8 : null;
@@ -73,10 +94,11 @@ export function readTarget(el: HTMLElement): Target | null {
     el,
     scope,
     fit,
+    look: lookOf(el, fit),
     inline,
-    iconOnly: fit === 'text' && !el.textContent?.trim(),
+    iconOnly,
     padX,
-    padY: num('--highlight-pad-y', d.padY),
+    padY: num('--highlight-pad-y', iconOnly ? ICON_PAD : d.padY),
     radius,
     magnet: num('--highlight-magnet', d.magnet),
   };
@@ -152,9 +174,15 @@ export function goalBox(t: Target, rects: DOMRect[], pointer: Point | null, magn
     y: top - t.padY,
     w: right - left + t.padX * 2,
     h: bottom - top + t.padY * 2,
-    r: 0, bt: 0, br: 0, bb: 0, bl: 0,
+    r: 0,
   };
-  box.r = t.radius ?? (t.iconOnly ? Math.min(box.w, box.h) / 2 : clamp(box.h / 5, 4, 6));
+  if (t.iconOnly) {
+    const side = Math.max(box.w, box.h);
+    box.x -= (side - box.w) / 2;
+    box.y -= (side - box.h) / 2;
+    box.w = box.h = side;
+  }
+  box.r = t.radius ?? (t.iconOnly ? box.w / 2 : clamp(box.h / 5, 4, 6));
 
   if (pointer) {
     // Per axis, so a wide bar leans vertically as readily as horizontally.
@@ -162,8 +190,9 @@ export function goalBox(t: Target, rects: DOMRect[], pointer: Point | null, magn
     const ny = clamp((pointer.y - (box.y + box.h / 2)) / (box.h / 2 + 24), -1, 1);
     const max = magnet * t.magnet;
     if (t.fit === 'surface') {
-      // Never past half the pad: neighbours sit a pad's width away.
-      const reach = Math.min(max, t.padX / 2);
+      // A 2px nudge whatever the halo's size: enough to feel the pull, and
+      // clear of neighbours, which sit at least a gutter away.
+      const reach = Math.min(max, 2);
       const lx = nx * reach, ly = ny * reach;
       if (lx < 0) box.x += lx;
       if (ly < 0) box.y += ly;
@@ -187,14 +216,6 @@ export function goalBox(t: Target, rects: DOMRect[], pointer: Point | null, magn
     box.h = Math.max(0, Math.min(box.y + box.h, el.scrollHeight) - y0);
     box.x = x0;
     box.y = y0;
-  }
-
-  if (t.fit === 'surface') {
-    const el = t.el.getBoundingClientRect();
-    box.bt = Math.max(0, el.top - o.y - box.y);
-    box.bl = Math.max(0, el.left - o.x - box.x);
-    box.bb = Math.max(0, box.y + box.h - (el.bottom - o.y));
-    box.br = Math.max(0, box.x + box.w - (el.right - o.x));
   }
   return box;
 }

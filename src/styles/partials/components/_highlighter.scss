@@ -9,7 +9,7 @@
 
 // The engine writes the box onto its scope every frame. Non-inheriting, so a
 // per-frame write restyles the scope alone, not its whole subtree.
-@each $name in x, y, w, h, r, bt, br, bb, bl {
+@each $name in x, y, w, h, r {
     @property --highlight-#{$name} {
         syntax: "<length>";
         inherits: false;
@@ -50,6 +50,20 @@
     initial-value: off;
 }
 
+@property --highlight-tone {
+    syntax: "wash | solid | keep";
+    inherits: false;
+    initial-value: wash;
+}
+
+// How much of a surface the box covers, 0-1, written every frame while it
+// moves. Inherits, so a fill on a child (highlight-fill) can read it.
+@property --highlight-cover {
+    syntax: "<number>";
+    inherits: true;
+    initial-value: 0;
+}
+
 @property --highlight-z {
     syntax: "<integer>";
     inherits: false;
@@ -74,7 +88,7 @@
 [data-highlight-slot="before"]::before,
 [data-highlight-slot="after"]::after {
     // Pseudo-elements don't inherit non-inheriting properties unless asked.
-    @each $name in x, y, w, h, r, bt, br, bb, bl, mask, z {
+    @each $name in x, y, w, h, r, mask, z {
         --highlight-#{$name}: inherit;
     }
 
@@ -83,11 +97,8 @@
     top: 0;
     left: 0;
     z-index: var(--highlight-z);
-    box-sizing: border-box;
     width: var(--highlight-w);
     height: var(--highlight-h);
-    border: 0 solid var(--accent-fill);
-    border-width: var(--highlight-bt) var(--highlight-br) var(--highlight-bb) var(--highlight-bl);
     border-radius: var(--highlight-r);
     transform: translate3d(var(--highlight-x), var(--highlight-y), 0);
     background-color: var(--accent-fill);
@@ -102,10 +113,10 @@
         background-color var(--transition-medium);
 }
 
-// A surface keeps its own look: only the ring around it is painted.
-[data-highlight-slot="before"][data-highlight-kind="surface"]::before,
-[data-highlight-slot="after"][data-highlight-kind="surface"]::after {
-    background-color: transparent;
+// On a filled button the box is solid: the button stays solid, in the accent.
+[data-highlight-slot="before"][data-highlight-kind="solid"]::before,
+[data-highlight-slot="after"][data-highlight-kind="solid"]::after {
+    background-color: var(--accent);
 }
 
 [data-highlight-slot="before"][data-highlight-visible]::before,
@@ -117,14 +128,16 @@
         background-color var(--transition-medium);
 }
 
-// Text takes the accent; a surface keeps its colours inside the ring.
-// :is() lifts this to (0,2,0) so it beats the `.parent > a` colour rules
-// links pick up around the site.
-:is(a, button, [data-highlight])[data-highlight-active="text"] {
+// Text takes the accent, on a wash too, like a link. On a solid box it keeps
+// its colour (page-coloured on the accent). :is() lifts this to (0,2,0) so it
+// beats the `.parent > a` colour rules links pick up around the site.
+:is(a, button, [data-highlight]):is([data-highlight-active="text"], [data-highlight-active="wash"]) {
     color: var(--accent);
 }
 
-// The box is the focus ring while it's on a target.
-[data-highlight-active]:focus-visible {
+// The box is the focus ring while it's on a target. Zero specificity: it only
+// needs to beat the browser's ring, and a surface's own hairline outline wins.
+// The focus can sit inside the target (a gallery tile's image).
+:where([data-highlight-active]:focus-visible, [data-highlight-active] :focus-visible) {
     outline: none;
 }

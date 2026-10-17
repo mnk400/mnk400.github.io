@@ -29,10 +29,21 @@
     min-width: 0;
     color: inherit;
     text-decoration: none;
+    // The whole card is one target (data-highlight: it wraps an image). The
+    // painting keeps its pixels and the caption sits on the wash. The card has
+    // no padding of its own, so the box brings it: a mat around the painting,
+    // room around the caption. Its hairlines fade as the box covers them.
+    --highlight-pad-x: var(--spacing-sm);
+    --highlight-pad-y: var(--spacing-sm);
+    --card-keep: calc(100% - 100% * var(--highlight-cover, 0));
+    @include highlight-surface(null, null, null, calc(var(--radius-md) + var(--spacing-sm)));
 
-    // These links wrap a whole block (and an image, so the highlighter skips
-    // them); the plate's hairline carries the hover instead.
-    @include hover-interactive {
+    // All of the caption takes the accent, secondary lines too, like a link.
+    &[data-highlight-active] .archive-index-card__caption span {
+        color: var(--accent);
+    }
+
+    @include hover-fallback {
         color: inherit;
 
         .archive-index-card__plate {
@@ -52,8 +63,7 @@
     overflow: hidden;
     border-radius: var(--radius-md);
     background-color: var(--translucent-low);
-    @include soft-outline(var(--translucent-medium));
-    transition: outline-color var(--transition-medium);
+    @include soft-outline(color-mix(in srgb, var(--translucent-medium) var(--card-keep), transparent));
 
     img {
         display: block;
@@ -88,7 +98,7 @@
     gap: var(--spacing-2xs);
     min-width: 0;
     padding-top: var(--spacing-sm);
-    border-top: 1px solid var(--translucent-medium);
+    border-top: 1px solid color-mix(in srgb, var(--translucent-medium) var(--card-keep), transparent);
 }
 
 .archive-index-card__heading {
@@ -107,13 +117,14 @@
     line-height: 1.3;
     text-overflow: ellipsis;
     white-space: nowrap;
+    transition: color var(--transition-medium);
 }
 
 .archive-index-card__arrow {
     display: inline-flex;
     align-items: center;
     color: var(--sec-text-color);
-    transition: none;
+    transition: color var(--transition-medium);
 }
 
 .archive-index-card__sub {
@@ -125,6 +136,7 @@
     line-height: 1.3;
     text-overflow: ellipsis;
     white-space: nowrap;
+    transition: color var(--transition-medium);
 }
 
 .archive-index-card__body {
@@ -138,6 +150,7 @@
     color: var(--sec-text-color);
     font-size: 0.8em;
     line-height: 1.4;
+    transition: color var(--transition-medium);
 }
 
 // Mobile holds 2 columns. Full-width plates turn the 15-painter hub into
@@ -276,10 +289,9 @@
     justify-content: center;
     border-radius: var(--radius-md);
     color: var(--text-color);
-    background-color: var(--translucent-low);
     backdrop-filter: none;
     @include soft-outline;
-    @include highlight-surface;
+    @include highlight-surface(var(--translucent-low));
 }
 
 .historical-browser-go-btn {

@@ -141,6 +141,15 @@ $themes: (
     }
 }
 
+// A surface's resting fill (highlight-surface / highlight-fill in _mixins).
+// Registered as a colour so fill changes (selected, expanded, theme) can
+// transition while background-color tracks the hover highlight every frame.
+@property --surface-fill {
+    syntax: "<color>";
+    inherits: false;
+    initial-value: transparent;
+}
+
 // Spacing Scale
 :root {
     --spacing-2xs: 2px;
@@ -190,7 +199,7 @@ $themes: (
 
     // Motion tokens (shared by view transitions + reveal)
     --motion-slide-offset: 8px;
-    // How far a hovered row's neighbours drift apart (make-room mixin)
+    // How far a hovered row's neighbours drift apart (highlight-rows mixin)
     --motion-make-room: 2px;
 
     // Z-index scale

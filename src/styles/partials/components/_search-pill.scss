@@ -71,15 +71,14 @@
 
 .search-pill__trigger {
     justify-content: center;
-    background-color: var(--translucent-low);
     color: var(--text-color);
     backdrop-filter: none;
     transition:
         opacity var(--transition-slow),
         transform var(--transition-slow),
-        background-color var(--transition-medium),
+        --surface-fill var(--transition-medium),
         color var(--transition-medium);
-    @include highlight-surface;
+    @include highlight-surface(var(--translucent-low));
 }
 
 .search-pill i {

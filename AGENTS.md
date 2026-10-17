@@ -96,6 +96,35 @@ elsewhere) and a `--type-*` size scale, both in `_variables.scss`. See `docs/sty
   fetch **fails the build** unless `ALLOW_README_FALLBACK=true`, which exists only for
   intentionally building placeholder product pages.
 
+### Hover and Tap Feedback
+
+`src/lib/interaction/` (loaded once from `Default.astro`) draws the hover highlight: an accent
+box behind text, an accent halo behind surfaces, gliding between targets. Touch gets a
+`.touch-hover` tap class instead. The rules are in `docs/style-dna.md` → "Interaction grammar".
+
+**Adding hover to an element:**
+
+1. Links, `<button>`s, `<select>`s and range/colour inputs are targets already. Anything else
+   that's clickable (or a link wrapping an image) needs `data-highlight` in its markup;
+   `data-highlight="off"` opts out.
+2. In the component's SCSS partial, declare its kind with one mixin from `_mixins.scss`:
+   `highlight-text`, `highlight-row($inset)`, or `highlight-surface($fill, $hover, $tone)`. A list
+   of rows also gets `highlight-rows` on its container. Undeclared targets are inferred (surface
+   if they have a fill or outline, else text), so declare whenever the guess would be wrong.
+3. Don't add a `:hover` fill or colour change: the highlight is the hover. `highlight-surface`
+   owns the element's fill (`$fill`) so it can hand it over to the box; change it later through
+   `--surface-fill` (and transition `--surface-fill`), never `background-color`. `$hover` is the
+   fallback for touch and no-JS; `$tone: solid` for filled buttons, `keep` when the fill is content.
+4. Selected state is ARIA (`aria-pressed`, `aria-selected`), never a class. Selected is the dark
+   fill (set through `--surface-fill`) plus `--highlight-tone: solid`, so hovering it shows a
+   solid accent box.
+
+The highlight paints inside the nearest "scope" (a frosted, filled or scrolling ancestor, or
+one declared with `highlight-scope`), so it can be clipped by that ancestor. If a highlight is
+cut off, give the scope room the way `.selection-switch-wrap` does (padding plus equal negative
+margin). Check new work on the dev-only lab at `/lab/hover/` (`src/pages/lab/[page].astro`),
+which also shows every theme at once.
+
 ### Cloudflare Pages Functions
 
 `functions/{archive,art,photos}/_middleware.ts` are 2-line re-exports of the shared handler in
