@@ -1,0 +1,130 @@
+@use "../base/mixins" as *;
+
+// =============================================================================
+// HIGHLIGHTER — src/lib/interaction
+// =============================================================================
+// Components opt in through the highlight-* mixins in _mixins.scss; this file
+// is the machinery they configure. Site-only: the CSS export ships the
+// hover-fallback hovers instead.
+
+// The engine writes the box onto its scope every frame. Non-inheriting, so a
+// per-frame write restyles the scope alone, not its whole subtree.
+@each $name in x, y, w, h, r, bt, br, bb, bl {
+    @property --highlight-#{$name} {
+        syntax: "<length>";
+        inherits: false;
+        initial-value: 0px;
+    }
+}
+
+@property --highlight-mask {
+    syntax: "*";
+    inherits: false;
+}
+
+// Per-target tuning, read once when a target is picked up. `auto` defers to
+// the engine's defaults for the target's fit.
+@each $name in pad-x, pad-y, radius {
+    @property --highlight-#{$name} {
+        syntax: "<length> | auto";
+        inherits: false;
+        initial-value: auto;
+    }
+}
+
+@property --highlight-magnet {
+    syntax: "<number> | auto";
+    inherits: false;
+    initial-value: auto;
+}
+
+@property --highlight-fit {
+    syntax: "text | box | surface | auto";
+    inherits: false;
+    initial-value: auto;
+}
+
+@property --highlight-scope {
+    syntax: "on | off";
+    inherits: false;
+    initial-value: off;
+}
+
+@property --highlight-z {
+    syntax: "<integer>";
+    inherits: false;
+    initial-value: -1;
+}
+
+// The page itself is the outermost scope.
+.wrapper {
+    @include highlight-scope;
+}
+
+// isolation makes the scope a stacking context, which is what lets z-index -1
+// paint above the scope's own fill and still below its content.
+[data-highlight-slot] {
+    isolation: isolate;
+}
+
+[data-highlight-slot][data-highlight-static] {
+    position: relative;
+}
+
+[data-highlight-slot="before"]::before,
+[data-highlight-slot="after"]::after {
+    // Pseudo-elements don't inherit non-inheriting properties unless asked.
+    @each $name in x, y, w, h, r, bt, br, bb, bl, mask, z {
+        --highlight-#{$name}: inherit;
+    }
+
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: var(--highlight-z);
+    box-sizing: border-box;
+    width: var(--highlight-w);
+    height: var(--highlight-h);
+    border: 0 solid var(--accent-fill);
+    border-width: var(--highlight-bt) var(--highlight-br) var(--highlight-bb) var(--highlight-bl);
+    border-radius: var(--highlight-r);
+    transform: translate3d(var(--highlight-x), var(--highlight-y), 0);
+    background-color: var(--accent-fill);
+    // One rounded rect per line for a link that wraps; none otherwise.
+    mask-image: var(--highlight-mask, none);
+    mask-size: 100% 100%;
+    mask-repeat: no-repeat;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+        opacity var(--transition-medium),
+        background-color var(--transition-medium);
+}
+
+// A surface keeps its own look: only the ring around it is painted.
+[data-highlight-slot="before"][data-highlight-kind="surface"]::before,
+[data-highlight-slot="after"][data-highlight-kind="surface"]::after {
+    background-color: transparent;
+}
+
+[data-highlight-slot="before"][data-highlight-visible]::before,
+[data-highlight-slot="after"][data-highlight-visible]::after {
+    opacity: 1;
+    // Quick in, soft out.
+    transition:
+        opacity var(--transition-fast),
+        background-color var(--transition-medium);
+}
+
+// Text takes the accent; a surface keeps its colours inside the ring.
+// :is() lifts this to (0,2,0) so it beats the `.parent > a` colour rules
+// links pick up around the site.
+:is(a, button, [data-highlight])[data-highlight-active="text"] {
+    color: var(--accent);
+}
+
+// The box is the focus ring while it's on a target.
+[data-highlight-active]:focus-visible {
+    outline: none;
+}

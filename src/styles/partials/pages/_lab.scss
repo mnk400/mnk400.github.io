@@ -1,0 +1,109 @@
+@use "../base/mixins" as *;
+
+// =============================================================================
+// HOVER LAB — src/pages/lab/[page].astro (dev only)
+// =============================================================================
+
+.hover-lab {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2xl);
+}
+
+.hover-lab__section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+
+    h2 {
+        margin: 0;
+    }
+}
+
+.hover-lab__note {
+    @include meta-text;
+    margin: 0;
+    color: var(--sec-text-color);
+
+    b {
+        font-weight: 400;
+        color: var(--text-color);
+    }
+}
+
+// Tuning sits last in the flow and sticks to the bottom, so it stays in reach
+// while scrolling through the variants above it.
+.hover-lab__panel {
+    position: sticky;
+    bottom: var(--spacing-md);
+    z-index: var(--z-sticky);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-sm) var(--spacing-lg);
+    padding: var(--spacing-md) var(--spacing-lg);
+    @include slip;
+}
+
+.hover-lab__control {
+    display: grid;
+    grid-template-columns: 4em minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--spacing-sm);
+    @include meta-text;
+    color: var(--sec-text-color);
+
+    input[type="range"],
+    select {
+        width: 100%;
+        min-width: 0;
+        margin: 0;
+    }
+
+    input[type="color"] {
+        width: var(--control-height-xs);
+        height: var(--control-height-xs);
+    }
+
+    output {
+        min-width: 3ch;
+        text-align: right;
+    }
+}
+
+// Inline links ------------------------------------------------------------------
+
+.hover-lab__prose {
+    margin: 0;
+    font-size: var(--type-body);
+    line-height: 1.7;
+    color: var(--sec-text-color);
+
+    a {
+        line-height: inherit;
+        color: var(--text-color);
+        font-weight: 300;
+    }
+}
+
+.hover-lab__post {
+    margin: 0;
+    font-size: var(--type-body);
+    line-height: 1.65;
+
+    a {
+        line-height: inherit;
+    }
+}
+
+.hover-lab__buttons {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+// The pre-ring halo, for comparison: the fill showing through surfaces too.
+:root[data-lab-wash] {
+    [data-highlight-slot="before"][data-highlight-kind="surface"]::before,
+    [data-highlight-slot="after"][data-highlight-kind="surface"]::after {
+        background-color: var(--accent-fill);
+    }
+}

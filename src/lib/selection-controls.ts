@@ -112,16 +112,22 @@ function setupSwitchOverflow(container: HTMLElement) {
   schedule();
 }
 
+/** Marks the option whose value matches as pressed; the rest unpressed. */
+export function setSwitchValue(container: HTMLElement, value: string) {
+  container.querySelectorAll<HTMLElement>('.switch-option').forEach((opt) => {
+    opt.setAttribute('aria-pressed', String((opt.dataset.value || opt.id) === value));
+  });
+}
+
 export function initSelectionSwitch(container: HTMLElement) {
   if (container.dataset.switchInitialized === 'true') return;
   container.dataset.switchInitialized = 'true';
 
-  const options = Array.from(container.querySelectorAll<HTMLElement>('.switch-option'));
-  options.forEach((option) => {
+  container.querySelectorAll<HTMLElement>('.switch-option').forEach((option) => {
     option.addEventListener('click', () => {
-      options.forEach((other) => other.classList.remove('active'));
-      option.classList.add('active');
-      dispatchChange(container, option.dataset.value || option.id, option);
+      const value = option.dataset.value || option.id;
+      setSwitchValue(container, value);
+      dispatchChange(container, value, option);
     });
   });
 
@@ -137,12 +143,14 @@ export function createSelectionSwitch(config: SwitchConfig): HTMLElement {
 
   const active = config.active ?? config.options[0]?.value;
   config.options.forEach((opt) => {
-    const span = document.createElement('span');
-    span.className = 'switch-option' + (opt.value === active ? ' active' : '');
-    span.dataset.value = opt.value;
-    span.textContent = opt.label;
-    Object.entries(swatchAttributes(opt.swatch)).forEach(([name, value]) => span.setAttribute(name, value));
-    el.appendChild(span);
+    const option = document.createElement('button');
+    option.type = 'button';
+    option.className = 'switch-option';
+    option.setAttribute('aria-pressed', String(opt.value === active));
+    option.dataset.value = opt.value;
+    option.textContent = opt.label;
+    Object.entries(swatchAttributes(opt.swatch)).forEach(([name, value]) => option.setAttribute(name, value));
+    el.appendChild(option);
   });
 
   initSelectionSwitch(el);
@@ -175,9 +183,7 @@ export function initSelectionDropdown(container: HTMLElement) {
     if (!activeOption) return;
 
     options.forEach((opt) => {
-      const isActive = opt === activeOption;
-      opt.classList.toggle('active', isActive);
-      opt.setAttribute('aria-selected', String(isActive));
+      opt.setAttribute('aria-selected', String(opt === activeOption));
     });
     const label = activeOption.querySelector('.selection-dropdown__option-label');
     triggerTextEl.textContent = (label || activeOption).textContent;
@@ -189,7 +195,7 @@ export function initSelectionDropdown(container: HTMLElement) {
     triggerEl.setAttribute('aria-expanded', String(open));
   }
 
-  const initial = options.find((opt) => opt.classList.contains('active')) || options[0];
+  const initial = options.find((opt) => opt.getAttribute('aria-selected') === 'true') || options[0];
   setActive(initial.dataset.value || '', false);
   setOpen(false);
 
@@ -243,7 +249,7 @@ export function createSelectionDropdown(config: DropdownConfig): HTMLElement {
   config.options.forEach((opt) => {
     const option = document.createElement('button');
     option.type = 'button';
-    option.className = 'selection-dropdown__option' + (opt.value === active ? ' active' : '');
+    option.className = 'selection-dropdown__option';
     option.dataset.value = opt.value;
     option.setAttribute('role', 'option');
     option.setAttribute('aria-selected', String(opt.value === active));

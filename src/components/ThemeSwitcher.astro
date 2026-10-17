@@ -9,12 +9,7 @@ const SWITCH_ID = 'themeSwitch';
 
 <script>
   import { setTheme, getActiveTheme } from '../lib/theme.ts';
-
-  function syncActive(switchEl: HTMLElement, value: string) {
-    switchEl.querySelectorAll<HTMLElement>('.switch-option').forEach(opt => {
-      opt.classList.toggle('active', opt.dataset.value === value);
-    });
-  }
+  import { setSwitchValue as syncActive } from '../lib/selection-controls.ts';
 
   function wire() {
     const sw = document.getElementById('themeSwitch');

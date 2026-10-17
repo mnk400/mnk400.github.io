@@ -17,11 +17,17 @@ A small, quiet, airy personal site: thin type on soft themed canvases, transluce
 
 ## Interaction grammar
 
-- **Hover** = subtle: links get a translucent underline (2px offset) + italic; buttons/cards shift background to `--contrast-overlay-hover` or `--translucent-medium`. Always guarded with `@media (any-hover: hover)`, with the `.touch-hover` JS class as the touch fallback (`hover-interactive` mixin).
-- **Press** = `scale: 0.96` on `:active`, `--transition-fast`. Never pair press-scale with a same-click text swap / icon rotate / panel expand.
+- **Hover** = the highlighter (`src/lib/highlighter`): one box per scope that glides between clickables, grows out of and shrinks into the cursor, and leans toward it. Two kinds of target, never mixed:
+    - **Bare text** (links, text buttons, rows): the box sits behind the glyphs (rows: behind the row, inset from the card) in `--accent-fill`, and the text turns `--accent`.
+    - **Surfaces** (anything with its own fill or outline: buttons, chips, toggles, the dropdown trigger, the music bar): the surface doesn't change at all. The hover is a **halo** a few px outside it, concentric with its corners, that stretches toward the pointer rather than sliding, so it never uncovers the element.
+    - Old fill-shift hovers live on only as the `hover-fallback` mixin: touch taps (`.touch-hover`) and pages without the module. No italics, no underlines.
+    - Selected things (dark fill, `.active`, `aria-selected`) take no hover at all.
+    - **Rows make room**: bare rows have no hairlines; the rows either side of the hovered one drift `--motion-make-room` (2px) apart, opening a gap around the box (`make-room` mixin). The box never touches another tinted thing: rows that can sit next to a selected tint (the dropdown) keep a `--spacing-2xs` gap on top of the drift. The drift runs on `--transition-medium` so it lands with the box.
+    - **Accents** are per theme and each clears 4.6:1 against its own fill, because the text on it is weight 200. Re-check contrast when changing an accent or `--accent-mix`.
+- **Press** = `scale: 0.96` on `:active`, `--transition-fast`, on surfaces only (the halo follows the press, since the engine measures every frame). Never pair press-scale with a same-click text swap / icon rotate / panel expand.
 - **Entrances** = fade + `translateY(var(--motion-slide-offset))` (8px), staggered 60ms (`_reveal.scss`). Same language as the directional view transitions (`_view-transitions.scss`): forward slides up, back slides down, header crossfades, background never animates.
 - **Collapse/expand** = `expanding-collapsible` mixin (max-height + opacity + margins over `--transition-slow`).
-- **Easing** = `cubic-bezier(0.4, 0, 0.2, 1)` everywhere, durations only via `--transition-fast/medium/slow/backdrop/slowest`.
+- **Easing** = `cubic-bezier(0.4, 0, 0.2, 1)` everywhere, durations only via `--transition-fast/medium/slow/backdrop/slowest`. The one exception is the highlighter's glide: a frame-rate-corrected exponential follow (it chases a moving pointer, so it can't be a fixed-duration curve), settling in about `--transition-medium`.
 - **Reduced motion** is honored: transforms removed, durations collapsed (see `_reveal.scss` pattern).
 - **Filters highlight, they don't hide** (on index pages written as prose, e.g. `/more`). Nothing is ever removed: a chip dims everything outside its category, search dims every name that doesn't match (across all categories, so a match stays lit even inside a dimmed sentence), both via a `color-mix` of `--sec-text-color`. A chip is a deliberate choice, so it fades harder (~22%) than live search does (~45%). The one layout change allowed is opening an "and N more" fold that holds what was asked for.
 

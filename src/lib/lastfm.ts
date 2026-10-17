@@ -1,3 +1,5 @@
+import { setSwitchValue } from './selection-controls.ts';
+
 const USERNAME = 'mnk_400';
 const API_KEY = '15606af7854e910d497469811c1ddbd4';
 const PLACEHOLDER = '/assets/images/site/album-placeholder.png';
@@ -170,11 +172,6 @@ export function initMusicPage() {
   let currentView = 'albums';
   let currentPeriod = '7day';
 
-  function setSwitchActive(container: HTMLElement, value: string) {
-    container.querySelectorAll<HTMLElement>('.switch-option').forEach((opt) => {
-      opt.classList.toggle('active', opt.dataset.value === value);
-    });
-  }
 
   function fadeOutGrid(): Promise<void> {
     return new Promise((resolve) => {
@@ -288,8 +285,8 @@ export function initMusicPage() {
     const value = (event as CustomEvent).detail?.value;
     if (!value) return;
     currentView = value;
-    setSwitchActive(viewToggle, currentView);
-    setSwitchActive(periodToggle, currentPeriod);
+    setSwitchValue(viewToggle, currentView);
+    setSwitchValue(periodToggle, currentPeriod);
     await fadeOutGrid();
     fetchData();
   });
@@ -298,8 +295,8 @@ export function initMusicPage() {
     const value = (event as CustomEvent).detail?.value;
     if (!value) return;
     currentPeriod = value;
-    setSwitchActive(viewToggle, currentView);
-    setSwitchActive(periodToggle, currentPeriod);
+    setSwitchValue(viewToggle, currentView);
+    setSwitchValue(periodToggle, currentPeriod);
     await fadeOutGrid();
     fetchData();
   });

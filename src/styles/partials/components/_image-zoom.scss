@@ -149,8 +149,6 @@ html:has(.image-zoom-overlay[open]) {
     @include hover-interactive {
         background-color: var(--background-main);
         color: transparent;
-        font-style: normal;
-        text-decoration: none;
     }
 
     &:focus,
@@ -256,6 +254,9 @@ html:has(.image-zoom-overlay[open]) {
     background: transparent;
     border: none;
     border-radius: var(--radius-md);
+    // Inherited from the old global button rule; frosts the photo's edge
+    // under the arrow. Kept as-is pending a decision on whether it's wanted.
+    backdrop-filter: blur(10px);
     cursor: pointer;
     font-size: 1.6em;
     line-height: 1;

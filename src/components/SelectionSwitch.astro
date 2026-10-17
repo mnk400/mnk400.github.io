@@ -16,12 +16,14 @@ const classes = switchClasses(variant, extraClass);
 ---
 <div class={classes} id={id} data-selection-switch>
   {options.map(opt => (
-    <span
+    <button
+      type="button"
       id={opt.value}
-      class:list={['switch-option', { active: opt.value === activeValue }]}
+      class="switch-option"
+      aria-pressed={opt.value === activeValue ? 'true' : 'false'}
       data-value={opt.value}
       {...swatchAttributes(opt.swatch)}
-    >{opt.label}</span>
+    >{opt.label}</button>
   ))}
 </div>
 

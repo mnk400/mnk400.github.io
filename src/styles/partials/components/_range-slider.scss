@@ -35,10 +35,7 @@
         cursor: pointer;
         transition: background-color var(--transition-medium);
         @include soft-outline;
-
-        @include hover-interactive {
-            background-color: var(--translucent-medium-high);
-        }
+        @include highlight-surface(var(--translucent-medium-high), null);
 
         &:focus-visible {
             outline: 2px solid var(--translucent-high);

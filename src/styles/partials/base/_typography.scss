@@ -1,3 +1,5 @@
+@use "mixins" as *;
+
 // =============================================================================
 // TYPOGRAPHY
 // =============================================================================
@@ -74,20 +76,10 @@ a {
     text-decoration: none;
     transition: color var(--transition-medium);
 
-    @media (any-hover: hover) {
-        &:hover {
-            text-decoration: underline;
-            text-decoration-color: var(--translucent-high);
-            text-underline-offset: 2px;
-            font-style: italic;
-        }
-    }
-
-    &.touch-hover {
-        text-decoration: underline;
-        text-decoration-color: var(--translucent-high);
-        text-underline-offset: 2px;
-        font-style: italic;
+    // With the highlighter running, the accent arrives with its box
+    // ([data-highlight-active] in _highlighter.scss).
+    @include hover-fallback {
+        color: var(--accent);
     }
 }
 

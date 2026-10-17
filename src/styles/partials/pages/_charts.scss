@@ -29,7 +29,7 @@
     }
 
     .legend-item {
-        @include button-as-text;
+        font: inherit;
         display: flex;
         align-items: center;
         gap: var(--spacing-xs);

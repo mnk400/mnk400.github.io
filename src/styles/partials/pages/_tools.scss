@@ -30,12 +30,10 @@
     color: inherit;
     text-decoration: none;
 
-    // These links wrap a whole block, so the global link hover (italic +
-    // underline) has to be stamped out; the plate's hairline carries it instead.
+    // These links wrap a whole block (and an image, so the highlighter skips
+    // them); the plate's hairline carries the hover instead.
     @include hover-interactive {
         color: inherit;
-        font-style: normal;
-        text-decoration: none;
 
         .archive-index-card__plate {
             outline-color: var(--translucent-high);
@@ -276,12 +274,12 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    border-radius: var(--radius-md);
     color: var(--text-color);
     background-color: var(--translucent-low);
     backdrop-filter: none;
     @include soft-outline;
-
-    @include hover-state-subtle;
+    @include highlight-surface;
 }
 
 .historical-browser-go-btn {
@@ -319,7 +317,9 @@
     @include soft-outline;
     overflow: hidden;
 
+    // Segments share one pill, so each highlights like a row inside it.
     .browser-control-button--segment {
+        @include highlight-row(var(--spacing-2xs), var(--radius-sm), var(--spacing-2xs));
         background-color: transparent;
         outline: none;
         border-radius: 0;

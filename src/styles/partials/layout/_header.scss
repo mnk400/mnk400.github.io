@@ -71,12 +71,15 @@ header {
     pointer-events: none;
 }
 
-// Settings panel
+// Settings panel. The reveal clips (overflow: hidden), so the panel reaches
+// spacing-sm into the gutter and pads it back: room for the swatches' hover
+// halos with nothing inside moving.
 .settings-panel {
     @extend .header-reveal;
+    margin-inline: calc(-1 * var(--spacing-sm));
 
     .settings-panel-inner {
-        padding: var(--spacing-md) 2px 0;
+        padding: var(--spacing-md) calc(var(--spacing-sm) + 2px) 0;
     }
 }
 
@@ -170,19 +173,11 @@ header:has(.header-breadcrumb) {
 }
 
 .site-name {
-    @include button-as-text;
     font-size: 1.5em;
-    font-weight: 400 !important; // override global `button { font-weight: 300 !important }`
+    font-weight: 400;
     letter-spacing: -0.02em;
-    text-decoration: none;
     color: var(--text-color);
     line-height: inherit;
-
-    &:hover {
-        color: var(--text-color);
-        text-decoration: none;
-        font-style: normal;
-    }
 }
 
 .site-name-menu {
@@ -206,13 +201,6 @@ header:has(.header-breadcrumb) {
             opacity var(--transition-medium),
             color var(--transition-medium);
         white-space: nowrap;
-
-        &:hover {
-            opacity: 1;
-            text-decoration: underline;
-            text-decoration-color: var(--translucent-high);
-            text-underline-offset: 2px;
-        }
     }
 }
 
@@ -246,18 +234,13 @@ header:has(.header-breadcrumb) {
         text-decoration: none;
         color: inherit;
         transition: color var(--transition-medium);
-
-        &:hover {
-            text-decoration: none;
-            font-style: normal;
-        }
     }
 }
 
 .breadcrumb-back {
-    @include button-as-text;
+    @include highlight-text;
     font-size: 0.9em;
-    font-weight: inherit !important; // override global `button { font-weight: 300 !important }`
+    font-weight: inherit;
     line-height: 1;
     align-self: flex-start;
     box-sizing: content-box;

@@ -8,13 +8,16 @@
 // MUSIC WIDGET
 // =============================================================================
 .music-widget {
+    // A link wrapping an image, so it opts in (data-highlight). The frosted
+    // bar is its child, which owns the fallback hover and the radius.
+    @include highlight-surface(null, null, calc(var(--radius-md) + 4px));
+
+    display: block;
     text-decoration: none;
     color: inherit;
 
     &:hover {
         color: inherit;
-        text-decoration: none;
-        font-style: normal;
     }
 }
 
@@ -29,7 +32,10 @@
     line-height: 1em;
     border-radius: var(--radius-md);
 
-    @include hover-state-subtle;
+    @include hover-fallback {
+        background-color: var(--translucent-medium-high);
+        color: var(--text-color);
+    }
 
     // The album art is its own charm, clicking it pulses instead of following
     // the link, no need to show widget bar's hover state
@@ -218,36 +224,5 @@
 @media (max-width: 420px) {
     .music-widget-status:not(.is-live) .music-widget-status-label {
         display: none;
-    }
-}
-
-// =============================================================================
-// MUSIC PAGE
-// =============================================================================
-
-// Artist list view (when not showing albums)
-.artist-list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-
-    .music-artist-item {
-        box-sizing: border-box;
-        display: flex;
-        align-items: center;
-        min-height: var(--control-height-lg);
-        line-height: 1;
-        padding: var(--spacing-md);
-        @include translucent-surface;
-        transition: background-color var(--transition-medium);
-
-        @include hover-state-subtle;
-
-        .music-artist-name {
-            font-size: 1em;
-            font-weight: 400;
-            color: var(--text-color);
-            margin: 0;
-        }
     }
 }

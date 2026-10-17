@@ -2,34 +2,6 @@
 // MIXINS
 // =============================================================================
 
-// Reset a <button> so it renders like inline text. The global `button` rule
-// in _buttons.scss paints background, padding, border-radius, hover bg, and
-// forces font-weight 300 — used by <button>s that semantically need to be
-// triggers but visually need to look like a link or icon.
-@mixin button-as-text {
-    background: none;
-    background-color: transparent;
-    border: 0;
-    border-radius: 0;
-    padding: 0;
-    margin: 0;
-    color: inherit;
-    font: inherit;
-    cursor: pointer;
-    backdrop-filter: none;
-    transition: none;
-
-    &:hover,
-    &:focus,
-    &:focus-visible,
-    &.touch-hover {
-        background: none;
-        background-color: transparent;
-        backdrop-filter: none;
-        color: inherit; // global `button:hover { color: var(--background-main) }` would invert the icon
-    }
-}
-
 // Translucent surface with blur and outline
 @mixin translucent-surface($bg: var(--translucent-low), $blur: 10px) {
     background-color: $bg;
@@ -62,19 +34,97 @@
     }
 }
 
-// Standard hover state (dark overlay style)
-@mixin hover-state-dark {
-    @include hover-interactive {
-        background-color: var(--contrast-overlay);
-        color: var(--background-main);
+// Hover the highlighter (src/lib/highlighter) takes over. Once the module flags
+// <html data-highlighter>, the box or halo is the hover and this only applies
+// to a touch tap; a page without the module (the CSS export) keeps it as a
+// plain hover. :where() keeps the root check out of the specificity.
+@mixin hover-fallback {
+    @media (any-hover: hover) {
+        :where(:root:not([data-highlighter])) &:hover {
+            @content;
+        }
+    }
+
+    &.touch-hover {
+        @content;
     }
 }
 
-// Standard hover state (subtle)
-@mixin hover-state-subtle {
-    @include hover-interactive {
-        background-color: var(--translucent-medium-high);
-        color: var(--text-color);
+// -----------------------------------------------------------------------------
+// HIGHLIGHT API: how a component opts into the hover highlighter
+// (src/lib/interaction). Links, buttons, selects and range/colour inputs are
+// targets already; anything else clickable also needs data-highlight in its
+// markup. The mixin declares what kind of target it is (style-dna
+// "Interaction grammar"). Undeclared targets are inferred: text, or surface
+// when they have a fill or outline.
+// -----------------------------------------------------------------------------
+
+// Bare text (links, text buttons): the box hugs the glyphs, the text turns
+// accent.
+@mixin highlight-text {
+    --highlight-fit: text;
+}
+
+// A row in a list: the box fills the row, $inset in from its sides (and
+// $inset-y from its top and bottom).
+@mixin highlight-row($inset: var(--spacing-xs), $radius: var(--radius-sm), $inset-y: 0px) {
+    --highlight-fit: box;
+    --highlight-pad-x: calc(-1 * #{$inset});
+    --highlight-pad-y: calc(-1 * #{$inset-y});
+    --highlight-radius: #{$radius};
+    --highlight-magnet: 0.5;
+}
+
+// Anything with its own fill or outline: the hover is a ring around it and the
+// surface itself doesn't change. $fill / $color are the fallback hover (touch
+// taps, pages without the highlighter); pass null to leave either alone.
+// $radius overrides the ring's radius, else it's the element's own plus 4px.
+@mixin highlight-surface($fill: var(--translucent-medium-high), $color: var(--text-color), $radius: null) {
+    --highlight-fit: surface;
+
+    @if $radius {
+        --highlight-radius: #{$radius};
+    }
+
+    @if $fill or $color {
+        @include hover-fallback {
+            background-color: $fill;
+            color: $color;
+        }
+    }
+}
+
+// A list of rows (apply to the container): the rows either side of the
+// hovered one drift apart. $row picks the rows among its children, which may
+// wrap the target. Owns the rows' transition so the drift lands with the box.
+@mixin highlight-rows($row: "*") {
+    > #{$row} {
+        transition:
+            color var(--transition-medium),
+            background-color var(--transition-medium),
+            translate var(--transition-medium);
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+        > #{$row}:has(~ [data-highlight-active], ~ * [data-highlight-active]) {
+            translate: 0 calc(-1 * var(--motion-make-room));
+        }
+
+        > [data-highlight-active] ~ #{$row},
+        > :has([data-highlight-active]) ~ #{$row} {
+            translate: 0 var(--motion-make-room);
+        }
+    }
+}
+
+// An element highlights paint inside. Usually inferred (frosted, filled or
+// scrolling containers); declare one to give highlights room. $z: 1 paints
+// above the scope's content, for targets that overlap it (switch chevrons).
+@mixin highlight-scope($z: null) {
+    --highlight-scope: on;
+
+    @if $z {
+        --highlight-z: #{$z};
     }
 }
 

@@ -18,6 +18,8 @@ $themes: (
         translucent-medium-high: rgba(0, 0, 0, 0.12),
         translucent-high: rgba(0, 0, 0, 0.2),
         code-bg: #ebe9e8,
+        accent: #1d5dba,
+        accent-mix: 13%,
     ),
     "denim": (
         background-main: #2d3d5a,
@@ -25,6 +27,8 @@ $themes: (
         text-color: #e8edf5,
         sec-text-color: #c6cfdc,
         code-bg: #1f2a3f,
+        accent: #b8d8ff,
+        accent-mix: 20%,
     ),
     "charcoal": (
         background-main: #1a1a1a,
@@ -32,6 +36,8 @@ $themes: (
         text-color: #d0d0d0,
         sec-text-color: #c2c2c2,
         code-bg: #212121,
+        accent: #62b1ff,
+        accent-mix: 26%,
     ),
     "plum": (
         background-main: #2a1a1d,
@@ -39,6 +45,8 @@ $themes: (
         text-color: #f5e8ea,
         sec-text-color: #e0d3d8,
         code-bg: #3d1f24,
+        accent: #ffa0b7,
+        accent-mix: 28%,
     ),
     "moss": (
         background-main: #2a2f2a,
@@ -46,6 +54,8 @@ $themes: (
         text-color: #f2faed,
         sec-text-color: #e0e6da,
         code-bg: #1e231e,
+        accent: #aadd91,
+        accent-mix: 26%,
     ),
     "butter": (
         background-main: #F1D799,
@@ -59,6 +69,8 @@ $themes: (
         translucent-medium-high: rgba(0, 0, 0, 0.12),
         translucent-high: rgba(0, 0, 0, 0.2),
         code-bg: #e6ca85,
+        accent: #284f9e,
+        accent-mix: 12%,
     ),
     "espresso": (
         background-main: #1f1410,
@@ -66,6 +78,8 @@ $themes: (
         text-color: #f0e0d0,
         sec-text-color: #d4c0ac,
         code-bg: #160d0a,
+        accent: #f2a65a,
+        accent-mix: 26%,
     ),
     "petal": (
         background-main: #efdadf,
@@ -79,6 +93,8 @@ $themes: (
         translucent-medium-high: rgba(0, 0, 0, 0.12),
         translucent-high: rgba(0, 0, 0, 0.2),
         code-bg: #e6cbd2,
+        accent: #9c2a4e,
+        accent-mix: 12%,
     ),
     "sky": (
         background-main: #d9eaf8,
@@ -92,6 +108,8 @@ $themes: (
         translucent-medium-high: rgba(0, 0, 0, 0.12),
         translucent-high: rgba(0, 0, 0, 0.2),
         code-bg: #c9e0f2,
+        accent: #993f2d,
+        accent-mix: 12%,
     ),
 );
 
@@ -103,6 +121,11 @@ $themes: (
         @each $name, $value in $tokens {
             --#{$name}: #{$value};
         }
+
+        // Hover highlight: the accent at a per-theme strength, translucent so
+        // it reads the same on the page and inside a frosted surface. Each
+        // accent clears 4.6:1 against its own fill, for weight-200 text.
+        --accent-fill: color-mix(in srgb, var(--accent) var(--accent-mix), transparent);
 
         @if not map.has-key($tokens, contrast-overlay) {
             --contrast-overlay: rgba(255, 255, 255, 0.7);
@@ -164,6 +187,8 @@ $themes: (
 
     // Motion tokens (shared by view transitions + reveal)
     --motion-slide-offset: 8px;
+    // How far a hovered row's neighbours drift apart (make-room mixin)
+    --motion-make-room: 2px;
 
     // Z-index scale
     --z-dropdown: 100;

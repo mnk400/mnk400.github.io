@@ -38,8 +38,7 @@
         background-color var(--transition-medium),
         color var(--transition-medium);
     @include soft-outline;
-
-    @include hover-state-subtle;
+    @include highlight-surface;
 
     .toggle-icon {
         transition: transform var(--transition-slow);

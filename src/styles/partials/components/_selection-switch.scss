@@ -16,6 +16,8 @@
     scroll-padding-inline: var(--spacing-sm);
     scrollbar-width: none;
     font-weight: 300;
+    // Options' rings paint here, clipped to the scroll area like the options.
+    @include highlight-scope;
 
     &::-webkit-scrollbar {
         display: none;
@@ -44,9 +46,9 @@
             scale: 0.96;
         }
 
-        @include hover-state-subtle;
+        @include highlight-surface;
 
-        &.active {
+        &[aria-pressed="true"] {
             background-color: var(--contrast-overlay);
             color: var(--background-main);
             outline: none;
@@ -90,11 +92,9 @@
             pointer-events: none;
         }
 
-        @include hover-interactive {
-            background-color: color-mix(in srgb, var(--swatch-fill) 92%, var(--swatch-ink));
-        }
+        @include highlight-surface(color-mix(in srgb, var(--swatch-fill) 92%, var(--swatch-ink)), null);
 
-        &.active {
+        &[aria-pressed="true"] {
             background-color: var(--swatch-fill);
             color: var(--swatch-ink);
             @include soft-outline(var(--swatch-edge));
@@ -107,7 +107,10 @@
 }
 
 .selection-switch-wrap {
+    // Chevrons sit over the options, so their rings paint above them.
+    @include highlight-scope(1);
     --switch-fade-width: 4.5em;
+    --switch-gutter: var(--spacing-sm);
     --switch-fade-left: #000;
     --switch-fade-right: #000;
     position: relative;
@@ -122,9 +125,25 @@
         --switch-fade-right: transparent;
     }
 
+    // The switch scrolls, so it clips anything past its padding box. Pad it
+    // enough for an option's halo and hand the space back with a negative
+    // margin; the extra 1px keeps the old inset the chevrons line up with.
+    > .selection-switch {
+        padding: calc(var(--switch-gutter) + 1px);
+        margin: calc(-1 * var(--switch-gutter));
+    }
+
+    // The fade starts at the column edge, not the gutter's: past the column
+    // a scrolled option is fully hidden.
     &.has-prev .selection-switch,
     &.has-next .selection-switch {
-        mask-image: linear-gradient(to right, var(--switch-fade-left) 0, #000 var(--switch-fade-width), #000 calc(100% - var(--switch-fade-width)), var(--switch-fade-right) 100%);
+        mask-image: linear-gradient(
+            to right,
+            var(--switch-fade-left) var(--switch-gutter),
+            #000 calc(var(--switch-gutter) + var(--switch-fade-width)),
+            #000 calc(100% - var(--switch-gutter) - var(--switch-fade-width)),
+            var(--switch-fade-right) calc(100% - var(--switch-gutter))
+        );
     }
 }
 
@@ -147,8 +166,7 @@
     transition: opacity var(--transition-medium), scale var(--transition-press);
     z-index: 2;
     @include soft-outline;
-
-    @include hover-state-subtle;
+    @include highlight-surface;
 
     &:active {
         scale: 0.94;

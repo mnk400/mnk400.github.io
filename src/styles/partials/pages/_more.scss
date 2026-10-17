@@ -35,18 +35,13 @@
 }
 
 .more-prose__more {
-    @include button-as-text;
+    @include highlight-text;
     color: var(--text-color);
     transition: color var(--transition-medium);
 
-    // !important only to beat the global button rule's own !important, so the
-    // fold reads as one more link in the sentence.
-    @include hover-interactive {
-        color: var(--text-color);
-        text-decoration: underline !important;
-        text-decoration-color: var(--translucent-high);
-        text-underline-offset: 2px;
-        font-style: italic;
+    // Reads as one more link in the sentence (it carries data-highlight).
+    @include hover-fallback {
+        color: var(--accent);
     }
 }
 

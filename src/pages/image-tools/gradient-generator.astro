@@ -260,12 +260,14 @@ const typeOptions = [
       const opts = gradientType === 'linear' ? linearDirections : radialDirections;
       directionToggle.innerHTML = '';
       opts.forEach((opt, i) => {
-        const span = document.createElement('span');
-        span.id = opt.value;
-        span.className = 'switch-option' + (i === 0 ? ' active' : '');
-        span.dataset.value = opt.value;
-        span.textContent = opt.label;
-        directionToggle.appendChild(span);
+        const option = document.createElement('button');
+        option.type = 'button';
+        option.id = opt.value;
+        option.className = 'switch-option';
+        option.setAttribute('aria-pressed', String(i === 0));
+        option.dataset.value = opt.value;
+        option.textContent = opt.label;
+        directionToggle.appendChild(option);
       });
       direction = opts[0].value;
       // Reset init flag so initSelectionSwitch rebinds click handlers + chevrons.

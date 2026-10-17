@@ -61,7 +61,7 @@ by the consuming project.
     partials/components/expandable-section  .expandable-section, -toggle, -content
     partials/components/selection-switch    .selection-switch and .switch-option
     partials/components/search-pill .search-pill, trigger, field, clear
-    partials/components/cards      .card, reveal card surfaces, .album-item
+    partials/components/cards      reveal card surfaces, .album-item
     partials/components/grids      grid helpers and page-agnostic grid primitives
     partials/components/image-gallery  gallery shell, masonry grid, image cards
     partials/components/info-grid  .info-grid and .info-card
@@ -115,6 +115,9 @@ Theme tokens:
     --translucent-medium
     --translucent-high
     --code-bg
+    --accent          hover accent; each theme's clears 4.6:1 against its fill
+    --accent-mix      strength of the hover fill (12-28% per theme)
+    --accent-fill     --accent at --accent-mix, translucent
 
 If your project wants persistent theme selection, own it locally:
 
@@ -187,6 +190,7 @@ Transitions:
 Motion:
 
     --motion-slide-offset   8px
+    --motion-make-room      2px   neighbour drift around a hovered row
 
 Z-index:
 
@@ -195,6 +199,16 @@ Z-index:
     --z-fixed
     --z-modal
     --z-tooltip
+
+
+Hover:
+
+    On manik.cc a script draws a gliding highlight: a box behind hovered text
+    (which turns --accent) and a halo around hovered surfaces. The script is
+    not exported. Without it, the CSS falls back to plain hovers: links turn
+    --accent, and buttons, chips, toggles and dropdown parts shift their fill.
+    The fallback switches off when <html> carries data-highlighter, so leave
+    that attribute unset unless you draw a highlight of your own.
 
 
 ================================================================================
@@ -249,14 +263,15 @@ Basic buttons:
     <a class="btn" href="/download">Download</a>
     <button class="normal-btn" type="button">Convert</button>
 
+A bare <button> is unstyled (no fill, padding or radius; weight 300, the
+site font, a pointer cursor). The filled look is opt-in through .btn or
+.normal-btn, so add one of those to any button that should look like one.
+
 Variants:
 
-    .btn--small
-    .btn--outline
-    .btn--text
-    .btn--copy
-    .btn--dark-forced
-    .btn--link-variant
+    .btn--outline       translucent fill with a hairline
+    .btn--text          no fill, secondary text colour
+    .btn--dark-forced   stays dark on every theme, for buttons over imagery
 
 Copy button visual contract:
 
@@ -350,6 +365,10 @@ Selection dropdown visual contract:
       </div>
     </div>
 
+Options are bare rows, inset from the menu edge and rounded; .active takes a
+tint and shows the check. Rows drift apart around [data-highlight-active],
+which only the site's highlight script sets.
+
 These are styles only. Open/close, active state, keyboard handling, and slider
 fill updates belong to the consuming project.
 
@@ -357,13 +376,6 @@ fill updates belong to the consuming project.
 ================================================================================
 8. CARDS AND GRIDS
 ================================================================================
-
-Basic card:
-
-    <article class="card">
-      <h2>Title</h2>
-      <p>Description</p>
-    </article>
 
 Info grid:
 

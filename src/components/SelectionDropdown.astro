@@ -37,7 +37,7 @@ const classes = ['selection-dropdown', extraClass].filter(Boolean).join(' ');
     {options.map((opt) => (
       <button
         type="button"
-        class:list={['selection-dropdown__option', { active: opt.value === activeValue }]}
+        class="selection-dropdown__option"
         role="option"
         aria-selected={opt.value === activeValue ? 'true' : 'false'}
         data-value={opt.value}

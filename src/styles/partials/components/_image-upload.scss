@@ -15,18 +15,14 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: var(--spacing-sm) var(--spacing-lg);
     cursor: pointer;
     font-size: 0.9em;
-    font-weight: 400;
     color: var(--text-color);
     border: none;
     transition: background-color var(--transition-medium), color var(--transition-medium);
     @include translucent-surface(var(--translucent-low), 10px);
-
-    @include hover-interactive {
-        background-color: var(--translucent-high);
-        color: var(--text-color);
-    }
+    @include highlight-surface(var(--translucent-high));
 }
 
 .image-upload__input {

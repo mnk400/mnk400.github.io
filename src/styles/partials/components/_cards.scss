@@ -4,38 +4,6 @@
 // CARDS
 // =============================================================================
 
-// Base card component
-.card {
-    background-color: var(--translucent-medium);
-    backdrop-filter: blur(10px);
-    border-radius: var(--radius-md);
-    padding: var(--spacing-lg);
-    transition: background-color var(--transition-medium), scale var(--transition-fast);
-
-    @include hover-interactive {
-        background-color: var(--translucent-high);
-    }
-
-    &--interactive {
-        cursor: pointer;
-
-        &:active {
-            scale: 0.96;
-        }
-    }
-
-    &--no-padding {
-        padding: 0;
-    }
-
-    // Opt out of the hover background change for non-interactive cards
-    &--static {
-        @include hover-interactive {
-            background-color: var(--translucent-medium);
-        }
-    }
-}
-
 // Media card with image overlay reveal
 .reveal-card {
     display: block;
@@ -52,8 +20,6 @@
 
     @include hover-interactive {
         color: inherit;
-        text-decoration: none;
-        font-style: normal;
 
         .reveal-card__media {
             outline-color: var(--translucent-high);

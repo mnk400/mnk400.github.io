@@ -12,11 +12,12 @@ const href = external ? 'https://www.last.fm/user/mnk_400' : '/music/music';
   href={href}
   class="music-widget"
   id="music-widget"
+  data-highlight
   target={external ? '_blank' : undefined}
   rel={external ? 'noopener noreferrer' : undefined}
 >
   <div class="music-widget-content">
-    <div class="music-widget-art-wrapper">
+    <div class="music-widget-art-wrapper" data-highlight-ignore>
       <div class="music-widget-art-placeholder"></div>
       <img
         id="music-widget-art"

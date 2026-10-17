@@ -79,8 +79,7 @@
         transform var(--transition-slow),
         background-color var(--transition-medium),
         color var(--transition-medium);
-
-    @include hover-state-subtle;
+    @include highlight-surface;
 }
 
 .search-pill i {
@@ -143,8 +142,9 @@
     color: var(--sec-text-color);
     backdrop-filter: none;
     font-size: 0.8em;
+    @include highlight-text;
 
-    @include hover-interactive {
+    @include hover-fallback {
         background-color: var(--translucent-medium);
         color: var(--text-color);
     }

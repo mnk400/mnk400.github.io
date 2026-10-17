@@ -61,16 +61,15 @@
         text-align: right;
     }
 
-    @include hover-interactive {
-        text-decoration: none;
-        font-style: normal;
-
+    // The title carries its own colour, so it takes the accent explicitly.
+    @include hover-fallback {
         .post-nav__title {
-            text-decoration: underline;
-            text-decoration-color: var(--translucent-high);
-            text-underline-offset: 2px;
-            font-style: italic;
+            color: var(--accent);
         }
+    }
+
+    &[data-highlight-active] .post-nav__title {
+        color: var(--accent);
     }
 }
 

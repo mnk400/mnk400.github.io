@@ -67,7 +67,7 @@ import Icon from '../../components/Icon.astro';
 </Page>
 
 <script>
-  import { createSelectionSwitch } from '../../lib/selection-controls.ts';
+  import { createSelectionSwitch, setSwitchValue } from '../../lib/selection-controls.ts';
 
   function initHistoricalBrowser() {
     const browserForm = document.getElementById('historical-browser-form') as HTMLFormElement | null;
@@ -142,7 +142,7 @@ import Icon from '../../components/Icon.astro';
 
     function centerSelectedYear() {
       if (!yearSwitch) return;
-      const active = yearSwitch.querySelector<HTMLElement>('.switch-option.active');
+      const active = yearSwitch.querySelector<HTMLElement>('.switch-option[aria-pressed="true"]');
       if (!active) return;
       requestAnimationFrame(() => {
         yearSwitch!.scrollLeft =
@@ -153,10 +153,7 @@ import Icon from '../../components/Icon.astro';
     function setSelectedYear(year: number) {
       selectedYear = Number(year);
       if (!yearSwitch) return;
-      const options = yearSwitch.querySelectorAll<HTMLElement>('.switch-option');
-      options.forEach((opt) => {
-        opt.classList.toggle('active', opt.dataset.value === String(selectedYear));
-      });
+      setSwitchValue(yearSwitch, String(selectedYear));
       centerSelectedYear();
     }
 

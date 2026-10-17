@@ -1,0 +1,196 @@
+---
+// Dev-only scratch pages for trying UI ideas against real components. A
+// production build emits none of them, so they need no /more entry.
+import Page from '../../layouts/Page.astro';
+import SelectionSwitch from '../../components/SelectionSwitch.astro';
+import SelectionDropdown from '../../components/SelectionDropdown.astro';
+import ExpandableSection from '../../components/ExpandableSection.astro';
+import MusicWidget from '../../components/MusicWidget.astro';
+import SearchPill from '../../components/SearchPill.astro';
+
+export function getStaticPaths() {
+  return import.meta.env.DEV ? [{ params: { page: 'hover' } }] : [];
+}
+
+const posts = [
+  ['The Writing Tax', 'Aug-26'],
+  ['A Decade of Listening', 'Feb-26'],
+  ['My Personal Ricoh GR III Recipe For Everyday Use', 'Mar-25'],
+  ['Matrix Multiplication as Art', 'May-24'],
+  ['C vs Fortran memory order', 'Feb-21'],
+];
+
+const chips = ['all', 'games', 'image tools', 'fun', 'music', 'cli tools', 'apps'].map((label) => ({
+  value: `chip-${label.replace(' ', '-')}`,
+  label,
+}));
+
+const themeNames = ['linen', 'denim', 'charcoal', 'plum', 'moss', 'butter', 'espresso', 'petal', 'sky'];
+const themeOptions = themeNames.map((value) => ({ value, label: value }));
+const swatches = themeNames.slice(0, 5).map((theme) => ({ value: `swatch-${theme}`, label: theme, swatch: { theme } }));
+---
+<Page title="Hover Lab" description="Hover highlight prototypes">
+  <div class="hover-lab" data-hover-lab>
+    <section class="hover-lab__section">
+      <h2>Text</h2>
+      <p class="hover-lab__note">bare clickables: the box sits behind the glyphs and the text takes the accent</p>
+      <!-- Line breaks fall inside text runs: compressHTML drops whitespace that touches a tag. -->
+      <p class="hover-lab__prose">
+        A lot of them are toys, like the small games <a href="#">Colordle</a>, <a href="#">Flappy Bird</a>, <a href="#">Game of Life</a>, <a href="#">Minesweeper</a> and <a href="#">Tic Tac Toe</a>. There are tools
+        for playing with images, <a href="#">ASCII Art Converter</a>, <a href="#">Color Palette Extractor</a> and <a href="#">a deliberately long link that has to wrap onto the next line</a>.
+      </p>
+      <p class="hover-lab__post">
+        Post copy at reading weight, where <a href="#">a link</a> sits mid-sentence and another
+        one <a href="#">closes it out</a>.
+      </p>
+      <div class="site-name-menu">
+        <a href="#">more</a>
+        <a href="#">photos</a>
+        <a href="#">linkedin</a>
+        <a href="#">email</a>
+      </div>
+      <div class="site-footer">
+        <div class="site-footer__row">
+          <span>seattle · 7:48 pm</span>
+          <button type="button" class="site-footer__settings">settings</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="hover-lab__section">
+      <h2>Rows</h2>
+      <p class="hover-lab__note">bare rows; the neighbours drift apart to make room for the box</p>
+      <ExpandableSection id="lab-archive" class="expandable-section--compact" title="<b>Archive</b>" expanded>
+        <div class="archive">
+          <ul>
+            {posts.map(([title, date]) => (
+              <li>
+                <a class="archive__row" href="#">
+                  <span>{title}</span>
+                  <span class="date">{date}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </ExpandableSection>
+      <SelectionDropdown id="lab-dropdown" options={themeOptions} ariaLabel="Lab dropdown" />
+    </section>
+
+    <section class="hover-lab__section">
+      <h2>Surfaces</h2>
+      <p class="hover-lab__note">things with their own fill keep it; the hover is a halo that stretches toward the pointer</p>
+      <SelectionSwitch id="lab-switch" options={chips} />
+      <SelectionSwitch id="lab-swatches" options={swatches} variant="swatch" />
+      <div class="hover-lab__buttons">
+        <button type="button" class="btn">primary</button>
+        <button type="button" class="btn btn--outline">outline</button>
+        <a class="btn btn--outline" href="#">link as button</a>
+      </div>
+      <SearchPill id="lab-search" />
+      <MusicWidget />
+    </section>
+
+    <section class="hover-lab__panel" aria-label="Tuning">
+      <label class="hover-lab__control">
+        <span>accent</span>
+        <select data-lab-accent>
+          <option value="theme">theme accent</option>
+          <option value="neutral">neutral tint</option>
+          <option value="custom">custom</option>
+        </select>
+        <input type="color" value="#3d9fff" data-lab-accent-color hidden />
+      </label>
+      <label class="hover-lab__control">
+        <span>surface</span>
+        <select data-lab-halo>
+          <option value="ring">ring</option>
+          <option value="wash">ring + wash</option>
+        </select>
+      </label>
+      <label class="hover-lab__control">
+        <span>fill</span>
+        <input type="range" min="6" max="50" step="1" data-lab-strength />
+        <output data-lab-strength-out></output>
+      </label>
+      <label class="hover-lab__control">
+        <span>glide</span>
+        <input type="range" min="0.08" max="0.6" step="0.01" value="0.25" data-lab-config="follow" />
+        <output>0.25</output>
+      </label>
+      <label class="hover-lab__control">
+        <span>magnet</span>
+        <input type="range" min="0" max="24" step="1" value="8" data-lab-config="magnet" />
+        <output>8</output>
+      </label>
+      <label class="hover-lab__control">
+        <span>sticky</span>
+        <input type="range" min="0" max="60" step="2" value="12" data-lab-config="sticky" />
+        <output>12</output>
+      </label>
+    </section>
+  </div>
+</Page>
+
+<script>
+  import { configure, type HighlighterConfig } from '../../lib/interaction/index.ts';
+  import { untilSwap } from '../../lib/lifecycle.ts';
+
+  const DEFAULTS: HighlighterConfig = { follow: 0.25, magnet: 8, sticky: 12 };
+
+  function init() {
+    const lab = document.querySelector<HTMLElement>('[data-hover-lab]');
+    if (!lab) return;
+    const root = document.documentElement;
+
+    lab.addEventListener('click', (e) => {
+      if ((e.target as Element).closest('a[href="#"]')) e.preventDefault();
+    });
+
+    const mode = lab.querySelector<HTMLSelectElement>('[data-lab-accent]')!;
+    const color = lab.querySelector<HTMLInputElement>('[data-lab-accent-color]')!;
+    const applyAccent = () => {
+      root.style.removeProperty('--accent');
+      root.style.removeProperty('--accent-fill');
+      color.hidden = mode.value !== 'custom';
+      if (mode.value === 'neutral') {
+        root.style.setProperty('--accent', 'var(--text-color)');
+        root.style.setProperty('--accent-fill', 'var(--translucent-medium-high)');
+      } else if (mode.value === 'custom') {
+        root.style.setProperty('--accent', color.value);
+      }
+    };
+    mode.addEventListener('change', applyAccent);
+    color.addEventListener('input', applyAccent);
+
+    const halo = lab.querySelector<HTMLSelectElement>('[data-lab-halo]')!;
+    halo.addEventListener('change', () => root.toggleAttribute('data-lab-wash', halo.value === 'wash'));
+
+    // Starts at the theme's own strength; only an override is written inline.
+    const strength = lab.querySelector<HTMLInputElement>('[data-lab-strength]')!;
+    const strengthOut = lab.querySelector<HTMLOutputElement>('[data-lab-strength-out]')!;
+    const themeMix = parseFloat(getComputedStyle(root).getPropertyValue('--accent-mix')) || 20;
+    strength.value = String(themeMix);
+    strengthOut.textContent = `${themeMix}%`;
+    strength.addEventListener('input', () => {
+      root.style.setProperty('--accent-mix', `${strength.value}%`);
+      strengthOut.textContent = `${strength.value}%`;
+    });
+
+    lab.querySelectorAll<HTMLInputElement>('[data-lab-config]').forEach((input) => {
+      const key = input.dataset.labConfig as keyof HighlighterConfig;
+      input.addEventListener('input', () => {
+        configure({ [key]: Number(input.value) });
+        input.nextElementSibling!.textContent = input.value;
+      });
+    });
+
+    untilSwap(() => {
+      for (const name of ['--accent', '--accent-fill', '--accent-mix']) root.style.removeProperty(name);
+      root.removeAttribute('data-lab-wash');
+      configure(DEFAULTS);
+    });
+  }
+
+  document.addEventListener('astro:page-load', init);
+</script>
