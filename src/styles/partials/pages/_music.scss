@@ -8,9 +8,8 @@
 // MUSIC WIDGET
 // =============================================================================
 .music-widget {
-    // A link wrapping an image, so it opts in (data-highlight). The frosted
-    // bar is its child, which carries the fill (highlight-fill) and radius.
-    @include highlight-surface(null, null, null, calc(var(--radius-md) + 3px));
+    // The bar is a child, so it carries the fill (highlight-fill) and radius.
+    @include highlight-surface($hover: null, $radius: calc(var(--radius-md) + 3px));
 
     display: block;
     text-decoration: none;
@@ -28,7 +27,8 @@
     text-align: left;
     gap: var(--spacing-md);
     padding: 7px var(--spacing-lg) 7px var(--spacing-md);
-    @include translucent-surface(var(--translucent-low), 10px);
+    backdrop-filter: blur(10px);
+    @include soft-outline;
     @include highlight-fill(var(--translucent-low), var(--translucent-medium-high));
     transition: --surface-fill var(--transition-medium);
     line-height: 1em;
@@ -168,11 +168,6 @@
 
     &.loaded {
         opacity: 1;
-    }
-
-    // Everything in a hovered target takes the accent, the status included.
-    .music-widget[data-highlight-active] & {
-        color: var(--accent);
     }
 }
 

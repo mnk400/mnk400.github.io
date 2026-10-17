@@ -29,19 +29,8 @@
     min-width: 0;
     color: inherit;
     text-decoration: none;
-    // The whole card is one target (data-highlight: it wraps an image). The
-    // painting keeps its pixels and the caption sits on the wash. The card has
-    // no padding of its own, so the box brings it: a mat around the painting,
-    // room around the caption. Its hairlines fade as the box covers them.
-    --highlight-pad-x: var(--spacing-sm);
-    --highlight-pad-y: var(--spacing-sm);
-    --card-keep: calc(100% - 100% * var(--highlight-cover, 0));
-    @include highlight-surface(null, null, null, calc(var(--radius-md) + var(--spacing-sm)));
-
-    // All of the caption takes the accent, secondary lines too, like a link.
-    &[data-highlight-active] .archive-index-card__caption span {
-        color: var(--accent);
-    }
+    // One target (data-highlight); the box is the mat and the caption's room.
+    @include highlight-surface($hover: null, $pad: var(--spacing-sm), $radius: calc(var(--radius-md) + var(--spacing-sm)));
 
     @include hover-fallback {
         color: inherit;
@@ -62,8 +51,8 @@
     aspect-ratio: 8 / 5;
     overflow: hidden;
     border-radius: var(--radius-md);
-    background-color: var(--translucent-low);
-    @include soft-outline(color-mix(in srgb, var(--translucent-medium) var(--card-keep), transparent));
+    @include soft-outline;
+    @include highlight-fill(var(--translucent-low));
 
     img {
         display: block;
@@ -290,8 +279,7 @@
     border-radius: var(--radius-md);
     color: var(--text-color);
     backdrop-filter: none;
-    @include soft-outline;
-    @include highlight-surface(var(--translucent-low));
+    @include highlight-control;
 }
 
 .historical-browser-go-btn {
@@ -317,7 +305,7 @@
         color: var(--sec-text-color);
         cursor: default;
         opacity: 0.45;
-        background-color: transparent;
+        --surface-fill: transparent;
         outline-color: transparent;
     }
 }
@@ -332,7 +320,7 @@
     // Segments share one pill, so each highlights like a row inside it.
     .browser-control-button--segment {
         @include highlight-row(var(--spacing-2xs), var(--radius-sm), var(--spacing-2xs));
-        background-color: transparent;
+        @include highlight-fill(transparent, var(--translucent-medium));
         outline: none;
         border-radius: 0;
     }

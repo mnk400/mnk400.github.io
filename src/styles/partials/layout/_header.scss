@@ -71,9 +71,8 @@ header {
     pointer-events: none;
 }
 
-// Settings panel. The reveal clips (overflow: hidden), so the panel reaches
-// spacing-sm into the gutter and pads it back: room for the swatches' hover
-// halos with nothing inside moving.
+// Settings panel. The reveal clips, so the panel reaches spacing-sm into the
+// gutter and pads it back: room for the swatches' boxes.
 .settings-panel {
     @extend .header-reveal;
     margin-inline: calc(-1 * var(--spacing-sm));
@@ -142,7 +141,9 @@ header:has(.header-breadcrumb) {
         transition: opacity var(--transition-slowest);
     }
 
+    // Boxes paint here, above the fade.
     .header-row {
+        @include highlight-scope;
         position: relative;
         margin-bottom: 0;
     }

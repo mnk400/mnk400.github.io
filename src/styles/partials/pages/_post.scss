@@ -67,10 +67,6 @@
             color: var(--accent);
         }
     }
-
-    &[data-highlight-active] .post-nav__title {
-        color: var(--accent);
-    }
 }
 
 .post-nav__label {

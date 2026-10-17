@@ -33,18 +33,16 @@ button {
     // Hovered, it turns solid accent: still the filled button, in the accent.
     @include highlight-surface(var(--contrast-overlay), var(--contrast-overlay-hover), solid);
 
-    // Stays dark on any theme, for buttons over imagery (game canvases). White
-    // text can't sit on every theme's accent, so it keeps its own fill.
+    // Dark on any theme, for buttons over imagery; keeps its fill on hover.
     &--dark-forced {
-        background-color: rgba(0, 0, 0, 0.7);
         color: #fff;
-        @include highlight-surface(null, rgba(0, 0, 0, 0.5), keep);
+        @include highlight-surface(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5), keep);
     }
 
     &--outline {
         color: var(--text-color);
-        @include soft-outline(var(--translucent-medium));
-        @include highlight-surface(var(--translucent-low), var(--translucent-high), wash);
+        @include highlight-control(var(--translucent-high), scale var(--transition-press));
+        --highlight-tone: wash;
     }
 
     &--text {

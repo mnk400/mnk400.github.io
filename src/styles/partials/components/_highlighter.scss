@@ -3,23 +3,18 @@
 // =============================================================================
 // HIGHLIGHTER — src/lib/interaction
 // =============================================================================
-// Components opt in through the highlight-* mixins in _mixins.scss; this file
-// is the machinery they configure. Site-only: the CSS export ships the
-// hover-fallback hovers instead.
+// The machinery behind the highlight-* mixins. Site-only: the CSS export
+// keeps the hover-fallback hovers.
 
-// The engine writes the box onto its scope every frame. Non-inheriting, so a
-// per-frame write restyles the scope alone, not its whole subtree.
+// The engine writes the box onto its scope every frame, and its pseudo-element
+// reads it by inheritance: WebKit doesn't restyle a pseudo that `inherit`s a
+// changed non-inheriting property, which froze the box mid-glide in Safari.
 @each $name in x, y, w, h, r {
     @property --highlight-#{$name} {
         syntax: "<length>";
-        inherits: false;
+        inherits: true;
         initial-value: 0px;
     }
-}
-
-@property --highlight-mask {
-    syntax: "*";
-    inherits: false;
 }
 
 // Per-target tuning, read once when a target is picked up. `auto` defers to
@@ -73,9 +68,10 @@
 // The page itself is the outermost scope.
 .wrapper {
     @include highlight-scope;
+    position: relative;
 }
 
-// isolation makes the scope a stacking context, which is what lets z-index -1
+// Inferred scopes get set up on first use. isolation is what lets z-index -1
 // paint above the scope's own fill and still below its content.
 [data-highlight-slot] {
     isolation: isolate;
@@ -87,10 +83,8 @@
 
 [data-highlight-slot="before"]::before,
 [data-highlight-slot="after"]::after {
-    // Pseudo-elements don't inherit non-inheriting properties unless asked.
-    @each $name in x, y, w, h, r, mask, z {
-        --highlight-#{$name}: inherit;
-    }
+    // Set on the scope by highlight-scope($z).
+    --highlight-z: inherit;
 
     content: "";
     position: absolute;
@@ -128,16 +122,16 @@
         background-color var(--transition-medium);
 }
 
-// Text takes the accent, on a wash too, like a link. On a solid box it keeps
-// its colour (page-coloured on the accent). :is() lifts this to (0,2,0) so it
-// beats the `.parent > a` colour rules links pick up around the site.
-:is(a, button, [data-highlight]):is([data-highlight-active="text"], [data-highlight-active="wash"]) {
-    color: var(--accent);
+// Text takes the accent, secondary lines too, like a link; on a solid box it
+// keeps its colour. (0,3,0) beats the colours links and captions carry.
+:is(a, button, [data-highlight])[data-highlight-active]:not([data-highlight-active="solid"], [data-highlight-active="keep"]) {
+    &, * {
+        color: var(--accent);
+    }
 }
 
-// The box is the focus ring while it's on a target. Zero specificity: it only
-// needs to beat the browser's ring, and a surface's own hairline outline wins.
-// The focus can sit inside the target (a gallery tile's image).
+// The box is the focus ring, also when focus sits inside the target (a gallery
+// card's image). Zero specificity, so a surface's own hairline wins.
 :where([data-highlight-active]:focus-visible, [data-highlight-active] :focus-visible) {
     outline: none;
 }

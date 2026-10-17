@@ -115,7 +115,7 @@ Theme tokens:
     --translucent-medium
     --translucent-high
     --code-bg
-    --accent          hover accent; each theme's clears 4.6:1 against its fill
+    --accent          hover accent; each theme's clears 4.5:1 against its fill
     --accent-mix      strength of the hover fill (~12% light themes, 18-20% dark)
     --accent-fill     --accent at --accent-mix, translucent
 

@@ -122,12 +122,9 @@ $themes: (
             --#{$name}: #{$value};
         }
 
-        // Hover highlight: the accent at a per-theme strength, translucent so
-        // it reads the same on the page and inside a frosted surface. Each
-        // accent is a deep or bright take on its theme's own hue (a contrasting
-        // hue mixes to grey) and clears 4.5:1 on its fill even over a
-        // translucent-low card, for weight-200 text. Light themes mix ~12%,
-        // dark ~18-20%, so fills read equally soft.
+        // Hover highlight: --accent-fill is the accent at --accent-mix,
+        // translucent so it reads the same inside a frosted surface. See
+        // style-dna "Interaction grammar".
         --accent-fill: color-mix(in srgb, var(--accent) var(--accent-mix), transparent);
 
         @if not map.has-key($tokens, contrast-overlay) {
@@ -141,9 +138,8 @@ $themes: (
     }
 }
 
-// A surface's resting fill (highlight-surface / highlight-fill in _mixins).
-// Registered as a colour so fill changes (selected, expanded, theme) can
-// transition while background-color tracks the hover highlight every frame.
+// A surface's resting fill (highlight-fill). Registered so it can transition
+// while background-color follows the box every frame.
 @property --surface-fill {
     syntax: "<color>";
     inherits: false;

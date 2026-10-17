@@ -21,10 +21,7 @@
     border: none;
     border-radius: var(--radius-lg);
     backdrop-filter: none;
-    transition: --surface-fill var(--transition-medium);
-    @include soft-outline;
-
-    @include highlight-surface(var(--translucent-low), var(--translucent-medium));
+    @include highlight-control(var(--translucent-medium));
 
     .selection-dropdown__chevron {
         transition: transform var(--transition-slow);
@@ -72,9 +69,8 @@
     }
 }
 
-// Bare rows, like the home archive: no hairlines, the highlighter's box is the
-// hover and the neighbours make room for it. Inset (the margin) and rounded so
-// the selected fill and the hover box are the same shape.
+// Bare rows, like the home archive. Inset and rounded so the selected fill and
+// the hover box are the same shape.
 .selection-dropdown__option {
     @include highlight-row(0px);
 

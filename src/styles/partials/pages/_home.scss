@@ -24,8 +24,7 @@
 }
 
 // Archive List
-// Bare rows: no hairlines, the whole row is the link, and the highlighter's box
-// is the only row marker. Neighbours make room for it on hover.
+// Bare rows: the whole row is the link and the box is the only row marker.
 .archive {
     ul {
         padding: 0;
@@ -58,9 +57,5 @@
         opacity: 80%;
         font-variant-numeric: tabular-nums;
         transition: color var(--transition-medium);
-    }
-
-    [data-highlight-active] .date {
-        color: var(--accent);
     }
 }

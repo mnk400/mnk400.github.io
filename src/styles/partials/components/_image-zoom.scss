@@ -417,8 +417,7 @@ html:has(.image-zoom-overlay[open]) {
     cursor: pointer;
     font-size: 1em;
     line-height: 1;
-    // Quiet at rest like the edge nav, so all the zoom chrome (counter,
-    // arrows, close, share) reads as one system; a round box when hovered.
+    // Quiet at rest like the edge nav, so the zoom chrome reads as one system.
     color: var(--sec-text-color);
     transition:
         color var(--transition-medium),

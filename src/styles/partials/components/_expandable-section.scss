@@ -33,11 +33,7 @@
     justify-content: space-between;
     align-items: center;
     color: var(--text-color);
-    transition:
-        --surface-fill var(--transition-medium),
-        color var(--transition-medium);
-    @include soft-outline;
-    @include highlight-surface(var(--translucent-low));
+    @include highlight-control;
 
     .toggle-icon {
         transition: transform var(--transition-slow);

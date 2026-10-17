@@ -84,8 +84,7 @@
         border-radius: var(--radius-md);
     }
 
-    // Room for a card's highlight (--spacing-xs out, plus its lean) to stay
-    // clear of the next card and the controls above. Touch never draws it.
+    // Room for a card's box to clear its neighbours. Touch never draws it.
     @media (any-hover: hover) {
         gap: var(--spacing-lg);
         margin-top: var(--spacing-xs);
@@ -97,13 +96,9 @@
 }
 
 // Image card (photo albums)
-// The whole card opens the photo and is one highlight target, caption
-// included (view.ts). The plate hands its fill over, so a cutout ends up on
-// the wash and a photo gets the box as a frame, with the caption on the wash.
+// One target, caption included (view.ts). The plate hands its fill to the box.
 .image-card {
-    @include highlight-surface(null, null, null, calc(var(--radius-md) + var(--spacing-xs)));
-    --highlight-pad-x: var(--spacing-xs);
-    --highlight-pad-y: var(--spacing-xs);
+    @include highlight-surface($hover: null, $pad: var(--spacing-xs), $radius: calc(var(--radius-md) + var(--spacing-xs)));
     break-inside: avoid;
     cursor: zoom-in;
     width: 100%;
@@ -134,7 +129,7 @@
             object-fit: contain;
             border-radius: inherit;
             // The zoomable hairline fades with the plate.
-            box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--translucent-medium) calc(100% - 100% * var(--highlight-cover, 0)), transparent);
+            box-shadow: inset 0 0 0 1px highlight-fade(var(--translucent-medium));
             opacity: 0;
             transition: opacity var(--transition-slow);
         }
@@ -170,13 +165,8 @@
     line-height: 1.2;
 }
 
-// Everything in a hovered card turns accent.
 .image-gallery-card__caption > * {
     transition: color var(--transition-medium);
-
-    .image-card[data-highlight-active] & {
-        color: var(--accent);
-    }
 }
 
 @media (max-width: 640px) {

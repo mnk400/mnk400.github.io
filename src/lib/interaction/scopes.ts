@@ -55,8 +55,8 @@ function prepare(el: HTMLElement): Scope | null {
   return scope;
 }
 
-/** The scope a target paints in. Stops short of <body>: overlays outside
- * .wrapper (image zoom) get no highlight and keep their own hovers. */
+/** The scope a target paints in. Stops short of <body>, so an overlay outside
+ * .wrapper (image zoom) needs a declared scope. */
 export function scopeFor(target: HTMLElement): Scope | null {
   for (let node = target.parentElement; node && node !== document.body; node = node.parentElement) {
     if (cache.get(node) || isScope(node)) return prepare(node);

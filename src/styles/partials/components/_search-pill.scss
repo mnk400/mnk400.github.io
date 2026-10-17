@@ -66,19 +66,13 @@
     gap: var(--spacing-sm);
     padding: 0 var(--spacing-md);
     border-radius: inherit;
-    @include soft-outline;
 }
 
 .search-pill__trigger {
     justify-content: center;
     color: var(--text-color);
     backdrop-filter: none;
-    transition:
-        opacity var(--transition-slow),
-        transform var(--transition-slow),
-        --surface-fill var(--transition-medium),
-        color var(--transition-medium);
-    @include highlight-surface(var(--translucent-low));
+    @include highlight-control($transition: (opacity var(--transition-slow), transform var(--transition-slow)));
 }
 
 .search-pill i {
@@ -86,18 +80,18 @@
     font-size: 0.95em;
 }
 
+// Highlights like the trigger, and holds the clear button's box.
 .search-pill__field {
+    @include highlight-scope;
+    position: relative;
     width: 100%;
-    background-color: var(--translucent-low);
     color: var(--text-color);
+    cursor: text;
     opacity: 0;
     pointer-events: none;
     transform: scaleX(var(--search-pill-resting-scale));
     transform-origin: left center;
-    transition:
-        opacity var(--transition-slow),
-        transform var(--transition-slow),
-        min-height var(--transition-slow);
+    @include highlight-control($transition: (opacity var(--transition-slow), transform var(--transition-slow), min-height var(--transition-slow)));
 
     > i {
         color: var(--sec-text-color);

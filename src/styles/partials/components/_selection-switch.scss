@@ -5,6 +5,7 @@
 // =============================================================================
 
 .selection-switch {
+    position: relative;
     display: flex;
     gap: var(--spacing-sm);
     flex-wrap: nowrap;
@@ -16,7 +17,7 @@
     scroll-padding-inline: var(--spacing-sm);
     scrollbar-width: none;
     font-weight: 300;
-    // Options' rings paint here, clipped to the scroll area like the options.
+    // Option boxes paint here, clipped to the scroll area.
     @include highlight-scope;
 
     &::-webkit-scrollbar {
@@ -37,18 +38,14 @@
         border-radius: var(--radius-pill);
         color: var(--text-color);
         cursor: pointer;
-        transition: --surface-fill var(--transition-medium), color var(--transition-medium), scale var(--transition-press);
-
-        @include soft-outline;
+        @include highlight-control($transition: scale var(--transition-press));
 
         &:active {
             scale: 0.96;
         }
 
-        @include highlight-surface(var(--translucent-low));
-
         // Selected: the dark fill, which hands over to a solid accent box.
-        &[aria-pressed="true"] {
+        &[aria-pressed="true"]:not(.selection-switch--swatch *) {
             --surface-fill: var(--contrast-overlay);
             --highlight-tone: solid;
             color: var(--background-main);
@@ -96,21 +93,14 @@
         // The fill is what a swatch shows, so it stays, and so does its ink.
         @include highlight-surface(null, color-mix(in srgb, var(--swatch-fill) 92%, var(--swatch-ink)), keep);
 
-        &[aria-pressed="true"] {
-            --highlight-tone: keep;
-            background-color: var(--swatch-fill);
-            color: var(--swatch-ink);
-            @include soft-outline(var(--swatch-edge));
-
-            &::after {
-                opacity: 1;
-            }
+        &[aria-pressed="true"]::after {
+            opacity: 1;
         }
     }
 }
 
 .selection-switch-wrap {
-    // Chevrons sit over the options, so their rings paint above them.
+    // Chevrons sit over the options, so their boxes paint above them.
     @include highlight-scope(1);
     --switch-fade-width: 4.5em;
     --switch-gutter: var(--spacing-sm);
@@ -128,10 +118,8 @@
         --switch-fade-right: transparent;
     }
 
-    // The switch scrolls, so it clips anything past its padding box. Pad it
-    // enough for an option's ring and hand the space back with a negative
-    // margin; the extra 1px above and below keeps the inset the chevrons line
-    // up with.
+    // The switch clips at its padding box: pad it for an option's box and
+    // hand the space back with a negative margin.
     > .selection-switch {
         padding: calc(var(--switch-gutter) + 1px) var(--switch-gutter);
         margin: calc(-1 * var(--switch-gutter));
@@ -156,8 +144,7 @@
 .selection-switch-chevron {
     position: absolute;
     top: 50%;
-    // The wrap's box includes the switch's ring gutters (their negative
-    // margins collapse through it), so they come off the row height.
+    // Minus the switch's gutters, which the wrap's box includes.
     height: min(calc(100% - 2 * var(--switch-gutter) - 2px), var(--control-height-sm));
     translate: 0 -50%;
     aspect-ratio: 1;

@@ -1,9 +1,6 @@
-// Hover highlight: one box per scope that glides between targets, grows out of
-// and shrinks back toward the pointer, and leans toward it (after
-// jespervos.com). Mouse, pen and keyboard focus; touch gets touch.ts instead.
-// Bare text gets an accent box behind it; a surface's box is a little bigger
-// than it and takes over its fill (--highlight-cover).
-// See "Interaction grammar" in docs/style-dna.md.
+// Hover highlight: one box per scope that glides between targets and leans
+// toward the pointer, for mouse, pen and keyboard focus (touch: touch.ts).
+// Rules in docs/style-dna.md "Interaction grammar".
 import { HIGHLIGHT_TARGETS, NO_FOCUS, NO_HOVER } from './targets.ts';
 import {
   BOX_KEYS, distanceToRects, dot, goalBox, lineMask, lookOf, readTarget, scopeOrigin, targetRects,
@@ -11,21 +8,14 @@ import {
 } from './geometry.ts';
 import type { Scope } from './scopes.ts';
 
-export interface HighlighterConfig {
+const config = {
   /** Share of the remaining distance covered per 60fps frame. */
-  follow: number;
+  follow: 0.25,
   /** Max lean toward the pointer, px. Targets scale it via --highlight-magnet. */
-  magnet: number;
+  magnet: 8,
   /** How far, px, the pointer may stray off a target before it lets go. */
-  sticky: number;
-}
-
-const config: HighlighterConfig = { follow: 0.25, magnet: 8, sticky: 12 };
-
-export function configure(next: Partial<HighlighterConfig>): void {
-  Object.assign(config, next);
-  wake();
-}
+  sticky: 12,
+};
 
 interface Painted {
   scope: Scope;
@@ -45,11 +35,10 @@ const resized = new ResizeObserver(() => wake());
 let current: Target | null = null;
 let focused: HTMLElement | null = null;
 // After a click, layout under a still pointer can shift (a panel opens), and
-// whatever lands there shouldn't light up until the pointer actually moves.
-let held: Point | null = null;
-// Surfaces get --highlight-cover, the share of them the box covers (0-1), so
-// their fill thins exactly as the box takes its place and returns as it leaves
-// (highlight-surface in _mixins.scss), with no timer to fall out of step.
+// whatever lands there shouldn't light up until the pointer actually moves,
+// unless the clicked target gave way to it (the search trigger to its field).
+let held: (Point & { el: HTMLElement | null }) | null = null;
+// Surfaces under the box, which get --highlight-cover (0-1) to fade their fill.
 const covered = new Map<HTMLElement, Scope>();
 let frame = 0;
 let lastTime = 0;
@@ -62,7 +51,7 @@ let busyUntil = 0;
 function isLive(el: HTMLElement, skip: string): boolean {
   if (!el.isConnected || el.matches(skip)) return false;
   const cs = getComputedStyle(el);
-  return cs.visibility !== 'hidden' && cs.pointerEvents !== 'none' && parseFloat(cs.opacity) > 0.05;
+  return cs.visibility !== 'hidden' && cs.pointerEvents !== 'none' && parseFloat(cs.opacity) > 0;
 }
 
 function hoverTarget(node: Element | null): HTMLElement | null {
@@ -74,7 +63,12 @@ function resolve(): HTMLElement | null {
   if (focused && isLive(focused, NO_FOCUS)) return focused;
   if (!pointer.inside || pointer.touch) return null;
   const hit = hoverTarget(document.elementFromPoint(pointer.x, pointer.y));
-  if (held) return hit && hit === current?.el ? hit : null;
+  if (held) {
+    const gaveWay = held.el && !isLive(held.el, NO_HOVER);
+    if (hit && (hit === held.el || gaveWay)) return hit;
+    // Hold the box over the gap until the clicked target's successor shows.
+    return gaveWay && performance.now() < busyUntil ? current?.el ?? null : null;
+  }
   if (hit) return hit;
   // Bridge the gaps between neighbours instead of blinking out.
   if (current && isLive(current.el, NO_HOVER)
@@ -150,12 +144,13 @@ function step(box: Box, goal: Box, k: number): boolean {
 }
 
 // Where a leaving box shrinks to: the pointer, but held within sticky reach of
-// where it was, so a fast exit doesn't drag it across the page.
+// where it was, so a fast exit doesn't drag it across the page. In a scroller
+// it stays inside its last box, which would otherwise grow the scroll area.
 function exitPoint(p: Painted): Point {
   const a = p.anchor;
   if (!pointer.inside || focused) return { x: a.x + a.w / 2, y: a.y + a.h / 2 };
   const at = local(p.scope);
-  const reach = config.sticky;
+  const reach = p.scope.scrolls ? 0 : config.sticky;
   return {
     x: Math.min(a.x + a.w + reach, Math.max(a.x - reach, at.x)),
     y: Math.min(a.y + a.h + reach, Math.max(a.y - reach, at.y)),
@@ -240,8 +235,7 @@ function reset(): void {
 // Registered once per session; reset() drops every page reference before a
 // swap, so nothing here outlives its page.
 
-// Lets CSS hand surface hover fills over to the ring (`hover-fallback` mixin)
-// while a page without this module keeps them. Re-set after each swap, since
+// Turns off the hover-fallback hovers. Re-set after each swap, since
 // ClientRouter copies the incoming document's <html> attributes.
 const flagRoot = () => document.documentElement.setAttribute('data-highlighter', '');
 flagRoot();
@@ -263,7 +257,7 @@ window.addEventListener('pointerdown', (e) => {
 }, { passive: true });
 
 window.addEventListener('click', () => {
-  held = { x: pointer.x, y: pointer.y };
+  held = { x: pointer.x, y: pointer.y, el: current?.el ?? null };
   stayBusy(300);
 }, { capture: true, passive: true });
 

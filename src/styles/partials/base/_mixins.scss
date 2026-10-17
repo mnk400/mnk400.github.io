@@ -34,10 +34,8 @@
     }
 }
 
-// Hover the highlighter (src/lib/interaction) takes over. Once the module flags
-// <html data-highlighter>, the box or halo is the hover and this only applies
-// to a touch tap; a page without the module (the CSS export) keeps it as a
-// plain hover. :where() keeps the root check out of the specificity.
+// A hover the highlighter replaces: with it running (<html data-highlighter>)
+// this styles touch taps only; without it (the CSS export), plain hovers.
 @mixin hover-fallback {
     @media (any-hover: hover) {
         :where(:root:not([data-highlighter])) &:hover {
@@ -51,23 +49,18 @@
 }
 
 // -----------------------------------------------------------------------------
-// HIGHLIGHT API: how a component opts into the hover highlighter
-// (src/lib/interaction). Links, buttons, selects and range/colour inputs are
-// targets already; anything else clickable also needs data-highlight in its
-// markup. The mixin declares what kind of target it is (style-dna
-// "Interaction grammar"). Undeclared targets are inferred: text, or surface
-// when they have a fill or outline.
+// HIGHLIGHT API (src/lib/interaction). Recipe in AGENTS.md, rules in style-dna
+// "Interaction grammar".
 // -----------------------------------------------------------------------------
 
-// Bare text (links, text buttons): the box hugs the glyphs, the text turns
-// accent.
+// Bare text: the box hugs the glyphs and the text turns accent.
 @mixin highlight-text {
     --highlight-fit: text;
+    --highlight-tone: initial;
 }
 
-// A row in a list: the box fills the row, $inset in from its sides (and
-// $inset-y from its top and bottom). A selected row with a fill (highlight-fill)
-// sets --highlight-tone: solid, so the fill hands over to a solid box.
+// A row in a list: the box fills the row, $inset in from its sides and
+// $inset-y from its top and bottom.
 @mixin highlight-row($inset: var(--spacing-xs), $radius: var(--radius-sm), $inset-y: 0px) {
     --highlight-fit: box;
     --highlight-pad-x: calc(-1 * #{$inset});
@@ -76,21 +69,14 @@
     --highlight-magnet: 0.5;
 }
 
-// Anything with its own fill or outline: the hover is an accent box 3px
-// bigger than it, and the element's fill thins out exactly as the box covers
-// it (--highlight-cover), so the two hand over with no gap and it ends up one
-// flat accent shape, the way a link does.
-//   $fill    its resting fill, which the mixin then owns: change it later
-//            through --surface-fill (selected, expanded), never
-//            background-color. null leaves the fill alone (opaque on purpose,
-//            or a child carries it: give that child highlight-fill).
-//   $hover   the fallback hover fill (touch taps, pages without the
-//            highlighter); null for none.
-//   $tone    wash (default): a light box, text turns accent. solid: a solid
-//            accent box, text keeps its colour (filled buttons). keep: fill
-//            and colours stay, the box shows around it (swatches, imagery).
-//   $radius  the box's radius, else the element's own plus 3px.
-@mixin highlight-surface($fill: null, $hover: var(--translucent-medium-high), $tone: null, $radius: null) {
+// Anything with a fill or outline: a box $pad bigger than it takes over its
+// fill as it covers it.
+//   $fill    resting fill, then owned by the mixin: change it through
+//            --surface-fill. null when it's opaque or on a child (highlight-fill).
+//   $hover   fill for touch taps and pages without the highlighter.
+//   $tone    wash (default), solid (filled buttons) or keep (content fills).
+//   $radius  defaults to the element's own plus $pad.
+@mixin highlight-surface($fill: null, $hover: var(--translucent-medium-high), $tone: null, $radius: null, $pad: null) {
     --highlight-fit: surface;
 
     @if $tone {
@@ -99,6 +85,11 @@
 
     @if $radius {
         --highlight-radius: #{$radius};
+    }
+
+    @if $pad {
+        --highlight-pad-x: #{$pad};
+        --highlight-pad-y: #{$pad};
     }
 
     @if $fill {
@@ -110,25 +101,40 @@
     }
 }
 
-// The fill half of highlight-surface, for a fill on a child of the target (the
-// cover inherits). Its hairline fades with it. Animate fill changes through
-// `transition: --surface-fill`: background-color follows the box every frame.
+// The standard control: translucent fill and hairline. $transition adds the
+// element's other transitions.
+@mixin highlight-control($hover: var(--translucent-medium-high), $transition: null) {
+    outline: 1px solid;
+    transition: --surface-fill var(--transition-medium), color var(--transition-medium), $transition;
+    @include highlight-surface(var(--translucent-low), $hover);
+}
+
+// A colour that fades out as the box covers its element.
+@function highlight-fade($color) {
+    @return color-mix(in srgb, #{$color} calc(100% - 100% * var(--highlight-cover, 0)), transparent);
+}
+
+// The fill half of highlight-surface, also for a fill on a child of the target.
+// Its hairline fades with it.
 @mixin highlight-fill($fill, $hover: null) {
-    $keep: calc(100% - 100% * var(--highlight-cover, 0));
     --surface-fill: #{$fill};
-    background-color: color-mix(in srgb, var(--surface-fill) #{$keep}, transparent);
-    outline-color: color-mix(in srgb, var(--translucent-medium) #{$keep}, transparent);
+    background-color: highlight-fade(var(--surface-fill));
+    outline-color: highlight-fade(var(--translucent-medium));
 
     @if $hover {
         @include hover-fallback {
             --surface-fill: #{$hover};
         }
+
+        // On a child, the tap lands on the target around it.
+        :where(.touch-hover) & {
+            --surface-fill: #{$hover};
+        }
     }
 }
 
-// A list of rows (apply to the container): the rows either side of the
-// hovered one drift apart. $row picks the rows among its children, which may
-// wrap the target. Owns the rows' transition so the drift lands with the box.
+// On a list's container: the rows either side of the hovered one drift apart.
+// $row picks the rows, which may wrap the target.
 @mixin highlight-rows($row: "*") {
     > #{$row} {
         transition:
@@ -149,11 +155,12 @@
     }
 }
 
-// An element highlights paint inside. Usually inferred (frosted, filled or
-// scrolling containers); declare one to give highlights room. $z: 1 paints
-// above the scope's content, for targets that overlap it (switch chevrons).
+// Where highlights paint. Usually inferred; declare one to give them room.
+// It must be positioned. $z: 1 paints above the scope's content (the switch
+// chevrons).
 @mixin highlight-scope($z: null) {
     --highlight-scope: on;
+    isolation: isolate;
 
     @if $z {
         --highlight-z: #{$z};

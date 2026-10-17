@@ -7,11 +7,9 @@ import { isTransparent, scopeFor, type Scope } from './scopes.ts';
 // sliding.
 export type Fit = 'text' | 'box' | 'surface';
 
-// What a box looks like. wash: a light accent box that takes over the
-// element's fill, text turns accent. solid: a solid accent box, text keeps its
-// colour (filled buttons, selected things, rows too). keep: the element keeps
-// its fill and colours, the box shows around it (swatches, buttons over
-// imagery). Text and rows default to 'text', a surface to wash.
+// wash: a light box, text turns accent. solid: an accent box, text keeps its
+// colour. keep: the element keeps its fill and colours. 'text' is the look of
+// text and rows unless they're solid.
 export type Tone = 'wash' | 'solid' | 'keep';
 export type Look = 'text' | Tone;
 
@@ -190,8 +188,7 @@ export function goalBox(t: Target, rects: DOMRect[], pointer: Point | null, magn
     const ny = clamp((pointer.y - (box.y + box.h / 2)) / (box.h / 2 + 24), -1, 1);
     const max = magnet * t.magnet;
     if (t.fit === 'surface') {
-      // A 2px nudge whatever the halo's size: enough to feel the pull, and
-      // clear of neighbours, which sit at least a gutter away.
+      // At most 2px whatever the size, so it stays clear of neighbours.
       const reach = Math.min(max, 2);
       const lx = nx * reach, ly = ny * reach;
       if (lx < 0) box.x += lx;
