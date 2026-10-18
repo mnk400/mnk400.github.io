@@ -1,18 +1,17 @@
 ---
-import { switchClasses, swatchAttributes, type SwitchOption, type SwitchVariant } from '../lib/selection-options.ts';
+import { switchClasses, type SelectionOption } from '../lib/selection-options.ts';
 
 interface Props {
   id: string;
-  options: SwitchOption[];
+  options: SelectionOption[];
   active?: string;
   class?: string;
-  variant?: SwitchVariant;
 }
 
-const { id, options, active, class: extraClass, variant } = Astro.props;
+const { id, options, active, class: extraClass } = Astro.props;
 const activeValue = active ?? options[0]?.value;
 
-const classes = switchClasses(variant, extraClass);
+const classes = switchClasses(extraClass);
 ---
 <div class={classes} id={id} data-selection-switch>
   {options.map(opt => (
@@ -22,7 +21,6 @@ const classes = switchClasses(variant, extraClass);
       class="switch-option"
       aria-pressed={opt.value === activeValue ? 'true' : 'false'}
       data-value={opt.value}
-      {...swatchAttributes(opt.swatch)}
     >{opt.label}</button>
   ))}
 </div>

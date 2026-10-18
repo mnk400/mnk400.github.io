@@ -77,7 +77,8 @@ on `astro:before-swap` — see `src/lib/image-zoom/index.ts` and `src/lib/image-
 ### Theme System
 
 Nine themes defined in `src/styles/partials/base/_variables.scss`, toggled via `data-theme` on
-`<html>`. State logic lives in `src/lib/theme.ts`; `ThemeSwitcher.astro` owns the event wiring.
+`<html>`. State logic lives in `src/lib/theme.ts`; the footer's theme button (`Footer.astro`) cycles
+through them.
 
 `Default.astro` also contains an inline pre-paint script that applies the theme before first
 paint to avoid a flash. It deliberately duplicates the resolution logic in ES5 but sources its

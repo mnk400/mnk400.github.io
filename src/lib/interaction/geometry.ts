@@ -106,8 +106,8 @@ export function readTarget(el: HTMLElement): Target | null {
 const visible = (el: Element) => getComputedStyle(el).visibility !== 'hidden';
 
 // Union of visible text runs and icons. Measuring content rather than the
-// element skips boxes that only reserve space (the footer's label slot, sized
-// for the longer of "settings" and "close") and enlarged tap areas.
+// element skips boxes that only reserve space (the footer's theme slot, sized
+// for the longest theme name) and enlarged tap areas.
 function contentRect(el: HTMLElement): DOMRect | null {
   let left = Infinity, top = Infinity, right = -Infinity, bottom = -Infinity;
   const add = (r: DOMRect) => {

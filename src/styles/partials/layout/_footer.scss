@@ -1,3 +1,4 @@
+@use "../base/variables" as *;
 @use "../base/mixins" as *;
 
 // =============================================================================
@@ -16,7 +17,7 @@
         color: var(--sec-text-color);
     }
 
-    &__settings {
+    &__theme {
         @include highlight-text;
         @include tap-target-expand;
         font: inherit;
@@ -24,19 +25,21 @@
     }
 }
 
-// Reserve the longer label's width when settings changes to close. The button
-// is the row's right-hand item, so the label hugs the right edge of that slot.
-.settings-toggle-slot {
+// Every name stacks in one cell, so the slot is as wide as the longest and
+// cycling never moves the row. Which one shows follows :root[data-theme], set
+// before first paint, so the label is right without waiting for JS.
+.theme-name-slot {
     display: inline-grid;
     text-align: right;
 
-    .settings-toggle-text {
+    > span {
         grid-area: 1 / 1;
-    }
-
-    &::after {
-        content: "settings";
         visibility: hidden;
-        grid-area: 1 / 1;
+    }
+}
+
+@each $theme, $tokens in $themes {
+    :root[data-theme="#{$theme}"] [data-theme-name="#{$theme}"] {
+        visibility: visible;
     }
 }

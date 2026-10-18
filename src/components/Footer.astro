@@ -1,14 +1,16 @@
 ---
+import { themes } from '../lib/theme.ts';
 ---
 <footer class="site-footer">
   <div class="site-footer__row">
     <span>seattle<span data-home-clock hidden> · <time data-local-time title="Local time in Seattle"></time></span></span>
-    <button type="button" class="site-footer__settings" data-settings-trigger aria-expanded="false" aria-controls="settingsPanel"><span class="settings-toggle-slot"><span class="settings-toggle-text">settings</span></span></button>
+    <button type="button" class="site-footer__theme" data-theme-cycle><span class="theme-name-slot">{themes.map(t => <span data-theme-name={t.name}>{t.name}</span>)}</span></button>
   </div>
 </footer>
 
 <script>
   import { untilSwap } from '../lib/lifecycle.ts';
+  import { setTheme, themeNames } from '../lib/theme.ts';
 
   function initLocalTime() {
     const clock = document.querySelector<HTMLTimeElement>('[data-local-time]');
@@ -36,5 +38,24 @@
     untilSwap(() => window.clearTimeout(timeout));
   }
 
+  // Steps through the themes in order. Reads the applied theme rather than
+  // getActiveTheme(), which a ?theme= link would pin. The visible name is CSS's.
+  function initThemeCycle() {
+    const button = document.querySelector<HTMLButtonElement>('[data-theme-cycle]');
+    if (!button) return;
+
+    const label = () => {
+      button.setAttribute('aria-label', `Theme: ${document.documentElement.dataset.theme}. Next theme`);
+    };
+
+    label();
+    button.addEventListener('click', () => {
+      const i = themeNames.indexOf(document.documentElement.dataset.theme ?? '');
+      setTheme(themeNames[(i + 1) % themeNames.length]);
+      label();
+    });
+  }
+
   document.addEventListener('astro:page-load', initLocalTime);
+  document.addEventListener('astro:page-load', initThemeCycle);
 </script>

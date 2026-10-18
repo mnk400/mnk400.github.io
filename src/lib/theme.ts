@@ -1,5 +1,5 @@
 // Theme state utility. Pure module — no DOM event registration here, that
-// lives in src/components/ThemeSwitcher.astro.
+// lives in src/components/Footer.astro.
 
 export interface Theme {
   name: string;
@@ -61,8 +61,8 @@ export function applyTheme(name: string, doc: Document = document): void {
 }
 
 /** Persists and applies, with a 500ms transition class on html+body so the
- * change animates instead of snapping. Used by user interaction (switch
- * click) — the pre-paint init in Default.astro deliberately bypasses this so
+ * change animates instead of snapping. Used by user interaction (the
+ * footer's theme button) — the pre-paint init in Default.astro deliberately bypasses this so
  * initial paint stays instant. */
 export function setTheme(name: string): void {
   if (!isValid(name)) return;

@@ -71,17 +71,6 @@ header {
     pointer-events: none;
 }
 
-// Settings panel. The reveal clips, so the panel reaches spacing-sm into the
-// gutter and pads it back: room for the swatches' boxes.
-.settings-panel {
-    @extend .header-reveal;
-    margin-inline: calc(-1 * var(--spacing-sm));
-
-    .settings-panel-inner {
-        padding: var(--spacing-md) calc(var(--spacing-sm) + 2px) 0;
-    }
-}
-
 // =============================================================================
 // HEADER ROW
 // =============================================================================

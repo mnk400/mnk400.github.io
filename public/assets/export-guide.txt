@@ -334,20 +334,6 @@ Selection switch visual contract:
 The selected option is the one with aria-pressed="true" (there is no .active
 class); keep it in sync from your own click handling.
 
-Add .selection-switch--swatch for taller paint-chip options, each filled with
-its own color. An option paints in --swatch-fill (background) and --swatch-ink
-(label + check), which default to the option's --background-main and
---text-color. So data-theme-preview alone makes a theme chip, and inline
-custom properties make any other color. Set ink alongside fill so the label
-stays legible. The selected option gets a corner check in its ink instead of
-the dark fill:
-
-    <div class="selection-switch selection-switch--swatch" aria-label="Theme">
-      <button class="switch-option" type="button" aria-pressed="true" data-theme-preview="linen">Linen</button>
-      <button class="switch-option" type="button" aria-pressed="false" data-theme-preview="plum">Plum</button>
-      <button class="switch-option" type="button" aria-pressed="false" style="--swatch-fill: #b6393d; --swatch-ink: #fff">Red</button>
-    </div>
-
 Search pill visual contract (was .site-search before the 2026-08 rename, see
 section 12):
 
