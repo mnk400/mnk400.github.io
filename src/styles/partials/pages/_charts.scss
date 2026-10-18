@@ -127,7 +127,7 @@
         opacity: 0.7;
         transition: opacity var(--transition-fast);
 
-        &:hover {
+        @include hover-interactive {
             opacity: 1;
         }
     }

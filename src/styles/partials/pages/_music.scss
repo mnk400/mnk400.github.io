@@ -36,8 +36,10 @@
 
     // The album art is its own charm, clicking it pulses instead of following
     // the link, no need to show widget bar's hover state
-    &:has(.music-widget-art-wrapper:hover) {
-        --surface-fill: var(--translucent-low);
+    @media (any-hover: hover) {
+        &:has(.music-widget-art-wrapper:hover) {
+            --surface-fill: var(--translucent-low);
+        }
     }
 }
 

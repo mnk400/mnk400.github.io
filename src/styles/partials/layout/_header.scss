@@ -209,12 +209,20 @@ header:has(.header-breadcrumb) {
     opacity: 0.4;
 }
 
-.site-name-group:hover .site-name-menu,
+
 .site-name-group:focus-within .site-name-menu,
 .site-name-menu.is-open {
     max-height: 2em;
     opacity: 1;
     padding-top: var(--spacing-xs);
+}
+
+@media (any-hover: hover) {
+    .site-name-group:hover .site-name-menu {
+        max-height: 2em;
+        opacity: 1;
+        padding-top: var(--spacing-xs);
+    }
 }
 
 

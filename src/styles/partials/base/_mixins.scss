@@ -21,30 +21,23 @@
     outline: solid 1px $color;
 }
 
-// Hover with touch fallback
+// A hover the highlighter doesn't cover. Touch gets none: iOS would leave it
+// stuck on after a tap.
 @mixin hover-interactive {
     @media (any-hover: hover) {
         &:hover {
             @content;
         }
     }
-
-    &.touch-hover {
-        @content;
-    }
 }
 
-// A hover the highlighter replaces: with it running (<html data-highlighter>)
-// this styles touch taps only; without it (the CSS export), plain hovers.
+// A hover the highlighter replaces: plain hovers only where it isn't running
+// (the CSS export, <html> without data-highlighter). Touch gets none.
 @mixin hover-fallback {
     @media (any-hover: hover) {
         :where(:root:not([data-highlighter])) &:hover {
             @content;
         }
-    }
-
-    &.touch-hover {
-        @content;
     }
 }
 
@@ -80,7 +73,7 @@ $highlight-tint: linear-gradient(
 // fill as it covers it.
 //   $fill    resting fill, then owned by the mixin: change it through
 //            --surface-fill. null when it's opaque or on a child (highlight-fill).
-//   $hover   fill for touch taps and pages without the highlighter.
+//   $hover   fill for pages without the highlighter.
 //   $tone    wash (default), solid (filled buttons), keep (content fills) or
 //            tint (art: the box paints over it, in a scope at highlight-scope(1)).
 //   $radius  defaults to the element's own plus $pad.
@@ -125,8 +118,8 @@ $highlight-tint: linear-gradient(
     color: var(--background-main);
     opacity: var(--highlight-cover);
 
-    // No box on touch taps or without the highlighter: the layer is the tint.
-    :where(:root:not([data-highlighter]), .touch-hover) & {
+    // No box without the highlighter: the layer is the tint.
+    :where(:root:not([data-highlighter])) & {
         background-image: $highlight-tint;
     }
 }
@@ -153,11 +146,6 @@ $highlight-tint: linear-gradient(
 
     @if $hover {
         @include hover-fallback {
-            --surface-fill: #{$hover};
-        }
-
-        // On a child, the tap lands on the target around it.
-        :where(.touch-hover) & {
             --surface-fill: #{$hover};
         }
     }

@@ -1,5 +1,5 @@
 // Hover highlight: one box per scope that glides between targets and leans
-// toward the pointer, for mouse, pen and keyboard focus (touch: touch.ts).
+// toward the pointer, for mouse, pen and keyboard focus. Touch draws nothing.
 // Rules in docs/style-dna.md "Interaction grammar".
 import { HIGHLIGHT_TARGETS, NO_FOCUS, NO_HOVER } from './targets.ts';
 import {
@@ -34,6 +34,11 @@ const resized = new ResizeObserver(() => wake());
 
 let current: Target | null = null;
 let focused: HTMLElement | null = null;
+// Focus only shows after a key that moves it, since browsers also count
+// script and text-field focus after a tap as :focus-visible (the zoom's close
+// button). Typing doesn't count: a phone's keyboard sends keys too.
+let keyboard = false;
+const FOCUS_KEYS = /^(Tab|Arrow|Home$|End$|Page|Escape$)/;
 // After a click, layout under a still pointer can shift (a panel opens), and
 // whatever lands there shouldn't light up until the pointer actually moves,
 // unless the clicked target gave way to it (the search trigger to its field).
@@ -253,8 +258,14 @@ window.addEventListener('pointermove', (e) => {
 
 window.addEventListener('pointerdown', (e) => {
   pointer.touch = e.pointerType === 'touch';
+  keyboard = false;
+  focused = null;
   stayBusy(300);
 }, { passive: true });
+
+window.addEventListener('keydown', (e) => {
+  if (FOCUS_KEYS.test(e.key)) keyboard = true;
+}, { capture: true, passive: true });
 
 window.addEventListener('click', () => {
   held = { x: pointer.x, y: pointer.y, el: current?.el ?? null };
@@ -277,7 +288,7 @@ document.addEventListener('animationend', wake, { passive: true, capture: true }
 document.addEventListener('focusin', (e) => {
   const node = e.target as Element;
   const el = node.closest<HTMLElement>(HIGHLIGHT_TARGETS);
-  if (el && node.matches(':focus-visible') && isLive(el, NO_FOCUS)) {
+  if (keyboard && el && node.matches(':focus-visible') && isLive(el, NO_FOCUS)) {
     focused = el;
     wake();
   }

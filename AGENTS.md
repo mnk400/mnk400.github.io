@@ -96,10 +96,12 @@ elsewhere) and a `--type-*` size scale, both in `_variables.scss`. See `docs/sty
   fetch **fails the build** unless `ALLOW_README_FALLBACK=true`, which exists only for
   intentionally building placeholder product pages.
 
-### Hover and Tap Feedback
+### Hover and Press Feedback
 
-`src/lib/interaction/` (loaded once from `Default.astro`) draws the hover highlight; touch gets a
-`.touch-hover` tap class instead. Rules: `docs/style-dna.md` → "Interaction grammar".
+`src/lib/interaction/` (loaded once from `Default.astro`) draws the hover highlight, and the same
+box for keyboard focus. **Touch draws nothing**: no box, no accent, no hover fills. A press shows
+through `:active` alone, which iOS only applies because `touch.ts` listens for touchstart; keep
+that listener. Rules: `docs/style-dna.md` → "Interaction grammar".
 
 **Adding hover to an element:**
 
@@ -112,7 +114,9 @@ elsewhere) and a `--type-*` size scale, both in `_variables.scss`. See `docs/sty
      (the music grid; content over the art takes `highlight-tint-layer`). A fill on a child
      takes `highlight-fill`.
    - `highlight-text`, or `highlight-row($inset)` with `highlight-rows` on the list.
-3. No `:hover` styles: the highlight is the hover. Change a surface's fill through
+3. No `:hover` styles: the highlight is the hover. A hover it doesn't cover goes through
+   `hover-interactive` (or `@media (any-hover: hover)`), never a bare `:hover`, which iOS leaves
+   stuck on after a tap. Change a surface's fill through
    `--surface-fill`, never `background-color`. Selected is ARIA plus the dark fill and
    `--highlight-tone: solid`.
 

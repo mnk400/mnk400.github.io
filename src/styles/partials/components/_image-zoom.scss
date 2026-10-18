@@ -152,8 +152,7 @@ html:has(.image-zoom-overlay[open]) {
     }
 
     &:focus,
-    &:active,
-    &.touch-hover {
+    &:active {
         background-color: var(--background-main);
         color: transparent;
         outline: none;

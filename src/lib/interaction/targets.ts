@@ -1,5 +1,4 @@
-// What the site treats as interactive. One list feeds both the hover
-// highlighter and touch tap feedback, so the two can't drift apart.
+// What the site treats as interactive, for the hover highlighter.
 
 /** Elements the highlighter tracks. A link that wraps an image (cards, the
  * music widget) opts in with data-highlight when it wants a highlight. */
@@ -14,10 +13,6 @@ export const HIGHLIGHT_TARGETS = [
   '.btn',
   '[data-highlight]',
 ].join(', ');
-
-/** Elements that get the .touch-hover class on tap: every target, plus links
- * around images, whose hover styles (reveal cards) double as tap feedback. */
-export const TAP_TARGETS = `${HIGHLIGHT_TARGETS}, a[href]`;
 
 /** No hover highlight. [data-highlight-ignore] marks a child with its own
  * hover (an album-art charm) that hides its parent's highlight while hovered.

@@ -17,7 +17,7 @@ A small, quiet, airy personal site: thin type on soft themed canvases, transluce
 
 ## Interaction grammar
 
-- **Hover** = the highlighter (`src/lib/interaction`): one box per scope that glides between clickables and leans toward the cursor. Keyboard focus gets the same box in place of the focus ring. No italics, no underlines.
+- **Hover** = the highlighter (`src/lib/interaction`): one box per scope that glides between clickables and leans toward the cursor. Keyboard focus gets the same box in place of the focus ring, but only after a key that moves focus. No italics, no underlines.
     - **Text and rows**: the box sits behind the glyphs in `--accent-fill` and the text turns `--accent`. A wrapped link gets a box per line, an icon-only button a circle.
     - **Surfaces** (anything with a fill or outline): the box is 3px bigger, concentric with the corners, and takes over the surface's fill and hairline as it covers them, leaving one flat accent shape. An image card is one target, caption included, and the box brings its padding: a `--spacing-sm` mat on the archive hubs, a `--spacing-xs` frame in galleries.
     - **Everything inside a hovered target turns accent**, secondary text included. Hierarchy holds through size and weight.
@@ -25,9 +25,10 @@ A small, quiet, airy personal site: thin type on soft themed canvases, transluce
     - **Selected** = the dark `--contrast-overlay` fill with page-coloured text, on chips and dropdown rows alike. Hovered, it hands over to a solid accent box. Selection is ARIA state, never a class.
     - **Rows make room**: bare rows have no hairlines, and their neighbours drift `--motion-make-room` apart around the box. The box never touches another filled thing.
     - **Accents** are per theme, a deep or bright take on the theme's own hue, mixed ~12% (light) or ~18–20% (dark) into `--accent-fill`. Each clears 4.5:1 on its fill, for weight-200 text; re-check all nine when changing one.
-    - Old fill hovers survive only as `hover-fallback`: touch taps and the CSS export.
+    - Old fill hovers survive only as `hover-fallback`, for the CSS export.
+- **Touch** = no highlight. The box is built for a cursor; a finger covers its target and starts every scroll looking like a tap. No box, no accent, no hover fill, and nothing revealed on hover has a touch stand-in (album stats stay hidden). Feedback is the browser's own tap highlight (kept: it confirms a tap registered and never fires on a scroll), the `:active` press, and whatever the tap does. Every `:hover` sits behind `any-hover: hover`.
 - **Links at rest** = weight 300 over the 200 copy, no underline, so a link is findable without decoration. Inside bold text or a heading a link keeps its parent's weight.
-- **Press** = `scale: 0.96` on `:active`, `--transition-fast`, on surfaces only. Never pair press-scale with a same-click text swap / icon rotate / panel expand.
+- **Press** = `scale: 0.96` on `:active`, `--transition-fast`, on surfaces only; no fill change. Never pair press-scale with a same-click text swap / icon rotate / panel expand: those controls let the result be the feedback.
 - **Entrances** = fade + `translateY(var(--motion-slide-offset))` (8px), staggered 60ms (`_reveal.scss`). Same language as the directional view transitions (`_view-transitions.scss`): forward slides up, back slides down, header crossfades, background never animates.
 - **Collapse/expand** = `expanding-collapsible` mixin (max-height + opacity + margins over `--transition-slow`).
 - **Easing** = `cubic-bezier(0.4, 0, 0.2, 1)` everywhere, durations only via `--transition-fast/medium/slow/backdrop/slowest`. The one exception is the highlighter's glide, an exponential follow that settles in about `--transition-medium`.
