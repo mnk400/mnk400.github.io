@@ -18,7 +18,7 @@ const thingHubItem = {
   title: 'Archive of Things',
   shortTitle: 'Things',
   url: '/archive/things/',
-  image: '/assets/images/previews/photo.jpg',
+  image: '/assets/images/previews/things.jpg',
   description: 'A small archive of objects, gear, and physical things I like.',
 } satisfies MoreItemData;
 
