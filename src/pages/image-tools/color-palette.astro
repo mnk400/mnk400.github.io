@@ -156,7 +156,6 @@ import RangeSlider from '../../components/RangeSlider.astro';
       });
     }
 
-    // Extraction is a few ms at this sample size, so it runs live.
     function extract() {
       if (!preview.src) return;
       displayPalette(extractPalette(preview, {
@@ -170,6 +169,7 @@ import RangeSlider from '../../components/RangeSlider.astro';
       markers.replaceChildren();
       extract();
     });
-    colorsInput.addEventListener('input', extract);
+    // On release, not per step: extraction is too slow on phones to run mid-drag.
+    colorsInput.addEventListener('change', extract);
   });
 </script>

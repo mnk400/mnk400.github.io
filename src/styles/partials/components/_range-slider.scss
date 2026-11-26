@@ -4,10 +4,38 @@
 // RANGE SLIDER (src/components/RangeSlider.astro)
 // =============================================================================
 
+// Registered so the fill can glide onto its step after a drag.
+@property --value-percent {
+    syntax: "<percentage>";
+    inherits: true;
+    initial-value: 0%;
+}
+
 .range-slider {
     --range-track-height: var(--control-height-sm);
 
     display: grid;
+
+    // Only the component glides: it owns the drag, so the fill can track the
+    // pointer 1:1 ([data-dragging]) and settle onto the step after.
+    // The component's script drags it, so touches must miss the native track:
+    // Chrome otherwise jumps the value on touchstart (even when the touch
+    // turns into a scroll) and sends a second change on touchend.
+    &[data-range-slider] > input::-webkit-slider-container {
+        pointer-events: none;
+    }
+
+    &[data-range-slider] > input::-webkit-slider-thumb {
+        pointer-events: none;
+    }
+
+    &[data-range-slider]:not([data-dragging]) {
+        transition: --value-percent var(--transition-medium);
+
+        @media (prefers-reduced-motion: reduce) {
+            transition: none;
+        }
+    }
 
     > input[type="range"],
     > .range-slider__value {
@@ -33,6 +61,8 @@
         border: none;
         border-radius: var(--radius-md);
         cursor: pointer;
+        // Vertical swipes still scroll the page; horizontal ones drag.
+        touch-action: pan-y;
         @include highlight-control;
 
         &:focus-visible:not([data-highlight-active]) {

@@ -21,16 +21,84 @@ const initialPercent = span > 0 ? ((Number(value) - Number(min)) / span) * 100 :
 
   // CSS can't read an input's value, so the filled width has to be pushed from here.
   // Pages that set .value programmatically dispatch 'input' to re-run this.
+  //
+  // Pointer drags are handled here instead of natively: the fill follows the
+  // pointer continuously while the value snaps to its step, then the fill
+  // settles onto the step on release (the transition lives in the SCSS).
   mount('[data-range-slider]', ({ root, find }) => {
     const input = find<HTMLInputElement>('input[type="range"]');
     const output = find('[data-range-output]');
-    const sync = () => {
+
+    let drag: { id: number; x: number; y: number; engaged: boolean; start: string } | null = null;
+
+    const bounds = () => {
       const min = Number(input.min || 0);
-      const span = Number(input.max || 100) - min;
-      const percent = span > 0 ? ((Number(input.value) - min) / span) * 100 : 0;
-      root.style.setProperty('--value-percent', `${percent}%`);
-      output.textContent = input.value;
+      return { min, span: Number(input.max || 100) - min };
     };
+    const setFill = (fraction: number) => root.style.setProperty('--value-percent', `${fraction * 100}%`);
+
+    const sync = () => {
+      output.textContent = input.value;
+      if (drag?.engaged) return;
+      const { min, span } = bounds();
+      setFill(span > 0 ? (Number(input.value) - min) / span : 0);
+    };
+
+    // Sets the value from a pointer x; the browser rounds it onto the step.
+    const pick = (clientX: number) => {
+      const rect = input.getBoundingClientRect();
+      const fraction = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+      const { min, span } = bounds();
+      const before = input.value;
+      input.value = String(min + fraction * span);
+      if (input.value !== before) input.dispatchEvent(new Event('input', { bubbles: true }));
+      return fraction;
+    };
+
+    const engage = () => {
+      drag!.engaged = true;
+      root.toggleAttribute('data-dragging', true);
+    };
+
+    input.addEventListener('pointerdown', (e) => {
+      if (!e.isPrimary || e.button !== 0) return;
+      e.preventDefault(); // keeps the native thumb drag out of it
+      if (e.pointerType === 'mouse') input.focus({ preventScroll: true });
+      drag = { id: e.pointerId, x: e.clientX, y: e.clientY, engaged: false, start: input.value };
+      if (e.pointerType !== 'touch') input.setPointerCapture(e.pointerId); // touch is captured already
+      // A mouse drags at once; a touch waits until it's clearly not a scroll.
+      if (e.pointerType === 'mouse') {
+        engage();
+        setFill(pick(e.clientX));
+      }
+    });
+
+    input.addEventListener('pointermove', (e) => {
+      if (e.pointerId !== drag?.id) return;
+      if (!e.buttons) return end(e); // released where we didn't see it (app switch, context menu)
+      if (!drag.engaged) {
+        const dx = Math.abs(e.clientX - drag.x);
+        if (dx < 4 || dx < Math.abs(e.clientY - drag.y)) return;
+        engage();
+      }
+      setFill(pick(e.clientX));
+    });
+
+    // iOS drives its native thumb from touch events, which pointerdown can't cancel.
+    input.addEventListener('touchmove', (e) => drag?.engaged && e.preventDefault(), { passive: false });
+
+    const end = (e: PointerEvent) => {
+      if (e.pointerId !== drag?.id) return;
+      const { engaged, start } = drag;
+      drag = null;
+      root.removeAttribute('data-dragging');
+      if (e.type === 'pointerup' && !engaged) pick(e.clientX); // a tap sets the value too
+      sync();
+      if (input.value !== start) input.dispatchEvent(new Event('change', { bubbles: true }));
+    };
+    input.addEventListener('pointerup', end);
+    input.addEventListener('pointercancel', end);
+
     input.addEventListener('input', sync);
     sync();
   });

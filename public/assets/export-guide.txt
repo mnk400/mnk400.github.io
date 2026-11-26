@@ -323,6 +323,8 @@ The output overlays the track, right-aligned with the standard large inset. Its
 foreground splits at --value-percent so it stays legible across both the filled
 and unfilled portions.
 
+The input is touch-action: pan-y, so a vertical swipe over it scrolls the page.
+
 Selection switch visual contract:
 
     <div class="selection-switch" aria-label="View">
