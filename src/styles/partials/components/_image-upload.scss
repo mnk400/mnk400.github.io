@@ -29,19 +29,53 @@
     display: none;
 }
 
-.image-upload .image-upload__preview {
-    max-width: 100%;
+// Holds the image and whatever the page slots under it, as one card.
+.image-upload__frame {
     display: none;
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    @include soft-outline(var(--translucent-medium));
+}
+
+// The image's own box: an "overlay" slot positions against it.
+.image-upload__stage {
+    position: relative;
+}
+
+.image-upload .image-upload__preview {
+    display: block;
+    width: 100%;
     margin: 0;
     padding: 0;
-    width: 100%;
-    border-radius: var(--radius-md);
-    transition: opacity 0.5s ease-out;
-    @include soft-outline(var(--translucent-medium));
+}
 
-    &.fade-out {
-        opacity: 0;
-    }
+.image-upload__caption {
+    display: none;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin: 0;
+    color: var(--sec-text-color);
+    @include meta-text;
+}
+
+.image-upload__name {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    min-width: 0;
+    font-weight: inherit;
+    @include highlight-text;
+}
+
+.image-upload__filename {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.image-upload__size {
+    flex-shrink: 0;
 }
 
 .image-upload--has-preview {
@@ -49,7 +83,15 @@
         display: none;
     }
 
-    .image-upload__preview {
+    .image-upload__frame {
         display: block;
     }
+
+    .image-upload__caption {
+        display: flex;
+    }
+}
+
+.image-upload--dragging :is(.image-upload__selector, .image-upload__frame) {
+    outline-color: var(--accent);
 }

@@ -1,4 +1,6 @@
 ---
+import Icon from './Icon.astro';
+
 interface Props {
   id?: string;
   label?: string;
@@ -8,7 +10,7 @@ interface Props {
 
 const {
   id = 'image-upload',
-  label = 'Select Image',
+  label = 'Drop an image, or choose one',
   accept = 'image/*',
   class: extraClass,
 } = Astro.props;
@@ -20,31 +22,109 @@ const wrapperClass = ['image-upload', extraClass].filter(Boolean).join(' ');
     <span>{label}</span>
   </button>
   <input class="image-upload__input" type="file" accept={accept} />
-  <img class="image-upload__preview" alt="" />
+  <div class="image-upload__frame">
+    <div class="image-upload__stage">
+      <img class="image-upload__preview" alt="" />
+      <slot name="overlay" />
+    </div>
+    <slot />
+  </div>
+  <p class="image-upload__caption">
+    <button class="image-upload__name" type="button" title="Replace image">
+      <Icon name="arrows-clockwise" weight="regular" />
+      <span class="image-upload__filename"></span>
+    </button>
+    <span class="image-upload__size"></span>
+  </p>
 </div>
 
 <script>
   import { emit } from '../lib/events.ts';
   import { mount } from '../lib/lifecycle.ts';
 
-  mount('[data-image-upload]', ({ root, find }) => {
-    const selector = find<HTMLButtonElement>('.image-upload__selector');
+  // Once loaded, the image is replaced through its filename, a drop, or a
+  // paste. The image itself takes no clicks: those belong to the page.
+  mount('[data-image-upload]', ({ root, find, signal }) => {
     const input = find<HTMLInputElement>('.image-upload__input');
     const preview = find<HTMLImageElement>('.image-upload__preview');
+    const name = find('.image-upload__name');
+    const filename = find('.image-upload__filename');
+    const size = find('.image-upload__size');
+    let url = '';
 
-    selector.addEventListener('click', () => input.click());
-    input.addEventListener('change', () => {
-      const file = input.files?.[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        const dataUrl = reader.result as string;
-        preview.src = dataUrl;
-        preview.alt = file.name;
-        root.classList.add('image-upload--has-preview');
-        emit(root, 'image-upload:change', { file, dataUrl, image: preview });
-      };
-      reader.readAsDataURL(file);
+    // Drop and paste honour `accept` the way the picker does: MIME types,
+    // type/* wildcards and .extensions.
+    const accepts = (file: File) => !input.accept || input.accept.split(',').some((raw) => {
+      const rule = raw.trim().toLowerCase();
+      if (rule.startsWith('.')) return file.name.toLowerCase().endsWith(rule);
+      if (rule.endsWith('/*')) return file.type.startsWith(rule.slice(0, -1));
+      return file.type === rule;
     });
+
+    async function load(file: File | undefined) {
+      if (!file || !accepts(file)) return;
+      const next = URL.createObjectURL(file);
+      preview.src = next;
+      try {
+        // Listeners read pixels on change, so wait until there are some.
+        await preview.decode();
+      } catch {
+        // Unreadable (HEIC in Chrome, say): keep the last good image. If a
+        // newer load already took over, leave it be.
+        if (preview.src === next) {
+          if (url) preview.src = url;
+          else preview.removeAttribute('src');
+        }
+        URL.revokeObjectURL(next);
+        return;
+      }
+      if (url) URL.revokeObjectURL(url);
+      url = next;
+      preview.alt = file.name;
+      filename.textContent = file.name;
+      size.textContent = `${preview.naturalWidth} × ${preview.naturalHeight}`;
+      root.classList.add('image-upload--has-preview');
+      emit(root, 'image-upload:change', { file, image: preview });
+    }
+
+    for (const opener of [find('.image-upload__selector'), name]) {
+      opener.addEventListener('click', () => input.click());
+    }
+    input.addEventListener('change', () => {
+      void load(input.files?.[0]);
+      input.value = ''; // so picking the same file again still fires
+    });
+
+    // Drops land anywhere on the page, like paste: a near miss would otherwise
+    // open the file and leave the page. Enter/leave are counted because they
+    // fire per element crossed, and Safari reports no relatedTarget.
+    let depth = 0;
+    const carriesFile = (e: DragEvent) => e.dataTransfer?.types.includes('Files') ?? false;
+    const setDragging = (on: boolean) => root.classList.toggle('image-upload--dragging', on);
+    document.addEventListener('dragenter', (e) => {
+      if (carriesFile(e)) setDragging(++depth > 0);
+    }, { signal });
+    document.addEventListener('dragleave', (e) => {
+      if (carriesFile(e)) setDragging((depth = Math.max(0, depth - 1)) > 0);
+    }, { signal });
+    document.addEventListener('dragover', (e) => {
+      if (carriesFile(e)) e.preventDefault();
+    }, { signal });
+    document.addEventListener('drop', (e) => {
+      if (!carriesFile(e)) return;
+      e.preventDefault();
+      depth = 0;
+      setDragging(false);
+      void load(e.dataTransfer?.files[0]);
+    }, { signal });
+
+    document.addEventListener('paste', (e) => {
+      const file = [...(e.clipboardData?.files ?? [])].find(accepts);
+      if (!file) return;
+      e.preventDefault();
+      void load(file);
+    }, { signal });
+
+    return () => { if (url) URL.revokeObjectURL(url); };
   });
 </script>

@@ -61,7 +61,6 @@ by the consuming project.
     partials/components/expandable-section  .expandable-section, -toggle, -content
     partials/components/selection-switch    .selection-switch and .switch-option
     partials/components/search-pill .search-pill, trigger, field, clear
-    partials/components/cards      .palette-actions row
     partials/components/grids      grid helpers and page-agnostic grid primitives
     partials/components/image-gallery  gallery shell, masonry grid, image cards
     partials/components/info-grid  .info-grid and .info-card
@@ -365,8 +364,39 @@ Options are bare rows, inset from the menu edge and rounded; the one with
 aria-selected="true" takes the dark fill (as a selected chip does) and shows the check. Rows drift apart around [data-highlight-active],
 which only the site's highlight script sets.
 
-These are styles only. Open/close, active state, keyboard handling, and slider
-fill updates belong to the consuming project.
+Image upload visual contract:
+
+    <div class="image-upload">
+      <button class="image-upload__selector" type="button">
+        <span>Drop an image, or choose one</span>
+      </button>
+      <input class="image-upload__input" type="file" accept="image/*">
+      <div class="image-upload__frame">
+        <div class="image-upload__stage">
+          <img class="image-upload__preview" alt="">
+          <!-- optional overlay, positioned against the image -->
+        </div>
+        <!-- optional content attached under the image, e.g. .palette-output -->
+      </div>
+      <p class="image-upload__caption">
+        <button class="image-upload__name" type="button">
+          <svg class="icon">...</svg>
+          <span class="image-upload__filename">photo.jpg</span>
+        </button>
+        <span class="image-upload__size">4032 × 3024</span>
+      </p>
+    </div>
+
+Only shows the selector. Add .image-upload--has-preview to swap it for
+the frame and caption: the frame is one outlined, rounded card around the image
+and anything attached under it, and .image-upload__stage is position: relative
+so an overlay can sit on the image. The caption puts the filename (clicking can
+reopens the picker) on the left and the size on the right. Add
+.image-upload--dragging while a file is dragged over the page to accent the
+selector or frame outline.
+
+These are styles only. Open/close, active state, keyboard handling, slider fill
+updates, and file loading belong to the consuming project.
 
 
 ================================================================================
@@ -382,6 +412,22 @@ Info grid:
         <p class="info-card__body">Short explanation.</p>
       </article>
     </div>
+
+Color palette strip:
+
+    <div class="palette-output" style="--cols: 3">
+      <button class="color-swatch" type="button" style="--swatch: #904820">
+        <span class="color-swatch__hex">#904820</span>
+        <span class="color-swatch__feedback" aria-hidden="true">copied</span>
+      </button>
+    </div>
+
+One continuous band of swatches, no gaps or borders, at a fixed height that
+rows split, so changing the count never moves what's below. --cols is
+swatches per row (default 5): with more swatches than that it wraps, and the
+last row stretches to fill. Each swatch paints --swatch and tints its hex from
+it; add .color-swatch--light on light colors so the hex inks dark. Add .copied
+to show the feedback label in the hex's place.
 
 Image grid classes are included for projects that share album/gallery layouts:
 
@@ -532,6 +578,17 @@ Example with Phosphor web classes:
 ================================================================================
 
 Breaking changes:
+
+    2026-11  .image-upload: the preview now sits in .image-upload__frame >
+             .image-upload__stage, and the frame (not the preview) carries the
+             outline and radius and shows with --has-preview. .fade-out is
+             removed. New parts: __frame, __stage, __caption, __name,
+             __filename, __size, and the --dragging modifier.
+             .palette-output / .color-swatch: swatches read their color from
+             --swatch (not background-color) and the strip from --cols; square
+             tiles became a fixed-height continuous strip.
+             partials/components/cards and its only class, .palette-actions,
+             are removed.
 
     2026-08  .site-search* renamed to .search-pill* so the class matches its
              component (SearchPill.astro) and partial (_search-pill.scss).

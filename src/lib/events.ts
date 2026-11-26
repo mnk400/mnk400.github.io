@@ -10,7 +10,7 @@ export interface SiteEvents {
   /** SearchPill's normalized (trimmed, lowercased) query changed. */
   'search:change': { query: string };
   /** ImageUpload loaded a new file into its preview. */
-  'image-upload:change': { file: File; dataUrl: string; image: HTMLImageElement };
+  'image-upload:change': { file: File; image: HTMLImageElement };
 }
 
 type SiteEventMap = { [K in keyof SiteEvents]: CustomEvent<SiteEvents[K]> };

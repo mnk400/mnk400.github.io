@@ -1,20 +1,22 @@
 ---
 import Page from '../../layouts/Page.astro';
-import CopyButton from '../../components/CopyButton.astro';
 import ControlGroup from '../../components/ControlGroup.astro';
 import ImageUpload from '../../components/ImageUpload.astro';
 import RangeSlider from '../../components/RangeSlider.astro';
 ---
 <Page item="image-tools/color-palette">
-  <p>Upload an image to extract its color palette.</p>
+  <p>Drop in an image to extract its color palette.</p>
   <p>
     This tool uses K-means clustering to identify the dominant colors in your image.
-    All processing occurs locally in your browser - no images are uploaded to external servers.
+    All processing occurs locally in your browser.
   </p>
 
   <div class="palette-container stack" data-mount="color-palette">
     <div class="stack">
-      <ImageUpload />
+      <ImageUpload>
+        <div slot="overlay" class="palette-markers" data-ref="markers" aria-hidden="true"></div>
+        <div class="palette-output" data-ref="output"></div>
+      </ImageUpload>
 
       <ControlGroup label="colors" for="colors-input">
         <RangeSlider
@@ -24,25 +26,12 @@ import RangeSlider from '../../components/RangeSlider.astro';
           max={10}
         />
       </ControlGroup>
-
-      <div class="toolbar">
-        <button class="normal-btn" data-ref="extract">Extract Palette</button>
-      </div>
-    </div>
-
-    <div class="palette-output" data-ref="output"></div>
-
-    <div class="palette-actions" style="display: none;" data-ref="actions">
-      <CopyButton
-        id="copy-all-btn"
-        class="btn--text"
-      >copy all hex</CopyButton>
     </div>
 
     <template data-ref="swatch">
-      <button class="color-swatch" type="button" data-color="" data-index="">
+      <button class="color-swatch" type="button" data-highlight="off" data-color="" data-index="">
         <span class="color-swatch__hex"></span>
-        <span class="color-swatch__feedback">Copied</span>
+        <span class="color-swatch__feedback" aria-hidden="true">copied</span>
       </button>
     </template>
   </div>
@@ -55,22 +44,21 @@ import RangeSlider from '../../components/RangeSlider.astro';
 
   // Larger sample than the lightbox dots: a one-shot action can afford it.
   const SAMPLE_SIZE = 128;
+  // Past this a hex crowds its swatch.
+  const MAX_PER_ROW = 5;
+  // RGB distance within which a new color keeps an old color's marker. The
+  // palette reclusters on every count change, so survivors shift a little.
+  const SAME_MARKER = 24;
+
+  const rgbDistance = (x: PaletteColor, y: PaletteColor) => Math.hypot(x.r - y.r, x.g - y.g, x.b - y.b);
 
   mount('[data-mount="color-palette"]', ({ ref, find }) => {
     const upload = find('[data-image-upload]');
     const preview = find<HTMLImageElement>('.image-upload__preview');
     const colorsInput = find<HTMLInputElement>('#colors-input');
-    const extractBtn = ref('extract');
     const paletteOutput = ref('output');
-    const paletteActions = ref('actions');
-    const copyAllBtn = find('#copy-all-btn');
+    const markers = ref('markers');
     const swatchTemplate = ref<HTMLTemplateElement>('swatch');
-
-    upload.addEventListener('image-upload:change', () => {
-      paletteOutput.innerHTML = '';
-      delete copyAllBtn.dataset.copyValue;
-      paletteActions.style.display = 'none';
-    });
 
     function copySwatch(swatch: HTMLElement, hex: string) {
       void copyText(hex).then(() => {
@@ -83,43 +71,105 @@ import RangeSlider from '../../components/RangeSlider.astro';
       });
     }
 
+    // A swatch and its marker light up together; the other markers dim.
+    function setActive(index: string | null) {
+      markers.classList.toggle('has-active', index !== null);
+      for (const el of [...paletteOutput.children, ...markers.children] as HTMLElement[]) {
+        el.classList.toggle('is-active', el.dataset.index === index);
+      }
+    }
+
+    // Touch draws no hover: a tap fires enter and leave around itself.
+    function linkHover(el: HTMLElement) {
+      el.addEventListener('pointerenter', (e) => {
+        if (e.pointerType !== 'touch') setActive(el.dataset.index!);
+      });
+      el.addEventListener('pointerleave', () => setActive(null));
+    }
+
+    const markerColor = new WeakMap<HTMLElement, PaletteColor>();
+
+    // A color that survives a count change keeps its marker, which glides to
+    // its new spot; only new colors pop in and dropped ones pop out.
+    function renderMarkers(colors: PaletteColor[]) {
+      const old = [...markers.querySelectorAll<HTMLElement>('.palette-marker:not(.is-leaving)')];
+      colors.forEach((color, index) => {
+        let match = -1;
+        let nearest = SAME_MARKER;
+        old.forEach((marker, i) => {
+          const d = rgbDistance(color, markerColor.get(marker)!);
+          if (d < nearest) [match, nearest] = [i, d];
+        });
+        const marker = match >= 0 ? old.splice(match, 1)[0] : createMarker();
+        markerColor.set(marker, color);
+        marker.dataset.index = String(index);
+        marker.style.setProperty('--x', String(color.x));
+        marker.style.setProperty('--y', String(color.y));
+        marker.style.setProperty('--swatch', color.hex);
+        marker.classList.toggle('palette-marker--light', isLightColor(color.r, color.g, color.b));
+      });
+      for (const marker of old) {
+        delete marker.dataset.index;
+        marker.classList.add('is-leaving');
+        // No exit animation under reduced motion: remove it now. (A glide in
+        // progress is a transition, which never fires animationend.)
+        if (!marker.getAnimations().some((a) => a instanceof CSSAnimation)) marker.remove();
+        else marker.addEventListener('animationend', () => marker.remove(), { once: true });
+      }
+    }
+
+    function createMarker() {
+      const marker = document.createElement('span');
+      marker.className = 'palette-marker';
+      linkHover(marker);
+      markers.appendChild(marker);
+      return marker;
+    }
+
     function displayPalette(colors: PaletteColor[]) {
       paletteOutput.innerHTML = '';
-      copyAllBtn.dataset.copyValue = colors.map((color) => color.hex).join('\n');
+      setActive(null);
+      renderMarkers(colors);
+      // At most MAX_PER_ROW to a row, rows balanced: 6 is 3 + 3, never 5 + 1.
+      const rows = Math.ceil(colors.length / MAX_PER_ROW);
+      paletteOutput.style.setProperty('--cols', String(Math.ceil(colors.length / rows)));
 
       if (colors.length === 0) {
-        delete copyAllBtn.dataset.copyValue;
-        paletteActions.style.display = 'none';
         paletteOutput.innerHTML = '<p>No colors could be extracted from this image.</p>';
         return;
       }
-
-      paletteActions.style.display = 'flex';
 
       colors.forEach((color, index) => {
         const { r, g, b, hex } = color;
         const fragment = swatchTemplate.content.cloneNode(true) as DocumentFragment;
         const swatch = fragment.querySelector<HTMLElement>('.color-swatch')!;
-        swatch.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+        swatch.style.setProperty('--swatch', `rgb(${r}, ${g}, ${b})`);
         swatch.dataset.color = hex;
         swatch.dataset.index = String(index);
         swatch.querySelector('.color-swatch__hex')!.textContent = hex;
         if (isLightColor(r, g, b)) swatch.classList.add('color-swatch--light');
         swatch.addEventListener('click', () => copySwatch(swatch, hex));
+        swatch.addEventListener('focus', () => setActive(swatch.dataset.index!));
+        swatch.addEventListener('blur', () => setActive(null));
+        linkHover(swatch);
         paletteOutput.appendChild(swatch);
       });
     }
 
-    extractBtn.addEventListener('click', () => {
-      if (!preview.src || preview.src === window.location.href) {
-        alert('Please select an image first!');
-        return;
-      }
-      const palette = extractPalette(preview, {
+    // Extraction is a few ms at this sample size, so it runs live.
+    function extract() {
+      if (!preview.src) return;
+      displayPalette(extractPalette(preview, {
         count: parseInt(colorsInput.value),
         sampleSize: SAMPLE_SIZE,
-      });
-      displayPalette(palette);
+      }));
+    }
+
+    // A new image starts clean: its colors aren't the old markers moving.
+    upload.addEventListener('image-upload:change', () => {
+      markers.replaceChildren();
+      extract();
     });
+    colorsInput.addEventListener('input', extract);
   });
 </script>

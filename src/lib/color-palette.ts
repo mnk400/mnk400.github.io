@@ -7,6 +7,9 @@ export interface PaletteColor {
   hex: string;
   /** Share of sampled pixels this color's cluster covers, 0–1. */
   weight: number;
+  /** Where in the image to point at this color, as fractions of its size. */
+  x: number;
+  y: number;
 }
 
 export interface PaletteOptions {
@@ -47,6 +50,10 @@ const MIN_CHROMA_SCALE = 0.02;
 // Lightness counts half when judging duplicates: two tints of one hue read as
 // more alike than their Oklab distance suggests.
 const SEPARATION_LIGHTNESS_WEIGHT = 0.5;
+
+// Oklab distance within which a pixel can stand in for its color's location.
+// About where two flat patches stop reading as the same color.
+const LOCATE_MATCH = 0.05;
 
 const SRGB_TO_LINEAR = new Float32Array(256);
 for (let i = 0; i < 256; i++) {
@@ -98,13 +105,15 @@ function samplePixels(image: HTMLImageElement, sampleSize: number): ImageData | 
 }
 
 /**
- * Interleaved Oklab triples plus per-pixel chroma. Every opaque pixel is kept,
- * so cluster sizes are true coverage rather than counts of distinct colors.
+ * Interleaved Oklab triples plus per-pixel chroma and raster position. Every
+ * opaque pixel is kept, so cluster sizes are true coverage rather than counts
+ * of distinct colors.
  */
 function toOklab(pixels: Uint8ClampedArray) {
   const total = pixels.length >> 2;
   const data = new Float32Array(total * 3);
   const chroma = new Float32Array(total);
+  const pos = new Int32Array(total);
   let n = 0;
 
   for (let i = 0, o = 0; i < pixels.length; i += 4) {
@@ -124,10 +133,11 @@ function toOklab(pixels: Uint8ClampedArray) {
     data[o++] = a;
     data[o++] = b;
     chroma[n] = Math.sqrt(a * a + b * b);
+    pos[n] = i >> 2;
     n++;
   }
 
-  return { data, chroma, count: n };
+  return { data, chroma, pos, count: n };
 }
 
 function oklabToRgb(L: number, a: number, bVal: number) {
@@ -256,6 +266,9 @@ function kMeans(data: Float32Array, n: number, k: number, centroids: Float32Arra
 }
 
 interface Candidate {
+  /** Its pool cluster, and the member pixel it reports. */
+  cluster: number;
+  pick: number;
   L: number;
   a: number;
   b: number;
@@ -273,19 +286,73 @@ function describeClusters(data: Float32Array, chroma: Float32Array, n: number, k
   for (let i = 0; i < n; i++) buckets[assign[i]].push(i);
 
   const candidates: Candidate[] = [];
-  for (const bucket of buckets) {
-    if (bucket.length === 0) continue;
+  buckets.forEach((bucket, cluster) => {
+    if (bucket.length === 0) return;
     bucket.sort((x, y) => chroma[x] - chroma[y]);
     const pick = bucket[Math.floor(CHROMA_PERCENTILE * (bucket.length - 1))];
     candidates.push({
+      cluster,
+      pick,
       L: data[pick * 3],
       a: data[pick * 3 + 1],
       b: data[pick * 3 + 2],
       chroma: chroma[pick],
       weight: bucket.length / n,
     });
-  }
+  });
   return candidates;
+}
+
+/**
+ * Where to point at a color: of the pixels that look like it, the one deepest
+ * inside its cluster's region (chamfer distance to the nearest pixel outside
+ * it, image edge included). Lands mid-patch, not on an edge or a stray speck.
+ */
+function locate(
+  c: Candidate, data: Float32Array, pos: Int32Array, assign: Int32Array, n: number, w: number, h: number,
+): number {
+  const depth = new Float32Array(w * h);
+  for (let i = 0; i < n; i++) if (assign[i] === c.cluster) depth[pos[i]] = Infinity;
+
+  const D = Math.SQRT2;
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      const i = y * w + x;
+      if (depth[i] === 0) continue;
+      const up = y > 0;
+      depth[i] = Math.min(
+        depth[i],
+        (x > 0 ? depth[i - 1] : 0) + 1,
+        (up ? depth[i - w] : 0) + 1,
+        (up && x > 0 ? depth[i - w - 1] : 0) + D,
+        (up && x < w - 1 ? depth[i - w + 1] : 0) + D,
+      );
+    }
+  }
+  for (let y = h - 1; y >= 0; y--) {
+    for (let x = w - 1; x >= 0; x--) {
+      const i = y * w + x;
+      if (depth[i] === 0) continue;
+      const down = y < h - 1;
+      depth[i] = Math.min(
+        depth[i],
+        (x < w - 1 ? depth[i + 1] : 0) + 1,
+        (down ? depth[i + w] : 0) + 1,
+        (down && x < w - 1 ? depth[i + w + 1] : 0) + D,
+        (down && x > 0 ? depth[i + w - 1] : 0) + D,
+      );
+    }
+  }
+
+  let best = c.pick;
+  for (let i = 0; i < n; i++) {
+    if (assign[i] !== c.cluster || depth[pos[i]] <= depth[pos[best]]) continue;
+    const dL = data[i * 3] - c.L;
+    const da = data[i * 3 + 1] - c.a;
+    const db = data[i * 3 + 2] - c.b;
+    if (dL * dL + da * da + db * db < LOCATE_MATCH * LOCATE_MATCH) best = i;
+  }
+  return pos[best];
 }
 
 function separation(x: Candidate, y: Candidate): number {
@@ -342,7 +409,8 @@ export function extractPalette(image: HTMLImageElement, options: PaletteOptions 
   const sampled = samplePixels(image, Math.max(1, Math.floor(sampleSize)));
   if (!sampled) return [];
 
-  const { data, chroma, count: n } = toOklab(sampled.data);
+  const { width: w, height: h } = sampled;
+  const { data, chroma, pos, count: n } = toOklab(sampled.data);
   if (n === 0) return [];
 
   const pool = Math.min(n, Math.max(k, Math.min(k * POOL_FACTOR, MAX_POOL)));
@@ -357,8 +425,15 @@ export function extractPalette(image: HTMLImageElement, options: PaletteOptions 
 
   return selectPalette(describeClusters(data, chroma, n, pool, assign), k, scale)
     .sort((x, y) => y.weight - x.weight)
-    .map(({ L, a, b, weight }) => {
-      const rgb = oklabToRgb(L, a, b);
-      return { ...rgb, hex: rgbToHex(rgb.r, rgb.g, rgb.b), weight };
+    .map((c) => {
+      const rgb = oklabToRgb(c.L, c.a, c.b);
+      const at = locate(c, data, pos, assign, n, w, h);
+      return {
+        ...rgb,
+        hex: rgbToHex(rgb.r, rgb.g, rgb.b),
+        weight: c.weight,
+        x: ((at % w) + 0.5) / w,
+        y: (Math.floor(at / w) + 0.5) / h,
+      };
     });
 }

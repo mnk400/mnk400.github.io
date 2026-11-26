@@ -60,73 +60,74 @@
     }
 }
 
-// Color palette grid
+// Color palette strip: one continuous band under the image. The page sets
+// --cols, the swatches per row. Its height is fixed and rows split it, so
+// changing the count never moves what's below.
 .palette-output {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: var(--spacing-md);
-    width: 100%;
-    margin-bottom: var(--spacing-md);
-    grid-auto-rows: 1fr;
+    display: flex;
+    flex-wrap: wrap;
+    height: calc(2 * var(--control-height-lg));
 
-    @media (max-width: 600px) {
-        grid-template-columns: repeat(3, 1fr);
+    &:empty {
+        display: none;
+    }
+
+    > p {
+        margin: 0;
+        padding: var(--spacing-md);
     }
 }
 
-// Color swatch
+// A segment of the strip. The hex is tinted from the swatch so it stays
+// quiet, and comes up to full contrast on hover or focus.
 .color-swatch {
+    --ink: color-mix(in oklab, var(--swatch) 55%, white);
+    --ink-strong: white;
     position: relative;
-    aspect-ratio: 1/1;
-    width: 100%;
-    padding: 0;
-    border: 1px solid var(--translucent-medium);
-    border-radius: var(--radius-md);
-    cursor: pointer;
-    overflow: hidden;
-    background: transparent;
+    flex: 1 0 calc(100% / var(--cols, 5));
+    background-color: var(--swatch);
+    font-size: 0.7em;
+    letter-spacing: 0.3px;
     @include mono-font;
 
-    &__hex {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        padding: var(--spacing-xs);
-        font-size: 0.75em;
-        font-weight: 400;
-        text-align: center;
-        letter-spacing: 0.3px;
-        background: rgba(0, 0, 0, 0.35);
-        color: white;
-        backdrop-filter: blur(4px);
+    &--light {
+        --ink: color-mix(in oklab, var(--swatch) 55%, black);
+        --ink-strong: black;
     }
 
-    &--light &__hex {
-        background: rgba(255, 255, 255, 0.45);
-        color: black;
-    }
-
+    &__hex,
     &__feedback {
         position: absolute;
         inset: 0;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 0.85em;
-        font-weight: 500;
-        letter-spacing: 0.3px;
-        color: white;
-        background: rgba(0, 0, 0, 0.55);
-        backdrop-filter: blur(4px);
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity var(--transition-fast);
+        color: var(--ink);
+        transition: color var(--transition-fast), opacity var(--transition-fast);
     }
 
-    &--light &__feedback {
-        background: rgba(255, 255, 255, 0.6);
-        color: black;
+    &__feedback {
+        color: var(--ink-strong);
+        opacity: 0;
+    }
+
+    &:focus-visible {
+        outline: 1px solid var(--ink-strong);
+        outline-offset: -1px;
+    }
+
+    &:focus-visible &__hex {
+        color: var(--ink-strong);
+    }
+
+    @include hover-interactive {
+        .color-swatch__hex {
+            color: var(--ink-strong);
+        }
+    }
+
+    &.copied &__hex {
+        opacity: 0;
     }
 
     &.copied &__feedback {
