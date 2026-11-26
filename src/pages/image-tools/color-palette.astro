@@ -5,17 +5,14 @@ import ControlGroup from '../../components/ControlGroup.astro';
 import ImageUpload from '../../components/ImageUpload.astro';
 import RangeSlider from '../../components/RangeSlider.astro';
 ---
-<Page
-  title="Color Palette Extractor"
-  description="Extract a color palette from any image"
->
+<Page item="image-tools/color-palette">
   <p>Upload an image to extract its color palette.</p>
   <p>
     This tool uses K-means clustering to identify the dominant colors in your image.
     All processing occurs locally in your browser - no images are uploaded to external servers.
   </p>
 
-  <div class="palette-container stack">
+  <div class="palette-container stack" data-mount="color-palette">
     <div class="stack">
       <ImageUpload />
 
@@ -29,20 +26,20 @@ import RangeSlider from '../../components/RangeSlider.astro';
       </ControlGroup>
 
       <div class="toolbar">
-        <button id="extract-btn" class="normal-btn">Extract Palette</button>
+        <button class="normal-btn" data-ref="extract">Extract Palette</button>
       </div>
     </div>
 
-    <div id="palette-output" class="palette-output"></div>
+    <div class="palette-output" data-ref="output"></div>
 
-    <div id="palette-actions" class="palette-actions" style="display: none;">
+    <div class="palette-actions" style="display: none;" data-ref="actions">
       <CopyButton
         id="copy-all-btn"
         class="btn--text"
       >copy all hex</CopyButton>
     </div>
 
-    <template id="color-swatch-template">
+    <template data-ref="swatch">
       <button class="color-swatch" type="button" data-color="" data-index="">
         <span class="color-swatch__hex"></span>
         <span class="color-swatch__feedback">Copied</span>
@@ -54,28 +51,25 @@ import RangeSlider from '../../components/RangeSlider.astro';
 <script>
   import { copyText } from '../../lib/clipboard.ts';
   import { extractPalette, isLightColor, type PaletteColor } from '../../lib/color-palette.ts';
+  import { mount } from '../../lib/lifecycle.ts';
 
   // Larger sample than the lightbox dots: a one-shot action can afford it.
   const SAMPLE_SIZE = 128;
 
-  function initColorPalette() {
-    const upload = document.querySelector<HTMLElement>('[data-image-upload]');
-    const preview = upload?.querySelector<HTMLImageElement>('.image-upload__preview');
-    const colorsInput = document.getElementById('colors-input') as HTMLInputElement | null;
-    const extractBtn = document.getElementById('extract-btn') as HTMLButtonElement | null;
-    const paletteOutput = document.getElementById('palette-output');
-    const paletteActions = document.getElementById('palette-actions');
-    const copyAllBtn = document.getElementById('copy-all-btn') as HTMLButtonElement | null;
-    const swatchTemplate = document.getElementById('color-swatch-template') as HTMLTemplateElement | null;
-
-    if (!upload || !preview || !colorsInput || !extractBtn || !paletteOutput || !paletteActions || !copyAllBtn || !swatchTemplate) return;
-    if (paletteOutput.dataset.colorPaletteInitialized === 'true') return;
-    paletteOutput.dataset.colorPaletteInitialized = 'true';
+  mount('[data-mount="color-palette"]', ({ ref, find }) => {
+    const upload = find('[data-image-upload]');
+    const preview = find<HTMLImageElement>('.image-upload__preview');
+    const colorsInput = find<HTMLInputElement>('#colors-input');
+    const extractBtn = ref('extract');
+    const paletteOutput = ref('output');
+    const paletteActions = ref('actions');
+    const copyAllBtn = find('#copy-all-btn');
+    const swatchTemplate = ref<HTMLTemplateElement>('swatch');
 
     upload.addEventListener('image-upload:change', () => {
-      paletteOutput!.innerHTML = '';
-      delete copyAllBtn!.dataset.copyValue;
-      paletteActions!.style.display = 'none';
+      paletteOutput.innerHTML = '';
+      delete copyAllBtn.dataset.copyValue;
+      paletteActions.style.display = 'none';
     });
 
     function copySwatch(swatch: HTMLElement, hex: string) {
@@ -90,21 +84,21 @@ import RangeSlider from '../../components/RangeSlider.astro';
     }
 
     function displayPalette(colors: PaletteColor[]) {
-      paletteOutput!.innerHTML = '';
-      copyAllBtn!.dataset.copyValue = colors.map((color) => color.hex).join('\n');
+      paletteOutput.innerHTML = '';
+      copyAllBtn.dataset.copyValue = colors.map((color) => color.hex).join('\n');
 
       if (colors.length === 0) {
-        delete copyAllBtn!.dataset.copyValue;
-        paletteActions!.style.display = 'none';
-        paletteOutput!.innerHTML = '<p>No colors could be extracted from this image.</p>';
+        delete copyAllBtn.dataset.copyValue;
+        paletteActions.style.display = 'none';
+        paletteOutput.innerHTML = '<p>No colors could be extracted from this image.</p>';
         return;
       }
 
-      paletteActions!.style.display = 'flex';
+      paletteActions.style.display = 'flex';
 
       colors.forEach((color, index) => {
         const { r, g, b, hex } = color;
-        const fragment = swatchTemplate!.content.cloneNode(true) as DocumentFragment;
+        const fragment = swatchTemplate.content.cloneNode(true) as DocumentFragment;
         const swatch = fragment.querySelector<HTMLElement>('.color-swatch')!;
         swatch.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
         swatch.dataset.color = hex;
@@ -112,23 +106,20 @@ import RangeSlider from '../../components/RangeSlider.astro';
         swatch.querySelector('.color-swatch__hex')!.textContent = hex;
         if (isLightColor(r, g, b)) swatch.classList.add('color-swatch--light');
         swatch.addEventListener('click', () => copySwatch(swatch, hex));
-        paletteOutput!.appendChild(swatch);
+        paletteOutput.appendChild(swatch);
       });
     }
 
     extractBtn.addEventListener('click', () => {
-      if (!preview!.src || preview!.src === window.location.href) {
+      if (!preview.src || preview.src === window.location.href) {
         alert('Please select an image first!');
         return;
       }
-      const palette = extractPalette(preview!, {
-        count: parseInt(colorsInput!.value),
+      const palette = extractPalette(preview, {
+        count: parseInt(colorsInput.value),
         sampleSize: SAMPLE_SIZE,
       });
       displayPalette(palette);
     });
-
-  }
-
-  document.addEventListener('astro:page-load', initColorPalette);
+  });
 </script>

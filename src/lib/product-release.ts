@@ -1,3 +1,5 @@
+import { mount } from './lifecycle.ts';
+
 interface ReleaseMeta {
   tag_name?: string;
   published_at?: string;
@@ -77,12 +79,6 @@ async function loadRelease(el: HTMLElement, repo: string) {
   } catch {}
 }
 
-export function initProductReleaseMeta(root: ParentNode = document) {
-  root.querySelectorAll<HTMLElement>('[data-release-repo]').forEach((el) => {
-    if (el.dataset.releaseInitialized === 'true') return;
-    el.dataset.releaseInitialized = 'true';
-
-    const repo = el.dataset.releaseRepo;
-    if (repo) void loadRelease(el, repo);
-  });
-}
+mount('[data-release-repo]', ({ root }) => {
+  if (root.dataset.releaseRepo) void loadRelease(root, root.dataset.releaseRepo);
+});

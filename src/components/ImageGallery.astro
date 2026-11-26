@@ -83,7 +83,6 @@ const galleryConfig: ImageGalleryConfig = { ...config, loadingText };
         id={search.id}
         label={search.label}
         placeholder={search.placeholder}
-        target={`#${galleryId}`}
         class={search.class}
       />
     </div>
@@ -101,7 +100,5 @@ const galleryConfig: ImageGalleryConfig = { ...config, loadingText };
 </div>
 
 <script>
-  import { initImageGalleries } from '../lib/image-gallery/index.ts';
-
-  document.addEventListener('astro:page-load', () => initImageGalleries());
+  import '../lib/image-gallery/index.ts';
 </script>

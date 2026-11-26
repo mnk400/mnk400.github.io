@@ -5,7 +5,6 @@ interface Props {
   id?: string;
   label?: string;
   placeholder?: string;
-  target?: string;
   class?: string;
 }
 
@@ -13,7 +12,6 @@ const {
   id = 'search-pill',
   label = 'Search',
   placeholder = 'search',
-  target,
   class: extraClass,
 } = Astro.props;
 ---
@@ -21,7 +19,6 @@ const {
   class:list={['search-pill', extraClass]}
   id={id}
   data-search-component
-  data-search-target={target}
 >
   <button
     class="search-pill__trigger"
@@ -48,74 +45,48 @@ const {
 </div>
 
 <script>
-  function initSearch(container: HTMLElement) {
-    if (container.dataset.searchInitialized === 'true') return;
+  import { emit } from '../lib/events.ts';
+  import { mount } from '../lib/lifecycle.ts';
 
-    const trigger = container.querySelector<HTMLButtonElement>('.search-pill__trigger');
-    const input = container.querySelector<HTMLInputElement>('.search-pill__field input');
-    const clear = container.querySelector<HTMLButtonElement>('.search-pill__clear');
-    if (!trigger || !input) return;
+  mount('[data-search-component]', ({ root, find }) => {
+    const trigger = find<HTMLButtonElement>('.search-pill__trigger');
+    const input = find<HTMLInputElement>('.search-pill__field input');
+    const clear = find<HTMLButtonElement>('.search-pill__clear');
 
-    const triggerEl = trigger;
-    const inputEl = input;
+    const getQuery = () => input.value.trim().toLowerCase();
 
-    const getQuery = () => inputEl.value.trim().toLowerCase();
-
-    function emitChange() {
+    function changed() {
       const query = getQuery();
-      const detail = { query, value: query, input };
-      container.classList.toggle('has-query', query.length > 0);
-      if (clear) clear.hidden = query.length === 0;
-
-      container.dispatchEvent(new CustomEvent('change', { detail }));
-      container.dispatchEvent(new CustomEvent('search:change', { detail }));
-
-      if (container.dataset.searchTarget) {
-        const target = document.querySelector<HTMLElement>(container.dataset.searchTarget);
-        if (target) {
-          target.dataset.searchQuery = query;
-          target.dispatchEvent(new CustomEvent('search-pill:change', {
-            detail: { ...detail, source: container },
-          }));
-        }
-      }
+      root.classList.toggle('has-query', query.length > 0);
+      clear.hidden = query.length === 0;
+      emit(root, 'search:change', { query });
     }
 
     function setOpen(open: boolean, focusInput: boolean) {
-      container.classList.toggle('is-open', open);
-      triggerEl.setAttribute('aria-expanded', String(open));
-      if (open && focusInput) inputEl.focus();
+      root.classList.toggle('is-open', open);
+      trigger.setAttribute('aria-expanded', String(open));
+      if (open && focusInput) input.focus();
     }
 
-    function setValue(value: string, shouldEmit: boolean) {
-      inputEl.value = value || '';
-      container.classList.toggle('has-query', getQuery().length > 0);
-      if (clear) clear.hidden = getQuery().length === 0;
-      if (shouldEmit) emitChange();
+    function clearQuery() {
+      input.value = '';
+      changed();
     }
 
-    triggerEl.addEventListener('click', () => setOpen(true, true));
-    inputEl.addEventListener('input', emitChange);
-    inputEl.addEventListener('focus', () => setOpen(true, false));
-    inputEl.addEventListener('blur', () => {
+    trigger.addEventListener('click', () => setOpen(true, true));
+    input.addEventListener('input', changed);
+    input.addEventListener('focus', () => setOpen(true, false));
+    input.addEventListener('blur', () => {
       if (!getQuery()) setOpen(false, false);
     });
-    inputEl.addEventListener('keydown', (event) => {
+    input.addEventListener('keydown', (event) => {
       if (event.key !== 'Escape') return;
-      if (getQuery()) setValue('', true);
+      if (getQuery()) clearQuery();
       setOpen(false, false);
     });
-    clear?.addEventListener('click', () => {
-      setValue('', true);
+    clear.addEventListener('click', () => {
+      clearQuery();
       setOpen(true, true);
     });
-
-    container.dataset.searchInitialized = 'true';
-  }
-
-  function initAllSearch() {
-    document.querySelectorAll<HTMLElement>('[data-search-component]').forEach(initSearch);
-  }
-
-  document.addEventListener('astro:page-load', initAllSearch);
+  });
 </script>

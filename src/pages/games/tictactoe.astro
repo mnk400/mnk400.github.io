@@ -1,32 +1,32 @@
 ---
 import Page from '../../layouts/Page.astro';
 ---
-<Page title="Tic Tac Toe">
-  <div class="game-wrapper">
+<Page item="games/tictactoe">
+  <div class="game-wrapper" data-mount="tictactoe">
     <div class="game-meta">
-      <span><span id="ttt-status">your turn</span></span>
+      <span><span data-ref="status">your turn</span></span>
       <span>you · ✕</span>
     </div>
-    <div id="ttt-game-container" class="board-grid"></div>
+    <div id="ttt-game-container" class="board-grid" data-ref="board"></div>
     <div class="toolbar">
-      <button id="reset-btn" class="normal-btn">Reset Game</button>
+      <button class="normal-btn" data-ref="reset">Reset Game</button>
     </div>
   </div>
 </Page>
 
 <script>
+  import { mount } from '../../lib/lifecycle.ts';
+
   const WIN_LINES = [
     [0, 1, 2], [3, 4, 5], [6, 7, 8],
     [0, 3, 6], [1, 4, 7], [2, 5, 8],
     [0, 4, 8], [2, 4, 6],
   ];
 
-  function initTictactoe() {
-    const gameContainer = document.getElementById('ttt-game-container');
-    const statusDisplay = document.getElementById('ttt-status');
-    const resetButton = document.getElementById('reset-btn');
-
-    if (!gameContainer || !statusDisplay || !resetButton) return;
+  mount('[data-mount="tictactoe"]', ({ ref }) => {
+    const gameContainer = ref('board');
+    const statusDisplay = ref('status');
+    const resetButton = ref('reset');
 
     let gameState = ['', '', '', '', '', '', '', '', ''];
     let gameActive = true;
@@ -128,14 +128,14 @@ import Page from '../../layouts/Page.astro';
         WIN_LINES.find((line) => line.every((index) => gameState[index] === winner))
           ?.forEach((index) => cells[index].classList.add('winning-cell'));
 
-        statusDisplay!.textContent = winner === humanPlayer ? 'you win 🎉' : 'you lose 💀';
+        statusDisplay.textContent = winner === humanPlayer ? 'you win 🎉' : 'you lose 💀';
       } else {
-        statusDisplay!.textContent = 'draw 🤝';
+        statusDisplay.textContent = 'draw 🤝';
       }
     }
 
     function updateStatus() {
-      statusDisplay!.textContent = currentPlayer === humanPlayer
+      statusDisplay.textContent = currentPlayer === humanPlayer
         ? 'your turn'
         : 'thinking...';
     }
@@ -155,7 +155,5 @@ import Page from '../../layouts/Page.astro';
     });
 
     updateStatus();
-  }
-
-  document.addEventListener('astro:page-load', initTictactoe);
+  });
 </script>

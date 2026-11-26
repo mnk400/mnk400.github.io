@@ -1,10 +1,7 @@
 ---
 import Page from '../../layouts/Page.astro';
 ---
-<Page
-  title="Game of Life"
-  description="Conway's Game of Life"
->
+<Page item="games/gameoflife">
   <p>
     This is a minimal implementation of Conway's Game of Life that lets cells cross the edges of the
     grid and wrap around to the opposite side.
@@ -14,29 +11,27 @@ import Page from '../../layouts/Page.astro';
     <p>
       To quickly get started, click the Random button to create a random matrix pattern.
     </p>
-    <div id="game-of-life-container" class="stack">
-      <div id="game-of-life-grid" class="board-grid"></div>
+    <div id="game-of-life-container" class="stack" data-mount="gameoflife">
+      <div class="board-grid" data-ref="grid"></div>
       <div class="toolbar">
-        <button id="start-btn" class="normal-btn">Start</button>
-        <button id="random-btn" class="normal-btn">Random</button>
-        <button id="step-btn" class="normal-btn">Step</button>
-        <button id="reset-btn" class="normal-btn">Reset</button>
+        <button class="normal-btn" data-ref="start">Start</button>
+        <button class="normal-btn" data-ref="random">Random</button>
+        <button class="normal-btn" data-ref="step">Step</button>
+        <button class="normal-btn" data-ref="reset">Reset</button>
       </div>
     </div>
   </div>
 </Page>
 
 <script>
-  import { untilSwap } from '../../lib/lifecycle.ts';
+  import { mount } from '../../lib/lifecycle.ts';
 
-  function initGameOfLife() {
-    const gridElement = document.getElementById('game-of-life-grid');
-    const startBtn = document.getElementById('start-btn');
-    const randomBtn = document.getElementById('random-btn');
-    const stepBtn = document.getElementById('step-btn');
-    const resetBtn = document.getElementById('reset-btn');
-
-    if (!gridElement || !startBtn || !randomBtn || !stepBtn || !resetBtn) return;
+  mount('[data-mount="gameoflife"]', ({ ref }) => {
+    const gridElement = ref('grid');
+    const startBtn = ref('start');
+    const randomBtn = ref('random');
+    const stepBtn = ref('step');
+    const resetBtn = ref('reset');
 
     const isMobile = window.innerWidth <= 768;
     const cols = isMobile ? 16 : 24;
@@ -54,8 +49,8 @@ import Page from '../../layouts/Page.astro';
     }
 
     function buildGrid() {
-      gridElement!.innerHTML = '';
-      gridElement!.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+      gridElement.innerHTML = '';
+      gridElement.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
       cellElements = [];
       for (let i = 0; i < rows; i++) {
         cellElements[i] = [];
@@ -64,7 +59,7 @@ import Page from '../../layouts/Page.astro';
           cell.classList.add('gol-cell');
           cell.dataset.highlight = '';
           cell.addEventListener('click', () => toggleCell(i, j));
-          gridElement!.appendChild(cell);
+          gridElement.appendChild(cell);
           cellElements[i][j] = cell;
         }
       }
@@ -105,13 +100,13 @@ import Page from '../../layouts/Page.astro';
         return;
       }
       gameRunning = true;
-      startBtn!.textContent = 'Pause';
+      startBtn.textContent = 'Pause';
       gameInterval = window.setInterval(step, frameInterval);
     }
 
     function stopGame() {
       gameRunning = false;
-      startBtn!.textContent = 'Start';
+      startBtn.textContent = 'Start';
       if (gameInterval !== null) {
         clearInterval(gameInterval);
         gameInterval = null;
@@ -152,11 +147,9 @@ import Page from '../../layouts/Page.astro';
     stepBtn.addEventListener('click', step);
     resetBtn.addEventListener('click', reset);
 
-    untilSwap(stopGame);
-
     buildGrid();
     render();
-  }
+    return stopGame;
+  });
 
-  document.addEventListener('astro:page-load', initGameOfLife);
 </script>

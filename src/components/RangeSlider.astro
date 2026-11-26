@@ -17,28 +17,21 @@ const initialPercent = span > 0 ? ((Number(value) - Number(min)) / span) * 100 :
 </div>
 
 <script>
-  // CSS can't read an input's value, so the filled width has to be pushed from here
-  function sync(host: HTMLElement, input: HTMLInputElement) {
-    const min = Number(input.min || 0);
-    const max = Number(input.max || 100);
-    const span = max - min;
-    const percent = span > 0 ? ((Number(input.value) - min) / span) * 100 : 0;
-    host.style.setProperty('--value-percent', `${percent}%`);
+  import { mount } from '../lib/lifecycle.ts';
 
-    const output = host.querySelector('[data-range-output]');
-    if (output) output.textContent = input.value;
-  }
-
-  document.addEventListener('astro:page-load', () => {
-    document.querySelectorAll<HTMLElement>('[data-range-slider]').forEach((host) => {
-      const input = host.querySelector<HTMLInputElement>('input[type="range"]');
-      if (!input || host.dataset.rangeInitialized === 'true') return;
-      host.dataset.rangeInitialized = 'true';
-
-      // Element-scoped, so it dies with the node on swap (see src/lib/lifecycle.ts).
-      // Pages that set .value programmatically dispatch 'input' to re-run this.
-      input.addEventListener('input', () => sync(host, input));
-      sync(host, input);
-    });
+  // CSS can't read an input's value, so the filled width has to be pushed from here.
+  // Pages that set .value programmatically dispatch 'input' to re-run this.
+  mount('[data-range-slider]', ({ root, find }) => {
+    const input = find<HTMLInputElement>('input[type="range"]');
+    const output = find('[data-range-output]');
+    const sync = () => {
+      const min = Number(input.min || 0);
+      const span = Number(input.max || 100) - min;
+      const percent = span > 0 ? ((Number(input.value) - min) / span) * 100 : 0;
+      root.style.setProperty('--value-percent', `${percent}%`);
+      output.textContent = input.value;
+    };
+    input.addEventListener('input', sync);
+    sync();
   });
 </script>

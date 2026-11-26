@@ -8,13 +8,13 @@ const difficultyOptions = [
   { value: 'expert', label: 'Expert' },
 ];
 ---
-<Page title="Minesweeper">
-  <div class="game-wrapper">
+<Page item="games/minesweeper">
+  <div class="game-wrapper" data-mount="minesweeper">
     <div class="game-meta">
-      <div id="mine-counter">Mines: 10</div>
-      <div id="game-timer">Time: 0</div>
+      <div data-ref="mines">Mines: 10</div>
+      <div data-ref="timer">Time: 0</div>
     </div>
-    <div id="minesweeper-grid" class="board-grid"></div>
+    <div class="board-grid" data-ref="grid"></div>
     <div id="minesweeper-controls" class="toolbar">
       <SelectionSwitch
         id="difficulty-selector"
@@ -22,14 +22,14 @@ const difficultyOptions = [
         active="beginner"
         class="difficulty-selector"
       />
-      <button id="new-game-btn" class="normal-btn">New Game</button>
-      <span id="game-status"></span>
+      <button class="normal-btn" data-ref="new-game">New Game</button>
+      <span id="game-status" data-ref="status"></span>
     </div>
   </div>
 </Page>
 
 <script>
-  import { untilSwap } from '../../lib/lifecycle.ts';
+  import { mount } from '../../lib/lifecycle.ts';
 
   interface Cell {
     isMine: boolean;
@@ -50,15 +50,13 @@ const difficultyOptions = [
     expert: { rows: 25, cols: 14, mines: 99 },
   };
 
-  function initMinesweeper() {
-    const gridElement = document.getElementById('minesweeper-grid');
-    const mineCounterElement = document.getElementById('mine-counter');
-    const timerElement = document.getElementById('game-timer');
-    const newGameButton = document.getElementById('new-game-btn');
-    const gameStatusElement = document.getElementById('game-status');
-    const difficultySelector = document.getElementById('difficulty-selector');
-
-    if (!gridElement || !mineCounterElement || !timerElement || !newGameButton || !gameStatusElement || !difficultySelector) return;
+  mount('[data-mount="minesweeper"]', ({ ref, find }) => {
+    const gridElement = ref('grid');
+    const mineCounterElement = ref('mines');
+    const timerElement = ref('timer');
+    const newGameButton = ref('new-game');
+    const gameStatusElement = ref('status');
+    const difficultySelector = find('#difficulty-selector');
 
     let gameConfig = difficulties.beginner;
     let grid: Cell[][] = [];
@@ -70,22 +68,22 @@ const difficultyOptions = [
 
     function initGame() {
       if (timerInterval !== null) clearInterval(timerInterval);
-      gridElement!.innerHTML = '';
+      gridElement.innerHTML = '';
       gameTime = 0;
       firstClick = true;
 
-      timerElement!.textContent = `time · ${gameTime}`;
+      timerElement.textContent = `time · ${gameTime}`;
       minesLeft = gameConfig.mines;
-      mineCounterElement!.textContent = `mines · ${minesLeft}`;
-      gameStatusElement!.textContent = '';
-      gameStatusElement!.classList.remove('win', 'lose');
+      mineCounterElement.textContent = `mines · ${minesLeft}`;
+      gameStatusElement.textContent = '';
+      gameStatusElement.classList.remove('win', 'lose');
 
       grid = [];
 
-      gridElement!.style.gridTemplateColumns = `repeat(${gameConfig.cols}, 1fr)`;
+      gridElement.style.gridTemplateColumns = `repeat(${gameConfig.cols}, 1fr)`;
 
-      const gap = parseFloat(getComputedStyle(gridElement!).columnGap) || 0;
-      const cellSize = (gridElement!.clientWidth - (gameConfig.cols - 1) * gap) / gameConfig.cols;
+      const gap = parseFloat(getComputedStyle(gridElement).columnGap) || 0;
+      const cellSize = (gridElement.clientWidth - (gameConfig.cols - 1) * gap) / gameConfig.cols;
 
       for (let row = 0; row < gameConfig.rows; row++) {
         grid[row] = [];
@@ -105,7 +103,7 @@ const difficultyOptions = [
           cell.addEventListener('click', () => handleCellClick(row, col));
           cell.addEventListener('contextmenu', () => handleRightClick(row, col));
 
-          gridElement!.appendChild(cell);
+          gridElement.appendChild(cell);
         }
       }
 
@@ -135,7 +133,7 @@ const difficultyOptions = [
     }
 
     function cellAt(row: number, col: number): HTMLElement {
-      return gridElement!.children[row * gameConfig.cols + col] as HTMLElement;
+      return gridElement.children[row * gameConfig.cols + col] as HTMLElement;
     }
 
     function countAdjacentMines(row: number, col: number) {
@@ -173,7 +171,7 @@ const difficultyOptions = [
       cellAt(row, col).classList.toggle('flagged', cell.isFlagged);
       minesLeft += cell.isFlagged ? -1 : 1;
 
-      mineCounterElement!.textContent = `mines · ${minesLeft}`;
+      mineCounterElement.textContent = `mines · ${minesLeft}`;
     }
 
     function revealCell(row: number, col: number) {
@@ -222,14 +220,14 @@ const difficultyOptions = [
 
     function endGame(isWin: boolean) {
       gameActive = false;
-      gridElement!.querySelectorAll<HTMLElement>('.ms-cell').forEach((cell) => {
+      gridElement.querySelectorAll<HTMLElement>('.ms-cell').forEach((cell) => {
         cell.dataset.highlight = 'off';
       });
       if (timerInterval !== null) clearInterval(timerInterval);
 
       if (isWin) {
-        gameStatusElement!.textContent = 'you win 🎉';
-        gameStatusElement!.classList.add('win');
+        gameStatusElement.textContent = 'you win 🎉';
+        gameStatusElement.classList.add('win');
 
         for (let row = 0; row < gameConfig.rows; row++) {
           for (let col = 0; col < gameConfig.cols; col++) {
@@ -239,8 +237,8 @@ const difficultyOptions = [
           }
         }
       } else {
-        gameStatusElement!.textContent = 'boom 💣';
-        gameStatusElement!.classList.add('lose');
+        gameStatusElement.textContent = 'boom 💣';
+        gameStatusElement.classList.add('lose');
 
         for (let row = 0; row < gameConfig.rows; row++) {
           for (let col = 0; col < gameConfig.cols; col++) {
@@ -259,7 +257,7 @@ const difficultyOptions = [
     function startTimer() {
       timerInterval = window.setInterval(() => {
         gameTime++;
-        timerElement!.textContent = `time · ${gameTime}`;
+        timerElement.textContent = `time · ${gameTime}`;
       }, 1000);
     }
 
@@ -270,19 +268,15 @@ const difficultyOptions = [
 
     newGameButton.addEventListener('click', initGame);
 
-    difficultySelector.addEventListener('change', (event) => {
-      const value = (event as CustomEvent).detail?.value;
-      if (value) changeDifficulty(value);
+    difficultySelector.addEventListener('selection:change', (event) => {
+      changeDifficulty(event.detail.value);
     });
 
     gridElement.addEventListener('contextmenu', (e) => e.preventDefault());
 
-    untilSwap(() => {
-      if (timerInterval !== null) clearInterval(timerInterval);
-    });
-
     initGame();
-  }
-
-  document.addEventListener('astro:page-load', initMinesweeper);
+    return () => {
+      if (timerInterval !== null) clearInterval(timerInterval);
+    };
+  });
 </script>

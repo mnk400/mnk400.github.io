@@ -20,12 +20,11 @@ import {
   createImageGalleryView,
   type ImageGalleryView,
 } from './view.ts';
+import { mount, untilSwap } from '../lifecycle.ts';
 
 export type { ImageGalleryConfig } from './data.ts';
 
 type GalleryRoot = HTMLElement;
-
-const activeGalleryCleanups = new Set<() => void>();
 
 function readConfig(root: GalleryRoot): ImageGalleryConfig | null {
   const config = root.querySelector<HTMLScriptElement>('[data-image-gallery-config]');
@@ -66,10 +65,17 @@ export async function loadImageGallery(root: GalleryRoot, config: ImageGalleryCo
     if (statusTimer !== null) window.clearTimeout(statusTimer);
     if (lightboxOpen) closeZoom({ skipRequest: true, immediate: true });
     root.setAttribute('aria-busy', 'false');
-    activeGalleryCleanups.delete(cleanup);
   };
-  activeGalleryCleanups.add(cleanup);
+  untilSwap(cleanup);
   root.setAttribute('aria-busy', 'true');
+
+  // The search pill is live before the manifest is: keep what's typed early.
+  let query = '';
+  let onQuery: (() => void) | null = null;
+  root.addEventListener('search:change', (event) => {
+    query = event.detail.query;
+    onQuery?.();
+  }, { signal });
 
   if (!source || !grid) {
     cleanup();
@@ -94,7 +100,7 @@ export async function loadImageGallery(root: GalleryRoot, config: ImageGalleryCo
 
     const manifest = await response.json() as GalleryManifest;
     const items = normalizeGalleryItems(manifest, config.baseUrl);
-    const state = createGalleryState(config, root.dataset.searchQuery);
+    const state = createGalleryState(config, query);
     view = createImageGalleryView({
       root,
       grid,
@@ -112,19 +118,13 @@ export async function loadImageGallery(root: GalleryRoot, config: ImageGalleryCo
     }
     if (status && !requestedImageOnLoad) status.hidden = true;
 
-    root.addEventListener('search-pill:change', (event) => {
-      state.query = (event as CustomEvent).detail?.query || '';
-      const visibleItems = view!.render();
-      root.dispatchEvent(new CustomEvent('image-gallery:filtered', {
-        detail: { items, visibleItems, query: state.query },
-      }));
-    }, { signal });
+    onQuery = () => {
+      state.query = query;
+      view!.render();
+    };
 
-    const visibleItems = view.render();
+    view.render();
     root.classList.add('is-ready');
-    root.dispatchEvent(new CustomEvent('image-gallery:loaded', {
-      detail: { manifest, items, visibleItems },
-    }));
     if (!root.hasAttribute('tabindex')) root.tabIndex = -1;
 
     const openItem = async (
@@ -214,18 +214,7 @@ export async function loadImageGallery(root: GalleryRoot, config: ImageGalleryCo
   }
 }
 
-export function initImageGalleries(root: ParentNode = document) {
-  root.querySelectorAll<GalleryRoot>('[data-image-gallery]').forEach((galleryRoot) => {
-    if (galleryRoot.dataset.imageGalleryInitialized === 'true') return;
-    const config = readConfig(galleryRoot);
-    if (!config) return;
-    galleryRoot.dataset.imageGalleryInitialized = 'true';
-    void loadImageGallery(galleryRoot, config);
-  });
-}
-
-export function destroyImageGalleries() {
-  [...activeGalleryCleanups].forEach((cleanup) => cleanup());
-}
-
-document.addEventListener('astro:before-swap', destroyImageGalleries);
+mount('[data-image-gallery]', ({ root }) => {
+  const config = readConfig(root);
+  if (config) void loadImageGallery(root, config);
+});

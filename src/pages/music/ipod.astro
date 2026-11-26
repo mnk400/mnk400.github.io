@@ -3,11 +3,7 @@ import Page from '../../layouts/Page.astro';
 import ExpandableSection from '../../components/ExpandableSection.astro';
 import Icon from '../../components/Icon.astro';
 ---
-<Page
-  title="iPod"
-  description="Listen to my playlist on an iPod."
-  image="/assets/images/previews/ipod.png"
->
+<Page item="music/ipod">
   <ExpandableSection id="ipod-explanation" title="<b>Learn more</b>">
     <div class="ipod-explanation">
       <h3>iPod Playlist</h3>
@@ -65,6 +61,8 @@ import Icon from '../../components/Icon.astro';
 </Page>
 
 <script>
+  import { mount } from '../../lib/lifecycle.ts';
+
   const PLAY_ICON_SVG = '<svg class="icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M240,128a15.74,15.74,0,0,1-7.6,13.51L88.32,229.65a16,16,0,0,1-16.2.3A15.86,15.86,0,0,1,64,216.13V39.87a15.86,15.86,0,0,1,8.12-13.82,16,16,0,0,1,16.2.3L232.4,114.49A15.74,15.74,0,0,1,240,128Z"/></svg>';
   const PAUSE_ICON_SVG = '<svg class="icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M216,48V208a16,16,0,0,1-16,16H160a16,16,0,0,1-16-16V48a16,16,0,0,1,16-16h40A16,16,0,0,1,216,48ZM96,32H56A16,16,0,0,0,40,48V208a16,16,0,0,0,16,16H96a16,16,0,0,0,16-16V48A16,16,0,0,0,96,32Z"/></svg>';
 
@@ -88,17 +86,14 @@ import Icon from '../../components/Icon.astro';
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const YT = () => (window as any).YT as YTApi;
 
-  function initIpod() {
-    const nextButton = document.querySelector<HTMLElement>('.ipod-skip.next');
-    const prevButton = document.querySelector<HTMLElement>('.ipod-skip.prev');
-    const centerButton = document.querySelector<HTMLElement>('.ipod-center-button');
-    const playPauseButton = document.querySelector<HTMLElement>('.ipod-play-pause');
-    const menuContainer = document.querySelector<HTMLElement>('.ipod-menu-options');
-    const nowPlayingContainer = document.getElementById('now-playing');
-    const titleElement = document.querySelector<HTMLElement>('.ipod-title-bar .ipod-title');
-
-    if (!nextButton || !prevButton || !centerButton || !playPauseButton ||
-      !menuContainer || !nowPlayingContainer || !titleElement) return;
+  mount('.ipod-container', ({ find, signal }) => {
+    const nextButton = find('.ipod-skip.next');
+    const prevButton = find('.ipod-skip.prev');
+    const centerButton = find('.ipod-center-button');
+    const playPauseButton = find('.ipod-play-pause');
+    const menuContainer = find('.ipod-menu-options');
+    const nowPlayingContainer = find('#now-playing');
+    const titleElement = find('.ipod-title-bar .ipod-title');
 
     let songs: Record<string, Song> = {};
     let menuOptions: NodeListOf<HTMLElement> = menuContainer.querySelectorAll('.ipod-option');
@@ -122,7 +117,7 @@ import Icon from '../../components/Icon.astro';
       .catch((error) => console.error('Error loading songs data:', error));
 
     function populateMenuOptions(songsData: Record<string, Song>) {
-      menuContainer!.innerHTML = '';
+      menuContainer.innerHTML = '';
       allSongs = Object.keys(songsData);
       updateVisibleSongs();
       if (menuOptions.length > 0) {
@@ -132,7 +127,7 @@ import Icon from '../../components/Icon.astro';
     }
 
     function updateVisibleSongs() {
-      menuContainer!.innerHTML = '';
+      menuContainer.innerHTML = '';
       const endIndex = Math.min(visibleStartIndex + songsPerPage, allSongs.length);
       for (let i = visibleStartIndex; i < endIndex; i++) {
         const songName = allSongs[i];
@@ -140,7 +135,7 @@ import Icon from '../../components/Icon.astro';
         option.className = 'ipod-option';
         option.textContent = songName;
         option.dataset.index = String(i);
-        menuContainer!.appendChild(option);
+        menuContainer.appendChild(option);
       }
       menuOptions = document.querySelectorAll('.ipod-menu-options .ipod-option');
     }
@@ -172,29 +167,29 @@ import Icon from '../../components/Icon.astro';
       }
 
       if (menuOptions[currentIndex]) menuOptions[currentIndex].classList.add('selected');
-      if (allSongs.length > 0) titleElement!.textContent = `${globalIndex + 1}/${allSongs.length}`;
+      if (allSongs.length > 0) titleElement.textContent = `${globalIndex + 1}/${allSongs.length}`;
     }
 
     function createNowPlayingScreen(songName: string) {
-      menuContainer!.style.display = 'none';
+      menuContainer.style.display = 'none';
       const song = songs[songName];
       currentSong = songName;
 
       const currentSongIndex = allSongs.indexOf(songName);
       if (currentSongIndex !== -1 && allSongs.length > 0) {
-        titleElement!.textContent = `${currentSongIndex + 1}/${allSongs.length}`;
+        titleElement.textContent = `${currentSongIndex + 1}/${allSongs.length}`;
       }
 
-      (nowPlayingContainer!.querySelector('.song-title') as HTMLElement).textContent = songName;
-      (nowPlayingContainer!.querySelector('.artist-name') as HTMLElement).textContent = song.artist;
-      (nowPlayingContainer!.querySelector('.album-info') as HTMLElement).textContent = `${song.album} (${song.year})`;
+      (nowPlayingContainer.querySelector('.song-title') as HTMLElement).textContent = songName;
+      (nowPlayingContainer.querySelector('.artist-name') as HTMLElement).textContent = song.artist;
+      (nowPlayingContainer.querySelector('.album-info') as HTMLElement).textContent = `${song.album} (${song.year})`;
 
       const progressBar = document.getElementById('progress-bar');
       if (progressBar) progressBar.style.width = '0%';
       const timeDisplay = document.getElementById('time-display');
       if (timeDisplay) timeDisplay.textContent = '0:00 / 0:00';
 
-      nowPlayingContainer!.style.display = 'block';
+      nowPlayingContainer.style.display = 'block';
 
       if (!YT()) {
         const tag = document.createElement('script');
@@ -323,7 +318,7 @@ import Icon from '../../components/Icon.astro';
           if (pressPlay) pressPlay.style.display = 'none';
           nowPlayingContainer.style.display = 'none';
         }
-        menuContainer!.style.display = 'flex';
+        menuContainer.style.display = 'flex';
         isPlaying = false;
         currentSong = null;
       }
@@ -374,22 +369,16 @@ import Icon from '../../components/Icon.astro';
       else if (event.key === 'Enter') centerButton.click();
       else if (event.key === ' ') playPauseButton.click();
     };
-    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('keydown', onKeyDown, { signal });
 
-    document.addEventListener('astro:before-swap', () => {
+    return () => {
       alive = false;
       if (progressTimer !== null) clearTimeout(progressTimer);
-      document.removeEventListener('keydown', onKeyDown);
       if (player) {
         player.destroy();
         player = null;
         document.getElementById('youtube-player')?.remove();
       }
-    }, { once: true });
-  }
-
-  document.addEventListener('astro:page-load', () => {
-    if (!document.querySelector('.ipod-container')) return;
-    initIpod();
+    };
   });
 </script>

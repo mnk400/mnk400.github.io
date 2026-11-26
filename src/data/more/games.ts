@@ -4,6 +4,7 @@ export const gameMoreItems: MoreItemData[] = [
   {
     id: 'games/tictactoe',
     title: 'Tic Tac Toe',
+    description: 'Play tic-tac-toe against the computer.',
     tags: ['game', 'puzzle'],
     redirectFrom: ['/more/tictactoe'],
   },
@@ -25,6 +26,7 @@ export const gameMoreItems: MoreItemData[] = [
   {
     id: 'games/minesweeper',
     title: 'Minesweeper',
+    description: 'Classic Minesweeper in three sizes, from beginner to expert.',
     tags: ['game', 'puzzle'],
     redirectFrom: ['/more/minesweeper'],
   },

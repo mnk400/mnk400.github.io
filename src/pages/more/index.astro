@@ -159,14 +159,14 @@ const itemAttrs = (item: MoreItem, group: MoreGroup) => ({
 </Page>
 
 <script>
-  function initMoreIndex() {
-    const prose = document.querySelector<HTMLElement>('[data-more-prose]');
+  import { mount } from '../../lib/lifecycle.ts';
+
+  // Search, chips and the note sit beside the prose, not inside it.
+  mount('[data-more-prose]', ({ root: prose }) => {
     const search = document.getElementById('more-search');
     const chips = document.getElementById('more-chips');
     const empty = document.querySelector<HTMLElement>('.more-empty');
     const note = document.querySelector<HTMLElement>('[data-more-note]');
-    if (!prose || prose.dataset.moreIndexInitialized === 'true') return;
-    prose.dataset.moreIndexInitialized = 'true';
 
     const items = Array.from(prose.querySelectorAll<HTMLElement>('[data-more-item]'));
     const lists = Array.from(prose.querySelectorAll<HTMLElement>('[data-more-list]'));
@@ -221,14 +221,12 @@ const itemAttrs = (item: MoreItem, group: MoreGroup) => ({
     };
 
     search?.addEventListener('search:change', (event) => {
-      query = event instanceof CustomEvent && event.detail?.query
-        ? String(event.detail.query).trim().toLowerCase()
-        : '';
+      query = event.detail.query;
       apply();
     });
 
-    chips?.addEventListener('change', (event) => {
-      activeRoot = event instanceof CustomEvent && event.detail?.value ? event.detail.value : 'all';
+    chips?.addEventListener('selection:change', (event) => {
+      activeRoot = event.detail.value;
       apply();
     });
 
@@ -265,7 +263,5 @@ const itemAttrs = (item: MoreItem, group: MoreGroup) => ({
     });
     prose.addEventListener('focusin', (event) => show(event.target));
     prose.addEventListener('focusout', hide);
-  }
-
-  document.addEventListener('astro:page-load', initMoreIndex);
+  });
 </script>

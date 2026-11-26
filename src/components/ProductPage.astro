@@ -178,27 +178,14 @@ function installValue(entry: ProductInstall): string {
 </Default>
 
 <script>
-  import { initProductReleaseMeta } from '../lib/product-release.ts';
+  import { mount } from '../lib/lifecycle.ts';
+  import '../lib/product-release.ts';
 
-  function initProductInstallTabs() {
-    document.querySelectorAll<HTMLElement>('[data-product-install]').forEach((root) => {
-      if (root.dataset.productInstallInitialized === 'true') return;
-      root.dataset.productInstallInitialized = 'true';
-
-      root.addEventListener('change', (event) => {
-        const value = event instanceof CustomEvent ? event.detail?.value : undefined;
-        if (!value) return;
-        root.querySelectorAll<HTMLElement>('[data-install-panel]').forEach((panel) => {
-          panel.classList.toggle('active', panel.dataset.installPanel === value);
-        });
+  mount('[data-product-install]', ({ root }) => {
+    root.addEventListener('selection:change', (event) => {
+      root.querySelectorAll<HTMLElement>('[data-install-panel]').forEach((panel) => {
+        panel.classList.toggle('active', panel.dataset.installPanel === event.detail.value);
       });
     });
-  }
-
-  function initProductPage() {
-    initProductInstallTabs();
-    initProductReleaseMeta();
-  }
-
-  document.addEventListener('astro:page-load', initProductPage);
+  });
 </script>

@@ -81,53 +81,38 @@ const style =
 </span>
 
 <script>
-  // Opt-in click pulse for charms using the `.charm-fx__body` contract (see
-  // styles/partials/charms/_motion). Bundled once for the whole site; wires
-  // every such charm on the page and re-runs after view transitions.
-  function wireCharmPulse() {
-    document.querySelectorAll<HTMLElement>('.charm-fx__body').forEach((body) => {
-      const charm = body.closest<HTMLElement>('.charm');
-      if (!charm || charm.dataset.pulseInit === 'true') return;
-      // A charm that acts answers its own click (the back button presses in);
-      // pulsing is for the charms with nothing else to say.
-      if (charm.hasAttribute('data-back-nav')) return;
-      charm.dataset.pulseInit = 'true';
+  import { mount } from '../../lib/lifecycle.ts';
 
-      charm.addEventListener('click', () => {
-        body.classList.remove('is-pulsing');
-        void body.offsetWidth; // reflow so the animation retriggers on rapid clicks
-        body.classList.add('is-pulsing');
-      });
-      body.addEventListener('animationend', (e) => {
-        if (e.animationName === 'charm-pulse') body.classList.remove('is-pulsing');
-      });
+  // Opt-in click pulse for charms using the `.charm-fx__body` contract (see
+  // styles/partials/charms/_motion). A charm that acts answers its own click
+  // (the back button presses in); pulsing is for the ones with nothing else to say.
+  mount('.charm:not([data-back-nav])', ({ root }) => {
+    const body = root.querySelector<HTMLElement>('.charm-fx__body');
+    if (!body) return;
+    root.addEventListener('click', () => {
+      body.classList.remove('is-pulsing');
+      void body.offsetWidth; // reflow so the animation retriggers on rapid clicks
+      body.classList.add('is-pulsing');
     });
-  }
+    body.addEventListener('animationend', (e) => {
+      if (e.animationName === 'charm-pulse') body.classList.remove('is-pulsing');
+    });
+  });
 
   // The clock charm's hands are CSS animations with the real periods, so the
-  // only work here is seeking each to `now` with a negative animation-delay —
+  // only work here is seeking each to `now` with a negative animation-delay;
   // after that the browser keeps time and nothing runs per frame.
-  function wireCharmClocks() {
+  mount('.charm--clock', ({ root }) => {
     const now = new Date();
     const seconds = now.getSeconds() + now.getMilliseconds() / 1000;
     const minutes = now.getMinutes() + seconds / 60;
     const hours = (now.getHours() % 12) + minutes / 60;
-
     // Seconds elapsed into each hand's own cycle.
-    const elapsed: Record<string, number> = {
-      second: seconds,
-      minute: minutes * 60,
-      hour: hours * 3600,
-    };
+    const elapsed: Record<string, number> = { second: seconds, minute: minutes * 60, hour: hours * 3600 };
 
-    document.querySelectorAll<HTMLElement>('.charm--clock .clock-hand').forEach((hand) => {
+    root.querySelectorAll<HTMLElement>('.clock-hand').forEach((hand) => {
       const unit = hand.dataset.hand;
       if (unit && unit in elapsed) hand.style.animationDelay = `-${elapsed[unit]}s`;
     });
-  }
-
-  document.addEventListener('astro:page-load', () => {
-    wireCharmPulse();
-    wireCharmClocks();
   });
 </script>

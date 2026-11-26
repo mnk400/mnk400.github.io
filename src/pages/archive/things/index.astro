@@ -3,15 +3,9 @@ import Page from '../../../layouts/Page.astro';
 import ArchiveIndex from '../../../components/ArchiveIndex.astro';
 import { getMoreGroups } from '../../../lib/more.ts';
 
-const group = getMoreGroups().find((entry) => entry.path === 'archive/things');
-const hub = group?.hub;
-const things = group?.items ?? [];
+const things = getMoreGroups().find((entry) => entry.path === 'archive/things')?.items ?? [];
 ---
-<Page
-  title={hub?.title ?? 'Archive of Things'}
-  description={hub?.description}
-  image={hub?.image}
->
+<Page item="archive/things">
   <p>
     A small browser for objects, gear, and physical things I like, each archive is searchable and image-led.
   </p>

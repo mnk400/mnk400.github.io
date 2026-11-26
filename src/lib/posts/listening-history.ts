@@ -11,6 +11,7 @@ import {
   type ChartOptions,
 } from 'chart.js';
 import { pageSignal, untilSwap } from '../lifecycle.ts';
+import { initSelectionSwitch } from '../selection-controls.ts';
 
 Chart.register(
   CategoryScale,
@@ -320,8 +321,8 @@ async function drawGenreDrift(
   }
 
   container.querySelector<HTMLElement>('[data-genre-drift-resolution]')
-    ?.addEventListener('change', (event) => {
-      resolution = (event as CustomEvent).detail.value;
+    ?.addEventListener('selection:change', (event) => {
+      resolution = event.detail.value as Resolution;
       render();
     });
 
@@ -392,8 +393,8 @@ async function drawTierChart(
   }
 
   container.querySelector<HTMLElement>('[data-tier-resolution]')
-    ?.addEventListener('change', (event) => {
-      resolution = (event as CustomEvent).detail.value;
+    ?.addEventListener('selection:change', (event) => {
+      resolution = event.detail.value as Resolution;
       render();
     });
 
@@ -526,8 +527,8 @@ async function drawDiscoveryRate(
   }
 
   container.querySelector<HTMLElement>('[data-discovery-resolution]')
-    ?.addEventListener('change', (event) => {
-      resolution = (event as CustomEvent).detail.value;
+    ?.addEventListener('selection:change', (event) => {
+      resolution = event.detail.value as Resolution;
       render();
     });
 
@@ -620,6 +621,10 @@ export async function init() {
   if (!marker || marker.dataset.listeningHistoryInitialized === 'true') return;
   marker.dataset.listeningHistoryInitialized = 'true';
 
+  // The post's switches are raw HTML in Markdown, so no component script
+  // initializes them, and mount() is too late for a dynamically imported module.
+  document.querySelectorAll<HTMLElement>('[data-selection-switch]').forEach(initSelectionSwitch);
+
   const signal = pageSignal();
   const charts = new Set<LineChart>();
   const registerChart: RegisterChart = (chart) => {
@@ -650,8 +655,8 @@ export async function init() {
 
     const renders = collected.filter((render): render is RenderFn => render !== null);
     document.querySelector<HTMLElement>('[data-listening-range]')
-      ?.addEventListener('change', (event) => {
-        useCutoff = (event as CustomEvent).detail.value === 'written';
+      ?.addEventListener('selection:change', (event) => {
+        useCutoff = event.detail.value === 'written';
         renders.forEach((render) => render());
       });
 

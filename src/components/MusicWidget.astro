@@ -11,7 +11,6 @@ const href = external ? 'https://www.last.fm/user/mnk_400' : '/music/music';
 <a
   href={href}
   class="music-widget"
-  id="music-widget"
   data-highlight
   target={external ? '_blank' : undefined}
   rel={external ? 'noopener noreferrer' : undefined}
@@ -20,7 +19,6 @@ const href = external ? 'https://www.last.fm/user/mnk_400' : '/music/music';
     <div class="music-widget-art-wrapper" data-highlight-ignore>
       <div class="music-widget-art-placeholder"></div>
       <img
-        id="music-widget-art"
         class="music-widget-art"
         src="/assets/images/site/album-placeholder.png"
         alt="Album art"
@@ -28,22 +26,21 @@ const href = external ? 'https://www.last.fm/user/mnk_400' : '/music/music';
     </div>
     <div class="music-widget-info">
       <span class="music-widget-info-placeholder">Loading track…</span>
-      <span id="music-widget-track" class="music-widget-track"></span>
+      <span class="music-widget-track"></span>
       <span class="music-widget-separator"> — </span>
-      <span id="music-widget-artist" class="music-widget-artist"></span>
+      <span class="music-widget-artist"></span>
     </div>
-    <div class="music-widget-status" id="music-widget-status">
+    <div class="music-widget-status">
       <svg class="music-widget-status-icon" viewBox="0 0 12 12" aria-hidden="true">
         <path d="M0 6c.65-1.33 1.28-2.6 2-2.6s1.35 1.27 2 2.6 1.28 2.6 2 2.6 1.35-1.27 2-2.6 1.28-2.6 2-2.6 1.35 1.27 2 2.6 1.28 2.6 2 2.6 1.35-1.27 2-2.6 1.28-2.6 2-2.6 1.35 1.27 2 2.6" />
       </svg>
-      <span class="music-widget-status-label" id="music-widget-label"></span>
-      <span class="music-widget-status-time" id="music-widget-time"></span>
+      <span class="music-widget-status-label"></span>
+      <span class="music-widget-status-time"></span>
     </div>
     <Icon name={external ? 'arrow-up-right' : 'arrow-right'} class="music-widget-arrow" />
   </div>
 </a>
 
 <script>
-  import { initMusicWidget } from '../lib/lastfm.ts';
-  document.addEventListener('astro:page-load', initMusicWidget);
+  import '../lib/lastfm.ts';
 </script>

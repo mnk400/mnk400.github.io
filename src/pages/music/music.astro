@@ -15,11 +15,8 @@ const periodOptions = [
   { value: 'overall', label: 'All Time' },
 ];
 ---
-<Page
-  title="Music"
-  description="Lists my top 9 albums on last.fm from past week."
->
-  <div class="music-container stack">
+<Page item="music/music">
+  <div class="music-container stack" data-mount="music">
     <p>What music am I listening to, or what music have I listened to the most in the past?</p>
 
     <div class="music-widget-section">
@@ -42,21 +39,20 @@ const periodOptions = [
       />
     </div>
 
-    <div id="album-grid" class="album-grid"></div>
-  </div>
+    <div class="album-grid" data-ref="grid"></div>
 
-  <template id="music-card-template">
-    <a class="album-item" target="_blank" rel="noopener" data-highlight>
-      <img data-field="image" alt="">
-      <span class="album-item__stats">
-        <span class="album-item__title" data-field="title"></span>
-        <span class="album-item__meta" data-field="meta"></span>
-      </span>
-    </a>
-  </template>
+    <template data-ref="card">
+      <a class="album-item" target="_blank" rel="noopener" data-highlight>
+        <img data-field="image" alt="">
+        <span class="album-item__stats">
+          <span class="album-item__title" data-field="title"></span>
+          <span class="album-item__meta" data-field="meta"></span>
+        </span>
+      </a>
+    </template>
+  </div>
 </Page>
 
 <script>
-  import { initMusicPage } from '../../lib/lastfm.ts';
-  document.addEventListener('astro:page-load', initMusicPage);
+  import '../../lib/lastfm.ts';
 </script>

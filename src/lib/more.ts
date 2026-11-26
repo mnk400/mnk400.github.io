@@ -49,6 +49,15 @@ export const moreItems: MoreItem[] = astroMoreItems
   .map(normalize)
   .sort((a, b) => a.id.localeCompare(b.id));
 
+const moreItemsById = new Map(moreItems.map((item) => [item.id, item]));
+
+/** The item for a page. Throws on an unknown id so a typo fails the build. */
+export function getMoreItem(id: string): MoreItem {
+  const item = moreItemsById.get(id);
+  if (!item) throw new Error(`No /more item with id "${id}" (see src/data/more/)`);
+  return item;
+}
+
 const listedMoreItems = moreItems.filter((item) => item.listed);
 const moreLeafItems = listedMoreItems.filter((item) => !item.isHub && item.groupPath.length > 0);
 

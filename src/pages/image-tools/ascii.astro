@@ -18,13 +18,10 @@ const ditherOptions = [
   { value: 'floyd', label: 'Floyd' },
 ];
 ---
-<Page
-  title="ASCII Art Converter"
-  description="Convert an image into a simple ASCII art"
->
+<Page item="image-tools/ascii">
   <p>Convert an image to ASCII art.</p>
 
-  <div class="ascii-container stack">
+  <div class="ascii-container stack" data-mount="ascii">
     <div class="stack">
       <ImageUpload />
 
@@ -54,17 +51,17 @@ const ditherOptions = [
       </ControlGroup>
 
       <div class="toolbar">
-        <button id="convert-btn" class="normal-btn">Convert to ASCII</button>
+        <button class="normal-btn" data-ref="convert">Convert to ASCII</button>
         <CopyButton
           id="copy-btn"
           class="normal-btn"
           style="display: none;"
         >Copy Text</CopyButton>
-        <button id="download-btn" class="normal-btn" style="display: none;">Download PNG</button>
+        <button class="normal-btn" style="display: none;" data-ref="download">Download PNG</button>
       </div>
     </div>
 
-    <pre id="ascii-output"></pre>
+    <pre id="ascii-output" data-ref="output"></pre>
   </div>
 </Page>
 
@@ -77,82 +74,77 @@ const ditherOptions = [
     type AsciiPalette,
     type DitherMode,
   } from '../../lib/ascii-utils.ts';
+  import { mount } from '../../lib/lifecycle.ts';
 
-  function initPhotoAscii() {
-    const upload = document.querySelector<HTMLElement>('[data-image-upload]');
-    const preview = upload?.querySelector<HTMLImageElement>('.image-upload__preview');
-    const widthInput = document.getElementById('width-input') as HTMLInputElement | null;
-    const convertBtn = document.getElementById('convert-btn') as HTMLButtonElement | null;
-    const asciiOutput = document.getElementById('ascii-output') as HTMLElement | null;
-    const copyBtn = document.getElementById('copy-btn') as HTMLButtonElement | null;
-    const downloadBtn = document.getElementById('download-btn') as HTMLButtonElement | null;
-    const paletteToggle = document.getElementById('ascii-palette-toggle');
-    const ditherToggle = document.getElementById('ascii-dither-toggle');
-
-    if (!upload || !preview || !widthInput || !convertBtn || !asciiOutput || !copyBtn || !downloadBtn) return;
-    if (asciiOutput.dataset.photoAsciiInitialized === 'true') return;
-    asciiOutput.dataset.photoAsciiInitialized = 'true';
+  mount('[data-mount="ascii"]', ({ ref, find }) => {
+    const upload = find('[data-image-upload]');
+    const preview = find<HTMLImageElement>('.image-upload__preview');
+    const widthInput = find<HTMLInputElement>('#width-input');
+    const convertBtn = ref('convert');
+    const asciiOutput = ref('output');
+    const copyBtn = find('#copy-btn');
+    const downloadBtn = ref('download');
 
     let palette: AsciiPalette = 'classic';
     let dither: DitherMode = 'none';
 
     function setActionVisibility(visible: boolean) {
       const display = visible ? 'inline-block' : 'none';
-      copyBtn!.style.display = display;
-      downloadBtn!.style.display = display;
+      copyBtn.style.display = display;
+      downloadBtn.style.display = display;
     }
 
     function render(showMissingImageAlert: boolean) {
-      if (!preview!.src) {
+      if (!preview.src) {
         if (showMissingImageAlert) alert('Please select an image first!');
         return;
       }
 
-      const width = parseInt(widthInput!.value);
-      const padLeft = parseFloat(getComputedStyle(asciiOutput!).paddingLeft);
-      const containerWidth = asciiOutput!.clientWidth - padLeft * 2;
-      const fontSize = calculateOptimalFontSize(containerWidth, width, asciiOutput!);
+      const width = parseInt(widthInput.value);
+      const padLeft = parseFloat(getComputedStyle(asciiOutput).paddingLeft);
+      const containerWidth = asciiOutput.clientWidth - padLeft * 2;
+      const fontSize = calculateOptimalFontSize(containerWidth, width, asciiOutput);
 
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d')!;
-      const height = calculateHeight(width, preview!.naturalWidth, preview!.naturalHeight);
+      const height = calculateHeight(width, preview.naturalWidth, preview.naturalHeight);
       canvas.width = width;
       canvas.height = height;
-      ctx.drawImage(preview!, 0, 0, width, height);
+      ctx.drawImage(preview, 0, 0, width, height);
       const imageData = ctx.getImageData(0, 0, width, height);
       const ascii = convertToAscii(imageData, width, height, {
         characters: ASCII_PALETTES[palette],
         dither,
       });
 
-      asciiOutput!.style.fontSize = `${fontSize}px`;
-      asciiOutput!.style.width = '100%';
-      asciiOutput!.style.maxWidth = '525px';
-      asciiOutput!.textContent = ascii;
-      copyBtn!.dataset.copyValue = ascii;
+      asciiOutput.style.fontSize = `${fontSize}px`;
+      asciiOutput.style.width = '100%';
+      asciiOutput.style.maxWidth = '525px';
+      asciiOutput.textContent = ascii;
+      copyBtn.dataset.copyValue = ascii;
       setActionVisibility(true);
     }
 
     upload.addEventListener('image-upload:change', () => {
-      asciiOutput!.textContent = '';
-      delete copyBtn!.dataset.copyValue;
+      asciiOutput.textContent = '';
+      delete copyBtn.dataset.copyValue;
       setActionVisibility(false);
     });
 
     convertBtn.addEventListener('click', () => render(true));
 
-    paletteToggle?.addEventListener('change', (e) => {
-      palette = (e as CustomEvent<{ value: string }>).detail.value as AsciiPalette;
-      if (asciiOutput!.textContent) render(false);
+    find('#ascii-palette-toggle').addEventListener('selection:change', (e) => {
+      palette = e.detail.value as AsciiPalette;
+      if (asciiOutput.textContent) render(false);
     });
 
-    ditherToggle?.addEventListener('change', (e) => {
-      dither = (e as CustomEvent<{ value: string }>).detail.value as DitherMode;
-      if (asciiOutput!.textContent) render(false);
+    find('#ascii-dither-toggle').addEventListener('selection:change', (e) => {
+      dither = e.detail.value as DitherMode;
+      if (asciiOutput.textContent) render(false);
     });
 
     downloadBtn.addEventListener('click', () => {
-      const text = asciiOutput!.textContent;
+      const text = asciiOutput.textContent;
       if (!text) {
         alert('Please convert an image to ASCII first!');
         return;
@@ -195,7 +187,5 @@ const ditherOptions = [
         URL.revokeObjectURL(url);
       });
     });
-  }
-
-  document.addEventListener('astro:page-load', initPhotoAscii);
+  });
 </script>

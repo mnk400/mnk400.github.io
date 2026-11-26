@@ -17,12 +17,7 @@ interface Props {
 const { painting } = Astro.props;
 const slug = painting.id.split('/').at(-1) ?? 'paintings';
 ---
-<Page
-  title={painting.title}
-  description={painting.description}
-  image={painting.image}
-  entity={painting.entity}
->
+<Page item={painting.id}>
   <p>A small browser archive of {painting.title} paintings. {painting.description}</p>
 
   <ImageGallery

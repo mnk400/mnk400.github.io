@@ -1,21 +1,14 @@
 ---
 import Page from '../../layouts/Page.astro';
 import ArchiveIndex from '../../components/ArchiveIndex.astro';
-import { getMoreGroups, moreItems, type MoreItem } from '../../lib/more.ts';
+import { getMoreGroups, getMoreItem, type MoreItem } from '../../lib/more.ts';
 
 const archiveFamilies = getMoreGroups()
   .filter((group) => group.root === 'archive')
   .flatMap((group): MoreItem[] => group.hub ? [group.hub] : []);
-const hub = moreItems.find((item) => item.id === 'archive');
 ---
-<Page
-  title={hub?.title ?? 'Archive'}
-  description={hub?.description}
-  image={hub?.image}
->
-  <p>
-    {hub?.description ?? 'Small browsable archives of paintings, objects, gear, and other things I like.'}
-  </p>
+<Page item="archive">
+  <p>{getMoreItem('archive').description}</p>
 
   <ArchiveIndex
     items={archiveFamilies}

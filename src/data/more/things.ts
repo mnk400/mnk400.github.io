@@ -68,7 +68,7 @@ export const thingStaticItems = [
     tags: [...thingTags, 'charms', 'decoration', 'fun', 'easter egg'],
     image: '/assets/images/previews/charms.jpg',
     order: 2,
-    description: 'Every decorative charm on the site, tipped out into a case.',
+    description: 'Every decorative charm on the site, tipped out in a pile.',
     redirectFrom: ['/fun-tools/charms'],
   },
 ] satisfies MoreItemData[];

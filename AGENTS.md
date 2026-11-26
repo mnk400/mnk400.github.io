@@ -51,28 +51,58 @@ An item's `id` is its URL path: `id: 'games/colordle'` → `/games/colordle/`. T
 segments determine its group, so `archive/paintings/monet` groups under `archive/paintings`.
 
 Category labels, chips, and sort order live in `src/data/categories.ts`, keyed by both top-level
-(`games`) and full path (`archive/paintings`). **A missing category entry does not error** — the
-group silently falls back to the raw slug as its label. Add the entry when adding a family.
+(`games`) and full path (`archive/paintings`). Every group needs an entry at its full path; the
+build fails without one (see `more-check.ts` below).
 
 `redirectFrom` entries become 301s in `_redirects` via `src/integrations/redirects.ts`. Keep old
 URLs listed there; the site has taken SEO damage from broken redirects before.
 
 Adding a page means both a route in `src/pages/` and an entry in the matching `src/data/more/`
-file. Families that need extra fields extend the base type
+file. The route renders `<Page item="games/colordle">` and does **not** repeat title,
+description or image: `Page` reads them from the entry, so the listing and the page's meta
+can't drift. Families that need extra fields extend the base type
 (`PaintingGalleryItemData extends MoreItemData` in `paintings.ts` is the pattern to copy).
+
+`src/integrations/more-check.ts` fails the build if an item has no built page, a listed item has
+no description (its page would ship the site-wide meta description), or a group has no
+`categories.ts` entry.
 
 ### Client Script Lifecycle
 
 `<ClientRouter />` swaps the DOM on navigation without a full reload. Scripts run once per
-session, so initialization hangs off `astro:page-load` and teardown off `astro:before-swap`.
+session while `astro:page-load` fires on every navigation, so **page and component scripts
+start with `mount()`** from `src/lib/lifecycle.ts`, never a raw `astro:page-load` listener:
 
-**Anything attached to `document`, `window`, or an observer must be torn down**, or it leaks
-across every navigation and retains detached DOM. Element-scoped listeners die with the element
-and are fine. A `dataset.initialized` guard is *not* sufficient — after a swap the element is a
-new node, so init runs again on a fresh element.
+```ts
+import { mount } from '../../lib/lifecycle.ts';
 
-The established pattern is an `AbortController` whose signal is passed to every listener, aborted
-on `astro:before-swap` — see `src/lib/image-zoom/index.ts` and `src/lib/image-gallery/index.ts`.
+mount('[data-mount="gradient"]', ({ root, ref, find, signal }) => {
+  const color = ref<HTMLInputElement>('color');        // [data-ref="color"] inside root
+  const toggle = find('#direction-toggle');             // components keep their id as a handle
+  window.addEventListener('resize', redraw, { signal }); // document/window listeners take signal
+  return () => stopLoop();                               // runs on swap
+});
+```
+
+- Setup runs once per matching element per page, only on pages that have one, so no
+  `dataset.initialized` guards and no null-check chains.
+- `ref()` and `find()` throw on a missing element; `ref()` also throws on duplicates. A failing
+  mount is logged as `mount(<selector>) failed` without breaking the rest of the page.
+- **Anything attached to `document`, `window`, or an observer must be torn down**: pass `signal`
+  or return a cleanup. Element-scoped listeners die with the element and need neither.
+- A page marks its root with `data-mount="<name>"` and its elements with `data-ref`. Keep an
+  `id` only where SCSS or a `<label for>` needs it.
+- Shared libs that run outside a mount use the primitives `pageSignal()` / `untilSwap()`.
+- Raw `astro:page-load` / `astro:before-swap` listeners are for document-level infrastructure
+  only (header, appearance, highlighter, zoom, view transitions).
+
+### Component Events
+
+Custom events are declared once in `src/lib/events.ts` (`SiteEvents`) and registered on
+`HTMLElementEventMap`, so listeners get a typed `detail` with no casts. Dispatch with
+`emit(el, name, detail)`; site events always bubble. Names are `component:change`
+(`selection:change`, `search:change`, `image-upload:change`), never a bare native name like
+`change`. Adding an event means adding it to `SiteEvents`.
 
 ### Theme System
 
@@ -144,9 +174,10 @@ another directory with the same 2-line re-export.
   moves to `src/lib/<feature>/`.
 - **Images**: `public/` is served unprocessed, so images there get no optimization. Prefer
   pre-generated derivatives (the paintings pipeline emits 1000px previews) over raw originals.
-- **New tool/game**: route in `src/pages/<category>/<slug>.astro` using `layout: Post`, entry in
-  `src/data/more/<category>.ts`, styles in `src/styles/partials/pages/`, category metadata in
-  `src/data/categories.ts` if the category is new.
+- **New tool/game**: entry in `src/data/more/<category>.ts` (with a description), route in
+  `src/pages/<category>/<slug>.astro` rendering `<Page item="<category>/<slug>">`, script via
+  `mount('[data-mount="<slug>"]', …)`, styles in `src/styles/partials/pages/`, category metadata
+  in `src/data/categories.ts` if the category is new.
 
 ## Design System Export
 

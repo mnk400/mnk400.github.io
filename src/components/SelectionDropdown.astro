@@ -50,7 +50,5 @@ const classes = ['selection-dropdown', extraClass].filter(Boolean).join(' ');
 </div>
 
 <script>
-  import { initSelectionControls } from '../lib/selection-controls.ts';
-
-  document.addEventListener('astro:page-load', () => initSelectionControls());
+  import '../lib/selection-controls.ts';
 </script>

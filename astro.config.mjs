@@ -3,6 +3,7 @@ import icon from 'astro-icon';
 import sitemap from '@astrojs/sitemap';
 import ogImages from './src/integrations/og-images.ts';
 import redirects from './src/integrations/redirects.ts';
+import moreCheck from './src/integrations/more-check.ts';
 
 export default defineConfig({
   site: process.env.SITE_URL ?? 'https://manik.cc',
@@ -14,6 +15,7 @@ export default defineConfig({
     }),
     ogImages(),
     redirects(),
+    moreCheck(),
   ],
   markdown: {
     // Shiki emits both --shiki-light and --shiki-dark on each token so our

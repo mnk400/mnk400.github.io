@@ -1,4 +1,5 @@
-import { pageSignal, untilSwap } from './lifecycle.ts';
+import { emit } from './events.ts';
+import { mount, pageSignal, untilSwap } from './lifecycle.ts';
 import { switchClasses, type SelectionOption } from './selection-options.ts';
 
 interface SwitchConfig {
@@ -21,13 +22,6 @@ const ICON_SVGS = {
   check: '<svg class="icon selection-dropdown__option-check" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56A8,8,0,0,1,45.66,138.34L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"/></svg>',
   'caret-down': '<svg class="icon selection-dropdown__chevron" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"/></svg>',
 };
-
-function dispatchChange(container: HTMLElement, value: string, element: HTMLElement) {
-  container.dispatchEvent(new CustomEvent('change', {
-    bubbles: true,
-    detail: { value, element },
-  }));
-}
 
 function setupSwitchOverflow(container: HTMLElement) {
   const parent = container.parentElement;
@@ -112,16 +106,37 @@ export function setSwitchValue(container: HTMLElement, value: string) {
   });
 }
 
+function switchOption(opt: SelectionOption, active: string | undefined): HTMLButtonElement {
+  const option = document.createElement('button');
+  option.type = 'button';
+  option.className = 'switch-option';
+  option.setAttribute('aria-pressed', String(opt.value === active));
+  option.dataset.value = opt.value;
+  option.textContent = opt.label;
+  return option;
+}
+
+/** Replaces a switch's options in place; the first is selected unless `active` says otherwise. */
+export function setSwitchOptions(container: HTMLElement, options: SelectionOption[], active = options[0]?.value) {
+  container.replaceChildren(...options.map((opt) => switchOption(opt, active)));
+  container.scrollLeft = 0;
+  // New options can change the overflow without a resize; re-run the chevron check.
+  container.dispatchEvent(new Event('scroll'));
+}
+
+// Also called directly for switches built after page load (createSelectionSwitch),
+// so it guards itself rather than relying on mount's once-per-element.
 export function initSelectionSwitch(container: HTMLElement) {
   if (container.dataset.switchInitialized === 'true') return;
   container.dataset.switchInitialized = 'true';
 
-  container.querySelectorAll<HTMLElement>('.switch-option').forEach((option) => {
-    option.addEventListener('click', () => {
-      const value = option.dataset.value || option.id;
-      setSwitchValue(container, value);
-      dispatchChange(container, value, option);
-    });
+  // Delegated, so setSwitchOptions can swap the buttons without rebinding.
+  container.addEventListener('click', (event) => {
+    const option = (event.target as HTMLElement).closest<HTMLElement>('.switch-option');
+    if (!option || !container.contains(option)) return;
+    const value = option.dataset.value || option.id;
+    setSwitchValue(container, value);
+    emit(container, 'selection:change', { value });
   });
 
   setupSwitchOverflow(container);
@@ -134,17 +149,7 @@ export function createSelectionSwitch(config: SwitchConfig): HTMLElement {
   if (config.ariaLabel) el.setAttribute('aria-label', config.ariaLabel);
   el.dataset.selectionSwitch = '';
 
-  const active = config.active ?? config.options[0]?.value;
-  config.options.forEach((opt) => {
-    const option = document.createElement('button');
-    option.type = 'button';
-    option.className = 'switch-option';
-    option.setAttribute('aria-pressed', String(opt.value === active));
-    option.dataset.value = opt.value;
-    option.textContent = opt.label;
-    el.appendChild(option);
-  });
-
+  setSwitchOptions(el, config.options, config.active);
   initSelectionSwitch(el);
   return el.parentElement && el.parentElement.classList.contains('selection-switch-wrap')
     ? el.parentElement
@@ -152,12 +157,8 @@ export function createSelectionSwitch(config: SwitchConfig): HTMLElement {
 }
 
 export function initSelectionDropdown(container: HTMLElement) {
+  // Self-guarded for the same reason as initSelectionSwitch.
   if (container.dataset.dropdownInitialized === 'true') return;
-  // Claim the element before the structural bail-out below, matching
-  // initSelectionSwitch. Markup is static per page, so a dropdown that fails
-  // the check will fail it identically on every astro:page-load; retrying just
-  // re-runs the query work forever. A post-swap element is a new node and so
-  // still gets initialized.
   container.dataset.dropdownInitialized = 'true';
 
   const trigger = container.querySelector<HTMLButtonElement>('.selection-dropdown__trigger');
@@ -179,7 +180,7 @@ export function initSelectionDropdown(container: HTMLElement) {
     });
     const label = activeOption.querySelector('.selection-dropdown__option-label');
     triggerTextEl.textContent = (label || activeOption).textContent;
-    if (shouldDispatch) dispatchChange(container, value, activeOption);
+    if (shouldDispatch) emit(container, 'selection:change', { value });
   }
 
   function setOpen(open: boolean) {
@@ -260,7 +261,5 @@ export function createSelectionDropdown(config: DropdownConfig): HTMLElement {
   return el;
 }
 
-export function initSelectionControls(root: ParentNode = document) {
-  root.querySelectorAll<HTMLElement>('[data-selection-switch]').forEach(initSelectionSwitch);
-  root.querySelectorAll<HTMLElement>('[data-selection-dropdown]').forEach(initSelectionDropdown);
-}
+mount('[data-selection-switch]', ({ root }) => initSelectionSwitch(root));
+mount('[data-selection-dropdown]', ({ root }) => initSelectionDropdown(root));

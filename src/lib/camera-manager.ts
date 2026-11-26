@@ -1,7 +1,9 @@
 // Shared lifecycle for getUserMedia tools: start/stop the stream, drive a
 // render loop per RAF, and (optionally) toggle a fullscreen container.
 // Pages supply a render(video) callback plus per-page lifecycle hooks for
-// teardown and styling differences.
+// styling differences. The stream and its listeners release on swap.
+
+import { pageSignal, untilSwap } from './lifecycle.ts';
 
 export interface CameraManagerOptions {
   video: HTMLVideoElement;
@@ -35,6 +37,7 @@ export function createCameraManager(opts: CameraManagerOptions): CameraControlle
   let stream: MediaStream | null = null;
   let rafId: number | null = null;
   let isFullscreen = false;
+  let disposed = false;
 
   function loop() {
     render(video);
@@ -43,9 +46,16 @@ export function createCameraManager(opts: CameraManagerOptions): CameraControlle
 
   async function start() {
     try {
-      stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      const granted = await navigator.mediaDevices.getUserMedia({ video: true });
+      // The permission prompt can outlive the page; release a late grant.
+      if (disposed) {
+        granted.getTracks().forEach((t) => t.stop());
+        return;
+      }
+      stream = granted;
       video.srcObject = stream;
       await video.play();
+      if (disposed) return;
       startBtn.textContent = stopLabel;
       onStart();
       loop();
@@ -91,8 +101,13 @@ export function createCameraManager(opts: CameraManagerOptions): CameraControlle
         isFullscreen = false;
         onExitFullscreen();
       }
-    });
+    }, { signal: pageSignal() });
   }
+
+  untilSwap(() => {
+    disposed = true;
+    if (stream) stop();
+  });
 
   return {
     isRunning: () => stream !== null,

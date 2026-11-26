@@ -1,3 +1,4 @@
+import { mount } from './lifecycle.ts';
 import { setSwitchValue } from './selection-controls.ts';
 
 const USERNAME = 'mnk_400';
@@ -52,63 +53,37 @@ async function fetchRecentTrack(): Promise<LastfmTrack | undefined> {
   return data.recenttracks?.track?.[0];
 }
 
-export async function initMusicWidget() {
-  const widget = document.getElementById('music-widget');
-  if (!widget) return;
+mount('.music-widget', async ({ root, find }) => {
+  wireArtCharm(root);
 
-  wireArtCharm(widget);
+  const track = await fetchRecentTrack();
+  if (!track) return;
 
-  try {
-    const track = await fetchRecentTrack();
-    if (!track) return;
+  const art = find<HTMLImageElement>('.music-widget-art');
+  const time = find('.music-widget-status-time');
+  const status = find('.music-widget-status');
+  const isNowPlaying = track['@attr']?.nowplaying === 'true';
 
-    const artEl = document.getElementById('music-widget-art') as HTMLImageElement | null;
-    const trackEl = document.getElementById('music-widget-track');
-    const artistEl = document.getElementById('music-widget-artist');
-    const labelEl = document.getElementById('music-widget-label');
-    const timeEl = document.getElementById('music-widget-time');
+  art.src = imageOf(track.image);
+  find('.music-widget-track').textContent = track.name;
+  find('.music-widget-artist').textContent = track.artist['#text'];
+  find('.music-widget-status-label').textContent = isNowPlaying ? 'now playing' : 'last';
 
-    const statusEl = document.getElementById('music-widget-status');
+  if (isNowPlaying) time.textContent = '';
+  else if (track.date?.uts) time.textContent = relativeTime(parseInt(track.date.uts) * 1000);
 
-    const isNowPlaying = track['@attr']?.nowplaying === 'true';
+  status.classList.toggle('is-live', isNowPlaying);
+  status.classList.add('loaded');
+  find('.music-widget-info').classList.add('loaded');
 
-    if (artEl) artEl.src = imageOf(track.image);
-    if (trackEl) trackEl.textContent = track.name;
-    if (artistEl) artistEl.textContent = track.artist['#text'];
-
-    if (labelEl) {
-      labelEl.textContent = isNowPlaying ? 'now playing' : 'last';
-    }
-
-    if (timeEl) {
-      if (isNowPlaying) {
-        timeEl.textContent = '';
-      } else if (track.date?.uts) {
-        timeEl.textContent = relativeTime(parseInt(track.date.uts) * 1000);
-      }
-    }
-
-    if (statusEl) {
-      statusEl.classList.toggle('is-live', isNowPlaying);
-      statusEl.classList.add('loaded');
-    }
-
-    const infoEl = document.querySelector('.music-widget-info');
-    if (infoEl) infoEl.classList.add('loaded');
-
-    if (artEl) {
-      const reveal = () => artEl.classList.add('loaded');
-      if (artEl.complete) {
-        reveal();
-      } else {
-        artEl.addEventListener('load', reveal, { once: true });
-        artEl.addEventListener('error', reveal, { once: true });
-      }
-    }
-  } catch (error) {
-    console.error('Error fetching music widget:', error);
+  const reveal = () => art.classList.add('loaded');
+  if (art.complete) {
+    reveal();
+  } else {
+    art.addEventListener('load', reveal, { once: true });
+    art.addEventListener('error', reveal, { once: true });
   }
-}
+});
 
 // The album art in the widget doubles as a hidden charm. Hover-grow is pure CSS
 // (see _music.scss); the click pulse needs JS to retrigger the one-shot each
@@ -116,8 +91,7 @@ export async function initMusicWidget() {
 function wireArtCharm(widget: HTMLElement) {
   const wrapper = widget.querySelector<HTMLElement>('.music-widget-art-wrapper');
   const art = widget.querySelector<HTMLElement>('.music-widget-art');
-  if (!wrapper || !art || wrapper.dataset.charmInit === 'true') return;
-  wrapper.dataset.charmInit = 'true';
+  if (!wrapper || !art) return;
 
   wrapper.addEventListener('click', (event) => {
     event.preventDefault(); // pulse the charm rather than open the link
@@ -166,11 +140,11 @@ function fetchArtistImage(artistName: string): Promise<string> {
   });
 }
 
-export function initMusicPage() {
-  const viewToggle = document.getElementById('view-toggle');
-  const periodToggle = document.getElementById('period-toggle');
-  const grid = document.getElementById('album-grid');
-  if (!viewToggle || !periodToggle || !grid) return;
+mount('[data-mount="music"]', ({ ref, find }) => {
+  const viewToggle = find('#view-toggle');
+  const periodToggle = find('#period-toggle');
+  const grid = ref('grid');
+  const template = ref<HTMLTemplateElement>('card');
 
   let currentView = 'albums';
   let currentPeriod = '7day';
@@ -178,7 +152,7 @@ export function initMusicPage() {
 
   function fadeOutGrid(): Promise<void> {
     return new Promise((resolve) => {
-      if (!grid || grid.children.length === 0) {
+      if (grid.children.length === 0) {
         resolve();
         return;
       }
@@ -189,9 +163,6 @@ export function initMusicPage() {
   }
 
   function renderGrid(items: GridItem[]) {
-    const template = document.getElementById('music-card-template') as HTMLTemplateElement | null;
-    if (!template || !grid) return;
-
     grid.innerHTML = '';
     grid.classList.remove('grid-fade-out');
     grid.style.display = 'grid';
@@ -222,7 +193,7 @@ export function initMusicPage() {
       const data = await response.json();
 
       if (data.error) {
-        grid!.innerHTML = `<p>Error: ${data.message}</p>`;
+        grid.innerHTML = `<p>Error: ${data.message}</p>`;
         return;
       }
 
@@ -235,7 +206,7 @@ export function initMusicPage() {
       }));
       renderGrid(items);
     } catch (error) {
-      grid!.innerHTML = `<p>Error fetching albums: ${(error as Error).message}</p>`;
+      grid.innerHTML = `<p>Error fetching albums: ${(error as Error).message}</p>`;
     }
   }
 
@@ -247,7 +218,7 @@ export function initMusicPage() {
       const data = await response.json();
 
       if (data.error) {
-        grid!.innerHTML = `<p>Error: ${data.message}</p>`;
+        grid.innerHTML = `<p>Error: ${data.message}</p>`;
         return;
       }
 
@@ -267,7 +238,7 @@ export function initMusicPage() {
       }));
       renderGrid(items);
     } catch (error) {
-      grid!.innerHTML = `<p>Error fetching artists: ${(error as Error).message}</p>`;
+      grid.innerHTML = `<p>Error fetching artists: ${(error as Error).message}</p>`;
     }
   }
 
@@ -279,20 +250,16 @@ export function initMusicPage() {
     }
   }
 
-  viewToggle.addEventListener('change', async (event) => {
-    const value = (event as CustomEvent).detail?.value;
-    if (!value) return;
-    currentView = value;
+  viewToggle.addEventListener('selection:change', async (event) => {
+    currentView = event.detail.value;
     setSwitchValue(viewToggle, currentView);
     setSwitchValue(periodToggle, currentPeriod);
     await fadeOutGrid();
     fetchData();
   });
 
-  periodToggle.addEventListener('change', async (event) => {
-    const value = (event as CustomEvent).detail?.value;
-    if (!value) return;
-    currentPeriod = value;
+  periodToggle.addEventListener('selection:change', async (event) => {
+    currentPeriod = event.detail.value;
     setSwitchValue(viewToggle, currentView);
     setSwitchValue(periodToggle, currentPeriod);
     await fadeOutGrid();
@@ -300,4 +267,4 @@ export function initMusicPage() {
   });
 
   fetchData();
-}
+});

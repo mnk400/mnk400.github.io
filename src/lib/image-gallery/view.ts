@@ -165,8 +165,8 @@ function setupControls(
       options: state.sortOptions.map((value) => ({ value, label: SORT_LABELS[value] || value })),
       active: state.sort,
     });
-    control.addEventListener('change', (event) => {
-      state.sort = (event as CustomEvent).detail.value;
+    control.addEventListener('selection:change', (event) => {
+      state.sort = event.detail.value;
       render();
     });
     controlsRoot.appendChild(createControlGroup('Sort', control));
@@ -191,8 +191,8 @@ function setupControls(
     const control = option === 'decade'
       ? createSelectionSwitch(config)
       : createSelectionDropdown(config);
-    control.addEventListener('change', (event) => {
-      state.filters[option] = (event as CustomEvent).detail.value;
+    control.addEventListener('selection:change', (event) => {
+      state.filters[option] = event.detail.value;
       render();
     });
     controlsRoot.appendChild(createControlGroup(label, control));

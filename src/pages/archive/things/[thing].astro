@@ -16,12 +16,7 @@ interface Props {
 
 const { thing } = Astro.props;
 ---
-<Page
-  title={thing.title}
-  description={thing.description}
-  image={thing.image}
-  entity={thing.entity}
->
+<Page item={thing.id}>
   {thing.description && <p>{thing.description}</p>}
 
   <ImageGallery

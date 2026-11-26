@@ -5,9 +5,15 @@
 // Set `prose` when the body is authored prose rather than UI copy, it opts into
 // the reading typography in _prose.scss. Articles go through Post.astro, which
 // wraps this and fills the `meta` and `body-end` slots.
+//
+// A page listed in src/data/more/ passes `item` (its id) instead of repeating
+// title, description and image, so the listing and the page can't drift.
 import Default from './Default.astro';
+import { getMoreItem } from '../lib/more.ts';
 
 interface Props {
+  /** A /more item id; its title, description, image and entity fill the props below. */
+  item?: string;
   title?: string;
   description?: string;
   image?: string;
@@ -24,15 +30,16 @@ interface Props {
   titleGutter?: string;
 }
 
+const meta = Astro.props.item ? getMoreItem(Astro.props.item) : undefined;
 const {
-  title,
-  description,
-  image,
+  title = meta?.title,
+  description = meta?.description,
+  image = meta?.image,
+  entity = meta?.entity,
   useMath = false,
   prose = false,
   article = false,
   styles,
-  entity,
   schemaType,
   layoutKind = 'page',
   titleGutter,

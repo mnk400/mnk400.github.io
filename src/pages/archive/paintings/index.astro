@@ -5,16 +5,9 @@ import ExpandableSection from '../../../components/ExpandableSection.astro';
 import { getMoreGroups } from '../../../lib/more.ts';
 import Charm from '../../../components/charms/Charm.astro';
 
-const group = getMoreGroups().find((entry) => entry.path === 'archive/paintings');
-const hub = group?.hub;
-const paintings = group?.items ?? [];
+const paintings = getMoreGroups().find((entry) => entry.path === 'archive/paintings')?.items ?? [];
 ---
-<Page
-  title={hub?.title ?? 'Archive of Paintings'}
-  description={hub?.description}
-  image={hub?.image}
-  titleGutter="4.5rem"
->
+<Page item="archive/paintings" titleGutter="4.5rem">
   <Charm type="pearl" slot="header-charm" anchor="top-right" x="-0.4em" y="-0.2em" rotate={6} size={1.65} />
 
   <p class="paintings-hub__intro">

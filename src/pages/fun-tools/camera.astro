@@ -7,14 +7,11 @@ import { cameraModes } from '../../lib/camera-modes/index.ts';
 
 const modeOptions = cameraModes.map((m) => ({ value: m.id, label: m.label }));
 ---
-<Page
-  title="Camera Art"
-  description="Convert your camera feed into real-time ASCII or circle art"
->
+<Page item="fun-tools/camera">
   <p>See yourself live as ASCII or circles.</p>
 
-  <div class="ascii-container stack">
-    <video id="video" style="display: none;"></video>
+  <div class="ascii-container stack" data-mount="camera">
+    <video style="display: none;" data-ref="video"></video>
 
     <div class="stack">
       <ControlGroup label="detail" for="detail-input">
@@ -51,13 +48,13 @@ const modeOptions = cameraModes.map((m) => ({ value: m.id, label: m.label }));
       ))}
 
       <div class="toolbar">
-        <button id="start-btn" class="normal-btn">Start Camera</button>
-        <button id="fullscreen-btn" class="normal-btn">Fullscreen</button>
+        <button class="normal-btn" data-ref="start">Start Camera</button>
+        <button id="fullscreen-btn" class="normal-btn" data-ref="fullscreen">Fullscreen</button>
       </div>
     </div>
 
     <div class="canvas-container">
-      <canvas id="camera-canvas"></canvas>
+      <canvas id="camera-canvas" data-ref="canvas"></canvas>
     </div>
   </div>
 </Page>
@@ -66,18 +63,14 @@ const modeOptions = cameraModes.map((m) => ({ value: m.id, label: m.label }));
   import { createCameraManager } from '../../lib/camera-manager.ts';
   import { cameraModes } from '../../lib/camera-modes/index.ts';
   import type { CameraMode } from '../../lib/camera-modes/types.ts';
+  import { mount } from '../../lib/lifecycle.ts';
 
-  function initCameraArt() {
-    const video = document.getElementById('video') as HTMLVideoElement | null;
-    const canvas = document.getElementById('camera-canvas') as HTMLCanvasElement | null;
-    const detailInput = document.getElementById('detail-input') as HTMLInputElement | null;
-    const startBtn = document.getElementById('start-btn') as HTMLButtonElement | null;
-    const fullscreenBtn = document.getElementById('fullscreen-btn') as HTMLButtonElement | null;
-    const modeToggle = document.getElementById('camera-mode-toggle');
-
-    if (!video || !canvas || !detailInput || !startBtn || !fullscreenBtn) return;
-    if (canvas.dataset.cameraArtInitialized === 'true') return;
-    canvas.dataset.cameraArtInitialized = 'true';
+  mount('[data-mount="camera"]', ({ root, ref, find, signal }) => {
+    const video = ref<HTMLVideoElement>('video');
+    const canvas = ref<HTMLCanvasElement>('canvas');
+    const detailInput = find<HTMLInputElement>('#detail-input');
+    const startBtn = ref<HTMLButtonElement>('start');
+    const fullscreenBtn = ref<HTMLButtonElement>('fullscreen');
 
     const ctx = canvas.getContext('2d')!;
     let activeMode: CameraMode = cameraModes[0];
@@ -90,21 +83,21 @@ const modeOptions = cameraModes.map((m) => ({ value: m.id, label: m.label }));
       optionState[mode.id] = {};
       for (const control of mode.controls ?? []) {
         optionState[mode.id][control.id] = control.default;
-        document.getElementById(`${mode.id}-${control.id}`)?.addEventListener('change', (e) => {
-          optionState[mode.id][control.id] = (e as CustomEvent<{ value: string }>).detail.value;
+        find(`#${mode.id}-${control.id}`).addEventListener('selection:change', (e) => {
+          optionState[mode.id][control.id] = e.detail.value;
         });
       }
     }
 
     function showModeControls(id: string) {
-      document.querySelectorAll<HTMLElement>('.mode-controls').forEach((el) => {
+      root.querySelectorAll<HTMLElement>('.mode-controls').forEach((el) => {
         el.hidden = el.dataset.mode !== id;
       });
     }
 
     function cssSize() {
       if (camera.isFullscreen()) return { w: window.innerWidth, h: window.innerHeight };
-      const w = canvas!.parentElement!.clientWidth;
+      const w = canvas.parentElement!.clientWidth;
       return { w, h: Math.round((w * 3) / 4) }; // 4:3 to match the feed
     }
 
@@ -113,8 +106,8 @@ const modeOptions = cameraModes.map((m) => ({ value: m.id, label: m.label }));
     function applyCanvasSize() {
       const dpr = window.devicePixelRatio || 1;
       const { w, h } = cssSize();
-      canvas!.width = Math.round(w * dpr);
-      canvas!.height = Math.round(h * dpr);
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
@@ -128,19 +121,19 @@ const modeOptions = cameraModes.map((m) => ({ value: m.id, label: m.label }));
         video: v,
         width: w,
         height: h,
-        detail: parseInt(detailInput!.value),
+        detail: parseInt(detailInput.value),
         fullscreen: camera.isFullscreen(),
         options: optionState[activeMode.id] ?? {},
       });
     }
 
-    modeToggle?.addEventListener('change', (e) => {
-      const id = (e as CustomEvent<{ value: string }>).detail.value;
+    find('#camera-mode-toggle').addEventListener('selection:change', (e) => {
+      const id = e.detail.value;
       activeMode = cameraModes.find((m) => m.id === id) ?? activeMode;
       showModeControls(activeMode.id);
       if (!camera.isRunning()) {
         ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.clearRect(0, 0, canvas!.width, canvas!.height);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
     });
 
@@ -155,30 +148,20 @@ const modeOptions = cameraModes.map((m) => ({ value: m.id, label: m.label }));
       },
       onStop() {
         ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.clearRect(0, 0, canvas!.width, canvas!.height);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
       },
       onEnterFullscreen() {
-        canvas!.classList.add('is-fullscreen');
+        canvas.classList.add('is-fullscreen');
         applyCanvasSize();
       },
       onExitFullscreen() {
-        canvas!.classList.remove('is-fullscreen');
+        canvas.classList.remove('is-fullscreen');
         applyCanvasSize();
-        detailInput!.value = '33';
-        detailInput!.dispatchEvent(new Event('input'));
+        detailInput.value = '33';
+        detailInput.dispatchEvent(new Event('input'));
       },
     });
 
-    function onResize() {
-      applyCanvasSize();
-    }
-    window.addEventListener('resize', onResize);
-
-    document.addEventListener('astro:before-swap', () => {
-      camera.stop();
-      window.removeEventListener('resize', onResize);
-    }, { once: true });
-  }
-
-  document.addEventListener('astro:page-load', initCameraArt);
+    window.addEventListener('resize', applyCanvasSize, { signal });
+  });
 </script>

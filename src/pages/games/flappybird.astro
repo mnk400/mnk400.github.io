@@ -1,28 +1,24 @@
 ---
 import Page from '../../layouts/Page.astro';
 ---
-<Page
-  title="Flappy Bird"
-  description="A minimal flappy-bird clone."
-  image="/assets/images/previews/flappy.jpg"
->
-  <div class="game-wrapper">
+<Page item="games/flappybird">
+  <div class="game-wrapper" data-mount="flappybird">
     <div class="game-meta">
-      <span id="score">Score · 0</span>
-      <span id="high-score">Best · 0</span>
+      <span data-ref="score">Score · 0</span>
+      <span data-ref="high-score">Best · 0</span>
     </div>
     <div id="flappy-game-container">
-      <canvas id="flappyCanvas" width="525" height="640"></canvas>
+      <canvas id="flappyCanvas" width="525" height="640" data-ref="canvas"></canvas>
       <div id="flappy-ui">
-        <div id="game-over" style="display: none;">
+        <div id="game-over" style="display: none;" data-ref="game-over">
           <h2>game over</h2>
-          <p>final · <span id="final-score">0</span></p>
-          <button id="restart-btn" class="normal-btn normal-btn--dark-forced">play again</button>
+          <p>final · <span data-ref="final-score">0</span></p>
+          <button data-ref="restart" class="normal-btn normal-btn--dark-forced">play again</button>
         </div>
-        <div id="start-screen">
+        <div id="start-screen" data-ref="start-screen">
           <h2>flappy bird</h2>
           <p>press space or click to fly</p>
-          <button id="start-btn" class="normal-btn normal-btn--dark-forced">start</button>
+          <button data-ref="start" class="normal-btn normal-btn--dark-forced">start</button>
         </div>
       </div>
     </div>
@@ -30,20 +26,17 @@ import Page from '../../layouts/Page.astro';
 </Page>
 
 <script>
-  function initFlappy() {
-    const canvas = document.getElementById('flappyCanvas') as HTMLCanvasElement | null;
-    const scoreElement = document.getElementById('score');
-    const highScoreElement = document.getElementById('high-score');
-    const gameOverScreen = document.getElementById('game-over');
-    const startScreen = document.getElementById('start-screen');
-    const finalScoreElement = document.getElementById('final-score');
-    const startBtn = document.getElementById('start-btn');
-    const restartBtn = document.getElementById('restart-btn');
+  import { mount } from '../../lib/lifecycle.ts';
 
-    if (!canvas || !scoreElement || !highScoreElement || !gameOverScreen ||
-        !startScreen || !finalScoreElement || !startBtn || !restartBtn) return;
-    if (canvas.dataset.flappyInitialized === 'true') return;
-    canvas.dataset.flappyInitialized = 'true';
+  mount('[data-mount="flappybird"]', ({ ref, signal }) => {
+    const canvas = ref<HTMLCanvasElement>('canvas');
+    const scoreElement = ref('score');
+    const highScoreElement = ref('high-score');
+    const gameOverScreen = ref('game-over');
+    const startScreen = ref('start-screen');
+    const finalScoreElement = ref('final-score');
+    const startBtn = ref('start');
+    const restartBtn = ref('restart');
 
     const ctx = canvas.getContext('2d')!;
 
@@ -61,7 +54,7 @@ import Page from '../../layouts/Page.astro';
       document.body.style.overflow = 'hidden';
       document.body.style.position = 'fixed';
       document.body.style.width = '100%';
-      document.addEventListener('touchmove', preventScrolling, { passive: false });
+      document.addEventListener('touchmove', preventScrolling, { passive: false, signal });
     }
 
     function enablePageScrolling() {
@@ -123,7 +116,7 @@ import Page from '../../layouts/Page.astro';
     const pipeInterval = 90;
 
     function resetGame() {
-      bird.y = canvas!.height / 2;
+      bird.y = canvas.height / 2;
       bird.velocity = 0;
       bird.alpha = 1;
       pipes.length = 0;
@@ -131,11 +124,11 @@ import Page from '../../layouts/Page.astro';
       pipeTimer = 0;
       dying = false;
       updateScore();
-      gameOverScreen!.classList.remove('visible');
-      startScreen!.classList.remove('visible');
-      gameOverScreen!.style.display = 'none';
-      startScreen!.style.display = 'none';
-      canvas!.classList.remove('dimmed');
+      gameOverScreen.classList.remove('visible');
+      startScreen.classList.remove('visible');
+      gameOverScreen.style.display = 'none';
+      startScreen.style.display = 'none';
+      canvas.classList.remove('dimmed');
 
       if (rafId !== null) {
         cancelAnimationFrame(rafId);
@@ -179,12 +172,12 @@ import Page from '../../layouts/Page.astro';
       }
 
       enablePageScrolling();
-      finalScoreElement!.textContent = String(score);
+      finalScoreElement.textContent = String(score);
 
       if (score > highScore) {
         highScore = score;
         localStorage.setItem('flappyHighScore', String(highScore));
-        highScoreElement!.textContent = `Best · ${highScore}`;
+        highScoreElement.textContent = `Best · ${highScore}`;
       }
 
       const start = performance.now();
@@ -193,22 +186,22 @@ import Page from '../../layouts/Page.astro';
         const t = Math.min(1, (now - start) / fallDuration);
         bird.velocity += bird.gravity * 0.6;
         bird.y += bird.velocity;
-        if (bird.y > canvas!.height + 40) bird.y = canvas!.height + 40;
+        if (bird.y > canvas.height + 40) bird.y = canvas.height + 40;
         bird.alpha = 1 - t * 0.7;
         render();
         if (t < 1) {
           requestAnimationFrame(deathFrame);
         } else {
-          canvas!.classList.add('dimmed');
-          gameOverScreen!.style.display = 'block';
-          requestAnimationFrame(() => gameOverScreen!.classList.add('visible'));
+          canvas.classList.add('dimmed');
+          gameOverScreen.style.display = 'block';
+          requestAnimationFrame(() => gameOverScreen.classList.add('visible'));
         }
       }
       requestAnimationFrame(deathFrame);
     }
 
     function updateScore() {
-      scoreElement!.textContent = `Score · ${score}`;
+      scoreElement.textContent = `Score · ${score}`;
     }
 
     function jump() {
@@ -218,18 +211,18 @@ import Page from '../../layouts/Page.astro';
     function updateBird() {
       bird.velocity += bird.gravity;
       bird.y += bird.velocity;
-      if (bird.y < 0 || bird.y + bird.height > canvas!.height) endGame();
+      if (bird.y < 0 || bird.y + bird.height > canvas.height) endGame();
     }
 
     function createPipe() {
       const minHeight = 50;
-      const maxHeight = canvas!.height - pipeGap - minHeight;
+      const maxHeight = canvas.height - pipeGap - minHeight;
       const topHeight = Math.random() * (maxHeight - minHeight) + minHeight;
       pipes.push({
-        x: canvas!.width,
+        x: canvas.width,
         topHeight,
         bottomY: topHeight + pipeGap,
-        bottomHeight: canvas!.height - (topHeight + pipeGap),
+        bottomHeight: canvas.height - (topHeight + pipeGap),
         passed: false,
       });
     }
@@ -294,7 +287,7 @@ import Page from '../../layouts/Page.astro';
     }
 
     function render() {
-      ctx.clearRect(0, 0, canvas!.width, canvas!.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawPipes();
       drawBird();
     }
@@ -329,11 +322,11 @@ import Page from '../../layouts/Page.astro';
     restartBtn.addEventListener('click', startGame);
     startBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startGame(); });
     restartBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startGame(); });
-    document.addEventListener('keydown', onKeydown);
+    document.addEventListener('keydown', onKeydown, { signal });
     canvas.addEventListener('click', handleGameInteraction);
     canvas.addEventListener('touchstart', handleGameInteraction, { passive: false });
     canvas.addEventListener('contextmenu', (e) => e.preventDefault());
-    document.addEventListener('visibilitychange', onVisibilityChange);
+    document.addEventListener('visibilitychange', onVisibilityChange, { signal });
 
     if (isMobile) {
       canvas.style.cursor = 'pointer';
@@ -341,22 +334,17 @@ import Page from '../../layouts/Page.astro';
       (document.body.style as CSSStyleDeclaration & { webkitUserSelect?: string }).webkitUserSelect = 'none';
     }
 
-    // Persistent state across same-doc nav: release timers + DOM listeners
-    // and restore body styles when the next page swaps in.
-    document.addEventListener('astro:before-swap', () => {
-      gameRunning = false;
-      if (rafId !== null) cancelAnimationFrame(rafId);
-      enablePageScrolling();
-      themeObserver.disconnect();
-      document.removeEventListener('keydown', onKeydown);
-      document.removeEventListener('visibilitychange', onVisibilityChange);
-    }, { once: true });
-
     startScreen.style.display = 'block';
     canvas.classList.add('dimmed');
     requestAnimationFrame(() => startScreen.classList.add('visible'));
     render();
-  }
 
-  document.addEventListener('astro:page-load', initFlappy);
+    // Body styles and the frame loop outlive the page unless released here.
+    return () => {
+      gameRunning = false;
+      if (rafId !== null) cancelAnimationFrame(rafId);
+      enablePageScrolling();
+      themeObserver.disconnect();
+    };
+  });
 </script>
