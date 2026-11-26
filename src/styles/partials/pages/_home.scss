@@ -40,11 +40,11 @@
         list-style: none;
     }
 
+    // Block, not flex: the date flows after the title's last word, so wrapped
+    // and unwrapped rows read the same instead of the date jumping to the edge.
     .archive__row {
         @include highlight-row;
-        display: flex;
-        align-items: baseline;
-        gap: var(--spacing-xs);
+        display: block;
         padding: var(--spacing-xs) var(--spacing-lg);
         font-size: 11.5pt;
         line-height: 1.3em;
@@ -54,6 +54,7 @@
         @include meta-text;
         color: var(--sec-text-color);
         white-space: nowrap;
+        margin-left: var(--spacing-xs);
         opacity: 80%;
         font-variant-numeric: tabular-nums;
         transition: color var(--transition-medium);

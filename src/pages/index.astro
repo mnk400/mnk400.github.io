@@ -6,6 +6,15 @@ import Charm from '../components/charms/Charm.astro';
 import MusicWidget from '../components/MusicWidget.astro';
 import Footer from '../components/Footer.astro';
 
+// Take only the month and year parts: the separator between them is CLDR
+// data that varies by Node version (newer ICU emits "Aug ’26").
+const monthYearFormat = new Intl.DateTimeFormat('en-US', { month: 'short', year: '2-digit', timeZone: 'UTC' });
+const formatMonthYear = (date: Date) => {
+  const parts = monthYearFormat.formatToParts(date);
+  const part = (type: Intl.DateTimeFormatPartTypes) => parts.find((p) => p.type === type)?.value;
+  return `${part('month')}-${part('year')}`;
+};
+
 const allPosts = await getCollection('posts');
 const posts = allPosts
   .map((post) => {
@@ -16,9 +25,7 @@ const posts = allPosts
       title: post.data.title,
       url: `/${y}/${m}/${d}/${slug}`,
       date,
-      monthYear: date
-        .toLocaleDateString('en-US', { month: 'short', year: '2-digit', timeZone: 'UTC' })
-        .replace(' ', '-'),
+      monthYear: formatMonthYear(date),
     };
   })
   .sort((a, b) => b.date.getTime() - a.date.getTime());
@@ -63,8 +70,8 @@ const posts = allPosts
           {posts.map(post => (
             <li>
               <a class="archive__row" href={post.url}>
-                <span>{post.title}</span>
-                <span class="date">{post.monthYear}</span>
+                {/* No whitespace between: the date stays glued to the last word. */}
+                <span>{post.title}</span><span class="date">{post.monthYear}</span>
               </a>
             </li>
           ))}
