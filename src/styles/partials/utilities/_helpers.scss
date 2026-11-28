@@ -109,7 +109,7 @@
     gap: var(--spacing-sm);
 }
 
-// Text-only controls in a caption or meta line (ImageUpload's, the camera's).
+// Text-only controls in a caption or meta line (MediaFrame's actions slot).
 // Buttons drop their own type for the line's and highlight as text.
 .caption-actions {
     display: inline-flex;

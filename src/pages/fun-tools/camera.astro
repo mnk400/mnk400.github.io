@@ -2,6 +2,7 @@
 import Page from '../../layouts/Page.astro';
 import ControlGroup from '../../components/ControlGroup.astro';
 import Icon from '../../components/Icon.astro';
+import MediaFrame from '../../components/MediaFrame.astro';
 import SelectionSwitch from '../../components/SelectionSwitch.astro';
 import RangeSlider from '../../components/RangeSlider.astro';
 import { cameraModes } from '../../lib/camera-modes/index.ts';
@@ -17,22 +18,19 @@ const modeOptions = cameraModes.map((m) => ({ value: m.id, label: m.label }));
         <span data-ref="start-label"><span class="camera-start__verb"></span> to start your camera</span>
       </button>
 
-      <div class="camera-frame" data-ref="frame">
+      <MediaFrame>
         <video class="camera-video" data-ref="video" playsinline muted></video>
         <canvas class="camera-canvas" data-ref="canvas"></canvas>
-      </div>
-
-      <p class="camera-caption">
-        <button class="camera-name" type="button" data-ref="name" title="Switch camera" disabled>
+        <button slot="source" class="media-frame__source" type="button" data-ref="name" title="Switch camera" disabled>
           <Icon name="camera-rotate" weight="regular" />
-          <span class="camera-name__label" data-ref="name-label">Camera</span>
+          <span class="media-frame__label" data-ref="name-label">Camera</span>
         </button>
-        <span class="caption-actions">
+        <span slot="actions" class="caption-actions">
           <button type="button" data-ref="save">save png</button>
           <button type="button" data-ref="fullscreen">fullscreen</button>
           <button type="button" data-ref="stop">stop</button>
         </span>
-      </p>
+      </MediaFrame>
     </div>
 
     <ControlGroup label="mode">
@@ -91,7 +89,7 @@ const modeOptions = cameraModes.map((m) => ({ value: m.id, label: m.label }));
   mount('[data-mount="camera"]', ({ root, ref, find, signal }) => {
     const startBtn = ref<HTMLButtonElement>('start');
     const startLabel = ref('start-label');
-    const frame = ref('frame');
+    const frame = find('.media-frame__card');
     const video = ref<HTMLVideoElement>('video');
     const canvas = ref<HTMLCanvasElement>('canvas');
     const nameBtn = ref<HTMLButtonElement>('name');
@@ -175,7 +173,7 @@ const modeOptions = cameraModes.map((m) => ({ value: m.id, label: m.label }));
     // The frame takes the feed's own shape, so nothing is cropped or stretched
     // outside fullscreen.
     const matchFeed = () => {
-      if (video.videoWidth) frame.style.setProperty('--feed-aspect', `${video.videoWidth} / ${video.videoHeight}`);
+      if (video.videoWidth) frame.style.setProperty('--media-aspect', `${video.videoWidth} / ${video.videoHeight}`);
     };
     video.addEventListener('loadedmetadata', matchFeed);
     video.addEventListener('resize', matchFeed);

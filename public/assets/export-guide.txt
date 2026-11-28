@@ -67,6 +67,7 @@ by the consuming project.
     partials/components/forms      bare inputs, select, colour input
     partials/components/control-group  .control-group and its parts
     partials/components/selection-dropdown  .selection-dropdown and its parts
+    partials/components/media-frame         .media-frame and its parts
     partials/components/image-upload        .image-upload and its parts
     partials/components/range-slider  .range-slider and .range-slider__value
     partials/components/image-zoom Image zoom overlay classes
@@ -370,6 +371,38 @@ Options are bare rows, inset from the menu edge and rounded; the one with
 aria-selected="true" takes the dark fill (as a selected chip does) and shows the check. Rows drift apart around [data-highlight-active],
 which only the site's highlight script sets.
 
+Media frame visual contract:
+
+    <div class="media-frame">
+      <div class="media-frame__card">
+        <div class="media-frame__stage">
+          <img src="photo.jpg" alt="">
+          <!-- optional overlay, positioned against the media -->
+        </div>
+        <!-- optional content attached under the media, e.g. .palette-output -->
+      </div>
+      <p class="media-frame__caption">
+        <button class="media-frame__source" type="button">
+          <svg class="icon">...</svg>
+          <span class="media-frame__label">photo.jpg</span>
+        </button>
+        <span class="caption-actions">
+          <button type="button">save png</button>
+        </span>
+      </p>
+    </div>
+
+A piece of media (image, video, canvas) in one outlined, rounded card, with a
+caption under it. .media-frame__stage is position: relative, so an overlay or
+stacked video and canvas can sit on it with position: absolute; set
+--media-aspect (e.g. 16 / 9) on the frame or an ancestor to fix the stage's
+shape, otherwise the media sets its height. The card goes edge to edge, square
+and unoutlined, when it is the fullscreen element. The caption puts the source
+on the left: a button whose label ellipsizes, and which reads as a plain label,
+icon hidden, while disabled. The right side takes the page's actions
+(.caption-actions, see helpers, suits them) or any short text. Neither part can
+widen its column.
+
 Image upload visual contract:
 
     <div class="image-upload">
@@ -377,34 +410,27 @@ Image upload visual contract:
         <span>Drop an image, or choose one</span>
       </button>
       <input class="image-upload__input" type="file" accept="image/*">
-      <div class="image-upload__frame">
-        <div class="image-upload__stage">
-          <img class="image-upload__preview" alt="">
-          <!-- optional overlay, positioned against the image -->
+      <div class="media-frame">
+        <div class="media-frame__card">
+          <div class="media-frame__stage">
+            <img class="image-upload__preview" alt="">
+          </div>
         </div>
-        <!-- optional content attached under the image, e.g. .palette-output -->
+        <p class="media-frame__caption">
+          <button class="media-frame__source" type="button">
+            <svg class="icon">...</svg>
+            <span class="media-frame__label">photo.jpg</span>
+          </button>
+          <span class="image-upload__size">4032 × 3024</span>
+        </p>
       </div>
-      <p class="image-upload__caption">
-        <button class="image-upload__name" type="button">
-          <svg class="icon">...</svg>
-          <span class="image-upload__filename">photo.jpg</span>
-        </button>
-        <span class="image-upload__size">4032 × 3024</span>
-        <!-- or, in its place, the page's own controls:
-        <span class="caption-actions">
-          <button type="button">copy</button>
-        </span> -->
-      </p>
     </div>
 
-Only shows the selector. Add .image-upload--has-preview to swap it for
-the frame and caption: the frame is one outlined, rounded card around the image
-and anything attached under it, and .image-upload__stage is position: relative
-so an overlay can sit on the image. The caption puts the filename (clicking
-reopens the picker) on the left and the size, or the page's own actions in its
-place, on the right; .caption-actions (see helpers) suits those. Add
-.image-upload--dragging while a file is dragged over the page to accent the
-selector or frame outline.
+A media frame (above) around the uploaded image. Only shows the selector; add
+.image-upload--has-preview to swap it for the media frame. Clicking the source
+reopens the picker, and the size sits on the right unless the page's own
+actions take its place. Add .image-upload--dragging while a file is dragged
+over the page to accent the selector or card outline.
 
 These are styles only. Open/close, active state, keyboard handling, slider fill
 updates, and file loading belong to the consuming project.
@@ -580,6 +606,14 @@ Example with Phosphor web classes:
 ================================================================================
 
 Breaking changes:
+
+    2026-11  .image-upload's frame and caption are now the shared .media-frame
+             (partials/components/media-frame), wrapped in a .media-frame that
+             --has-preview shows. Renamed: __frame → .media-frame__card,
+             __stage → .media-frame__stage, __caption → .media-frame__caption,
+             __name → .media-frame__source, __filename → .media-frame__label.
+             Unchanged: .image-upload, __selector, __input, __preview, __size,
+             --has-preview, --dragging. Rename the classes and add the wrapper.
 
     2026-11  .image-upload: the preview now sits in .image-upload__frame >
              .image-upload__stage, and the frame (not the preview) carries the

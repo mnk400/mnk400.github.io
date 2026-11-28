@@ -1,0 +1,76 @@
+@use "../base/mixins" as *;
+
+// =============================================================================
+// MEDIA FRAME — MediaFrame.astro
+// =============================================================================
+
+// The card, then its caption. Neither may widen the column: a long label
+// ellipsizes instead.
+.media-frame {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--spacing-sm);
+    min-width: 0;
+}
+
+// One outlined card: the stage and anything slotted under it.
+.media-frame__card {
+    overflow: hidden;
+    border-radius: var(--radius-md);
+    @include soft-outline(var(--translucent-medium));
+
+    &:fullscreen {
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+        outline: none;
+    }
+}
+
+// The media's own box, which overlays position against. --media-aspect fixes
+// its shape (a video feed's); without it the media sets the height.
+.media-frame__stage {
+    position: relative;
+    aspect-ratio: var(--media-aspect, auto);
+
+    .media-frame__card:fullscreen > & {
+        height: 100%;
+        aspect-ratio: auto;
+    }
+}
+
+.media-frame__caption {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin: 0;
+    color: var(--sec-text-color);
+    @include meta-text;
+}
+
+// Disabled, the source is a plain label: nothing to switch to.
+.media-frame__source {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    min-width: 0;
+    font-weight: inherit;
+    @include highlight-text;
+
+    &:disabled {
+        cursor: default;
+        color: inherit;
+        opacity: 1;
+
+        .icon {
+            display: none;
+        }
+    }
+}
+
+.media-frame__label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

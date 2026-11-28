@@ -280,15 +280,17 @@
     @include mono-font;
 }
 
-// Camera art: one view that is first the start button, then the feed. The
-// canvas paints over the live video, which the lens shows through.
+// Camera art: one view that is first the start button, then the feed in a
+// MediaFrame. The canvas paints over the live video, which the lens shows
+// through. 4:3 holds until the feed reports its own shape.
 .camera-view {
     display: grid;
     gap: var(--spacing-sm);
+    --media-aspect: 4 / 3;
 }
 
 .camera-tool[data-state="live"] .camera-start,
-.camera-tool:not([data-state="live"]) :is(.camera-frame, .camera-caption),
+.camera-tool:not([data-state="live"]) .media-frame,
 .camera-mode-controls[hidden] {
     display: none;
 }
@@ -324,22 +326,6 @@
     }
 }
 
-.camera-frame {
-    position: relative;
-    overflow: hidden;
-    aspect-ratio: var(--feed-aspect, 4 / 3);
-    border-radius: var(--radius-md);
-    @include soft-outline(var(--translucent-medium));
-
-    &:fullscreen {
-        width: 100vw;
-        height: 100vh;
-        aspect-ratio: auto;
-        border-radius: 0;
-        outline: none;
-    }
-}
-
 .camera-video,
 .camera-canvas {
     position: absolute;
@@ -360,43 +346,6 @@
 .camera-canvas {
     background-color: var(--background-main);
     @include lens-overlay;
-}
-
-// Like ImageUpload's caption: the source on the left, actions on the right.
-.camera-caption {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--spacing-md);
-    margin: 0;
-    color: var(--sec-text-color);
-    @include meta-text;
-}
-
-.camera-name {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    min-width: 0;
-    font-weight: inherit;
-    @include highlight-text;
-
-    // One camera: a label, not a switch.
-    &:disabled {
-        cursor: default;
-        color: inherit;
-        opacity: 1;
-
-        .icon {
-            display: none;
-        }
-    }
-}
-
-.camera-name__label {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
 // Historical Browser

@@ -1,5 +1,6 @@
 ---
 import Icon from './Icon.astro';
+import MediaFrame from './MediaFrame.astro';
 
 interface Props {
   id?: string;
@@ -22,20 +23,16 @@ const wrapperClass = ['image-upload', extraClass].filter(Boolean).join(' ');
     <span>{label}</span>
   </button>
   <input class="image-upload__input" type="file" accept={accept} />
-  <div class="image-upload__frame">
-    <div class="image-upload__stage">
-      <img class="image-upload__preview" alt="" />
-      <slot name="overlay" />
-    </div>
-    <slot />
-  </div>
-  <p class="image-upload__caption">
-    <button class="image-upload__name" type="button" title="Replace image">
+  <MediaFrame>
+    <img class="image-upload__preview" alt="" />
+    <slot name="overlay" />
+    <slot slot="below" />
+    <button slot="source" class="media-frame__source" type="button" title="Replace image">
       <Icon name="arrows-clockwise" weight="regular" />
-      <span class="image-upload__filename"></span>
+      <span class="media-frame__label"></span>
     </button>
-    <slot name="caption"><span class="image-upload__size"></span></slot>
-  </p>
+    <slot name="caption" slot="actions"><span class="image-upload__size"></span></slot>
+  </MediaFrame>
 </div>
 
 <script>
@@ -47,8 +44,8 @@ const wrapperClass = ['image-upload', extraClass].filter(Boolean).join(' ');
   mount('[data-image-upload]', ({ root, find, signal }) => {
     const input = find<HTMLInputElement>('.image-upload__input');
     const preview = find<HTMLImageElement>('.image-upload__preview');
-    const name = find('.image-upload__name');
-    const filename = find('.image-upload__filename');
+    const name = find('.media-frame__source');
+    const filename = find('.media-frame__label');
     const size = root.querySelector('.image-upload__size');
     let url = '';
 

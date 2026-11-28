@@ -1,0 +1,22 @@
+---
+// An outlined card around a piece of media, with a caption under it: the
+// media's source on the left (a .media-frame__source button), the page's
+// actions on the right. Styles only; the page owns what the controls do.
+interface Props {
+  class?: string;
+}
+
+const { class: extraClass } = Astro.props;
+---
+<div class:list={['media-frame', extraClass]}>
+  <div class="media-frame__card">
+    <div class="media-frame__stage">
+      <slot />
+    </div>
+    <slot name="below" />
+  </div>
+  <p class="media-frame__caption">
+    <slot name="source" />
+    <slot name="actions" />
+  </p>
+</div>
