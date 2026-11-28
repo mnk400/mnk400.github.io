@@ -19,7 +19,6 @@ import {
   type ZoomRect,
 } from './motion.ts';
 import { allowPixelReads } from '../images.ts';
-import { extractPalette, type PaletteColor } from '../color-palette.ts';
 import {
   createZoomView,
   destroyZoomView,
@@ -29,7 +28,6 @@ import {
   setZoomShareFeedback,
   updateZoomMeta,
   updateZoomNavigation,
-  updateZoomPalette,
   zoomSlideWidth,
   type ZoomView,
 } from './view.ts';
@@ -89,28 +87,6 @@ let activeSession: ZoomSession | null = null;
 // Slides mounted (and loaded) on each side of the current one.
 const SLIDE_RADIUS = 1;
 const ORIGIN_LOAD_WAIT = 400;
-const PALETTE_DOTS = 4;
-const PALETTE_SAMPLE_SIZE = 64;
-const PALETTE_CACHE_LIMIT = 120;
-
-// Keyed by thumbnail URL, item ids are only unique within one manifest.
-const paletteCache = new Map<string, PaletteColor[]>();
-
-function paletteForImage(item: ZoomGalleryItem, image: HTMLImageElement): PaletteColor[] {
-  const cached = paletteCache.get(item.thumbSrc);
-  if (cached) return cached;
-
-  const colors = extractPalette(image, {
-    count: PALETTE_DOTS,
-    sampleSize: PALETTE_SAMPLE_SIZE,
-  });
-  if (paletteCache.size >= PALETTE_CACHE_LIMIT) {
-    const oldest = paletteCache.keys().next();
-    if (!oldest.done) paletteCache.delete(oldest.value);
-  }
-  paletteCache.set(item.thumbSrc, colors);
-  return colors;
-}
 
 function setSessionTimer(session: ZoomSession, callback: () => void, delay: number): number {
   return window.setTimeout(() => {
@@ -243,11 +219,6 @@ function setCurrentIndex(session: ZoomSession, index: number, notify = true) {
   updateZoomMeta(session.view, item);
   resetZoomShareFeedback(session.view);
   syncSlides(session);
-  void loadViewerImage(session, safeIndex).then((image) => {
-    if (image && activeSession === session && session.currentIndex === safeIndex && session.view) {
-      updateZoomPalette(session.view, paletteForImage(item, image));
-    }
-  });
   if (notify) session.options.onChange?.(item, safeIndex);
 }
 
@@ -394,7 +365,6 @@ export async function openZoomGallery(
   const clone = await createClone(session, selected, target);
   if (!clone || activeSession !== session || !session.view) return false;
   session.clonedImage = clone;
-  updateZoomPalette(session.view, paletteForImage(selected, clone));
   updateZoomNavigation(session.view, safeIndex, session.items.length);
   updateZoomMeta(session.view, selected);
 

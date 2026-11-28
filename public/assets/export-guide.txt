@@ -473,9 +473,6 @@ The CSS includes the overlay classes used by manik.cc's image zoom runtime:
     .image-zoom-clone
     .image-zoom-clone--direct
     .image-zoom-controls
-    .image-zoom-palette
-    .image-zoom-palette__dot
-    .image-zoom-palette__swatch
     .image-zoom-meta
     .image-zoom-caption
     .image-zoom-detail
@@ -518,12 +515,6 @@ position and size stay fixed at one end of the morph; animate it with an inline
 transitions only `transform` and `opacity`, so changing top/left/width/height
 will not animate. Keep the clone on the thumbnail source: swapping in a large
 original mid-morph stutters it.
-
-Populate `.image-zoom-palette` before activating `.image-zoom-controls`, so its
-initial appearance shares the controls' opacity transition instead of arriving
-later. Keep the dot elements mounted during gallery navigation and update their
-swatch background colors in place; the CSS color transition avoids exposing the
-page background or requiring temporary overlapping palette layers.
 
 The JavaScript runtime is not exported. Astro projects can copy
 `src/lib/image-zoom/` plus `ImageZoomTemplate.astro` if they want the same

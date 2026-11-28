@@ -1,4 +1,3 @@
-import type { PaletteColor } from '../color-palette.ts';
 import { waitForAnimationFrame } from './motion.ts';
 import type { ZoomGalleryItem } from './index.ts';
 
@@ -17,7 +16,6 @@ export interface ZoomView {
   shareLinkIcon: HTMLElement | null;
   shareCheckIcon: HTMLElement | null;
   counter: HTMLElement | null;
-  palette: HTMLElement;
   caption: HTMLElement;
   detail: HTMLElement;
   metaSeparator: HTMLElement;
@@ -44,22 +42,6 @@ function bindClick(button: HTMLButtonElement, callback: () => void, signal: Abor
   }, { signal });
 }
 
-function bindPalettePulse(palette: HTMLElement, signal: AbortSignal) {
-  palette.addEventListener('click', (event) => {
-    const swatch = (event.target as HTMLElement).closest<HTMLElement>('.image-zoom-palette__swatch');
-    if (!swatch) return;
-    swatch.classList.remove('is-pulsing');
-    void swatch.offsetWidth; // reflow, so rapid clicks retrigger
-    swatch.classList.add('is-pulsing');
-  }, { signal });
-
-  palette.addEventListener('animationend', (event) => {
-    if (event.animationName === 'charm-pulse') {
-      (event.target as HTMLElement).classList.remove('is-pulsing');
-    }
-  }, { signal });
-}
-
 export function createZoomView(options: ZoomViewOptions): ZoomView {
   const overlay = document.querySelector<HTMLDialogElement>('[data-image-zoom]');
   if (!overlay) throw new Error('Image zoom dialog is missing');
@@ -74,7 +56,6 @@ export function createZoomView(options: ZoomViewOptions): ZoomView {
   const previous = overlay.querySelector<HTMLButtonElement>('[data-zoom-previous]')!;
   const next = overlay.querySelector<HTMLButtonElement>('[data-zoom-next]')!;
   const counter = overlay.querySelector<HTMLElement>('[data-zoom-counter]')!;
-  const palette = overlay.querySelector<HTMLElement>('[data-zoom-palette]')!;
   const shareButton = overlay.querySelector<HTMLButtonElement>('[data-zoom-share]')!;
   const shareLinkIcon = overlay.querySelector<HTMLElement>('[data-zoom-share-link]')!;
   const shareCheckIcon = overlay.querySelector<HTMLElement>('[data-zoom-share-check]')!;
@@ -114,7 +95,6 @@ export function createZoomView(options: ZoomViewOptions): ZoomView {
     bindClick(next, options.onNext, options.signal);
   }
   if (options.share) bindClick(shareButton, options.onShare, options.signal);
-  bindPalettePulse(palette, options.signal);
 
   overlay.showModal();
   return {
@@ -132,7 +112,6 @@ export function createZoomView(options: ZoomViewOptions): ZoomView {
     shareLinkIcon: options.share ? shareLinkIcon : null,
     shareCheckIcon: options.share ? shareCheckIcon : null,
     counter: options.multi ? counter : null,
-    palette,
     caption,
     detail,
     metaSeparator,
@@ -224,30 +203,6 @@ export function updateZoomMeta(view: ZoomView, item: ZoomGalleryItem) {
   view.detail.style.display = detail ? '' : 'none';
   view.metaSeparator.style.display = title && detail ? '' : 'none';
   view.metaLine.classList.toggle('is-empty', !title && !detail);
-}
-
-export function updateZoomPalette(view: ZoomView, colors: PaletteColor[]) {
-  view.palette.hidden = colors.length === 0;
-  if (colors.length === 0) {
-    view.palette.replaceChildren();
-    return;
-  }
-
-  const dots = Array.from(view.palette.querySelectorAll<HTMLElement>(':scope > .image-zoom-palette__dot'));
-  colors.forEach((color, index) => {
-    let dot = dots[index];
-    if (!dot) {
-      dot = document.createElement('span');
-      dot.className = 'image-zoom-palette__dot';
-      const swatch = document.createElement('span');
-      swatch.className = 'image-zoom-palette__swatch';
-      dot.appendChild(swatch);
-      view.palette.appendChild(dot);
-    }
-    const swatch = dot.querySelector<HTMLElement>('.image-zoom-palette__swatch');
-    if (swatch) swatch.style.backgroundColor = color.hex;
-  });
-  dots.slice(colors.length).forEach((dot) => dot.remove());
 }
 
 export function updateZoomNavigation(view: ZoomView, index: number, total: number) {
