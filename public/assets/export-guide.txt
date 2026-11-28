@@ -166,6 +166,8 @@ Typography:
 
     --font-family    SF on Apple (-apple-system, BlinkMacSystemFont, system-ui),
                      then Inter, then sans-serif
+    --font-mono      IBM Plex Mono, then ui-monospace: code and ASCII art; the
+                     mono-font mixin reads it
     --type-meta      0.8125rem  (13px)  dates, footers, small labels
     --type-body      0.9375rem  (15px)  page copy
     --type-lede      1rem       (16px)  intro paragraphs

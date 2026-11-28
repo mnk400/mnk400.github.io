@@ -1,6 +1,6 @@
-// Image → ASCII conversion. Used by the live camera tool and the photo
-// converter. Pure functions; the only DOM touch is the offscreen probe
-// in calculateOptimalFontSize for measuring real mono char width.
+// Image → ASCII conversion and drawing, shared by the live camera tool and
+// the photo converter. Conversion is pure; the DOM touches are the probes that
+// measure glyphs and read colors.
 
 export const ASCII_PALETTES = {
   classic: '@%#*+=-:.',
@@ -144,6 +144,36 @@ export function isLightInk(color: string): boolean {
   probe.fillRect(0, 0, 1, 1);
   const [r, g, b] = probe.getImageData(0, 0, 1, 1).data;
   return 0.299 * r + 0.587 * g + 0.114 * b > 128;
+}
+
+export interface AsciiBox {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+/**
+ * Draws converted text onto a canvas so its cols × rows cells fill `box`
+ * exactly, the layout the converter's <pre> gets from CSS: the font sized so a
+ * row spans the width, rows spread to fill the height. One fillText per row.
+ */
+export function drawAscii(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  cols: number,
+  box: AsciiBox,
+  style: { fontFamily: string; ink: string },
+) {
+  const lines = text.replace(/\n$/, '').split('\n');
+  // Measured every call: cheap, and right even after a web font swaps in.
+  ctx.font = `100px ${style.fontFamily}`;
+  const advance = ctx.measureText('M').width / 100;
+  const lineHeight = box.height / lines.length;
+  ctx.font = `${box.width / (cols * advance)}px ${style.fontFamily}`;
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = style.ink;
+  lines.forEach((line, i) => ctx.fillText(line, box.x, box.y + (i + 0.5) * lineHeight));
 }
 
 // Characters are taller than wide, so vertical resolution is halved.

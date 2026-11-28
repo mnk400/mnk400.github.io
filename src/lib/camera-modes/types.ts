@@ -21,6 +21,7 @@ export interface ModeControl {
   id: string;           // option key, e.g. 'dither'
   label: string;        // field label shown above the switch
   default: string;      // initial value (must be one of options below)
+  class?: string;       // extra class on its SelectionSwitch, e.g. glyph labels in mono
   options: SelectionOption[];
 }
 

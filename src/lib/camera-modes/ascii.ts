@@ -1,10 +1,11 @@
-// ASCII mode: brightness grid → monospace characters drawn onto the canvas.
-// Drawn one fillText per row (monospace, uniform advance) so a full frame is
-// ~rows draw calls, not cols×rows — cheap enough for the RAF loop.
+// ASCII mode: the photo converter's conversion and layout, live. Same cell
+// shape and font, so a frame here looks like the same image there.
 
 import {
   ASCII_PALETTES,
+  calculateHeight,
   convertToAscii,
+  drawAscii,
   isLightInk,
   type AsciiPalette,
   type DitherMode,
@@ -14,28 +15,11 @@ import type { CameraMode, RenderContext } from './types.ts';
 
 const MIN_COLS = 15;
 const MAX_COLS = 150;
-const FONT = 'ui-monospace, "Courier New", monospace';
 
-let charRatio = 0;
 // Light ink (dark themes) draws bright pixels dense, or the feed reads as a
 // negative. Re-tested only when the theme's ink changes.
 let lastInk = '';
 let lightInk = false;
-
-// Measure the monospace advance-to-fontSize ratio once (linear in font size).
-function measureCharRatio(ctx: CanvasRenderingContext2D): number {
-  if (!charRatio) {
-    ctx.save();
-    ctx.font = `100px ${FONT}`;
-    charRatio = ctx.measureText('M').width / 100;
-    ctx.restore();
-  }
-  return charRatio;
-}
-
-function textColor(): string {
-  return getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim() || '#222';
-}
 
 export const asciiMode: CameraMode = {
   id: 'ascii',
@@ -46,6 +30,7 @@ export const asciiMode: CameraMode = {
       id: 'palette',
       label: 'glyphs',
       default: 'classic',
+      class: 'ascii-ramps',
       // Each ramp is labelled with its own glyphs, and named for screen readers.
       options: Object.entries(ASCII_PALETTES).map(([value, label]) => ({ value, label, ariaLabel: value })),
     },
@@ -63,35 +48,25 @@ export const asciiMode: CameraMode = {
   render({ ctx, video, width, height, detail, mirror, options }: RenderContext) {
     if (!video.videoWidth) return;
 
-    // Fill the box: font size makes `cols` chars span the full width, then
-    // take as many rows as fit the height (stretching to the canvas aspect,
-    // same as circles mode) so there's no letterboxing.
-    const ratio = measureCharRatio(ctx);
     const cols = Math.round(MIN_COLS + (detail / 100) * (MAX_COLS - MIN_COLS));
-    const fontSize = width / (cols * ratio);
-    const rows = Math.max(1, Math.round(height / fontSize));
-    const lineHeight = height / rows;
-
+    const rows = Math.max(1, calculateHeight(cols, width, height));
     const palette = (options.palette as AsciiPalette) in ASCII_PALETTES
       ? (options.palette as AsciiPalette)
       : 'classic';
     const dither = (options.dither as DitherMode) || 'none';
 
-    const ink = textColor();
+    const root = getComputedStyle(document.documentElement);
+    const ink = root.getPropertyValue('--text-color').trim() || '#222';
     if (ink !== lastInk) [lastInk, lightInk] = [ink, isLightInk(ink)];
 
-    const imageData = sampleFrame(video, cols, rows, { aspect: width / height, mirror });
-    const lines = convertToAscii(imageData, cols, rows, {
+    const text = convertToAscii(sampleFrame(video, cols, rows, { aspect: width / height, mirror }), cols, rows, {
       characters: ASCII_PALETTES[palette],
       dither,
       invert: lightInk,
-    }).split('\n');
-
-    ctx.font = `${fontSize}px ${FONT}`;
-    ctx.textBaseline = 'top';
-    ctx.fillStyle = ink;
-    for (let i = 0; i < rows; i++) {
-      ctx.fillText(lines[i], 0, i * lineHeight);
-    }
+    });
+    drawAscii(ctx, text, cols, { x: 0, y: 0, width, height }, {
+      fontFamily: root.getPropertyValue('--font-mono').trim() || 'monospace',
+      ink,
+    });
   },
 };

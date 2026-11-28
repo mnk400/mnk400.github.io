@@ -93,7 +93,7 @@ a {
 // Code
 code,
 .highlighter-rouge {
-    font-family: "IBM Plex Mono", monospace;
+    font-family: var(--font-mono);
     font-size: 11pt;
     background: var(--code-bg);
     padding: 2px 6px;

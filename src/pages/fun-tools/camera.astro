@@ -59,7 +59,7 @@ const modeOptions = cameraModes.map((m) => ({ value: m.id, label: m.label }));
             <ControlGroup label={control.label}>
               <SelectionSwitch
                 id={`${mode.id}-${control.id}`}
-                class={control.id === 'palette' ? 'ascii-ramps' : undefined}
+                class={control.class}
                 options={control.options}
                 active={control.default}
               />

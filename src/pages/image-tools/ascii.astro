@@ -70,6 +70,7 @@ const ditherOptions = [
     calculateHeight,
     calculateOptimalFontSize,
     convertToAscii,
+    drawAscii,
     forgetFontMetrics,
     isLightInk,
     type AsciiPalette,
@@ -154,27 +155,24 @@ const ditherOptions = [
       copyBtn.click();
     });
 
-    // Saved as seen: the theme's ground and ink, the art's own font and spacing.
+    // Saved as seen: the art's own font and cell shape, scaled to
+    // EXPORT_FONT_SIZE, in the theme's ink on its ground.
     downloadBtn.addEventListener('click', () => {
-      const lines = art.textContent?.split('\n');
-      if (!lines?.length || !rows) return;
+      const text = art.textContent;
+      if (!text || !rows) return;
       const style = getComputedStyle(art);
       const scale = EXPORT_FONT_SIZE / parseFloat(style.fontSize);
-      const cell = art.clientWidth / cols * scale;
-      const lineHeight = art.clientHeight / rows * scale;
-      const pad = lineHeight;
+      const width = art.clientWidth * scale;
+      const height = art.clientHeight * scale;
+      const pad = height / rows;
 
       const canvas = document.createElement('canvas');
-      canvas.width = Math.ceil(cols * cell + pad * 2);
-      canvas.height = Math.ceil(rows * lineHeight + pad * 2);
+      canvas.width = Math.ceil(width + pad * 2);
+      canvas.height = Math.ceil(height + pad * 2);
       const ctx = canvas.getContext('2d')!;
       ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--background-main').trim();
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = ink();
-      ctx.font = `${EXPORT_FONT_SIZE}px ${style.fontFamily}`;
-      ctx.textBaseline = 'middle';
-      lines.forEach((line, i) => ctx.fillText(line, pad, pad + (i + 0.5) * lineHeight));
-
+      drawAscii(ctx, text, cols, { x: pad, y: pad, width, height }, { fontFamily: style.fontFamily, ink: ink() });
       canvas.toBlob((blob) => { if (blob) downloadBlob(blob, `${name}-ascii.png`); });
     });
 

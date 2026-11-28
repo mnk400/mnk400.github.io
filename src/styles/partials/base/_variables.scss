@@ -175,6 +175,8 @@ $themes: (
     // to match in inter.scss). Hierarchy comes from size and colour, not
     // weight, so body stays at 200 and titles at 300.
     --font-family: -apple-system, BlinkMacSystemFont, system-ui, "Inter", sans-serif;
+    // Code and ASCII art. A token so canvas drawing can use it too.
+    --font-mono: "IBM Plex Mono", ui-monospace, monospace;
     --type-meta: 0.8125rem;   // 13px: dates, footer, small labels
     --type-body: 0.9375rem;   // 15px: page copy
     --type-lede: 1rem;        // 16px: home intro
