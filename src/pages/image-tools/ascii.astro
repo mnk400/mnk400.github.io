@@ -5,12 +5,14 @@ import ControlGroup from '../../components/ControlGroup.astro';
 import SelectionSwitch from '../../components/SelectionSwitch.astro';
 import ImageUpload from '../../components/ImageUpload.astro';
 import RangeSlider from '../../components/RangeSlider.astro';
+import { ASCII_PALETTES } from '../../lib/ascii-utils.ts';
 
-const paletteOptions = [
-  { value: 'classic', label: 'Classic' },
-  { value: 'blocks', label: 'Blocks' },
-  { value: 'minimal', label: 'Minimal' },
-];
+// Each ramp is labelled with its own glyphs, and named for screen readers.
+const paletteOptions = Object.entries(ASCII_PALETTES).map(([value, label]) => ({
+  value,
+  label,
+  ariaLabel: value,
+}));
 
 const ditherOptions = [
   { value: 'none', label: 'Smooth' },
@@ -19,49 +21,46 @@ const ditherOptions = [
 ];
 ---
 <Page item="image-tools/ascii">
-  <p>Convert an image to ASCII art.</p>
+  <p>Drop in an image to turn it into ASCII art.</p>
+  <p>
+    Hover over the art to see the image underneath, and click it to copy the text.
+    All processing occurs locally in your browser.
+  </p>
 
-  <div class="ascii-container stack" data-mount="ascii">
-    <div class="stack">
-      <ImageUpload />
+  <div class="ascii-tool stack" data-mount="ascii">
+    <ImageUpload>
+      <pre slot="overlay" class="ascii-art" data-ref="art" data-highlight="off" aria-hidden="true"></pre>
+      <span slot="caption" class="image-upload__actions ascii-actions">
+        <CopyButton id="ascii-copy" class="btn--text">copy</CopyButton>
+        <button class="btn--text" type="button" data-ref="download">save png</button>
+      </span>
+    </ImageUpload>
 
-      <ControlGroup label="characters" for="width-input">
-        <RangeSlider
-          id="width-input"
-          value={80}
-          min={15}
-          max={150}
-        />
-      </ControlGroup>
+    <ControlGroup label="characters" for="width-input">
+      <RangeSlider
+        id="width-input"
+        value={80}
+        min={15}
+        max={150}
+      />
+    </ControlGroup>
 
-      <ControlGroup label="palette">
-        <SelectionSwitch
-          id="ascii-palette-toggle"
-          options={paletteOptions}
-          active="classic"
-        />
-      </ControlGroup>
+    <ControlGroup label="glyphs">
+      <SelectionSwitch
+        id="ascii-palette-toggle"
+        class="ascii-ramps"
+        options={paletteOptions}
+        active="classic"
+      />
+    </ControlGroup>
 
-      <ControlGroup label="dither">
-        <SelectionSwitch
-          id="ascii-dither-toggle"
-          options={ditherOptions}
-          active="none"
-        />
-      </ControlGroup>
-
-      <div class="toolbar">
-        <button class="normal-btn" data-ref="convert">Convert to ASCII</button>
-        <CopyButton
-          id="copy-btn"
-          class="normal-btn"
-          style="display: none;"
-        >Copy Text</CopyButton>
-        <button class="normal-btn" style="display: none;" data-ref="download">Download PNG</button>
-      </div>
-    </div>
-
-    <pre id="ascii-output" data-ref="output"></pre>
+    <ControlGroup label="dither">
+      <SelectionSwitch
+        id="ascii-dither-toggle"
+        options={ditherOptions}
+        active="none"
+      />
+    </ControlGroup>
   </div>
 </Page>
 
@@ -71,121 +70,175 @@ const ditherOptions = [
     calculateHeight,
     calculateOptimalFontSize,
     convertToAscii,
+    forgetFontMetrics,
+    isLightInk,
     type AsciiPalette,
     type DitherMode,
   } from '../../lib/ascii-utils.ts';
   import { mount } from '../../lib/lifecycle.ts';
 
-  mount('[data-mount="ascii"]', ({ ref, find }) => {
+  // A touch held this long shows the image; shorter is a tap (copy).
+  const HOLD_MS = 250;
+  // A held touch that drifts this far is a scroll, not a peek.
+  const HOLD_SLOP = 10;
+  // Glyph size in the saved PNG; its spacing follows the art on screen.
+  const EXPORT_FONT_SIZE = 20;
+
+  mount('[data-mount="ascii"]', ({ ref, find, signal }) => {
     const upload = find('[data-image-upload]');
     const preview = find<HTMLImageElement>('.image-upload__preview');
     const widthInput = find<HTMLInputElement>('#width-input');
-    const convertBtn = ref('convert');
-    const asciiOutput = ref('output');
-    const copyBtn = find('#copy-btn');
+    const art = ref<HTMLPreElement>('art');
+    const copyBtn = find<HTMLButtonElement>('#ascii-copy');
     const downloadBtn = ref('download');
+    const sampler = document.createElement('canvas').getContext('2d', { willReadFrequently: true })!;
 
     let palette: AsciiPalette = 'classic';
     let dither: DitherMode = 'none';
+    let name = 'ascii';
+    let cols = 0;
+    let rows = 0;
 
-    function setActionVisibility(visible: boolean) {
-      const display = visible ? 'inline-block' : 'none';
-      copyBtn.style.display = display;
-      downloadBtn.style.display = display;
+    const ink = () => getComputedStyle(document.documentElement).getPropertyValue('--text-color').trim() || '#222';
+
+    // Size the glyphs so the grid fills the image's box exactly: cols across
+    // the width, rows down the height. The art has the image's shape, so the
+    // lens lines up with what's under it.
+    function fit() {
+      if (!rows) return;
+      art.style.fontSize = `${calculateOptimalFontSize(art.clientWidth, cols, art)}px`;
+      art.style.lineHeight = `${art.clientHeight / rows}px`;
     }
 
-    function render(showMissingImageAlert: boolean) {
-      if (!preview.src) {
-        if (showMissingImageAlert) alert('Please select an image first!');
-        return;
-      }
-
-      const width = parseInt(widthInput.value);
-      const padLeft = parseFloat(getComputedStyle(asciiOutput).paddingLeft);
-      const containerWidth = asciiOutput.clientWidth - padLeft * 2;
-      const fontSize = calculateOptimalFontSize(containerWidth, width, asciiOutput);
-
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d')!;
-      const height = calculateHeight(width, preview.naturalWidth, preview.naturalHeight);
-      canvas.width = width;
-      canvas.height = height;
-      ctx.drawImage(preview, 0, 0, width, height);
-      const imageData = ctx.getImageData(0, 0, width, height);
-      const ascii = convertToAscii(imageData, width, height, {
+    // Conversion is about a millisecond even at 150 columns, so it runs live.
+    function render() {
+      if (!preview.naturalWidth) return;
+      cols = parseInt(widthInput.value);
+      rows = Math.max(1, calculateHeight(cols, preview.naturalWidth, preview.naturalHeight));
+      sampler.canvas.width = cols;
+      sampler.canvas.height = rows;
+      sampler.drawImage(preview, 0, 0, cols, rows);
+      const pixels = sampler.getImageData(0, 0, cols, rows);
+      const convert = (invert: boolean) => convertToAscii(pixels, cols, rows, {
         characters: ASCII_PALETTES[palette],
         dither,
+        invert,
       });
-
-      asciiOutput.style.fontSize = `${fontSize}px`;
-      asciiOutput.style.width = '100%';
-      asciiOutput.style.maxWidth = '525px';
-      asciiOutput.textContent = ascii;
-      copyBtn.dataset.copyValue = ascii;
-      setActionVisibility(true);
+      // Dark themes draw light glyphs, so dense has to mean bright on screen.
+      // The copied text is pasted who knows where: it stays dark-on-light.
+      const lightInk = isLightInk(ink());
+      const text = convert(lightInk);
+      art.textContent = text.trimEnd();
+      copyBtn.dataset.copyValue = lightInk ? convert(false) : text;
+      fit();
     }
 
-    upload.addEventListener('image-upload:change', () => {
-      asciiOutput.textContent = '';
-      delete copyBtn.dataset.copyValue;
-      setActionVisibility(false);
+    upload.addEventListener('image-upload:change', (e) => {
+      name = e.detail.file.name.replace(/\.[^.]+$/, '') || 'ascii';
+      render();
     });
-
-    convertBtn.addEventListener('click', () => render(true));
-
+    widthInput.addEventListener('input', render);
     find('#ascii-palette-toggle').addEventListener('selection:change', (e) => {
       palette = e.detail.value as AsciiPalette;
-      if (asciiOutput.textContent) render(false);
+      render();
     });
-
     find('#ascii-dither-toggle').addEventListener('selection:change', (e) => {
       dither = e.detail.value as DitherMode;
-      if (asciiOutput.textContent) render(false);
+      render();
     });
 
-    downloadBtn.addEventListener('click', () => {
-      const text = asciiOutput.textContent;
-      if (!text) {
-        alert('Please convert an image to ASCII first!');
+    // The lens: a hole in the art that follows the pointer onto the image.
+    art.addEventListener('pointermove', (e) => {
+      if (e.pointerType === 'touch') return;
+      const box = art.getBoundingClientRect();
+      art.style.setProperty('--lens-x', `${e.clientX - box.left}px`);
+      art.style.setProperty('--lens-y', `${e.clientY - box.top}px`);
+      art.classList.add('is-peeking');
+    });
+    art.addEventListener('pointerleave', () => art.classList.remove('is-peeking'));
+
+    // Touch has no hover, so holding shows the whole image instead.
+    let hold = 0;
+    let held = false;
+    let start = { x: 0, y: 0 };
+    const release = () => {
+      window.clearTimeout(hold);
+      art.classList.remove('is-revealed');
+    };
+    art.addEventListener('pointerdown', (e) => {
+      held = false;
+      if (e.pointerType !== 'touch') return;
+      start = { x: e.clientX, y: e.clientY };
+      hold = window.setTimeout(() => {
+        held = true;
+        art.classList.add('is-revealed');
+      }, HOLD_MS);
+    });
+    art.addEventListener('pointermove', (e) => {
+      if (e.pointerType === 'touch' && Math.hypot(e.clientX - start.x, e.clientY - start.y) > HOLD_SLOP) release();
+    });
+    art.addEventListener('pointerup', release);
+    art.addEventListener('pointercancel', release);
+    art.addEventListener('contextmenu', (e) => { if (held) e.preventDefault(); });
+
+    // A click copies; a drag that selected text, or a hold that peeked, doesn't.
+    art.addEventListener('click', () => {
+      if (held) {
+        held = false;
         return;
       }
+      if (!window.getSelection()?.isCollapsed) return;
+      copyBtn.click();
+    });
+
+    // Saved as seen: the theme's ground and ink, the art's own font and spacing.
+    downloadBtn.addEventListener('click', () => {
+      const lines = art.textContent?.split('\n');
+      if (!lines?.length || !rows) return;
+      const style = getComputedStyle(art);
+      const scale = EXPORT_FONT_SIZE / parseFloat(style.fontSize);
+      const cell = art.clientWidth / cols * scale;
+      const lineHeight = art.clientHeight / rows * scale;
+      const pad = lineHeight;
 
       const canvas = document.createElement('canvas');
+      canvas.width = Math.ceil(cols * cell + pad * 2);
+      canvas.height = Math.ceil(rows * lineHeight + pad * 2);
       const ctx = canvas.getContext('2d')!;
-      const fontSize = 12;
-      const fontFamily = 'Courier New, monospace';
-      ctx.font = `${fontSize}px ${fontFamily}`;
-
-      const lines = text.split('\n');
-      const maxLineLength = Math.max(...lines.map((line) => line.length));
-      const lineHeight = fontSize * 1.2;
-      const border = 20;
-      canvas.width = maxLineLength * fontSize * 0.6 + border * 2;
-      canvas.height = lines.length * lineHeight + border * 2;
-
-      ctx.fillStyle = 'white';
+      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--background-main').trim();
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.strokeStyle = 'black';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(1, 1, canvas.width - 2, canvas.height - 2);
-      ctx.fillStyle = 'black';
-      ctx.font = `${fontSize}px ${fontFamily}`;
-      ctx.textBaseline = 'top';
-      lines.forEach((line, i) => {
-        ctx.fillText(line, border, border + i * lineHeight);
-      });
+      ctx.fillStyle = ink();
+      ctx.font = `${EXPORT_FONT_SIZE}px ${style.fontFamily}`;
+      ctx.textBaseline = 'middle';
+      lines.forEach((line, i) => ctx.fillText(line, pad, pad + (i + 0.5) * lineHeight));
 
       canvas.toBlob((blob) => {
         if (!blob) return;
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'ascii-art.png';
-        document.body.appendChild(a);
+        a.download = `${name}-ascii.png`;
         a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        // Revoked at once, Safari can cancel the download before it starts.
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000);
       });
     });
+
+    // Plex Mono swaps in after first paint; the fit has to follow its metrics.
+    document.fonts.addEventListener('loadingdone', () => {
+      forgetFontMetrics();
+      fit();
+    }, { signal });
+
+    const resize = new ResizeObserver(fit);
+    resize.observe(art);
+    // A theme switch can flip the ink from dark to light, and with it the ramp.
+    const theme = new MutationObserver(render);
+    theme.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => {
+      resize.disconnect();
+      theme.disconnect();
+      window.clearTimeout(hold);
+    };
   });
 </script>

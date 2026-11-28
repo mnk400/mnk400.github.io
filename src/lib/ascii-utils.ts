@@ -17,11 +17,13 @@ const DEFAULT_CHARS = '@%#*+=-:. ';
 export interface AsciiOptions {
   characters?: string;
   dither?: DitherMode;
+  invert?: boolean;
 }
 
 interface NormalizedOptions {
   characters: string;
   dither: DitherMode;
+  invert: boolean;
 }
 
 function clamp(value: number, min: number, max: number) {
@@ -29,19 +31,22 @@ function clamp(value: number, min: number, max: number) {
 }
 
 function normalize(options?: AsciiOptions | string): NormalizedOptions {
-  if (typeof options === 'string') return { characters: options, dither: 'none' };
+  if (typeof options === 'string') return { characters: options, dither: 'none', invert: false };
   const o = options ?? {};
   const dither = o.dither && ASCII_DITHER_MODES.includes(o.dither) ? o.dither : 'none';
-  return { characters: o.characters || DEFAULT_CHARS, dither };
+  return { characters: o.characters || DEFAULT_CHARS, dither, invert: o.invert ?? false };
 }
 
-// Alpha-blend onto white so transparent pixels read as background, not black.
-function pixelBrightness(pixels: Uint8ClampedArray, idx: number) {
+// Darkness as the glyph ramp reads it: 0 takes the densest glyph. Transparent
+// pixels blend onto the ground, so they come out as empty space either way.
+function pixelBrightness(pixels: Uint8ClampedArray, idx: number, invert: boolean) {
   const alpha = pixels[idx + 3] / 255;
-  const r = pixels[idx] * alpha + 255 * (1 - alpha);
-  const g = pixels[idx + 1] * alpha + 255 * (1 - alpha);
-  const b = pixels[idx + 2] * alpha + 255 * (1 - alpha);
-  return (r + g + b) / 3;
+  const ground = invert ? 0 : 255;
+  const r = pixels[idx] * alpha + ground * (1 - alpha);
+  const g = pixels[idx + 1] * alpha + ground * (1 - alpha);
+  const b = pixels[idx + 2] * alpha + ground * (1 - alpha);
+  const v = (r + g + b) / 3;
+  return invert ? 255 - v : v;
 }
 
 function brightnessToChar(value: number, chars: string[]) {
@@ -54,7 +59,7 @@ function quantize(value: number, levels: number) {
   return { index, value: index / (levels - 1) * 255 };
 }
 
-function convertOrdered(pixels: Uint8ClampedArray, width: number, height: number, chars: string[]) {
+function convertOrdered(pixels: Uint8ClampedArray, width: number, height: number, chars: string[], invert: boolean) {
   const bayer = [
     0, 8, 2, 10,
     12, 4, 14, 6,
@@ -67,16 +72,16 @@ function convertOrdered(pixels: Uint8ClampedArray, width: number, height: number
     for (let x = 0; x < width; x++) {
       const idx = (y * width + x) * 4;
       const threshold = (bayer[(y % 4) * 4 + (x % 4)] / 16 - 0.5) * step;
-      ascii += brightnessToChar(pixelBrightness(pixels, idx) + threshold, chars);
+      ascii += brightnessToChar(pixelBrightness(pixels, idx, invert) + threshold, chars);
     }
     ascii += '\n';
   }
   return ascii;
 }
 
-function convertFloyd(pixels: Uint8ClampedArray, width: number, height: number, chars: string[]) {
+function convertFloyd(pixels: Uint8ClampedArray, width: number, height: number, chars: string[], invert: boolean) {
   const values = new Array<number>(width * height);
-  for (let i = 0; i < values.length; i++) values[i] = pixelBrightness(pixels, i * 4);
+  for (let i = 0; i < values.length; i++) values[i] = pixelBrightness(pixels, i * 4, invert);
 
   const addError = (x: number, y: number, amount: number) => {
     if (x < 0 || x >= width || y < 0 || y >= height) return;
@@ -111,17 +116,34 @@ export function convertToAscii(
   const chars = Array.from(settings.characters);
   if (!chars.length) return '';
 
-  if (settings.dither === 'ordered') return convertOrdered(pixels, width, height, chars);
-  if (settings.dither === 'floyd') return convertFloyd(pixels, width, height, chars);
+  const { invert } = settings;
+  if (settings.dither === 'ordered') return convertOrdered(pixels, width, height, chars, invert);
+  if (settings.dither === 'floyd') return convertFloyd(pixels, width, height, chars, invert);
 
   let ascii = '';
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      ascii += brightnessToChar(pixelBrightness(pixels, (y * width + x) * 4), chars);
+      ascii += brightnessToChar(pixelBrightness(pixels, (y * width + x) * 4, invert), chars);
     }
     ascii += '\n';
   }
   return ascii;
+}
+
+let probe: CanvasRenderingContext2D | null = null;
+
+/** Whether a CSS color is light, so text in it reads bright on its ground. */
+export function isLightInk(color: string): boolean {
+  probe ??= document.createElement('canvas').getContext('2d', { willReadFrequently: true });
+  if (!probe) return false;
+  // Painting it resolves any CSS color syntax (color-mix, oklab) to sRGB.
+  probe.clearRect(0, 0, 1, 1);
+  // An invalid color leaves fillStyle as it was: reset it so that reads dark.
+  probe.fillStyle = '#000';
+  probe.fillStyle = color;
+  probe.fillRect(0, 0, 1, 1);
+  const [r, g, b] = probe.getImageData(0, 0, 1, 1).data;
+  return 0.299 * r + 0.587 * g + 0.114 * b > 128;
 }
 
 // Characters are taller than wide, so vertical resolution is halved.
@@ -144,6 +166,11 @@ function measureMonoCharRatio(fontFamily: string) {
   const ratio = 200 / charWidth;
   monoRatioCache.set(fontFamily, ratio);
   return ratio;
+}
+
+// A web font that swaps in changes the advance: measure again after it loads.
+export function forgetFontMetrics() {
+  monoRatioCache.clear();
 }
 
 // Picks a font-size such that charCount monospace glyphs span exactly

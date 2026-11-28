@@ -34,7 +34,7 @@ const wrapperClass = ['image-upload', extraClass].filter(Boolean).join(' ');
       <Icon name="arrows-clockwise" weight="regular" />
       <span class="image-upload__filename"></span>
     </button>
-    <span class="image-upload__size"></span>
+    <slot name="caption"><span class="image-upload__size"></span></slot>
   </p>
 </div>
 
@@ -49,7 +49,7 @@ const wrapperClass = ['image-upload', extraClass].filter(Boolean).join(' ');
     const preview = find<HTMLImageElement>('.image-upload__preview');
     const name = find('.image-upload__name');
     const filename = find('.image-upload__filename');
-    const size = find('.image-upload__size');
+    const size = root.querySelector('.image-upload__size');
     let url = '';
 
     // Drop and paste honour `accept` the way the picker does: MIME types,
@@ -82,7 +82,7 @@ const wrapperClass = ['image-upload', extraClass].filter(Boolean).join(' ');
       url = next;
       preview.alt = file.name;
       filename.textContent = file.name;
-      size.textContent = `${preview.naturalWidth} × ${preview.naturalHeight}`;
+      if (size) size.textContent = `${preview.naturalWidth} × ${preview.naturalHeight}`;
       root.classList.add('image-upload--has-preview');
       emit(root, 'image-upload:change', { file, image: preview });
     }

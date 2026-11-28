@@ -4,6 +4,8 @@
 export interface SelectionOption {
   value: string;
   label: string;
+  /** Accessible name, when the visible label doesn't read as one. */
+  ariaLabel?: string;
 }
 
 export function switchClasses(extra?: string): string {

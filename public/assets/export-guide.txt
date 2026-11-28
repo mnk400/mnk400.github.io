@@ -386,14 +386,21 @@ Image upload visual contract:
           <span class="image-upload__filename">photo.jpg</span>
         </button>
         <span class="image-upload__size">4032 × 3024</span>
+        <!-- or, in its place, the page's own controls:
+        <span class="image-upload__actions">
+          <button type="button">copy</button>
+        </span> -->
       </p>
     </div>
 
 Only shows the selector. Add .image-upload--has-preview to swap it for
 the frame and caption: the frame is one outlined, rounded card around the image
 and anything attached under it, and .image-upload__stage is position: relative
-so an overlay can sit on the image. The caption puts the filename (clicking can
-reopens the picker) on the left and the size on the right. Add
+so an overlay can sit on the image. The caption puts the filename (clicking
+reopens the picker) on the left and the size, or the page's own actions in its
+place, on the right. .image-upload__actions is that row of controls: buttons in it
+drop their own type for the caption's meta text and take a text-fit hover
+highlight. Add
 .image-upload--dragging while a file is dragged over the page to accent the
 selector or frame outline.
 
@@ -576,7 +583,7 @@ Breaking changes:
              .image-upload__stage, and the frame (not the preview) carries the
              outline and radius and shows with --has-preview. .fade-out is
              removed. New parts: __frame, __stage, __caption, __name,
-             __filename, __size, and the --dragging modifier.
+             __filename, __size, __actions, and the --dragging modifier.
              .palette-output / .color-swatch: swatches read their color from
              --swatch (not background-color) and the strip from --cols; square
              tiles became a fixed-height continuous strip.

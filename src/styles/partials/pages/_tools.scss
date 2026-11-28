@@ -260,25 +260,6 @@
         }
     }
 
-    // Static photo → ASCII converter still renders selectable text into <pre>.
-    #ascii-output {
-        white-space: pre;
-        @include mono-font;
-        line-height: 1;
-        overflow: auto;
-        width: 100%;
-        display: block;
-        box-sizing: border-box;
-        padding: var(--spacing-md);
-        border: 1px solid var(--translucent-medium);
-        border-radius: var(--radius-lg);
-        text-align: center;
-
-        &:empty {
-            aspect-ratio: 4 / 3;
-        }
-    }
-
     // Hide the fullscreen toggle on small screens — fullscreen API
     // is unreliable on mobile and the button just clutters the toolbar.
     #fullscreen-btn {
@@ -286,6 +267,60 @@
             display: none;
         }
     }
+}
+
+// ASCII converter: the art covers its image in the same box. The image stays
+// beneath for the lens, a soft hole in the art that follows the pointer, and
+// for a held touch, which fades the art out entirely.
+@property --lens {
+    syntax: "<length>";
+    inherits: false;
+    initial-value: 0px;
+}
+
+.ascii-tool .ascii-art {
+    --lens: 0px;
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    white-space: pre;
+    border-radius: 0;
+    background-color: var(--background-main);
+    color: var(--text-color);
+    font-weight: 400;
+    cursor: copy;
+    @include mono-font;
+    mask-image: radial-gradient(
+        circle at var(--lens-x, 50%) var(--lens-y, 50%),
+        transparent calc(var(--lens) * 0.55),
+        black var(--lens)
+    );
+    transition: --lens var(--transition-slow), opacity var(--transition-medium);
+
+    &.is-peeking {
+        --lens: calc(2 * var(--control-height-lg));
+    }
+
+    &.is-revealed {
+        opacity: 0;
+    }
+
+    // A long press peeks; it shouldn't also select text or open a callout.
+    @media (pointer: coarse) {
+        -webkit-touch-callout: none;
+        @include no-select;
+    }
+}
+
+.ascii-actions {
+    // CopyButton's feedback is capitalised; the caption is not.
+    text-transform: lowercase;
+}
+
+.ascii-ramps .switch-option {
+    @include mono-font;
 }
 
 // Historical Browser

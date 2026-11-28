@@ -20,6 +20,7 @@ const classes = switchClasses(extraClass);
       id={opt.value}
       class="switch-option"
       aria-pressed={opt.value === activeValue ? 'true' : 'false'}
+      aria-label={opt.ariaLabel}
       data-value={opt.value}
     >{opt.label}</button>
   ))}

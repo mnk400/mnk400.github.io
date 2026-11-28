@@ -5,6 +5,7 @@
 import {
   ASCII_PALETTES,
   convertToAscii,
+  isLightInk,
   type AsciiPalette,
   type DitherMode,
 } from '../ascii-utils.ts';
@@ -16,6 +17,10 @@ const MAX_COLS = 150;
 const FONT = 'ui-monospace, "Courier New", monospace';
 
 let charRatio = 0;
+// Light ink (dark themes) draws bright pixels dense, or the feed reads as a
+// negative. Re-tested only when the theme's ink changes.
+let lastInk = '';
+let lightInk = false;
 
 // Measure the monospace advance-to-fontSize ratio once (linear in font size).
 function measureCharRatio(ctx: CanvasRenderingContext2D): number {
@@ -74,15 +79,19 @@ export const asciiMode: CameraMode = {
       : 'classic';
     const dither = (options.dither as DitherMode) || 'none';
 
+    const ink = textColor();
+    if (ink !== lastInk) [lastInk, lightInk] = [ink, isLightInk(ink)];
+
     const imageData = sampleFrame(video, cols, rows);
     const lines = convertToAscii(imageData, cols, rows, {
       characters: ASCII_PALETTES[palette],
       dither,
+      invert: lightInk,
     }).split('\n');
 
     ctx.font = `${fontSize}px ${FONT}`;
     ctx.textBaseline = 'top';
-    ctx.fillStyle = textColor();
+    ctx.fillStyle = ink;
     for (let i = 0; i < rows; i++) {
       ctx.fillText(lines[i], 0, i * lineHeight);
     }
