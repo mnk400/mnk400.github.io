@@ -1,3 +1,5 @@
+import type { SelectionOption } from '../selection-options.ts';
+
 // A camera mode is one way of painting a webcam frame onto the shared canvas.
 // The page owns the canvas + lifecycle; each mode only implements render().
 // Adding a new visual style = add a file here and register it in index.ts.
@@ -8,7 +10,7 @@ export interface RenderContext {
   width: number;        // canvas width in CSS pixels (ctx is DPR-scaled)
   height: number;       // canvas height in CSS pixels
   detail: number;       // 0–100 from the Detail slider
-  fullscreen: boolean;
+  mirror: boolean;      // selfie camera: flip so it reads like a mirror
   options: Record<string, string>; // selected values of this mode's controls, keyed by control id
 }
 
@@ -19,7 +21,7 @@ export interface ModeControl {
   id: string;           // option key, e.g. 'dither'
   label: string;        // field label shown above the switch
   default: string;      // initial value (must be one of options below)
-  options: { value: string; label: string }[];
+  options: SelectionOption[];
 }
 
 export interface CameraMode {

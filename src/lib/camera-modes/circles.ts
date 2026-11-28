@@ -11,7 +11,7 @@ const MAX_COLS = 100;
 export const circlesMode: CameraMode = {
   id: 'circles',
   label: 'Circles',
-  render({ ctx, video, width, height, detail }: RenderContext) {
+  render({ ctx, video, width, height, detail, mirror }: RenderContext) {
     if (!video.videoWidth) return;
 
     const cols = Math.round(MIN_COLS + (detail / 100) * (MAX_COLS - MIN_COLS));
@@ -19,7 +19,7 @@ export const circlesMode: CameraMode = {
     const rows = Math.max(1, Math.round(height / cell));
     const maxRadius = cell / 2;
 
-    const { data } = sampleFrame(video, cols, rows);
+    const { data } = sampleFrame(video, cols, rows, { aspect: width / height, mirror });
 
     for (let y = 0; y < rows; y++) {
       for (let x = 0; x < cols; x++) {

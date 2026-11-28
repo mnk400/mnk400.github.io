@@ -1,3 +1,5 @@
+@use "../base/mixins" as *;
+
 // =============================================================================
 // UTILITY CLASSES
 // =============================================================================
@@ -105,6 +107,19 @@
     flex-wrap: wrap;
     align-items: center;
     gap: var(--spacing-sm);
+}
+
+// Text-only controls in a caption or meta line (ImageUpload's, the camera's).
+// Buttons drop their own type for the line's and highlight as text.
+.caption-actions {
+    display: inline-flex;
+    flex-shrink: 0;
+    gap: var(--spacing-md);
+
+    > button {
+        font: inherit;
+        @include highlight-text;
+    }
 }
 
 // Spacing utilities

@@ -1,6 +1,7 @@
 ---
 import Page from '../../layouts/Page.astro';
 import ControlGroup from '../../components/ControlGroup.astro';
+import Icon from '../../components/Icon.astro';
 import SelectionSwitch from '../../components/SelectionSwitch.astro';
 import RangeSlider from '../../components/RangeSlider.astro';
 import { cameraModes } from '../../lib/camera-modes/index.ts';
@@ -10,52 +11,63 @@ const modeOptions = cameraModes.map((m) => ({ value: m.id, label: m.label }));
 <Page item="fun-tools/camera">
   <p>See yourself live as ASCII or circles.</p>
 
-  <div class="ascii-container stack" data-mount="camera">
-    <video style="display: none;" data-ref="video"></video>
+  <div class="camera-tool stack" data-mount="camera" data-state="idle">
+    <div class="camera-view">
+      <button class="camera-start" type="button" data-ref="start">
+        <span data-ref="start-label"><span class="camera-start__verb"></span> to start your camera</span>
+      </button>
 
-    <div class="stack">
-      <ControlGroup label="detail" for="detail-input">
-        <RangeSlider
-          id="detail-input"
-          value={33}
-          min={0}
-          max={100}
-        />
-      </ControlGroup>
-
-      <ControlGroup label="mode">
-        <SelectionSwitch
-          id="camera-mode-toggle"
-          options={modeOptions}
-          active={modeOptions[0].value}
-        />
-      </ControlGroup>
-
-      {cameraModes.map((mode) => (
-        mode.controls?.length ? (
-          <div class="mode-controls" data-mode={mode.id} hidden={mode.id !== modeOptions[0].value}>
-            {mode.controls.map((control) => (
-              <ControlGroup label={control.label}>
-                <SelectionSwitch
-                  id={`${mode.id}-${control.id}`}
-                  options={control.options}
-                  active={control.default}
-                />
-              </ControlGroup>
-            ))}
-          </div>
-        ) : null
-      ))}
-
-      <div class="toolbar">
-        <button class="normal-btn" data-ref="start">Start Camera</button>
-        <button id="fullscreen-btn" class="normal-btn" data-ref="fullscreen">Fullscreen</button>
+      <div class="camera-frame" data-ref="frame">
+        <video class="camera-video" data-ref="video" playsinline muted></video>
+        <canvas class="camera-canvas" data-ref="canvas"></canvas>
       </div>
+
+      <p class="camera-caption">
+        <button class="camera-name" type="button" data-ref="name" title="Switch camera" disabled>
+          <Icon name="camera-rotate" weight="regular" />
+          <span class="camera-name__label" data-ref="name-label">Camera</span>
+        </button>
+        <span class="caption-actions">
+          <button type="button" data-ref="save">save png</button>
+          <button type="button" data-ref="fullscreen">fullscreen</button>
+          <button type="button" data-ref="stop">stop</button>
+        </span>
+      </p>
     </div>
 
-    <div class="canvas-container">
-      <canvas id="camera-canvas" data-ref="canvas"></canvas>
-    </div>
+    <ControlGroup label="mode">
+      <SelectionSwitch
+        id="camera-mode-toggle"
+        options={modeOptions}
+        active={modeOptions[0].value}
+      />
+    </ControlGroup>
+
+    <ControlGroup label="detail" for="detail-input">
+      <RangeSlider
+        id="detail-input"
+        value={33}
+        min={0}
+        max={100}
+      />
+    </ControlGroup>
+
+    {cameraModes.map((mode) => (
+      mode.controls?.length ? (
+        <div class="camera-mode-controls stack" data-mode={mode.id} hidden={mode.id !== modeOptions[0].value}>
+          {mode.controls.map((control) => (
+            <ControlGroup label={control.label}>
+              <SelectionSwitch
+                id={`${mode.id}-${control.id}`}
+                class={control.id === 'palette' ? 'ascii-ramps' : undefined}
+                options={control.options}
+                active={control.default}
+              />
+            </ControlGroup>
+          ))}
+        </div>
+      ) : null
+    ))}
   </div>
 </Page>
 
@@ -63,21 +75,41 @@ const modeOptions = cameraModes.map((m) => ({ value: m.id, label: m.label }));
   import { createCameraManager } from '../../lib/camera-manager.ts';
   import { cameraModes } from '../../lib/camera-modes/index.ts';
   import type { CameraMode } from '../../lib/camera-modes/types.ts';
+  import { downloadCanvas } from '../../lib/download.ts';
+  import { attachLens } from '../../lib/lens.ts';
   import { mount } from '../../lib/lifecycle.ts';
 
+  type State = 'idle' | 'starting' | 'live' | 'error';
+
+  // getUserMedia's failures, in words. Anything else gets the generic line.
+  const ERRORS: Record<string, string> = {
+    NotAllowedError: 'Camera access is blocked. Allow it in your browser’s site settings, then try again.',
+    NotFoundError: 'No camera found. Connect one, then try again.',
+    NotReadableError: 'Another app is using the camera. Close it, then try again.',
+  };
+
   mount('[data-mount="camera"]', ({ root, ref, find, signal }) => {
+    const startBtn = ref<HTMLButtonElement>('start');
+    const startLabel = ref('start-label');
+    const frame = ref('frame');
     const video = ref<HTMLVideoElement>('video');
     const canvas = ref<HTMLCanvasElement>('canvas');
-    const detailInput = find<HTMLInputElement>('#detail-input');
-    const startBtn = ref<HTMLButtonElement>('start');
+    const nameBtn = ref<HTMLButtonElement>('name');
+    const nameLabel = ref('name-label');
     const fullscreenBtn = ref<HTMLButtonElement>('fullscreen');
+    const detailInput = find<HTMLInputElement>('#detail-input');
 
     const ctx = canvas.getContext('2d')!;
+    const idleLabel = startLabel.innerHTML;
     let activeMode: CameraMode = cameraModes[0];
+    let size = { w: 0, h: 0 };
+    let mirror = true;
+    let devices: MediaDeviceInfo[] = [];
+
+    // Element fullscreen is missing on iPhone Safari: no promise of it there.
+    fullscreenBtn.hidden = !document.fullscreenEnabled;
 
     // Per-mode sub-option state, seeded from each mode's declared defaults.
-    // The server pre-renders one SelectionSwitch per control; we just track
-    // its value and hand the active mode's slice to render() each frame.
     const optionState: Record<string, Record<string, string>> = {};
     for (const mode of cameraModes) {
       optionState[mode.id] = {};
@@ -89,79 +121,135 @@ const modeOptions = cameraModes.map((m) => ({ value: m.id, label: m.label }));
       }
     }
 
-    function showModeControls(id: string) {
-      root.querySelectorAll<HTMLElement>('.mode-controls').forEach((el) => {
-        el.hidden = el.dataset.mode !== id;
+    find('#camera-mode-toggle').addEventListener('selection:change', (e) => {
+      activeMode = cameraModes.find((m) => m.id === e.detail.value) ?? activeMode;
+      root.querySelectorAll<HTMLElement>('[data-mode]').forEach((el) => {
+        el.hidden = el.dataset.mode !== activeMode.id;
       });
+    });
+
+    function setState(state: State, message?: string) {
+      root.dataset.state = state;
+      startBtn.disabled = state === 'starting';
+      if (state === 'starting') startLabel.textContent = 'Starting your camera…';
+      else if (message) startLabel.textContent = message;
+      else startLabel.innerHTML = idleLabel;
     }
 
-    function cssSize() {
-      if (camera.isFullscreen()) return { w: window.innerWidth, h: window.innerHeight };
-      const w = canvas.parentElement!.clientWidth;
-      return { w, h: Math.round((w * 3) / 4) }; // 4:3 to match the feed
-    }
-
-    // Size the backing store for the device pixel ratio so canvas text stays
-    // crisp, then scale the context so modes can draw in CSS pixels.
+    // The backing store follows the frame at device resolution, so glyphs stay
+    // crisp; modes draw in CSS pixels through the scaled context.
     function applyCanvasSize() {
       const dpr = window.devicePixelRatio || 1;
-      const { w, h } = cssSize();
-      canvas.width = Math.round(w * dpr);
-      canvas.height = Math.round(h * dpr);
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      size = { w: canvas.clientWidth, h: canvas.clientHeight };
+      canvas.width = Math.round(size.w * dpr);
+      canvas.height = Math.round(size.h * dpr);
     }
 
     function renderFrame(v: HTMLVideoElement) {
+      if (!size.w || !size.h) return;
       const dpr = window.devicePixelRatio || 1;
-      const { w, h } = cssSize();
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.clearRect(0, 0, w, h);
+      ctx.clearRect(0, 0, size.w, size.h);
       activeMode.render({
         ctx,
         video: v,
-        width: w,
-        height: h,
+        width: size.w,
+        height: size.h,
         detail: parseInt(detailInput.value),
-        fullscreen: camera.isFullscreen(),
+        mirror,
         options: optionState[activeMode.id] ?? {},
       });
     }
 
-    find('#camera-mode-toggle').addEventListener('selection:change', (e) => {
-      const id = e.detail.value;
-      activeMode = cameraModes.find((m) => m.id === id) ?? activeMode;
-      showModeControls(activeMode.id);
-      if (!camera.isRunning()) {
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // Set before the track's first frame renders, so a switch never draws a
+    // frame or two with the last camera's mirroring.
+    function onTrack(track: MediaStreamTrack) {
+      // Selfie cameras mirror; a rear camera (environment) shows the world as is.
+      mirror = track.getSettings().facingMode !== 'environment';
+      video.classList.toggle('is-mirrored', mirror);
+      nameLabel.textContent = track.label || 'Camera';
+    }
+
+    const camera = createCameraManager({ video, render: renderFrame, onTrack });
+
+    // The frame takes the feed's own shape, so nothing is cropped or stretched
+    // outside fullscreen.
+    const matchFeed = () => {
+      if (video.videoWidth) frame.style.setProperty('--feed-aspect', `${video.videoWidth} / ${video.videoHeight}`);
+    };
+    video.addEventListener('loadedmetadata', matchFeed);
+    video.addEventListener('resize', matchFeed);
+
+    const failure = (err: unknown) => ERRORS[(err as DOMException).name] ?? 'Couldn’t start the camera. Try again?';
+
+    // Labels only exist once access is granted. One camera: nothing to switch.
+    async function listCameras() {
+      try {
+        devices = (await navigator.mediaDevices.enumerateDevices()).filter((d) => d.kind === 'videoinput');
+      } catch {
+        devices = [];
       }
+      nameBtn.disabled = devices.length < 2;
+    }
+
+    async function start() {
+      setState('starting');
+      try {
+        // False: stopped (or the page left) before access came back.
+        if (!(await camera.start())) return;
+      } catch (err) {
+        console.error('Error accessing camera:', err);
+        setState('error', failure(err));
+        return;
+      }
+      setState('live');
+      await listCameras();
+    }
+
+    // Switching stays live: the canvas holds its last frame until the new feed
+    // lands. A camera that won't open hands back to the one that did.
+    async function switchCamera() {
+      const current = camera.track()?.getSettings().deviceId;
+      const at = devices.findIndex((d) => d.deviceId === current);
+      const next = devices[(at + 1) % devices.length];
+      if (!next) return;
+      nameBtn.disabled = true;
+      try {
+        await camera.start(next.deviceId);
+      } catch (err) {
+        console.error('Error switching camera:', err);
+        try {
+          await camera.start(current);
+        } catch (again) {
+          setState('error', failure(again));
+        }
+      } finally {
+        nameBtn.disabled = devices.length < 2;
+      }
+    }
+
+    startBtn.addEventListener('click', () => void start());
+    nameBtn.addEventListener('click', () => void switchCamera());
+
+    ref('stop').addEventListener('click', () => {
+      if (document.fullscreenElement) void document.exitFullscreen();
+      camera.stop();
+      setState('idle');
     });
 
-    const camera = createCameraManager({
-      video,
-      startBtn,
-      fullscreenBtn,
-      fullscreenTarget: canvas,
-      render: renderFrame,
-      onStart() {
-        applyCanvasSize();
-      },
-      onStop() {
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-      },
-      onEnterFullscreen() {
-        canvas.classList.add('is-fullscreen');
-        applyCanvasSize();
-      },
-      onExitFullscreen() {
-        canvas.classList.remove('is-fullscreen');
-        applyCanvasSize();
-        detailInput.value = '33';
-        detailInput.dispatchEvent(new Event('input'));
-      },
+    ref('save').addEventListener('click', () => {
+      const ground = getComputedStyle(document.documentElement).getPropertyValue('--background-main').trim();
+      downloadCanvas(canvas, `camera-${activeMode.id}.png`, ground || '#fff');
     });
 
-    window.addEventListener('resize', applyCanvasSize, { signal });
+    fullscreenBtn.addEventListener('click', () => {
+      frame.requestFullscreen().catch((err) => console.error('Error entering fullscreen:', err));
+    });
+
+    attachLens(canvas, signal);
+
+    const resize = new ResizeObserver(applyCanvasSize);
+    resize.observe(canvas);
+    return () => resize.disconnect();
   });
 </script>

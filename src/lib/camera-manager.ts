@@ -1,117 +1,91 @@
-// Shared lifecycle for getUserMedia tools: start/stop the stream, drive a
-// render loop per RAF, and (optionally) toggle a fullscreen container.
-// Pages supply a render(video) callback plus per-page lifecycle hooks for
-// styling differences. The stream and its listeners release on swap.
+// Shared lifecycle for getUserMedia tools: open and close the stream and drive
+// a render loop per frame. The page owns every control and message; failures
+// come back as the rejected start(). The stream releases on swap.
 
-import { pageSignal, untilSwap } from './lifecycle.ts';
+import { untilSwap } from './lifecycle.ts';
 
 export interface CameraManagerOptions {
   video: HTMLVideoElement;
-  startBtn: HTMLButtonElement;
-  fullscreenBtn?: HTMLButtonElement | null;
-  fullscreenTarget?: HTMLElement | null;
-  startLabel?: string;
-  stopLabel?: string;
   render: (video: HTMLVideoElement) => void;
-  onStart?: () => void;
-  onStop?: () => void;
-  onEnterFullscreen?: () => void;
-  onExitFullscreen?: () => void;
+  /** The new track, before its first frame renders. */
+  onTrack?: (track: MediaStreamTrack) => void;
 }
 
 export interface CameraController {
-  isRunning: () => boolean;
-  isFullscreen: () => boolean;
+  /**
+   * Opens a camera (the selfie one by default) or switches to `deviceId`.
+   * Resolves true once live, false if a later start or stop overtook it.
+   */
+  start: (deviceId?: string) => Promise<boolean>;
   stop: () => void;
+  isRunning: () => boolean;
+  track: () => MediaStreamTrack | null;
 }
 
-export function createCameraManager(opts: CameraManagerOptions): CameraController {
-  const {
-    video, startBtn, fullscreenBtn, fullscreenTarget,
-    startLabel = 'Start Camera', stopLabel = 'Stop Camera',
-    render,
-    onStart = () => {}, onStop = () => {},
-    onEnterFullscreen = () => {}, onExitFullscreen = () => {},
-  } = opts;
-
+export function createCameraManager({ video, render, onTrack }: CameraManagerOptions): CameraController {
   let stream: MediaStream | null = null;
   let rafId: number | null = null;
-  let isFullscreen = false;
-  let disposed = false;
+  // Bumped by every start and stop: an older start that resolves late is stale.
+  let generation = 0;
 
   function loop() {
     render(video);
     rafId = requestAnimationFrame(loop);
   }
 
-  async function start() {
+  function release() {
+    stream?.getTracks().forEach((t) => t.stop());
+    stream = null;
+    if (rafId !== null) cancelAnimationFrame(rafId);
+    rafId = null;
+    video.srcObject = null;
+  }
+
+  async function start(deviceId?: string) {
+    const mine = ++generation;
+    // Many phones can't hold two cameras open, so the old one closes first.
+    release();
+    let granted: MediaStream;
     try {
-      const granted = await navigator.mediaDevices.getUserMedia({ video: true });
-      // The permission prompt can outlive the page; release a late grant.
-      if (disposed) {
-        granted.getTracks().forEach((t) => t.stop());
-        return;
-      }
-      stream = granted;
-      video.srcObject = stream;
-      await video.play();
-      if (disposed) return;
-      startBtn.textContent = stopLabel;
-      onStart();
-      loop();
+      granted = await navigator.mediaDevices.getUserMedia({
+        video: deviceId ? { deviceId: { exact: deviceId } } : { facingMode: 'user' },
+      });
     } catch (err) {
-      console.error('Error accessing camera:', err);
-      alert('Could not access camera. Please make sure you have granted camera permissions.');
+      if (mine !== generation) return false;
+      throw err;
     }
+    // Overtaken (or the page left) while the prompt was up: let this one go.
+    if (mine !== generation) {
+      granted.getTracks().forEach((t) => t.stop());
+      return false;
+    }
+    stream = granted;
+    video.srcObject = stream;
+    try {
+      await video.play();
+    } catch (err) {
+      // A newer srcObject aborts this play(); that's the newer start's business.
+      if (mine !== generation) return false;
+      release();
+      throw err;
+    }
+    if (mine !== generation) return false;
+    onTrack?.(stream.getVideoTracks()[0]);
+    loop();
+    return true;
   }
 
   function stop() {
-    if (stream) {
-      stream.getTracks().forEach((t) => t.stop());
-      stream = null;
-    }
-    if (rafId !== null) {
-      cancelAnimationFrame(rafId);
-      rafId = null;
-    }
-    video.srcObject = null;
-    startBtn.textContent = startLabel;
-    onStop();
+    generation++;
+    release();
   }
 
-  startBtn.addEventListener('click', () => {
-    if (stream) stop(); else start();
-  });
-
-  if (fullscreenBtn && fullscreenTarget) {
-    fullscreenBtn.addEventListener('click', async () => {
-      if (!stream) await start();
-      if (document.fullscreenElement) return;
-      try {
-        await fullscreenTarget.requestFullscreen();
-        isFullscreen = true;
-        onEnterFullscreen();
-      } catch (err) {
-        console.error('Error attempting to enable fullscreen:', err);
-      }
-    });
-
-    document.addEventListener('fullscreenchange', () => {
-      if (!document.fullscreenElement && isFullscreen) {
-        isFullscreen = false;
-        onExitFullscreen();
-      }
-    }, { signal: pageSignal() });
-  }
-
-  untilSwap(() => {
-    disposed = true;
-    if (stream) stop();
-  });
+  untilSwap(stop);
 
   return {
-    isRunning: () => stream !== null,
-    isFullscreen: () => isFullscreen,
+    start,
     stop,
+    isRunning: () => stream !== null,
+    track: () => stream?.getVideoTracks()[0] ?? null,
   };
 }

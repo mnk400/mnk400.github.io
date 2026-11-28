@@ -30,7 +30,7 @@ const ditherOptions = [
   <div class="ascii-tool stack" data-mount="ascii">
     <ImageUpload>
       <pre slot="overlay" class="ascii-art" data-ref="art" data-highlight="off" aria-hidden="true"></pre>
-      <span slot="caption" class="image-upload__actions ascii-actions">
+      <span slot="caption" class="caption-actions ascii-actions">
         <CopyButton id="ascii-copy" class="btn--text">copy</CopyButton>
         <button class="btn--text" type="button" data-ref="download">save png</button>
       </span>
@@ -75,12 +75,10 @@ const ditherOptions = [
     type AsciiPalette,
     type DitherMode,
   } from '../../lib/ascii-utils.ts';
+  import { downloadBlob } from '../../lib/download.ts';
+  import { attachLens } from '../../lib/lens.ts';
   import { mount } from '../../lib/lifecycle.ts';
 
-  // A touch held this long shows the image; shorter is a tap (copy).
-  const HOLD_MS = 250;
-  // A held touch that drifts this far is a scroll, not a peek.
-  const HOLD_SLOP = 10;
   // Glyph size in the saved PNG; its spacing follows the art on screen.
   const EXPORT_FONT_SIZE = 20;
 
@@ -147,47 +145,12 @@ const ditherOptions = [
       render();
     });
 
-    // The lens: a hole in the art that follows the pointer onto the image.
-    art.addEventListener('pointermove', (e) => {
-      if (e.pointerType === 'touch') return;
-      const box = art.getBoundingClientRect();
-      art.style.setProperty('--lens-x', `${e.clientX - box.left}px`);
-      art.style.setProperty('--lens-y', `${e.clientY - box.top}px`);
-      art.classList.add('is-peeking');
-    });
-    art.addEventListener('pointerleave', () => art.classList.remove('is-peeking'));
-
-    // Touch has no hover, so holding shows the whole image instead.
-    let hold = 0;
-    let held = false;
-    let start = { x: 0, y: 0 };
-    const release = () => {
-      window.clearTimeout(hold);
-      art.classList.remove('is-revealed');
-    };
-    art.addEventListener('pointerdown', (e) => {
-      held = false;
-      if (e.pointerType !== 'touch') return;
-      start = { x: e.clientX, y: e.clientY };
-      hold = window.setTimeout(() => {
-        held = true;
-        art.classList.add('is-revealed');
-      }, HOLD_MS);
-    });
-    art.addEventListener('pointermove', (e) => {
-      if (e.pointerType === 'touch' && Math.hypot(e.clientX - start.x, e.clientY - start.y) > HOLD_SLOP) release();
-    });
-    art.addEventListener('pointerup', release);
-    art.addEventListener('pointercancel', release);
-    art.addEventListener('contextmenu', (e) => { if (held) e.preventDefault(); });
+    // The lens shows the image through the art; a held touch shows it whole.
+    const lens = attachLens(art, signal);
 
     // A click copies; a drag that selected text, or a hold that peeked, doesn't.
     art.addEventListener('click', () => {
-      if (held) {
-        held = false;
-        return;
-      }
-      if (!window.getSelection()?.isCollapsed) return;
+      if (lens.consumeHold() || !window.getSelection()?.isCollapsed) return;
       copyBtn.click();
     });
 
@@ -212,16 +175,7 @@ const ditherOptions = [
       ctx.textBaseline = 'middle';
       lines.forEach((line, i) => ctx.fillText(line, pad, pad + (i + 0.5) * lineHeight));
 
-      canvas.toBlob((blob) => {
-        if (!blob) return;
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${name}-ascii.png`;
-        a.click();
-        // Revoked at once, Safari can cancel the download before it starts.
-        window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-      });
+      canvas.toBlob((blob) => { if (blob) downloadBlob(blob, `${name}-ascii.png`); });
     });
 
     // Plex Mono swaps in after first paint; the fit has to follow its metrics.
@@ -238,7 +192,6 @@ const ditherOptions = [
     return () => {
       resize.disconnect();
       theme.disconnect();
-      window.clearTimeout(hold);
     };
   });
 </script>

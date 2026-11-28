@@ -221,77 +221,16 @@
     color: var(--ink-strong);
 }
 
-// ASCII Art styles
-.ascii-container {
-    .canvas-container {
-        position: relative;
-        width: 100%;
-        padding-bottom: 75%; /* 16:9 aspect ratio */
-    }
-
-    // Live camera tool — a single DPR-scaled canvas shared by all paint modes.
-    #camera-canvas {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        @include translucent-surface;
-        border-radius: var(--radius-lg);
-
-        &.is-fullscreen {
-            width: 100vw;
-            height: 100vh;
-            margin: 0;
-            padding: 0;
-            border-radius: 0;
-            background-color: #000;
-        }
-    }
-
-    // Per-mode sub-options (e.g. ASCII dither/palette). Only the active mode's
-    // block is shown; display:grid would otherwise defeat the hidden attribute.
-    .mode-controls {
-        display: grid;
-        gap: var(--spacing-sm);
-
-        &[hidden] {
-            display: none;
-        }
-    }
-
-    // Hide the fullscreen toggle on small screens — fullscreen API
-    // is unreliable on mobile and the button just clutters the toolbar.
-    #fullscreen-btn {
-        @media (max-width: 768px) {
-            display: none;
-        }
-    }
-}
-
-// ASCII converter: the art covers its image in the same box. The image stays
-// beneath for the lens, a soft hole in the art that follows the pointer, and
-// for a held touch, which fades the art out entirely.
+// The lens (lib/lens.ts): a soft hole in an overlay that follows the
+// pointer onto what's beneath, or a held touch that fades the overlay out.
 @property --lens {
     syntax: "<length>";
     inherits: false;
     initial-value: 0px;
 }
 
-.ascii-tool .ascii-art {
+@mixin lens-overlay {
     --lens: 0px;
-    position: absolute;
-    inset: 0;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    white-space: pre;
-    border-radius: 0;
-    background-color: var(--background-main);
-    color: var(--text-color);
-    font-weight: 400;
-    cursor: copy;
-    @include mono-font;
     mask-image: radial-gradient(
         circle at var(--lens-x, 50%) var(--lens-y, 50%),
         transparent calc(var(--lens) * 0.55),
@@ -314,6 +253,24 @@
     }
 }
 
+// ASCII converter: the art covers its image in the same box, the image
+// beneath for the lens.
+.ascii-tool .ascii-art {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    white-space: pre;
+    border-radius: 0;
+    background-color: var(--background-main);
+    color: var(--text-color);
+    font-weight: 400;
+    cursor: copy;
+    @include mono-font;
+    @include lens-overlay;
+}
+
 .ascii-actions {
     // CopyButton's feedback is capitalised; the caption is not.
     text-transform: lowercase;
@@ -321,6 +278,125 @@
 
 .ascii-ramps .switch-option {
     @include mono-font;
+}
+
+// Camera art: one view that is first the start button, then the feed. The
+// canvas paints over the live video, which the lens shows through.
+.camera-view {
+    display: grid;
+    gap: var(--spacing-sm);
+}
+
+.camera-tool[data-state="live"] .camera-start,
+.camera-tool:not([data-state="live"]) :is(.camera-frame, .camera-caption),
+.camera-mode-controls[hidden] {
+    display: none;
+}
+
+// The idle frame is the button, as ImageUpload's selector is, and holds the
+// feed's likely shape so going live barely moves the page.
+.camera-start {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: var(--spacing-lg);
+    font-size: 0.9em;
+    color: var(--text-color);
+    text-align: center;
+    text-wrap: balance;
+    border: none;
+    border-radius: var(--radius-md);
+    backdrop-filter: blur(10px);
+    @include highlight-control(var(--translucent-high));
+
+    &:disabled {
+        cursor: progress;
+    }
+}
+
+.camera-start__verb::before {
+    content: "Click";
+
+    @media (hover: none) {
+        content: "Tap";
+    }
+}
+
+.camera-frame {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: var(--feed-aspect, 4 / 3);
+    border-radius: var(--radius-md);
+    @include soft-outline(var(--translucent-medium));
+
+    &:fullscreen {
+        width: 100vw;
+        height: 100vh;
+        aspect-ratio: auto;
+        border-radius: 0;
+        outline: none;
+    }
+}
+
+.camera-video,
+.camera-canvas {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.camera-video {
+    object-fit: cover;
+
+    &.is-mirrored {
+        scale: -1 1;
+    }
+}
+
+.camera-canvas {
+    background-color: var(--background-main);
+    @include lens-overlay;
+}
+
+// Like ImageUpload's caption: the source on the left, actions on the right.
+.camera-caption {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin: 0;
+    color: var(--sec-text-color);
+    @include meta-text;
+}
+
+.camera-name {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    min-width: 0;
+    font-weight: inherit;
+    @include highlight-text;
+
+    // One camera: a label, not a switch.
+    &:disabled {
+        cursor: default;
+        color: inherit;
+        opacity: 1;
+
+        .icon {
+            display: none;
+        }
+    }
+}
+
+.camera-name__label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 // Historical Browser

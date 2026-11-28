@@ -40,7 +40,15 @@ function textColor(): string {
 export const asciiMode: CameraMode = {
   id: 'ascii',
   label: 'ASCII',
+  // Same order and labels as the photo converter.
   controls: [
+    {
+      id: 'palette',
+      label: 'glyphs',
+      default: 'classic',
+      // Each ramp is labelled with its own glyphs, and named for screen readers.
+      options: Object.entries(ASCII_PALETTES).map(([value, label]) => ({ value, label, ariaLabel: value })),
+    },
     {
       id: 'dither',
       label: 'dither',
@@ -51,18 +59,8 @@ export const asciiMode: CameraMode = {
         { value: 'floyd', label: 'Floyd' },
       ],
     },
-    {
-      id: 'palette',
-      label: 'palette',
-      default: 'classic',
-      options: [
-        { value: 'classic', label: 'Classic' },
-        { value: 'blocks', label: 'Blocks' },
-        { value: 'minimal', label: 'Minimal' },
-      ],
-    },
   ],
-  render({ ctx, video, width, height, detail, options }: RenderContext) {
+  render({ ctx, video, width, height, detail, mirror, options }: RenderContext) {
     if (!video.videoWidth) return;
 
     // Fill the box: font size makes `cols` chars span the full width, then
@@ -82,7 +80,7 @@ export const asciiMode: CameraMode = {
     const ink = textColor();
     if (ink !== lastInk) [lastInk, lightInk] = [ink, isLightInk(ink)];
 
-    const imageData = sampleFrame(video, cols, rows);
+    const imageData = sampleFrame(video, cols, rows, { aspect: width / height, mirror });
     const lines = convertToAscii(imageData, cols, rows, {
       characters: ASCII_PALETTES[palette],
       dither,

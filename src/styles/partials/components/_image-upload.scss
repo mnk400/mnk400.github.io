@@ -78,19 +78,6 @@
     flex-shrink: 0;
 }
 
-// A page's own caption controls, in place of the size. Buttons take the
-// caption's meta text rather than their own type.
-.image-upload__actions {
-    display: inline-flex;
-    flex-shrink: 0;
-    gap: var(--spacing-md);
-
-    > button {
-        font: inherit;
-        @include highlight-text;
-    }
-}
-
 .image-upload--has-preview {
     .image-upload__selector {
         display: none;
